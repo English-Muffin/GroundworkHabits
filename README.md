@@ -44,7 +44,7 @@ The same workflow builds all three and attaches them to a GitHub Release, which 
   - Calendar to Daybook (desktop app): gear menu > Connect a calendar…, paste the calendar's "Secret address in iCal format"
     (Google Calendar on the web > Settings > your calendar). Events from the last 30 and next 90 days appear as tasks with a blue dot and refresh every 15 minutes.
   - Daybook to calendar (all versions): gear menu > Export tasks to calendar (.ics), then in Google Calendar: Settings > Import & export > Import.
-    Re-importing the newer file updates the same events instead of duplicating them.
+    Each task keeps the same event ID in every export, so Google should recognise events it already has, but check for duplicates the first time you re-import.
 - Data is otherwise saved locally on each device. Use the gear menu, "Export backup" and "Import backup", to move it between devices.
 - The Space Grotesk font loads from Google Fonts on the first online launch and is then cached. Offline before that, a system font is used.
   To bundle it, add the font files under `www/fonts` and an `@font-face` rule in `www/index.html`.
