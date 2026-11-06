@@ -1,0 +1,7 @@
+{
+  "appId": "com.daybook.app",
+  "appName": "Daybook",
+  "webDir": "www",
+  "backgroundColor": "#080808",
+  "server": { "androidScheme": "https" }
+}
