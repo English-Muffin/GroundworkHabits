@@ -18,15 +18,29 @@ ipcMain.on('fs:write', (e, text) => {
 // calendar feed: fetched here because the page itself is blocked by CORS.
 // https only on every redirect hop, no local/private hosts, isolated cookie-less session, 5 MB and 20 s caps
 const CAL_MAX = 5e6;
-const privateHost = h => /^(localhost|.*\.local|.*\.internal)$/i.test(h) || /^\[(::1\]|f[cd]|fe80)/i.test(h) ||
-  /^(127\.|10\.|0\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h);
+const { BlockList, isIP } = require('net');
+const { lookup } = require('dns').promises;
+const blocked = new BlockList();
+[['0.0.0.0', 8], ['10.0.0.0', 8], ['100.64.0.0', 10], ['127.0.0.0', 8], ['169.254.0.0', 16], ['172.16.0.0', 12], ['192.168.0.0', 16]]
+  .forEach(([a, p]) => blocked.addSubnet(a, p, 'ipv4'));
+[['::', 128], ['::1', 128], ['fc00::', 7], ['fe80::', 10]].forEach(([a, p]) => blocked.addSubnet(a, p, 'ipv6'));
+// every address the host resolves to must be public.
+// shortcut: DNS could still change between this check and the connection (rebinding); pin the IP if this ever fetches more than calendar text
+async function publicHost(host) {
+  host = host.replace(/^\[|\]$/g, '').replace(/\.$/, '').toLowerCase();
+  if (!host || host === 'localhost' || /\.(localhost|local|internal)$/.test(host)) return false;
+  const addrs = isIP(host) ? [{ address: host, family: isIP(host) }] : await lookup(host, { all: true, verbatim: true });
+  // IPv4-mapped IPv6 (::ffff:1.2.3.4) is checked as the IPv4 address inside it
+  const bad = a => { const m = a.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/i); return m ? blocked.check(m[1], 'ipv4') : blocked.check(a, isIP(a) === 6 ? 'ipv6' : 'ipv4'); };
+  return addrs.length > 0 && !addrs.some(a => bad(a.address));
+}
 ipcMain.handle('cal:fetch', async (e, url) => {
   const ses = session.fromPartition('calendar-feed');
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 20000);
   try {
     let u = new URL(url), res;
     for (let hop = 0; ; hop++) {
-      if (u.protocol !== 'https:' || privateHost(u.hostname)) return { ok: false, error: 'The address must be a public https:// link' };
+      if (u.protocol !== 'https:' || !(await publicHost(u.hostname))) return { ok: false, error: 'The address must be a public https:// link' };
       res = await ses.fetch(u.href, { redirect: 'manual', signal: ctl.signal });
       if (res.status >= 300 && res.status < 400 && res.headers.get('location')) {
         if (hop >= 5) return { ok: false, error: 'Too many redirects' };
