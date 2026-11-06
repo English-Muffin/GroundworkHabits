@@ -38,7 +38,16 @@ function embeddedV4(a) {
   m = h.match(/^2002:([0-9a-f]{1,4}):([0-9a-f]{1,4}):/);
   return m ? hex(m[1], m[2]) : null;
 }
-const isPublic = a => { const v4 = isIP(a) === 6 ? embeddedV4(a) : a; return v4 ? !blocked.check(v4, 'ipv4') : !blocked.check(a, 'ipv6'); };
+// IPv6 fails closed: only global unicast (2000::/3) outside special-purpose ranges; 6to4/NAT64/mapped use their IPv4
+const global6 = new BlockList(); global6.addSubnet('2000::', 3, 'ipv6');
+[['2001::', 32], ['2001:db8::', 32], ['2002::', 16]].forEach(([a, p]) => blocked.addSubnet(a, p, 'ipv6'));
+const isPublic = a => {
+  if (isIP(a) === 4) return !blocked.check(a, 'ipv4');
+  if (isIP(a) !== 6) return false;
+  const v4 = embeddedV4(a);
+  if (v4) return !blocked.check(v4, 'ipv4');
+  return global6.check(a, 'ipv6') && !blocked.check(a, 'ipv6');
+};
 function safeLookup(host, opts, cb) {
   dns.lookup(host, { all: true, verbatim: true }, (err, addrs) => {
     if (err) return cb(err);
@@ -52,7 +61,7 @@ function getOnce(u, signal) {
     if (isIP(host) && !isPublic(host)) return reject(Object.assign(new Error('private address'), { code: 'EPRIVATE' }));
     const req = https.get(u, { lookup: safeLookup, signal, headers: { 'User-Agent': 'Daybook calendar sync', Accept: 'text/calendar' } }, res => {
       if (res.socket.remoteAddress && !isPublic(res.socket.remoteAddress)) { res.destroy(); return reject(Object.assign(new Error('private address'), { code: 'EPRIVATE' })); }
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) { res.resume(); return resolve({ redirect: new URL(res.headers.location, u) }); }
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) { res.resume(); return resolve({ redirect: String(res.headers.location) }); } // parsed by the caller, inside its try
       if (res.statusCode !== 200) { res.resume(); return resolve({ status: res.statusCode }); }
       if (+res.headers['content-length'] > CAL_MAX) { res.destroy(); return resolve({ big: true }); }
       const parts = []; let size = 0;
@@ -70,7 +79,7 @@ ipcMain.handle('cal:fetch', async (e, url) => {
     for (let hop = 0; ; hop++) {
       if (u.protocol !== 'https:' || /^(localhost|.*\.(localhost|local|internal))\.?$/i.test(u.hostname)) return { ok: false, error: 'The address must be a public https:// link' };
       const r = await getOnce(u, ctl.signal);
-      if (r.redirect) { if (hop >= 5) return { ok: false, error: 'Too many redirects' }; u = r.redirect; continue; }
+      if (r.redirect) { if (hop >= 5) return { ok: false, error: 'Too many redirects' }; u = new URL(r.redirect, u); continue; }
       if (r.big) return { ok: false, error: 'That calendar is too large' };
       if (r.status) return { ok: false, error: r.status === 404 ? 'Calendar address not found. Copy the secret iCal address again' : 'Calendar returned an error (' + r.status + ')' };
       if (!r.text.includes('BEGIN:VCALENDAR')) return { ok: false, error: 'That address is not an iCal calendar' };
