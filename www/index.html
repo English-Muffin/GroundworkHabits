@@ -199,6 +199,9 @@ textarea.field{min-height:130px;resize:vertical;line-height:1.5}
 .tk.done span{color:var(--g6a);text-decoration:line-through}
 .cb{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--g3b);background:transparent;flex:none;padding:0;margin-top:1px;display:grid;place-items:center}
 .cb.on{background:var(--teal);border-color:var(--teal)}
+.cb.x{border-color:color-mix(in srgb,var(--red) 70%,transparent);background:color-mix(in srgb,var(--red) 14%,transparent)}
+.cb.x svg{width:10px;height:10px;stroke:var(--red);stroke-width:3.2;fill:none;stroke-linecap:round}
+.tk.miss span{color:var(--muted)}
 .cb.on svg{width:10px;height:10px;stroke:var(--on);stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .tkx{background:none;border:0;color:var(--g55);padding:0 2px;font-size:14px;line-height:1;opacity:0}
 .tk:hover .tkx,.tkx:focus-visible{opacity:1}
@@ -375,6 +378,7 @@ const ICON={
   prev:'<path d="M15 6l-6 6 6 6"/>',next:'<path d="M9 6l6 6-6 6"/>'
 };
 const ic=(n,c)=>'<svg class="ic'+(c?' '+c:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+ICON[n]+'</svg>';
+const XMARK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
 const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const FLAME='<svg class="flame" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.6 5.2 5.6 5.2 10.3a5.2 5.2 0 0 1-10.4 0c0-2.1 1-3.4 2.1-4.3 0 2.1 1 3.1 2.1 3.1C11 8.5 10 5.5 12 2z"/></svg>';
 const STAR='<svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg>';
@@ -609,7 +613,9 @@ function vToday(){
 
 /* ---------- Tasks ---------- */
 function taskChip(k,it){
-  return '<div class="tk '+(it.done?'done':'')+'"><button class="cb '+(it.done?'on':'')+'" data-act="tdone" data-k="'+k+'" data-i="'+it.id+'" aria-pressed="'+it.done+'" aria-label="'+esc(it.text)+'">'+(it.done?CHECK:'')+'</button><span contenteditable="plaintext-only" role="textbox" aria-label="Task text" data-et="'+k+'" data-i="'+it.id+'">'+esc(it.text)+'</span><button class="tkx" data-act="tdel" data-k="'+k+'" data-i="'+it.id+'" aria-label="Delete task">&times;</button></div>';
+  // a past day's unfinished task shows as missed (X); tapping still toggles it done and back
+  const miss=!it.done&&k<dk(TODAY);
+  return '<div class="tk '+(it.done?'done':miss?'miss':'')+'"><button class="cb '+(it.done?'on':miss?'x':'')+'" data-act="tdone" data-k="'+k+'" data-i="'+it.id+'" aria-pressed="'+it.done+'" aria-label="'+esc(it.text)+(miss?', missed. Tap to mark as done':'')+'">'+(it.done?CHECK:miss?XMARK:'')+'</button><span contenteditable="plaintext-only" role="textbox" aria-label="Task text" data-et="'+k+'" data-i="'+it.id+'">'+esc(it.text)+'</span><button class="tkx" data-act="tdel" data-k="'+k+'" data-i="'+it.id+'" aria-label="Delete task">&times;</button></div>';
 }
 function taskAdder(k,copy){
   const items=(S.tasks[k]||{items:[]}).items;
