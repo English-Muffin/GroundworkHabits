@@ -2,7 +2,7 @@
 
 All notable changes to Daybook. Versions match the GitHub releases.
 
-## Unreleased
+## 1.3.0
 
 - Habits can track an amount with a unit and an optional goal (km, pages, hours), next to done/not done and counts.
 - Repeating tasks (every day, weekday, week or month) replace task templates. Deleting one offers to delete the later repeats.
