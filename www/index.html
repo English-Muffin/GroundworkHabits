@@ -545,12 +545,12 @@ function dailyGrid(){
   const n=dim(vy,vm),pts=[];
   for(let d=1;d<=n;d++){const date=new Date(vy,vm,d);pts.push(date>TODAY?0:dayPct(date))}
   const yy=v=>12+(100-v)*.76;
-  const poly=pts.map((v,i)=>((i+.5)/n*100).toFixed(2)+','+yy(v).toFixed(2));
-  const area=poly.join(' ')+' '+((n-.5)/n*100).toFixed(2)+',100 '+(.5/n*100).toFixed(2)+',100';
+  const curve=smooth(pts.map((v,i)=>[+((i+.5)/n*100).toFixed(2),+yy(v).toFixed(2)])); // same curve as the Insights chart
+  const area=curve+' L'+((pts.length-.5)/n*100).toFixed(2)+',100 L'+(.5/n*100).toFixed(2)+',100 Z';
   const avg=Math.round(hs.reduce((s,h)=>s+dailyStats(h,vy,vm).pct,0)/hs.length);
   let o='<div class="gcard"><div class="gin" style="--n:'+n+'">';
   o+='<div class="grow chartrow"><div class="gname"><span class="tdot"></span><span class="nm lbl" style="color:var(--g4a);font-size:8px">TREND</span></div>'
-   +'<div class="gchart"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--teal)" stop-opacity=".22"/><stop offset="1" style="stop-color:var(--teal)" stop-opacity="0"/></linearGradient></defs><polygon points="'+area+'" fill="url(#ga)"/><polyline points="'+poly.join(' ')+'" fill="none" style="stroke:var(--teal)" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>'
+   +'<div class="gchart"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--teal)" stop-opacity=".3"/><stop offset="1" style="stop-color:var(--teal)" stop-opacity="0"/></linearGradient></defs><path d="'+area+'" fill="url(#ga)"/><path d="'+curve+'" fill="none" style="stroke:var(--teal)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>'
    +pts.map((v,i)=>'<span class="pt" style="left:'+((i+.5)/n*100)+'%;top:'+yy(v)+'%"></span>').join('')+'</div>'
    +'<div class="gstat"><div class="avg"><small>AVG</small><b>'+avg+'%</b></div></div></div>';
   o+='<div class="grow hdr"><div class="gname">HABIT</div>';
