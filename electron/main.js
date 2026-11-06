@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, shell, ipcMain, dialog, net } = require('electron');
+const { app, BrowserWindow, Menu, shell, ipcMain, dialog, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -15,16 +15,38 @@ ipcMain.on('fs:write', (e, text) => {
   const f = dataFile(); if (!f || typeof text !== 'string') { e.returnValue = false; return; }
   try { fs.writeFileSync(f + '.tmp', text); fs.renameSync(f + '.tmp', f); e.returnValue = true; } catch (err) { e.returnValue = false; } // tmp+rename: never a half-written file
 });
-// calendar feed: fetched here because the page itself is blocked by CORS; https only, size-capped
+// calendar feed: fetched here because the page itself is blocked by CORS.
+// https only on every redirect hop, no local/private hosts, isolated cookie-less session, 5 MB and 20 s caps
+const CAL_MAX = 5e6;
+const privateHost = h => /^(localhost|.*\.local|.*\.internal)$/i.test(h) || /^\[(::1\]|f[cd]|fe80)/i.test(h) ||
+  /^(127\.|10\.|0\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h);
 ipcMain.handle('cal:fetch', async (e, url) => {
+  const ses = session.fromPartition('calendar-feed');
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 20000);
   try {
-    const u = new URL(url); if (u.protocol !== 'https:') return { ok: false, error: 'The address must start with https://' };
-    const res = await net.fetch(u.href, { redirect: 'follow' });
+    let u = new URL(url), res;
+    for (let hop = 0; ; hop++) {
+      if (u.protocol !== 'https:' || privateHost(u.hostname)) return { ok: false, error: 'The address must be a public https:// link' };
+      res = await ses.fetch(u.href, { redirect: 'manual', signal: ctl.signal });
+      if (res.status >= 300 && res.status < 400 && res.headers.get('location')) {
+        if (hop >= 5) return { ok: false, error: 'Too many redirects' };
+        u = new URL(res.headers.get('location'), u); continue;
+      }
+      break;
+    }
     if (!res.ok) return { ok: false, error: res.status === 404 ? 'Calendar address not found. Copy the secret iCal address again' : 'Calendar returned an error (' + res.status + ')' };
-    const text = await res.text();
-    if (text.length > 5e6 || !text.includes('BEGIN:VCALENDAR')) return { ok: false, error: 'That address is not an iCal calendar' };
+    if (+res.headers.get('content-length') > CAL_MAX) return { ok: false, error: 'That calendar is too large' };
+    const reader = res.body.getReader(), parts = []; let size = 0;
+    for (;;) {
+      const { done, value } = await reader.read(); if (done) break;
+      size += value.length; if (size > CAL_MAX) { ctl.abort(); return { ok: false, error: 'That calendar is too large' }; }
+      parts.push(Buffer.from(value));
+    }
+    const text = Buffer.concat(parts).toString('utf8');
+    if (!text.includes('BEGIN:VCALENDAR')) return { ok: false, error: 'That address is not an iCal calendar' };
     return { ok: true, text };
-  } catch (err) { return { ok: false, error: 'Could not reach your calendar' }; }
+  } catch (err) { return { ok: false, error: ctl.signal.aborted ? 'Your calendar took too long to respond' : 'Could not reach your calendar' }; }
+  finally { clearTimeout(timer); }
 });
 // tests: DAYBOOK_TEST_PICK = folder to "pick", DAYBOOK_TEST_ANSWERS = comma list of message box button indexes
 const testAnswers = (process.env.DAYBOOK_TEST_ANSWERS || '').split(',').filter(Boolean).map(Number);
