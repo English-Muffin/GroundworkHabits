@@ -100,13 +100,18 @@ async def desktop(b):
       const r1=all().sort();
       applyCalendar(parseIcs(ics([['a',d(3),'Dentist moved']])));
       const r2=all();
+      // a deleted (hidden) calendar event stays hidden after a resync
+      const kk=Object.keys(S.tasks).find(k=>S.tasks[k].items.some(i=>i.cal==='a'));S.tasks[kk].items.find(i=>i.cal==='a').hidden=true;
+      applyCalendar(parseIcs(ics([['a',d(3),'Dentist moved']])));
+      const hiddenKept=S.tasks[kk].items.some(i=>i.cal==='a'&&i.hidden);
       const out=tasksToIcs();
       return {r1,r2,exp:[d(1)+'|Dentist, 3pm',d(2)+'|Long summary that is folded'].sort(),moved:[d(3)+'|Dentist moved'],
-        icsOk:out.includes('BEGIN:VEVENT')&&!out.includes('Dentist')&&out.includes('Test task edited')};
+        hiddenKept,icsOk:out.includes('BEGIN:VEVENT')&&!out.includes('Dentist')&&out.includes('Test task edited')};
     })()""")
     check('calendar import adds, folds, unescapes and skips old events', cal['r1'] == cal['exp'])
     check('calendar resync moves changed events and removes deleted ones', cal['r2'] == cal['moved'])
     check('tasks export to .ics without calendar-imported events', cal['icsOk'])
+    check('deleted calendar event stays hidden after resync', cal['hiddenKept'])
     await pg.evaluate("""localStorage.setItem('daybook-v2',JSON.stringify({habits:[{id:'x\\"><img src=x onerror=window.pwn=1>',name:'H',type:'daily',color:'red\\"><img src=x onerror=window.pwn=1>'}],log:{},tasks:{},goals:[{id:'g',title:'G',area:'Health',pct:'<img src=x onerror=window.pwn=1>'}],journal:{}}))""")
     await pg.reload(); await pg.wait_for_timeout(200); await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(200)
     check('malicious saved data is sanitised', not await pg.evaluate('window.pwn') and await pg.locator('.goal .pc').first.inner_text() == '0%')

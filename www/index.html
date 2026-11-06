@@ -417,6 +417,8 @@ applyPrefs();
 const empty=()=>({v:DATA_V,habits:[],log:{},tasks:{},goals:[],journal:{},quits:[]});
 
 // true when there is anything the user would lose (not just habits)
+// calendar events: `hidden` ones were deleted here and stay hidden; events never count as to-dos
+const vis=a=>a.filter(i=>!i.hidden),todo=a=>a.filter(i=>!i.cal);
 const hasData=()=>S.habits.length||S.goals.length||S.quits.length||Object.values(S.tasks).some(t=>t.items.length||t.mind)||Object.values(S.journal).some(Boolean);
 function seed(){
   const H=[
@@ -473,7 +475,7 @@ function clean(d){
     o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0]});
     const l=obj(d.log)&&obj(d.log[h.id])?d.log[h.id]:{};o.log[i]={};Object.keys(l).forEach(k=>{if(/^\d{4}-\d{2}(-\d{2}|-W\d)?$/.test(k)&&l[k])o.log[i][k]=1})});
   if(obj(d.tasks))Object.keys(d.tasks).forEach(k=>{const t=d.tasks[k];if(!DK.test(k)||!obj(t))return;const m=obj(t.mind)?t.mind:null;
-    o.tasks[k]={items:(Array.isArray(t.items)?t.items:[]).filter(obj).map(x=>Object.assign({id:id(x.id),text:str(x.text),done:!!x.done},typeof x.cal==='string'&&x.cal.length<300?{cal:x.cal}:{})),
+    o.tasks[k]={items:(Array.isArray(t.items)?t.items:[]).filter(obj).map(x=>Object.assign({id:id(x.id),text:str(x.text),done:!!x.done},typeof x.cal==='string'&&x.cal.length<300?{cal:x.cal,hidden:!!x.hidden}:{})),
       mind:m?{energy:num(m.energy,0,10,5),focus:num(m.focus,0,10,5),motivation:num(m.motivation,0,10,5)}:null}});
   (Array.isArray(d.goals)?d.goals:[]).forEach(g=>{if(obj(g))o.goals.push({id:id(g.id),title:str(g.title),area:AREAS.includes(g.area)?g.area:AREAS[0],pct:num(g.pct,0,100,0)})});
   (Array.isArray(d.quits)?d.quits:[]).forEach(q=>{if(obj(q)&&QT.test(q.since))o.quits.push({id:id(q.id),name:str(q.name),since:q.since,best:num(q.best,0,100000,0)})});
@@ -604,7 +606,7 @@ function vToday(){
   let o='<div class="tgrid"><section class="card thero">'+ring(pct,170,14,'<div style="font-size:34px;font-weight:700;letter-spacing:-.03em">'+t.done+'/'+t.total+'</div><div class="lbl" style="font-size:9px">done today</div>')
    +'<div><div class="d">'+DAYS[TODAY.getDay()]+'</div><div class="muted" style="margin-top:2px">'+TODAY.getDate()+' '+MONTHS[m]+' '+y+'</div></div></section>'
    +'<section class="card"><div class="ch"><span class="lbl">Tasks today</span><button class="link" data-act="goto" data-v="tasks">Open</button></div>'
-   +(day.items.length?day.items.map(it=>taskChip(k,it)).join(''):'<p class="muted" style="margin:0 0 8px;font-size:12px">Nothing planned yet.</p>')
+   +(vis(day.items).length?vis(day.items).map(it=>taskChip(k,it)).join(''):'<p class="muted" style="margin:0 0 8px;font-size:12px">Nothing planned yet.</p>')
    +taskAdder(k,false)+'</section></div>';
   const sec=(title,rows)=>rows?'<section class="sec"><h2>'+title+'</h2>'+rows+'</section>':'';
   o+=sec('Daily',byType('daily').map(h=>{const on=!!L(h)[k],c=curStreak(h);
@@ -628,15 +630,15 @@ function taskChipHtml(k,it,miss){
   return '<div class="tk '+(it.done?'done':miss?'miss':'')+'"><button class="cb '+(it.done?'on':miss?'cbx':'')+'" data-act="tdone" data-k="'+k+'" data-i="'+it.id+'" aria-pressed="'+it.done+'" aria-label="'+esc(it.text)+(miss?', missed. Tap to mark as done':'')+'">'+(it.done?CHECK:miss?XMARK:'')+'</button><span contenteditable="plaintext-only" role="textbox" aria-label="Task text" data-et="'+k+'" data-i="'+it.id+'">'+esc(it.text)+'</span><button class="tkx" data-act="tdel" data-k="'+k+'" data-i="'+it.id+'" aria-label="Delete task">&times;</button></div>';
 }
 function taskAdder(k,copy){
-  const items=(S.tasks[k]||{items:[]}).items;
+  const items=vis((S.tasks[k]||{items:[]}).items);
   let o=addingTask===k?'<input class="tin" id="taskInput" data-k="'+k+'" maxlength="100" placeholder="New task, then Enter" aria-label="New task">':'<button class="addt" data-act="tadd" data-k="'+k+'">+ Add task</button>';
   if(copy&&!items.length)o+='<button class="cpy" data-act="tcopy" data-k="'+k+'">Copy yesterday’s list</button>';
   return o;
 }
 function vTasks(){
   const days=[];for(let i=0;i<7;i++)days.push(addDays(taskWeek,i));
-  const data=days.map(d=>{const t=S.tasks[dk(d)]||{items:[],mind:null};return {d,k:dk(d),items:t.items,mind:t.mind,done:t.items.filter(i=>i.done).length}});
-  const tot=data.reduce((s,x)=>s+x.items.length,0),done=data.reduce((s,x)=>s+x.done,0),pct=tot?Math.round(done/tot*100):0,mx=Math.max(1,...data.map(x=>x.items.length));
+  const data=days.map(d=>{const t=S.tasks[dk(d)]||{items:[],mind:null};const td=todo(t.items);return {d,k:dk(d),items:vis(t.items),todo:td,mind:t.mind,done:td.filter(i=>i.done).length}});
+  const tot=data.reduce((s,x)=>s+x.todo.length,0),done=data.reduce((s,x)=>s+x.done,0),pct=tot?Math.round(done/tot*100):0,mx=Math.max(1,...data.map(x=>x.todo.length));
   const isNow=dk(taskWeek)===dk(wkStart(TODAY));
   const e=addDays(taskWeek,6);
   const range=p2(taskWeek.getDate())+' '+MONR[taskWeek.getMonth()]+' – '+p2(e.getDate())+' '+MONR[e.getMonth()]+' '+e.getFullYear();
@@ -644,7 +646,7 @@ function vTasks(){
   let o='<div class="ttop"><section class="card wk"><div class="wkhead"><div><div class="lbl" style="font-size:9px">WEEK STARTING</div><span class="wkpill">'+range+'</span></div>'
    +'<div class="wknav"><button data-act="tprev" aria-label="Previous week">'+ic('prev')+'</button><button data-act="tnow">'+(isNow?'This week':'Go to this week')+'</button><button data-act="tnext" aria-label="Next week">'+ic('next')+'</button></div></div>'
    +'<div class="wkbody"><div class="ovp"><div class="t">Overall progress</div><div class="bars">'+data.map(x=>{
-      const th=x.items.length?Math.max(10,x.items.length/mx*H):6,fh=x.items.length?x.done/mx*H:0;
+      const th=x.todo.length?Math.max(10,x.todo.length/mx*H):6,fh=x.todo.length?x.done/mx*H:0;
       return '<div class="bcol"><div class="bt" style="height:'+th+'px"><i style="height:'+fh+'px"></i></div><span>'+x.d.toLocaleDateString('en-GB',{weekday:'short'})+'</span></div>'}).join('')+'</div></div>'
    +'<div class="ovr">'+ring(pct,92,8,'<span class="big">'+pct+'%</span>')+'<span>'+done+' / '+tot+' completed</span></div></div></section>';
   // mindset chart
@@ -659,13 +661,13 @@ function vTasks(){
    +'<div class="mx">'+data.map(x=>'<span>'+x.d.toLocaleDateString('en-GB',{weekday:'short'})+'</span>').join('')+'</div></section></div>';
   // day columns
   o+='<div class="days">'+data.map(x=>{
-    const p=x.items.length?Math.round(x.done/x.items.length*100):0,open=!!openMind[x.k],m=x.mind||{};
+    const p=x.todo.length?Math.round(x.done/x.todo.length*100):0,open=!!openMind[x.k],m=x.mind||{};
     return '<section class="day '+(x.k===dk(TODAY)?'now':'')+'"><h3>'+DAYS[x.d.getDay()]+'</h3><div class="dt">'+dmy(x.d)+'</div>'
      +ring(p,70,7,'<span style="font-size:15px">'+p+'%</span>')+'<div class="tl">TASKS</div>'
      +x.items.map(it=>taskChip(x.k,it)).join('')+taskAdder(x.k,true)
      +'<button class="mh '+(open?'open':'')+'" data-act="mind" data-k="'+x.k+'" aria-expanded="'+open+'"><span class="lbl">MINDSET</span><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>'
      +(open?'<div class="ms">'+[['energy','Energy'],['focus','Focus'],['motivation','Motivation']].map(f=>'<div class="r"><div><span>'+f[1]+'</span><span class="bdg" id="b-'+x.k+'-'+f[0]+'">'+(m[f[0]]!=null?m[f[0]]:5)+'</span></div><input type="range" min="0" max="10" step="1" value="'+(m[f[0]]!=null?m[f[0]]:5)+'" data-mind="'+x.k+'" data-f="'+f[0]+'" aria-label="'+f[1]+' on '+DAYS[x.d.getDay()]+'"></div>').join('')+'</div>':'')
-     +'<div class="cnt"><span>Completed</span><b class="t">'+x.done+'</b></div><div class="cnt"><span>Not completed</span><b>'+(x.items.length-x.done)+'</b></div></section>';
+     +'<div class="cnt"><span>Completed</span><b class="t">'+x.done+'</b></div><div class="cnt"><span>Not completed</span><b>'+(x.todo.length-x.done)+'</b></div></section>';
   }).join('')+'</div>';
   return o;
 }
@@ -716,7 +718,7 @@ function vInsights(){
   o+='<section class="card"><div class="ch"><span class="lbl">TOP STREAKS</span></div>'+ts.map((x,i)=>'<div class="lrow"><span>'+medal(MC[i])+'</span><div><div class="top"><span>'+esc(x.h.name)+'</span><b>'+x.s+'d</b></div><div class="tr"><i style="width:'+Math.max(3,Math.min(100,x.s/30*100))+'%"></i></div></div></div>').join('')+'</section></div>';
   // goals + tasks
   const gd=S.goals.filter(g=>g.pct>=100).length,ga=S.goals.length?Math.round(S.goals.reduce((s,g)=>s+g.pct,0)/S.goals.length):0;
-  let tt=0,td=0;for(let i=0;i<7;i++){const t=S.tasks[dk(addDays(wkStart(TODAY),i))];if(t){tt+=t.items.length;td+=t.items.filter(x=>x.done).length}}
+  let tt=0,td=0;for(let i=0;i<7;i++){const t=S.tasks[dk(addDays(wkStart(TODAY),i))];if(t){const a=todo(t.items);tt+=a.length;td+=a.filter(x=>x.done).length}}
   const tp=tt?Math.round(td/tt*100):0;
   o+='<div class="two"><section class="card"><div class="ch"><span class="lbl">GOALS</span><button class="link" data-act="goto" data-v="goals">Open →</button></div><div class="bigv">'+gd+' / '+S.goals.length+' completed</div><div class="goal"><div class="tr"><i style="width:'+ga+'%"></i></div></div><div class="sub">Average progress '+ga+'%</div></section>'
    +'<section class="card"><div class="ch"><span class="lbl">TASKS THIS WEEK</span><button class="link" data-act="goto" data-v="tasks">Open →</button></div><div class="bigv">'+tp+'%</div><div class="goal"><div class="tr"><i style="width:'+tp+'%"></i></div></div><div class="sub">Of this week’s tasks are done</div></section></div>';
@@ -876,7 +878,7 @@ document.addEventListener('click',e=>{
     case 'export':menuOpen=false;persist=false;exportData();break;
     case 'import':menuOpen=false;persist=false;$('#impFile').click();break;
     case 'fresh':
-      if(confirmReset){S=empty();confirmReset=false;menuOpen=false;toast('Everything erased')}else{confirmReset=true;persist=false}break;
+      if(confirmReset){S=empty();P.cal='';P.calAt=0;applyPrefs();confirmReset=false;menuOpen=false;toast('Everything erased')}else{confirmReset=true;persist=false}break;
     case 'goto':location.hash=t.dataset.v;persist=false;return;
     case 'mprev':{const d=new Date(vy,vm-1,1);vy=d.getFullYear();vm=d.getMonth();persist=false;break}
     case 'mnext':{const d=new Date(vy,vm+1,1);vy=d.getFullYear();vm=d.getMonth();persist=false;break}
@@ -916,10 +918,10 @@ document.addEventListener('click',e=>{
     case 'tnext':taskWeek=addDays(taskWeek,7);persist=false;break;
     case 'tnow':taskWeek=wkStart(TODAY);persist=false;break;
     case 'tdone':{const day=S.tasks[t.dataset.k],it=day.items.find(i=>i.id===t.dataset.i);it.done=!it.done;break}
-    case 'tdel':{const day=S.tasks[t.dataset.k];day.items=day.items.filter(i=>i.id!==t.dataset.i);break}
+    case 'tdel':{const day=S.tasks[t.dataset.k],it=day.items.find(i=>i.id===t.dataset.i);if(it&&it.cal)it.hidden=true;else day.items=day.items.filter(i=>i.id!==t.dataset.i);break}
     case 'tadd':addingTask=t.dataset.k;focusSel='#taskInput';persist=false;break;
     case 'tcopy':{
-      const k=t.dataset.k,prev=dk(addDays(new Date(k+'T00:00:00'),-1)),src=(S.tasks[prev]||{items:[]}).items;
+      const k=t.dataset.k,prev=dk(addDays(new Date(k+'T00:00:00'),-1)),src=todo((S.tasks[prev]||{items:[]}).items);
       if(!src.length){toast('Nothing to copy from the day before');persist=false;break}
       (S.tasks[k]=S.tasks[k]||{items:[],mind:null}).items=src.map(i=>({id:uid(),text:i.text,done:false}));break}
     case 'mind':openMind[t.dataset.k]=!openMind[t.dataset.k];persist=false;break;
