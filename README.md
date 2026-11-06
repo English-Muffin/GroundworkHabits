@@ -38,7 +38,9 @@ The same workflow builds all three and attaches them to a GitHub Release, which 
   macOS will say the app "cannot be verified": right-click Daybook, choose Open, then Open again
   (on macOS 15+: try to open it once, then System Settings > Privacy & Security > Open Anyway).
   On Android, allow "install unknown apps" for the app you use to open the APK. A Play Store release needs a signed release build.
-- Data is saved locally on each device. Use the gear menu, "Export backup" and "Import backup", to move it between devices.
+- Desktop app: Settings (gear) > Data folder > Choose folder… saves your data as `daybook.json` in any folder.
+  Pick your Google Drive, OneDrive or Dropbox folder (with their desktop app installed) and it syncs between PCs automatically.
+- Data is otherwise saved locally on each device. Use the gear menu, "Export backup" and "Import backup", to move it between devices.
 - The Space Grotesk font loads from Google Fonts on the first online launch and is then cached. Offline before that, a system font is used.
   To bundle it, add the font files under `www/fonts` and an `@font-face` rule in `www/index.html`.
 - To ship an update to the installed web version, change `VERSION` in `www/sw.js`.

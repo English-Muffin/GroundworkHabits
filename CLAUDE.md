@@ -10,11 +10,12 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `www/index.html`  the whole app (CSS + HTML shell + JS in one file, no build step, no dependencies)
 - `www/sw.js`  offline cache. Bump `VERSION` whenever shipped files change
 - `www/manifest.webmanifest`, `www/icons/`  PWA metadata and icons
-- `electron/main.js`  Windows wrapper. `package.json` holds the electron-builder config
+- `electron/main.js` + `preload.js`  desktop wrapper. The preload exposes `window.daybookFS` so the user can pick a data folder (Settings > Data folder); data is mirrored to `<folder>/daybook.json` (sync, tmp+rename), re-read on focus. Picking a Google Drive/OneDrive/Dropbox synced folder is the cloud sync story. `package.json` holds the electron-builder config
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
 - `tests/smoke.py`  Playwright smoke tests (28 checks, desktop and phone)
+- `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
 ## Commands
 - Run locally: `python -m http.server 8765 --directory www`, then open http://localhost:8765
@@ -66,6 +67,6 @@ Run `python tests/smoke.py`. When you fix a bug, add a check for it. Test at 390
 - Today and Goals screens were designed without a reference. They deserve a polish pass
 - Local notifications / daily reminder (Capacitor Local Notifications; Notification API on the web)
 - Reorder habits, undo for deletes
-- Cloud sync (currently local only, with export/import backup)
+- Cloud sync on web/Android (desktop has it via a synced data folder); a real Google Drive API login would need an OAuth client ID
 - Bundle the font files
 - Signed Windows build and a signed Android release build for the Play Store

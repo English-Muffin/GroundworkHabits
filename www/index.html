@@ -53,6 +53,7 @@ svg{display:block}
 .menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:10px 12px;border-radius:9px;font-size:13px;color:var(--gcf)}
 .menu button:hover{background:var(--g17);color:var(--gff)}
 .menu .sep{height:1px;background:var(--line);margin:4px 6px}
+.menu .mpath{font-size:11px;color:var(--text);padding:0 12px 6px;overflow-wrap:anywhere;max-width:260px}
 .menu .mlbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 12px 4px}
 .menu .mrow{display:flex;gap:6px;padding:4px 12px 8px;flex-wrap:wrap}
 .menu .mrow button{width:auto;padding:6px 12px;border:1px solid var(--line2);border-radius:999px;font-size:12px}
@@ -379,7 +380,12 @@ const KEY='daybook-v2';
 const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'];
 const AREAS=['Health','Fitness','Career','Money','Learning','Relationships','Family','Fun','Home','Mindset'];
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){return null}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
+/* desktop only: mirror data to <folder>/daybook.json (a Drive/OneDrive/Dropbox folder gives cloud sync) */
+const DFS=window.daybookFS||null;let dataDir=DFS?DFS.folder():'',fileText=null;
+function writeFile(){clearTimeout(save.t);save.t=0;if(!dataDir)return;const t=JSON.stringify(S);if(t===fileText)return;if(DFS.write(t))fileText=t;else toast('Could not save to your data folder')}
+function readFile(){const t=DFS.read();if(!t||t===fileText)return false;try{S=clean(JSON.parse(t));fileText=t;try{localStorage.setItem(KEY,t)}catch(e){}return true}catch(e){return false}}
+window.addEventListener('beforeunload',()=>{if(save.t)writeFile()});
 const DATA_V=1; // bump and migrate in load-time block below when the saved shape changes
 const PKEY='daybook-prefs',ACCENTS=[['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
 let P={theme:'dark',accent:ACCENTS[0][1]};try{Object.assign(P,JSON.parse(localStorage.getItem(PKEY))||{})}catch(e){}
@@ -458,6 +464,7 @@ function clean(d){
   return o;
 }
 let S=clean(load());
+if(dataDir&&!readFile())writeFile(); // folder file wins; a new folder gets current data
 ['habits','log','tasks','goals','journal'].forEach(k=>{if(!S[k])S[k]=(k==='habits'||k==='goals')?[]:{}});
 if(!S.v)S.v=1; // pre-versioned saves are v1; add 'if(S.v<2){...;S.v=2}' steps here
 
@@ -747,6 +754,7 @@ function render(){
   mn.innerHTML='<div class="mlbl">Customize</div><div class="mlbl">Theme</div><div class="mrow">'+[['dark','Dark'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+(P.theme===t[0])+'">'+t[1]+'</button>').join('')+'</div>'
     +'<div class="mlbl">Accent colour</div><div class="mrow">'+ACCENTS.map(a=>'<button class="sw" data-act="paccent" data-sw="accent" data-v="'+a[1]+'" style="background:'+a[1]+'" aria-label="'+a[0]+' accent" aria-pressed="'+(P.accent===a[1])+'"></button>').join('')+'</div>'
     +'<div class="mrow" style="display:block">'+colorFields('accent',P.accent,'accent colour')+'</div><div class="sep"></div>'
+    +(DFS?'<div class="mlbl">Data folder</div><div class="mpath">'+(dataDir?esc(dataDir):'App storage (this PC only)')+'</div><button data-act="pickdir">Choose folder…</button>'+(dataDir?'<button data-act="resetdir">Stop using this folder</button>':'')+'<div class="sep"></div>':'')
     +'<button data-act="export">Export backup</button><button data-act="import">Import backup</button><div class="sep"></div><button data-act="demo">'+(confirmDemo?'Tap again: replace my data with demo':'Load demo data')+'</button><button data-act="fresh">'+(confirmReset?'Click again to erase everything':'Start fresh')+'</button>';
   $('#modal').innerHTML=vModal();
   keep.forEach(k=>{const el=$(k[0]);if(el){el.scrollLeft=k[1];el.scrollTop=k[2]}});
@@ -778,6 +786,9 @@ document.addEventListener('click',e=>{
     case 'demo':
       if(S.habits.length&&!confirmDemo){confirmDemo=true;persist=false;break}
       S=seed();confirmDemo=false;menuOpen=false;toast('Demo data loaded');break;
+    case 'pickdir':persist=false;menuOpen=false;DFS.choose().then(res=>{if(!res)return;dataDir=res.folder;fileText=null;
+      if(readFile()){render();toast('Loaded your data from that folder')}else{writeFile();render();toast('Daybook now saves to that folder')}});break;
+    case 'resetdir':DFS.reset();dataDir='';fileText=null;persist=false;toast('Saving to app storage only');break;
     case 'export':menuOpen=false;persist=false;exportData();break;
     case 'import':menuOpen=false;persist=false;$('#impFile').click();break;
     case 'fresh':
@@ -899,6 +910,7 @@ async function exportData(){
 }
 /* keep "today" correct if the app stays open past midnight */
 function refreshToday(){
+  if(dataDir&&!save.t&&readFile())render(); // picks up changes synced from another device
   const n=sod(new Date());if(dk(n)===dk(TODAY))return;
   const wasCur=isCurM(vy,vm),wasWeek=dk(taskWeek)===dk(wkStart(TODAY));
   TODAY=n;if(wasCur){vy=n.getFullYear();vm=n.getMonth()}if(wasWeek)taskWeek=wkStart(n);

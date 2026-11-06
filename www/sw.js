@@ -1,5 +1,5 @@
 /* Daybook service worker: works offline after the first visit. Bump VERSION to ship updates. */
-const VERSION = 'daybook-v8';
+const VERSION = 'daybook-v9';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png'];
 
 self.addEventListener('install', e => {
