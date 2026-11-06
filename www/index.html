@@ -52,6 +52,7 @@ svg{display:block}
 .menu{position:absolute;right:0;top:52px;background:var(--g0f);border:1px solid var(--line2);border-radius:14px;padding:6px;z-index:40;min-width:210px;box-shadow:0 18px 40px rgba(0,0,0,.6)}
 .menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:10px 12px;border-radius:9px;font-size:13px;color:var(--gcf)}
 .menu button:hover{background:var(--g17);color:var(--gff)}
+.menu{max-height:calc(100dvh - 90px);overflow:auto;overscroll-behavior:contain}
 .menu .sep{height:1px;background:var(--line);margin:4px 6px}
 .menu .mpath{font-size:11px;color:var(--text);padding:0 12px 6px;overflow-wrap:anywhere;max-width:260px}
 .menu .mlbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 12px 4px}
@@ -293,6 +294,24 @@ input[type=range]{width:100%;accent-color:var(--teal);height:16px;margin:0}
 .sec h2{margin:0 0 12px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .trow{display:flex;align-items:center;gap:14px;background:var(--g12);border-radius:14px;padding:10px 14px;margin-bottom:6px}
 .trow .nm{flex:1;font-weight:500;min-width:0}
+.hnote{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.nbtn{background:none;border:0;color:var(--g55);width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none}
+.nbtn .ic{width:15px;height:15px}.nbtn:hover{color:var(--text)}
+.cell .cn{font-size:10px;font-weight:700;color:var(--teal);line-height:1}
+.tundo{background:none;border:0;color:var(--teal);font-weight:700;font-size:12px;margin-left:12px;padding:0}
+.tstreaks{margin:14px 0}.tsg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+.tsi{background:var(--g15);border-radius:14px;padding:12px 14px;display:grid;gap:4px}.tsi b{font-size:20px;font-weight:700}
+.review{margin:0 0 14px}.rvg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:12px}
+.rvg>div{display:grid;gap:4px}.rvg b{font-size:22px;font-weight:700}
+.heat{margin-bottom:14px}.hwrap{overflow-x:auto;margin-top:12px;padding-bottom:4px}
+.hmon,.hgrid{display:grid;grid-template-columns:repeat(26,13px);gap:3px;width:max-content}
+.hmon span{font-size:9px;color:var(--muted);height:13px;white-space:nowrap}
+.hcol{display:grid;gap:3px}.hgrid i,.hleg i{display:block;width:13px;height:13px;border-radius:3px}.hleg i{display:inline-block;width:9px;height:9px;vertical-align:middle}
+.h0{background:var(--g18)}.h1{background:color-mix(in srgb,var(--teal) 30%,var(--g18))}.h2{background:color-mix(in srgb,var(--teal) 62%,var(--g18))}.h3{background:var(--teal)}.hz{background:transparent}
+.menu .ftg{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.menu .ftg i{flex:none;width:30px;height:18px;border-radius:99px;background:var(--g2a);position:relative;transition:background .15s}
+.menu .ftg i::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--gcf);transition:transform .15s}
+.menu .ftg[aria-checked=true] i{background:var(--teal)}.menu .ftg[aria-checked=true] i::after{transform:translateX(12px);background:var(--on)}
 .trow .meta{font-size:11px;color:var(--g66);display:flex;gap:6px;align-items:center}
 
 /* modal */
@@ -377,6 +396,7 @@ const ICON={
   tasks:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l3 3 5-6"/>',
   goals:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/>',
   insights:'<path d="M6 20v-9M12 20V4M18 20v-6"/>',
+  note:'<path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h4"/>',
   trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   prev:'<path d="M15 6l-6 6 6 6"/>',next:'<path d="M9 6l6 6-6 6"/>'
@@ -401,7 +421,7 @@ function readFile(){const t=DFS.read();if(!t||t===fileText)return false;try{S=cl
 window.addEventListener('beforeunload',()=>{if(save.t)writeFile()});
 const DATA_V=1; // bump and migrate in load-time block below when the saved shape changes
 const PKEY='daybook-prefs',ACCENTS=[['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
-let P={theme:'dark',accent:ACCENTS[0][1]};try{Object.assign(P,JSON.parse(localStorage.getItem(PKEY))||{})}catch(e){}
+let P={theme:'dark',accent:ACCENTS[0][1],feat:{},remTime:'21:00'};try{Object.assign(P,JSON.parse(localStorage.getItem(PKEY))||{})}catch(e){}
 const hexRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const rgbHex=a=>'#'+a.map(v=>v.toString(16).padStart(2,'0')).join('');
 // colour fields (picker + hex + R,G,B) for id `f`; edits sync siblings without a re-render (that would steal focus)
@@ -414,7 +434,10 @@ function setColor(f,hex,from){COLOR_SET[f](hex);
 function applyPrefs(){const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=P.theme==='light'?'#f7f7f7':P.theme==='amoled'?'#000000':'#080808';try{localStorage.setItem(PKEY,JSON.stringify(P))}catch(e){}}
 applyPrefs();
-const empty=()=>({v:DATA_V,habits:[],log:{},tasks:{},goals:[],journal:{},quits:[]});
+// optional features, switched in Settings > Features (all on except the reminder)
+const FEAT=[['streaks','Streaks on Today'],['review','Weekly review'],['heatmap','Year heatmap'],['notes','Habit notes'],['missed','Mark missed tasks'],['ach','Achievements tab'],['reminder','Daily reminder']];
+const feat=k=>P.feat&&k in P.feat?!!P.feat[k]:k!=='reminder';
+const empty=()=>({v:DATA_V,habits:[],log:{},tasks:{},goals:[],journal:{},quits:[],count:{},notes:{}});
 
 // true when there is anything the user would lose (not just habits)
 // calendar events: `hidden` ones were deleted here and stay hidden; events never count as to-dos
@@ -472,7 +495,10 @@ function clean(d){
   if(!obj(d))return o;
   o.v=num(d.v,1,999,1);
   (Array.isArray(d.habits)?d.habits:[]).forEach(h=>{if(!obj(h))return;const i=id(h.id);
-    o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0]});
+    o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0],target:num(h.target,1,99,1)});
+    const LK=/^\d{4}-\d{2}(-\d{2}|-W\d)?$/,cn=obj(d.count)&&obj(d.count[h.id])?d.count[h.id]:{},nt=obj(d.notes)&&obj(d.notes[h.id])?d.notes[h.id]:{};
+    o.count[i]={};Object.keys(cn).forEach(k=>{if(LK.test(k))o.count[i][k]=num(cn[k],1,99,1)});
+    o.notes[i]={};Object.keys(nt).forEach(k=>{if(LK.test(k)&&typeof nt[k]==='string'&&nt[k].trim())o.notes[i][k]=nt[k].slice(0,300)});
     const l=obj(d.log)&&obj(d.log[h.id])?d.log[h.id]:{};o.log[i]={};Object.keys(l).forEach(k=>{if(/^\d{4}-\d{2}(-\d{2}|-W\d)?$/.test(k)&&l[k])o.log[i][k]=1})});
   if(obj(d.tasks))Object.keys(d.tasks).forEach(k=>{const t=d.tasks[k];if(!DK.test(k)||!obj(t))return;const m=obj(t.mind)?t.mind:null;
     o.tasks[k]={items:(Array.isArray(t.items)?t.items:[]).filter(obj).map(x=>Object.assign({id:id(x.id),text:str(x.text),done:!!x.done},typeof x.cal==='string'&&x.cal.length<300?{cal:x.cal,hidden:!!x.hidden}:{})),
@@ -489,12 +515,20 @@ if(!S.v)S.v=1; // pre-versioned saves are v1; add 'if(S.v<2){...;S.v=2}' steps h
 
 let view=(location.hash||'#habits').slice(1);
 const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tasks','tasks'],['goals','Goals','goals'],['insights','Insights','insights'],['achievements','Achievements','trophy']];
-if(!VIEWS.some(v=>v[0]===view))view='habits';
+const views=()=>VIEWS.filter(v=>v[0]!=='achievements'||feat('ach'));
+if(!views().some(v=>v[0]===view))view='habits';
 let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',confirmDemo=false,confirmGoal=null,menuOpen=false,confirmReset=false,
     taskWeek=wkStart(TODAY),addingTask=null,openMind={},insHabit='all',insRange=7,insMenu=null,lbTab='daily',modal=null,insSeries=[];
 
 /* ---------- habit logic ---------- */
 const L=h=>S.log[h.id]||(S.log[h.id]={});
+// targets: "8 glasses a day" = 8 taps. log[k] still marks done (so every stat keeps working); count[k] holds partial taps
+function tap(h,k){const l=L(h),T=h.target||1;if(T<2){if(l[k])delete l[k];else l[k]=1;return}
+  const c=S.count[h.id]||(S.count[h.id]={}),n=(c[k]||(l[k]?T:0))+1;
+  if(n>T){delete c[k];delete l[k]}else{c[k]=n;if(n>=T)l[k]=1;else delete l[k]}}
+const cellIn=(h,k,on)=>on?CHECK:((S.count[h.id]||{})[k]?'<span class="cn">'+S.count[h.id][k]+'</span>':'');
+const noteTitle=(h,k)=>feat('notes')&&(S.notes[h.id]||{})[k]?' title="'+esc(S.notes[h.id][k])+'"':'';
+const tgt=(h,k)=>(h.target||1)>1?', '+((S.count[h.id]||{})[k]||(L(h)[k]?h.target:0))+' of '+h.target:'';
 const byType=t=>S.habits.filter(h=>h.type===t);
 const isCurM=(y,m)=>y===TODAY.getFullYear()&&m===TODAY.getMonth();
 const isFutM=(y,m)=>new Date(y,m,1)>TODAY;
@@ -569,7 +603,7 @@ function dailyGrid(){
     o+='<div class="grow hrow">'+nameCell(h);
     for(let d=1;d<=n;d++){
       const k=dkey(vy,vm,d),fut=new Date(vy,vm,d)>TODAY,on=!!l[k];
-      o+='<div class="cellw"><button class="cell '+(on?'on':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" '+(fut?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+', '+d+' '+MONTHS[vm]+'">'+(on?CHECK:'')+'</button></div>';
+      o+='<div class="cellw"><button class="cell '+(on?'on':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" '+(fut?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+', '+d+' '+MONTHS[vm]+tgt(h,k)+'"'+noteTitle(h,k)+'>'+cellIn(h,k,on)+'</button></div>';
     }
     o+='<div class="gstat">'+statCell(st)+'</div></div>';
   });
@@ -585,7 +619,7 @@ function weeklyList(){
     const l=L(h),st=weeklyStats(h,vy,vm);
     o+='<div class="wrow">'+nameCell(h);
     for(let w=1;w<=wn;w++){const on=!!l[wkey(vy,vm,w)];
-      o+='<div class="c"><button class="cell '+(on?'on':'')+'" data-act="wcell" data-h="'+h.id+'" data-w="'+w+'" '+(w>el?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+', week '+w+'">'+(on?CHECK:'')+'</button></div>'}
+      o+='<div class="c"><button class="cell '+(on?'on':'')+'" data-act="wcell" data-h="'+h.id+'" data-w="'+w+'" '+(w>el?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+', week '+w+tgt(h,wkey(vy,vm,w))+'">'+cellIn(h,wkey(vy,vm,w),on)+'</button></div>'}
     o+='<div class="gstat">'+statCell(st)+'</div></div>';
   });
   return o+'</div></div>';
@@ -594,7 +628,7 @@ function monthlyList(){
   const hs=byType('monthly');if(!hs.length)return emptyHabits();
   return '<div class="mlist">'+hs.map(h=>{
     const on=!!L(h)[mkey(vy,vm)],fut=isFutM(vy,vm);
-    return '<div class="mrow" style="--c:'+h.color+'"><button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" '+(fut?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+'">'+(on?CHECK:'')+'</button><span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="Edit or delete this habit">'+esc(h.name)+'</button><span class="st '+(on?'d':'')+'">'+(on?'Done':'Pending')+'</span></div>';
+    return '<div class="mrow" style="--c:'+h.color+'"><button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" '+(fut?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,mkey(vy,vm))+'">'+cellIn(h,mkey(vy,vm),on)+'</button><span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="Edit or delete this habit">'+esc(h.name)+'</button><span class="st '+(on?'d':'')+'">'+(on?'Done':'Pending')+'</span></div>';
   }).join('')+'</div>';
 }
 
@@ -608,13 +642,16 @@ function vToday(){
    +'<section class="card"><div class="ch"><span class="lbl">Tasks today</span><button class="link" data-act="goto" data-v="tasks">Open</button></div>'
    +(vis(day.items).length?vis(day.items).map(it=>taskChip(k,it)).join(''):'<p class="muted" style="margin:0 0 8px;font-size:12px">Nothing planned yet.</p>')
    +taskAdder(k,false)+'</section></div>';
+  if(feat('streaks')&&feat('ach')&&S.quits.length)o+='<section class="card tstreaks"><div class="ch"><span class="lbl">Streaks</span><button class="link" data-act="goto" data-v="achievements">Open</button></div><div class="tsg">'
+    +S.quits.map(q=>{const d=qDays(q),nx=MILES.find(x=>x>d);return '<div class="tsi"><div class="lbl" style="font-size:9px">'+esc(q.name)+'</div><b>'+d+(d===1?' day':' days')+'</b><span class="sub" style="margin:0">'+(nx?'Next: '+dur(nx):'Every milestone reached')+'</span></div>'}).join('')+'</div></section>';
+  if(feat('review')&&TODAY.getDay()===0)o+=reviewCard();
   const sec=(title,rows)=>rows?'<section class="sec"><h2>'+title+'</h2>'+rows+'</section>':'';
   o+=sec('Daily',byType('daily').map(h=>{const on=!!L(h)[k],c=curStreak(h);
-    return '<div class="trow"><button class="cell '+(on?'on':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+'">'+(on?CHECK:'')+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span>'+(c?'<span class="meta" style="color:var(--flame)">'+FLAME+c+'</span>':'')+'</div>'}).join(''));
+    return '<div class="trow"><button class="cell '+(on?'on':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,k)+'">'+cellIn(h,k,on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+(feat('notes')&&(S.notes[h.id]||{})[k]?'<small class="hnote">'+esc(S.notes[h.id][k])+'</small>':'')+'</span>'+(feat('notes')?'<button class="nbtn" data-act="note" data-h="'+h.id+'" data-k="'+k+'" aria-label="'+((S.notes[h.id]||{})[k]?'Edit':'Add')+' note for '+esc(h.name)+'">'+ic('note')+'</button>':'')+(c?'<span class="meta" style="color:var(--flame)">'+FLAME+c+'</span>':'')+'</div>'}).join(''));
   o+=sec('Weekly',byType('weekly').map(h=>{const on=!!L(h)[wkey(y,m,wn)];
-    return '<div class="trow"><button class="cell '+(on?'on':'')+'" data-act="wcell" data-h="'+h.id+'" data-w="'+wn+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+'">'+(on?CHECK:'')+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This week</span></div>'}).join(''));
+    return '<div class="trow"><button class="cell '+(on?'on':'')+'" data-act="wcell" data-h="'+h.id+'" data-w="'+wn+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,wkey(y,m,wn))+'">'+cellIn(h,wkey(y,m,wn),on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This week</span></div>'}).join(''));
   o+=sec('Monthly',byType('monthly').map(h=>{const on=!!L(h)[mkey(y,m)];
-    return '<div class="trow"><button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+'">'+(on?CHECK:'')+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This month</span></div>'}).join(''));
+    return '<div class="trow"><button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,mkey(y,m))+'">'+cellIn(h,mkey(y,m),on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This month</span></div>'}).join(''));
   if(!S.habits.length)o+='<div class="empty">Add your first habit to start your day.<br><button class="btn" data-act="newhabit">+ New Habit</button> <button class="btn ghost" data-act="demo">Load demo data</button></div>';
   return o;
 }
@@ -622,7 +659,7 @@ function vToday(){
 /* ---------- Tasks ---------- */
 function taskChip(k,it){
   // a past day's unfinished task shows as missed (X); tapping still toggles it done and back
-  const miss=!it.done&&!it.cal&&k<dk(TODAY); // calendar events are not to-dos, so they never show as missed
+  const miss=feat('missed')&&!it.done&&!it.cal&&k<dk(TODAY); // calendar events are not to-dos, so they never show as missed
   if(it.cal)return taskChipHtml(k,it,miss).replace('<span contenteditable="plaintext-only"','<span class="calb" title="From Google Calendar" aria-label="From Google Calendar"></span><span contenteditable="plaintext-only"');
   return taskChipHtml(k,it,miss);
 }
@@ -680,6 +717,34 @@ function series(n,off,hid){
   return out;
 }
 const avgOf=a=>a.length?Math.round(a.reduce((s,x)=>s+x.v,0)/a.length):0;
+/* weekly review: the last 7 days at a glance (Insights always, Today on Sundays) */
+function reviewCard(){
+  const days=[...Array(7)].map((_,i)=>addDays(TODAY,i-6)),prev=days.map(d=>addDays(d,-7)),dh=byType('daily').length;
+  const avg=a=>Math.round(a.reduce((s,d)=>s+dayPct(d),0)/7),hp=avg(days),diff=hp-avg(prev);
+  let tt=0,td=0;const md={energy:[],focus:[],motivation:[]};
+  days.forEach(d=>{const t=S.tasks[dk(d)];if(!t)return;const a=todo(t.items);tt+=a.length;td+=a.filter(x=>x.done).length;if(t.mind)Object.keys(md).forEach(f=>md[f].push(t.mind[f]))});
+  const best=byType('daily').map(h=>({h,s:curStreak(h)})).sort((a,b)=>b.s-a.s)[0],lo=days[0].getTime();
+  const miles=S.quits.flatMap(q=>MILES.filter(x=>{const at=qDate(q).getTime()+x*864e5;return at>=lo&&at<=Date.now()}).map(x=>esc(q.name)+' reached '+dur(x)));
+  const mood=md.energy.length?MF.map(f=>'<span style="color:'+f[1]+'">'+f[2]+' '+(md[f[0]].reduce((a,b)=>a+b,0)/md[f[0]].length).toFixed(1)+'</span>').join(' · '):'<span class="muted">Not logged this week</span>';
+  return '<section class="card review"><div class="ch"><span class="lbl">Your week in review</span><span class="sub" style="margin:0">'+days[0].getDate()+' '+MON3[days[0].getMonth()]+' – '+TODAY.getDate()+' '+MON3[TODAY.getMonth()]+'</span></div><div class="rvg">'
+   +'<div><div class="lbl" style="font-size:9px">Habits</div><b>'+(dh?hp+'%':'–')+'</b>'+(dh?'<span class="sub" style="margin:0;color:'+(diff>=0?'var(--teal)':'var(--red)')+'">'+(diff>=0?'+':'')+diff+'% vs last week</span>':'')+'</div>'
+   +'<div><div class="lbl" style="font-size:9px">Tasks</div><b>'+td+' / '+tt+'</b><span class="sub" style="margin:0">done</span></div>'
+   +'<div><div class="lbl" style="font-size:9px">Best streak</div><b>'+(best&&best.s?best.s+'d':'–')+'</b><span class="sub" style="margin:0">'+(best&&best.s?esc(best.h.name):'Tick a daily habit to start one')+'</span></div>'
+   +'<div><div class="lbl" style="font-size:9px">Mindset</div><span class="sub" style="margin:0">'+mood+'</span></div></div>'
+   +(miles.length?'<div class="miles" style="margin-top:12px">'+miles.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+'</section>';
+}
+/* year heatmap: last 26 weeks of daily habits, one square per day */
+function heatCard(){
+  if(!byType('daily').length)return '';
+  const start=wkStart(addDays(TODAY,-7*25));let cols='',perfect=0,months='';
+  for(let w=0;w<26;w++){let c='';const first=addDays(start,w*7);months+='<span>'+(first.getDate()<=7?MON3[first.getMonth()]:'')+'</span>';
+    for(let d=0;d<7;d++){const day=addDays(start,w*7+d);if(day>TODAY){c+='<i class="hz"></i>';continue}
+      const v=dayPct(day);if(v===100)perfect++;
+      c+='<i class="h'+(v===0?0:v<34?1:v<67?2:3)+'" title="'+day.getDate()+' '+MON3[day.getMonth()]+': '+v+'%"></i>'}
+    cols+='<div class="hcol">'+c+'</div>'}
+  return '<section class="card heat"><div class="ch"><span class="lbl">Last 6 months</span><span class="sub hleg" style="margin:0">Less <i class="h0"></i><i class="h1"></i><i class="h2"></i><i class="h3"></i> More</span></div>'
+   +'<div class="hwrap"><div class="hmon">'+months+'</div><div class="hgrid" role="img" aria-label="Daily habit completion for the last 26 weeks">'+cols+'</div></div><div class="sub">'+perfect+' perfect '+(perfect===1?'day':'days')+' in the last 6 months</div></section>';
+}
 function vInsights(){
   const dh=byType('daily');
   if(!dh.length)return '<div class="empty">Insights show up once you have daily habits.<br><button class="btn" data-act="newhabit">+ New Habit</button> <button class="btn ghost" data-act="demo">Load demo data</button></div>';
@@ -695,11 +760,12 @@ function vInsights(){
   const xl=insSeries.map((s,i)=>(i%step===0||i===n-1)?'<span>'+s.d.getDate()+' '+MON3[s.d.getMonth()]+'</span>':'').join('');
   const dd=(m,label,items)=>'<div class="selb"><button data-act="menu" data-m="'+m+'" class="'+(insMenu===m?'open':'')+'" aria-haspopup="listbox" aria-expanded="'+(insMenu===m)+'">'+esc(label)+'<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'
     +(insMenu===m?'<div class="dd" role="listbox">'+items.map(i=>'<button role="option" class="'+(i[2]?'on':'')+'" data-act="pick" data-m="'+m+'" data-v="'+esc(i[0])+'">'+esc(i[1])+'</button>').join('')+'</div>':'')+'</div>';
-  let o='<section class="card ibig"><div class="lbl" style="font-size:9px">'+(insHabit==='all'?'OVERALL CONSISTENCY':esc(hn).toUpperCase())+'</div><div class="big">'+big+'%</div>'
+  let o=(feat('review')?reviewCard():'')+'<section class="card ibig"><div class="lbl" style="font-size:9px">'+(insHabit==='all'?'OVERALL CONSISTENCY':esc(hn).toUpperCase())+'</div><div class="big">'+big+'%</div>'
    +'<div class="sel">'+dd('habit',hn,[['all','Overall',insHabit==='all']].concat(dh.map(h=>[h.id,h.name,insHabit===h.id])))
    +dd('range','Last '+insRange+' days',[7,14,30].map(r=>[String(r),'Last '+r+' days',insRange===r]))+'</div>'
    +'<div class="ichart" id="ichart"><svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Consistency over the last '+insRange+' days"><defs><linearGradient id="ig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--teal)" stop-opacity=".3"/><stop offset="1" style="stop-color:var(--teal)" stop-opacity="0"/></linearGradient></defs><path d="'+path+' L100,100 L0,100 Z" fill="url(#ig)"/><path d="'+path+'" fill="none" style="stroke:var(--teal)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>'
    +'<div class="vl" id="vl"></div><div class="dt" id="dt"></div><div class="tip" id="tip"><small></small><b></b></div></div><div class="ix">'+xl+'</div></section>';
+  if(feat('heatmap'))o+=heatCard();
   o+='<div class="stats"><div class="card stat"><div class="lbl">THIS WEEK</div><div class="v">'+thisW+'%</div></div>'
    +'<div class="card stat"><div class="lbl">VS LAST WEEK</div><div class="v" style="color:'+(diff>=0?'var(--teal)':'var(--red)')+'">'+(diff>=0?'+':'')+diff+'%</div></div>'
    +'<div class="card stat"><div class="lbl">BEST STREAK</div><div class="v">'+FLAME+bestS+'</div></div>'
@@ -795,8 +861,14 @@ function vModal(){
      +'<input class="field" id="mName" maxlength="60" placeholder="Habit name" value="'+esc(modal.name||'')+'" aria-label="Habit name">'
      +'<div class="seg">'+['daily','weekly','monthly'].map(t=>'<button class="'+(modal.type===t?'on':'')+'"'+(modal.id?' disabled style="opacity:.55;cursor:default"':'')+' data-act="mtype" data-v="'+t+'">'+t+'</button>').join('')+'</div>'
      +'<div class="colors" role="group" aria-label="Colour">'+COLORS.map((c,i)=>'<button style="--c:'+c+'" class="'+(modal.color===c?'on':'')+'" data-act="mcolor" data-sw="habit" data-v="'+c+'" aria-pressed="'+(modal.color===c)+'" aria-label="Colour '+(i+1)+'"></button>').join('')+'</div>'+colorFields('habit',modal.color,'habit colour')
+     +'<label class="sub" style="margin:0" for="mTarget">Times per '+{daily:'day',weekly:'week',monthly:'month'}[modal.type]+' (1 = just done or not)</label><input class="field" type="number" inputmode="numeric" min="1" max="99" id="mTarget" value="'+(modal.target||1)+'">'
+     +(modal.id?'<div class="row" style="justify-content:flex-start"><button class="btn ghost" data-act="hup">Move up</button><button class="btn ghost" data-act="hdown">Move down</button></div>':'')
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button>'+(modal.id?'<button class="btn danger" data-act="mdel">'+(modal.confirm?'Tap again to delete':'Delete')+'</button>':'')+'<button class="btn" data-act="msave">'+(modal.id?'Save':'Add habit')+'</button></div></div></div>';
   }
+  if(modal.kind==='note'){const h=findH(modal.h);
+    return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Note"><h2>Note</h2><p class="sub" style="margin:0">'+esc(h?h.name:'')+' · '+dmy(new Date(modal.k+'T00:00'))+'</p>'
+     +'<textarea class="field" id="nText" maxlength="300" placeholder="e.g. Ran 5 km, felt great" aria-label="Note">'+esc(modal.text||'')+'</textarea>'
+     +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button><button class="btn" data-act="nsave">Save note</button></div></div></div>'}
   if(modal.kind==='cal')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Connect Google Calendar"><h2>Connect Google Calendar</h2>'
      +'<p class="sub" style="margin:0;font-size:12px;line-height:1.5">In Google Calendar on a computer: Settings, pick your calendar under “Settings for my calendars”, then copy <b>Secret address in iCal format</b> and paste it here. Daybook adds events from the last 30 days and next 90 days to your tasks and refreshes every 15 minutes. Keep this address private.</p>'
      +'<input class="field" id="calUrl" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" aria-label="Secret iCal address" spellcheck="false">'
@@ -819,7 +891,7 @@ let lastView=null;
 function render(){
   const keep=['.gcard','.wscroll','.days','.dd'].map(q=>{const el=$(q);return el?[q,el.scrollLeft,el.scrollTop]:null}).filter(Boolean),sy=window.scrollY;
   const vi=VIEWS.find(v=>v[0]===view);
-  $('#nav').innerHTML=VIEWS.map(v=>'<a href="#'+v[0]+'" class="'+(v[0]===view?'on':'')+'"'+(v[0]===view?' aria-current="page"':'')+'>'+ic(v[2])+'<span>'+v[1]+'</span></a>').join('');
+  $('#nav').innerHTML=views().map(v=>'<a href="#'+v[0]+'" class="'+(v[0]===view?'on':'')+'"'+(v[0]===view?' aria-current="page"':'')+'>'+ic(v[2])+'<span>'+v[1]+'</span></a>').join('');
   $('#ttl').textContent=view==='tasks'?'Task Tracker':vi[1];
   $('#gearBtn').innerHTML=ic('gear');
   document.title=vi[1]+' | Daybook';
@@ -829,6 +901,9 @@ function render(){
     +'<div class="mlbl">Accent colour</div><div class="mrow">'+ACCENTS.map(a=>'<button class="sw" data-act="paccent" data-sw="accent" data-v="'+a[1]+'" style="background:'+a[1]+'" aria-label="'+a[0]+' accent" aria-pressed="'+(P.accent===a[1])+'"></button>').join('')+'</div>'
     +'<div class="mrow" style="display:block">'+colorFields('accent',P.accent,'accent colour')+'</div><div class="sep"></div>'
     +(DFS?'<div class="mlbl">Data folder</div><div class="mpath">'+(dataDir?esc(dataDir):'App storage (this PC only)')+'</div><button data-act="pickdir">Choose folder…</button>'+(dataDir?'<button data-act="resetdir">Stop using this folder</button>':'')+'<div class="sep"></div>':'')
+    +'<div class="mlbl">Features</div>'+FEAT.map(f=>'<button class="ftg" data-act="feat" data-v="'+f[0]+'" role="switch" aria-checked="'+feat(f[0])+'"><span>'+f[1]+'</span><i></i></button>').join('')
+    +(feat('reminder')?('Notification' in window?'<div class="mrow" style="align-items:center"><label class="sub" for="remTime" style="margin:0">Remind me at</label><input type="time" class="ain" id="remTime" value="'+esc(P.remTime||'21:00')+'"></div><div class="mpath" style="color:var(--muted)">Only while Daybook is open or in the background.</div>':'<div class="mpath" style="color:var(--muted)">Reminders aren’t supported here yet.</div>'):'')
+    +'<div class="sep"></div>'
     +'<div class="mlbl">Google Calendar</div>'
     +(DFS&&DFS.fetchCal?(P.cal?'<div class="mpath">Syncing from your calendar'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):'')+'</div><button data-act="calsync">Sync now</button><button data-act="caloff">Stop calendar sync</button>':'<button data-act="calset">Connect a calendar…</button>'):'')
     +'<button data-act="calexport">Export tasks to calendar (.ics)</button><div class="sep"></div>'
@@ -841,6 +916,9 @@ function render(){
   if(view==='tasks')bindMind();
   if(focusSel){const el=$(focusSel);if(el)el.focus();focusSel=null}
 }
+let undoSnap=null;
+function snap(){undoSnap=JSON.stringify(S)}
+function toastUndo(msg){const t=$('#toast');t.innerHTML=esc(msg)+'<button class="tundo" data-act="undo">Undo</button>';t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true;undoSnap=null},6000)}
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true},2600)}
 
 /* ---------- events ---------- */
@@ -883,21 +961,25 @@ document.addEventListener('click',e=>{
     case 'mprev':{const d=new Date(vy,vm-1,1);vy=d.getFullYear();vm=d.getMonth();persist=false;break}
     case 'mnext':{const d=new Date(vy,vm+1,1);vy=d.getFullYear();vm=d.getMonth();persist=false;break}
     case 'tab':tab=t.dataset.v;persist=false;break;
-    case 'cell':{const h=findH(t.dataset.h),l=L(h),k=t.dataset.d;if(l[k])delete l[k];else l[k]=1;break}
-    case 'wcell':{const h=findH(t.dataset.h),l=L(h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=wkey(y,m,t.dataset.w);if(l[k])delete l[k];else l[k]=1;break}
-    case 'mcell':{const h=findH(t.dataset.h),l=L(h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=mkey(y,m);if(l[k])delete l[k];else l[k]=1;break}
-    case 'edithabit':{const h=findH(t.dataset.h);if(!h)break;modal={kind:'habit',id:h.id,type:h.type,color:/^#[0-9a-f]{6}$/.test(h.color)?h.color:COLORS[0],name:h.name,confirm:false};focusSel='#mName';persist=false;break}
+    case 'cell':{const h=findH(t.dataset.h);tap(h,t.dataset.d);break}
+    case 'wcell':{const h=findH(t.dataset.h),l=L(h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=wkey(y,m,t.dataset.w);tap(h,k);break}
+    case 'mcell':{const h=findH(t.dataset.h),l=L(h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=mkey(y,m);tap(h,k);break}
+    case 'edithabit':{const h=findH(t.dataset.h);if(!h)break;modal={kind:'habit',id:h.id,type:h.type,color:/^#[0-9a-f]{6}$/.test(h.color)?h.color:COLORS[0],name:h.name,target:h.target||1,confirm:false};focusSel='#mName';persist=false;break}
+    case 'hup':case 'hdown':{persist=false;const i=S.habits.findIndex(h=>h.id===modal.id);if(i<0)break;const ty=S.habits[i].type,d=act==='hup'?-1:1;let j=i+d;
+      while(j>=0&&j<S.habits.length&&S.habits[j].type!==ty)j+=d;
+      if(j>=0&&j<S.habits.length){[S.habits[i],S.habits[j]]=[S.habits[j],S.habits[i]];persist=true}else toast(d<0?'Already at the top':'Already at the bottom');break}
     case 'mdel':
-      if(modal&&modal.id){if(modal.confirm){S.habits=S.habits.filter(h=>h.id!==modal.id);delete S.log[modal.id];modal=null;toast('Habit deleted')}else{modal.confirm=true;persist=false}}break;
-    case 'newhabit':modal={kind:'habit',type:view==='habits'?tab:'daily',color:COLORS[0],name:''};focusSel='#mName';persist=false;break;
+      if(modal&&modal.id){if(modal.confirm){snap();S.habits=S.habits.filter(h=>h.id!==modal.id);delete S.log[modal.id];delete S.count[modal.id];delete S.notes[modal.id];modal=null;toastUndo('Habit deleted')}else{modal.confirm=true;persist=false}}break;
+    case 'newhabit':modal={kind:'habit',type:view==='habits'?tab:'daily',color:COLORS[0],name:'',target:1};focusSel='#mName';persist=false;break;
     case 'newgoal':modal={kind:'goal',area:'Health',title:''};focusSel='#gTitle';persist=false;break;
     case 'mtype':if(!modal.id)modal.type=t.dataset.v;persist=false;break;
     case 'mcolor':setColor('habit',t.dataset.v);persist=false;break;
     case 'modalclose':case 'ovclose':modal=null;persist=false;break;
     case 'msave':{
       const nm=($('#mName').value||'').trim();if(!nm){$('#mName').focus();return}
-      if(modal.id){const h=findH(modal.id);if(h){h.name=nm;h.color=modal.color}modal=null;break}
-      const id=uid();S.habits.push({id,name:nm,type:modal.type,color:modal.color});S.log[id]={};
+      const tg=clamp(Math.round(+$('#mTarget').value)||1,1,99);
+      if(modal.id){const h=findH(modal.id);if(h){h.name=nm;h.color=modal.color;h.target=tg}modal=null;break}
+      const id=uid();S.habits.push({id,name:nm,type:modal.type,color:modal.color,target:tg});S.log[id]={};
       if(view==='habits')tab=modal.type;modal=null;break}
     case 'gsave':{
       const ti=($('#gTitle').value||'').trim();if(!ti){$('#gTitle').focus();return}
@@ -911,14 +993,20 @@ document.addEventListener('click',e=>{
     case 'qreset':{if(modal.confirm!=='reset'){modal.confirm='reset';persist=false;break}
       const q=S.quits.find(x=>x.id===modal.id);if(q){q.best=Math.max(q.best||0,qDays(q));q.since=nowLocal()}modal=null;toast('Streak restarted. You’ve got this.');break}
     case 'qdel':{if(modal.confirm!=='del'){modal.confirm='del';persist=false;break}
-      S.quits=S.quits.filter(x=>x.id!==modal.id);modal=null;toast('Streak deleted');break}
+      snap();S.quits=S.quits.filter(x=>x.id!==modal.id);modal=null;toastUndo('Streak deleted');break}
+    case 'undo':if(!undoSnap){persist=false;break}S=clean(JSON.parse(undoSnap));undoSnap=null;toast('Restored');break;
+    case 'note':modal={kind:'note',h:t.dataset.h,k:t.dataset.k,text:(S.notes[t.dataset.h]||{})[t.dataset.k]||''};focusSel='#nText';persist=false;break;
+    case 'nsave':{const v=($('#nText').value||'').trim().slice(0,300),n=S.notes[modal.h]||(S.notes[modal.h]={});if(v)n[modal.k]=v;else delete n[modal.k];modal=null;break}
+    case 'feat':{const k=t.dataset.v,on=!feat(k);P.feat=Object.assign({},P.feat,{[k]:on});if(k==='reminder'&&on)P.remDay=dk(TODAY);applyPrefs();persist=false;
+      if(k==='reminder'&&on&&'Notification' in window&&Notification.permission!=='granted')Notification.requestPermission().then(x=>{if(x!=='granted'){P.feat=Object.assign({},P.feat,{reminder:false});applyPrefs();toast('Notifications are blocked. Allow them in your system settings')}render()});
+      if(k==='ach'&&!on&&view==='achievements'){location.hash='habits'}break}
     case 'gdel':if(confirmGoal!==t.dataset.g){confirmGoal=t.dataset.g;persist=false;break}
-      S.goals=S.goals.filter(g=>g.id!==t.dataset.g);confirmGoal=null;toast('Goal deleted');break;
+      snap();S.goals=S.goals.filter(g=>g.id!==t.dataset.g);confirmGoal=null;toastUndo('Goal deleted');break;
     case 'tprev':taskWeek=addDays(taskWeek,-7);persist=false;break;
     case 'tnext':taskWeek=addDays(taskWeek,7);persist=false;break;
     case 'tnow':taskWeek=wkStart(TODAY);persist=false;break;
     case 'tdone':{const day=S.tasks[t.dataset.k],it=day.items.find(i=>i.id===t.dataset.i);it.done=!it.done;break}
-    case 'tdel':{const day=S.tasks[t.dataset.k],it=day.items.find(i=>i.id===t.dataset.i);if(it&&it.cal)it.hidden=true;else day.items=day.items.filter(i=>i.id!==t.dataset.i);break}
+    case 'tdel':{snap();toastUndo('Task deleted');const day=S.tasks[t.dataset.k],it=day.items.find(i=>i.id===t.dataset.i);if(it&&it.cal)it.hidden=true;else day.items=day.items.filter(i=>i.id!==t.dataset.i);break}
     case 'tadd':addingTask=t.dataset.k;focusSel='#taskInput';persist=false;break;
     case 'tcopy':{
       const k=t.dataset.k,prev=dk(addDays(new Date(k+'T00:00:00'),-1)),src=todo((S.tasks[prev]||{items:[]}).items);
@@ -949,6 +1037,8 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('input',e=>{
   const t=e.target;
   if(t.id==='mName'&&modal)modal.name=t.value;
+  if(t.id==='mTarget'&&modal)modal.target=t.value;
+  if(t.id==='nText'&&modal)modal.text=t.value;
   if(t.id==='gTitle'&&modal)modal.title=t.value;
   if(t.id==='reflect'){S.journal[mkey(TODAY.getFullYear(),TODAY.getMonth())]=t.value;save()}
   if(t.dataset&&t.dataset.mind){
@@ -987,10 +1077,11 @@ document.addEventListener('change',e=>{
   }
   if(e.target.dataset&&(e.target.dataset.mind||e.target.dataset.goal)){render()}
   if(e.target.id==='gArea'&&modal)modal.area=e.target.value;
+  if(e.target.id==='remTime'&&/^\d{2}:\d{2}$/.test(e.target.value)){P.remTime=e.target.value;P.remDay='';applyPrefs()}
 });
 window.addEventListener('hashchange',()=>{
   const v=(location.hash||'#habits').slice(1);
-  if(VIEWS.some(x=>x[0]===v)){view=v;menuOpen=false;insMenu=null;addingTask=null;modal=null;render();window.scrollTo(0,0)}
+  if(views().some(x=>x[0]===v)){view=v;menuOpen=false;insMenu=null;addingTask=null;modal=null;render();window.scrollTo(0,0)}
 });
 async function shareFile(text,name,type,title,done){
   try{
@@ -1067,7 +1158,16 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshTod
 window.addEventListener('focus',refreshToday);
 window.DaybookTest={parseIcs,applyCalendar,tasksToIcs,state:()=>S}; // smoke tests only
 pullCalendar();let calTick=0;
-setInterval(()=>{refreshToday();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
+// daily reminder: a notification at the chosen time if daily habits are still open (only while Daybook is running)
+function checkReminder(){
+  if(!feat('reminder')||!('Notification' in window)||Notification.permission!=='granted')return;
+  const n=new Date(),[hh,mm]=(P.remTime||'21:00').split(':').map(Number),k=dk(TODAY);
+  if(P.remDay===k||n.getHours()*60+n.getMinutes()<hh*60+mm)return;
+  P.remDay=k;applyPrefs();const t=doneToday();
+  if(t.total&&t.done<t.total)try{new Notification('Daybook',{body:(t.total-t.done)+' of '+t.total+' habits still to do today. You’ve got this.',tag:'daybook-reminder'})}catch(e){}
+}
+checkReminder();
+setInterval(()=>{refreshToday();checkReminder();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/.test(navigator.userAgent)){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
