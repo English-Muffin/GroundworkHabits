@@ -14,7 +14,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
-- `tests/smoke.py`  Playwright smoke tests (58 checks, plus 10 desktop checks in `tests/electron_folder.py`, desktop and phone)
+- `tests/smoke.py`  Playwright smoke tests (64 checks, plus 10 desktop checks in `tests/electron_folder.py`, desktop and phone)
 - `tests/stress.py`  stress test (heavy data, 320-1920px, all themes, random clicks, edge dates); writes report.txt
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
@@ -26,13 +26,14 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - Android app: `npm install && npx cap add android && npx cap sync android && npx cap open android`
 
 ## How `www/index.html` works
-- State is one object `S`: `{v, habits, log, tasks, goals, journal, quits, count, notes, templates}` (`v` = data version, migrations go after `let S=load()`), saved to `localStorage` key `daybook-v2` by `save()`.
+- State is one object `S`: `{v, habits, log, tasks, goals, journal, quits, count, notes, amt}` (`v` = data version, migrations go after `let S=load()`), saved to `localStorage` key `daybook-v2` by `save()`.
   - `habits`: `{id, name, type: 'daily'|'weekly'|'monthly', color}`
   - `log[habitId]`: set of keys. Daily `YYYY-MM-DD`, weekly `YYYY-MM-Wn` (W1 = days 1-7 of the month), monthly `YYYY-MM`
   - `tasks['YYYY-MM-DD']`: `{items: [{id, text, done, cal?}], mind: {energy, focus, motivation} | null}`
   - `habits[].target` (1-99): taps needed per period. `count[habitId][key]` holds partial taps; `log` still marks done, so stats are unchanged. Use `tap(h,k)` to toggle
   - `habits[].per` (1-7): days per week for daily habits (Today shows `n/per this week`). A habit's type can change; ticks of the old type stay in `log` under their own key format
-  - `templates`: `{id, name, items: [text]}` task templates
+  - `habits[].track`: `check` | `count` (uses `target`) | `amount` (`unit`, optional `goal`; numbers in `amt[habitId][key]`, `log` marks done once the goal is met; `setAmt()`)
+  - task items may carry `rep` (series id of a repeating task, see `repeatDates()`), `cal`/`hidden`/`pin` (calendar events; `pin` = user moved it to another day)
   - `notes[habitId][key]`: short note for that day/week/month
   - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Achievements tab
   - `goals`: `{id, title, area, pct}`. `journal['YYYY-MM']`: monthly reflection text
@@ -55,6 +56,11 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - Desktop mini widget: `#widget` route (`vWidget`, `html.widget`), opened via `daybookFS.widget()`; windows stay in sync through the `storage` event.
 - Android reminder: `@capacitor/local-notifications` (a real `dependencies` entry so `cap sync` picks it up) schedules a daily notification; web/desktop use the Notification API while running.
 - Touch dragging uses touch events (grip = immediate, press-and-hold 380 ms anywhere on an item); mouse/pen use pointer events on the grip.
+
+## First run and touch
+- First open shows a tips dialog (`tipsHtml`), remembered in localStorage `daybook-tips` (not in prefs). Tests set it with an init script.
+- `(pointer:coarse)` hides every grip; touch users press and hold to drag.
+- Today's ring (`.thero`) and tasks (`.ttasks`) are separate dashboard cards; `#main.tdash` pairs them side by side on desktop with `grid-auto-flow:dense`.
 
 ## Drag to rearrange
 Any `[data-drop=LIST]` container whose children are `[data-drag=LIST][data-id]` with a `.grip` button can be reordered by pointer (mouse and touch, `touch-action:none` on the grip) or arrow keys on the grip. `commitDrag()` writes the order: tasks (between days via `.tlist[data-k]`), `habits-<type>`, goals, quits, and `cards` (top-level blocks of Today/Insights, order in `P.layout[view]`). Calendar tasks have no grip. Switch: `feat('drag')`.
@@ -80,6 +86,7 @@ Dark is the designed theme. Settings > Customize adds accent colours (sets `--te
 - Fonts load from Google Fonts online and fall back to a system font offline.
 
 ## Before you finish any change
+Run all three: `python tests/smoke.py` (starts with a JS syntax check), `LAYOUT_ONLY=1 python tests/stress.py out/` (layout, overlap and covered-element checks at 6 sizes x 3 themes; must report 0 findings) and `python tests/electron_folder.py`. Editing big chunks with scripts has removed neighbouring code before: diff the list of `case '...'` actions and `modal.kind` branches against the previous version after large edits.
 Run `python tests/smoke.py`. When you fix a bug, add a check for it. Test at 390px wide as well as desktop.
 
 ## Ideas not done yet

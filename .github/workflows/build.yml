@@ -59,5 +59,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with: { path: files, merge-multiple: true }
+      - name: Checksums
+        run: cd files && for f in *; do sha256sum "$f" > "$f.sha256"; done
       - uses: softprops/action-gh-release@v2
         with: { files: files/* }

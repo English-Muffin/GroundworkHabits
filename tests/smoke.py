@@ -1,7 +1,7 @@
 """Smoke tests for Daybook. Run from the project root:  python tests/smoke.py
 Needs:  pip install playwright && playwright install chromium
 Starts its own static server for ./www, so nothing else has to be running."""
-import asyncio, json, functools, tempfile, threading, http.server
+import asyncio, json, functools, tempfile, threading, http.server, os, subprocess
 from pathlib import Path
 from playwright.async_api import async_playwright
 
@@ -24,6 +24,7 @@ def serve():
 
 async def desktop(b):
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}, accept_downloads=True)
+    await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')")
     pg = await ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)))
     await pg.goto(URL); await pg.wait_for_timeout(300)
@@ -104,15 +105,20 @@ async def desktop(b):
       const kk=Object.keys(S.tasks).find(k=>S.tasks[k].items.some(i=>i.cal==='a'));S.tasks[kk].items.find(i=>i.cal==='a').hidden=true;
       applyCalendar(parseIcs(ics([['a',d(3),'Dentist moved']])));
       const hiddenKept=S.tasks[kk].items.some(i=>i.cal==='a'&&i.hidden);
+      // a calendar task the user moved keeps its new day on the next sync
+      applyCalendar(parseIcs(ics([['m',d(4),'Movable']])));const mk=Object.keys(S.tasks).find(k=>S.tasks[k].items.some(i=>i.cal==='m'));const mi=S.tasks[mk].items.find(i=>i.cal==='m');
+      S.tasks[mk].items=S.tasks[mk].items.filter(i=>i!==mi);mi.pin=true;(S.tasks['2099-01-01']={items:[mi],mind:null});
+      applyCalendar(parseIcs(ics([['m',d(4),'Movable renamed']])));const pinKept=S.tasks['2099-01-01'].items.some(i=>i.cal==='m'&&i.text==='Movable renamed');
       const out=tasksToIcs();
       return {r1,r2,exp:[d(1)+'|Dentist, 3pm',d(2)+'|Long summary that is folded'].sort(),moved:[d(3)+'|Dentist moved'],
-        hiddenKept,icsOk:out.includes('BEGIN:VEVENT')&&!out.includes('Dentist')&&out.includes('Test task edited')};
+        hiddenKept,pinKept,icsOk:out.includes('BEGIN:VEVENT')&&!out.includes('Dentist')&&out.includes('Test task edited')};
     })()""")
     check('calendar import adds, folds, unescapes and skips old events', cal['r1'] == cal['exp'])
     check('calendar resync moves changed events and removes deleted ones', cal['r2'] == cal['moved'])
     check('tasks export to .ics without calendar-imported events', cal['icsOk'])
     check('deleted calendar event stays hidden after resync', cal['hiddenKept'])
-    await pg.evaluate("""localStorage.setItem('daybook-v2',JSON.stringify({habits:[{id:'x\\"><img src=x onerror=window.pwn=1>',name:'H',type:'daily',color:'red\\"><img src=x onerror=window.pwn=1>'}],log:{},tasks:{},goals:[{id:'g',title:'G',area:'Health',pct:'<img src=x onerror=window.pwn=1>'}],journal:{}}))""")
+    check('moved calendar task stays on its new day after resync', cal['pinKept'])
+    await pg.evaluate("""localStorage.setItem('daybook-v2',JSON.stringify({habits:[{id:'x\\"><img src=x onerror=window.pwn=1>',name:'H',type:'daily',color:'red\\"><img src=x onerror=window.pwn=1>'},{id:'u',name:'U',type:'daily',color:'#3b82f6',track:'amount',unit:'\\"><img src=x onerror=window.pwn=1>'}],log:{},tasks:{},goals:[{id:'g',title:'G',area:'Health',pct:'<img src=x onerror=window.pwn=1>'}],amt:{},journal:{}}))""")
     await pg.reload(); await pg.wait_for_timeout(200); await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(200)
     check('malicious saved data is sanitised', not await pg.evaluate('window.pwn') and await pg.locator('.goal .pc').first.inner_text() == '0%')
     await pg.evaluate("localStorage.removeItem('daybook-v2')")
@@ -133,7 +139,9 @@ async def desktop(b):
     await pg.evaluate("location.hash='today'"); await pg.evaluate("localStorage.setItem('daybook-v2','{}');localStorage.removeItem('daybook-prefs')"); await pg.reload(); await pg.wait_for_timeout(150)
     await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(100)
     for nm, tg in [('Water', '3'), ('Read', '1')]:
-        await pg.click('[data-act=newhabit] >> nth=0'); await pg.fill('#mName', nm); await pg.fill('#mTarget', tg); await pg.click('[data-act=msave]')
+        await pg.click('[data-act=newhabit] >> nth=0'); await pg.fill('#mName', nm)
+        if tg != '1': await pg.click('[data-act=mtrack][data-v=count]'); await pg.fill('#mTarget', tg)
+        await pg.click('[data-act=msave]')
     await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(100)
     water = pg.locator('.trow', has_text='Water').locator('.cell')
     await water.click(); await water.click()
@@ -175,14 +183,14 @@ async def desktop(b):
     await pg.locator('.goal', has_text='Second goal').locator('.grip').focus(); await pg.keyboard.press('ArrowLeft'); await pg.wait_for_timeout(100)
     check('move a goal card with the arrow keys', 'Second goal' in await pg.locator('.goal').first.inner_text())
     await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(150)
-    gb = await pg.locator('#main > [data-id="daily"] > .grip').bounding_box(); tb = await pg.locator('#main > [data-id="tgrid"]').bounding_box()
+    gb = await pg.locator('#main > [data-id="daily"] > .grip').bounding_box(); tb = await pg.locator('#main > [data-id="thero"]').bounding_box()
     await pg.mouse.move(gb['x'] + 10, gb['y'] + 6); await pg.mouse.down(); await pg.mouse.move(tb['x'] + 300, tb['y'] + 10, steps=10); await pg.mouse.up(); await pg.wait_for_timeout(150)
     await pg.reload(); await pg.wait_for_timeout(200)
     check('Today card order is remembered', await pg.locator('#main > [data-drag="cards"]').first.get_attribute('data-id') == 'daily')
     await pg.click('[data-act=gear]'); await pg.click('[data-act=featfold]'); await pg.click('[data-act=feat][data-v=drag]')
     check('drag switch off hides every grip', await pg.locator('#main .grip').count() == 0)
     await pg.evaluate("localStorage.removeItem('daybook-prefs')")
-    # --- category change, days per week, templates, search, CSV, focus timer, PIN lock ---
+    # --- category change, days per week, repeating tasks, search, CSV, focus timer, PIN lock ---
     await pg.evaluate("location.hash='habits'"); await pg.evaluate("""localStorage.setItem('daybook-v2',JSON.stringify({habits:[{id:'h1',name:'Swim',type:'daily',color:'#3b82f6'}],log:{},goals:[],journal:{},quits:[],
       tasks:{[(d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))(new Date())]:{items:[{id:'t1',text:'Write report',done:false},{id:'t2',text:'Call bank',done:false}],mind:null}}}));localStorage.removeItem('daybook-prefs')"""); await pg.reload(); await pg.wait_for_timeout(150)
     await pg.click('.gname .nb >> text=Swim'); await pg.click('[data-act=mtype][data-v=weekly]'); await pg.click('[data-act=msave]')
@@ -192,10 +200,29 @@ async def desktop(b):
     await pg.locator('.trow', has_text='Swim').locator('.cell').click()
     check('days-per-week habit shows weekly progress', '1/3 this week' in await pg.locator('.trow', has_text='Swim').inner_text())
     await pg.evaluate("location.hash='tasks'"); await pg.wait_for_timeout(150)
-    await pg.click('[data-act=tplopen]'); await pg.fill('#tplName', 'Work day'); await pg.click('[data-act=tplsave]')
-    await pg.select_option('#tplDay', index=0); await pg.click('[data-act=tplapply]'); await pg.wait_for_timeout(100)
-    first = await pg.evaluate("(()=>{const d=JSON.parse(localStorage.getItem('daybook-v2'));return [d.templates.length,Object.values(d.tasks).flatMap(t=>t.items).filter(i=>i.text==='Write report').length]})()")
-    check('save a day as a template and add it to another day', first == [1, 2])
+    # repeating task: weekly on this weekday until the end of the year, then delete one and the later repeats
+    k0 = await pg.evaluate("(()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())})()")
+    await pg.click(f'[data-act=tadd][data-k="{k0}"]'); await pg.fill('#taskInput', 'Weekly review'); await pg.select_option('#tRep', 'w')
+    until_shown = await pg.locator('#tUntil').is_visible(); await pg.select_option('#tUntil', 'y'); await pg.locator('#taskInput').press('Enter'); await pg.wait_for_timeout(100)
+    reps = await pg.evaluate("(()=>{const d=JSON.parse(localStorage.getItem('daybook-v2'));return Object.entries(d.tasks).filter(([k,t])=>t.items.some(i=>i.text==='Weekly review')).map(([k])=>k).sort()})()")
+    want = await pg.evaluate(f"(()=>{{const o=[],d=new Date('{k0}T00:00'),y=d.getFullYear(),p=n=>String(n).padStart(2,'0');for(;d.getFullYear()===y;d.setDate(d.getDate()+7))o.push(d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()));return o}})()")
+    # amount habit: log km, reach the goal
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(100)
+    await pg.click('[data-act=newhabit] >> nth=0'); await pg.fill('#mName', 'Run'); await pg.click('[data-act=mtrack][data-v=amount]')
+    await pg.fill('#mUnit', 'km'); await pg.fill('#mGoal', '5'); await pg.click('[data-act=msave]')
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(100)
+    run = pg.locator('.trow', has_text='Run')
+    await run.locator('.cell').click(); await pg.fill('#aVal', '3.5'); await pg.keyboard.press('Enter'); await pg.wait_for_timeout(100)
+    part = await run.locator('.cell').inner_text(); part_on = 'on' in (await run.locator('.cell').get_attribute('class')).split()
+    await run.locator('.cell').click(); await pg.click('[data-act=amtstep][data-v="1"]'); await pg.click('[data-act=amtstep][data-v="1"]'); await pg.click('[data-act=amtsave]'); await pg.wait_for_timeout(100)
+    meta = await run.inner_text(); done = 'on' in (await run.locator('.cell').get_attribute('class')).split()
+    saved = await pg.evaluate("(()=>{const d=JSON.parse(localStorage.getItem('daybook-v2'));const h=d.habits.find(x=>x.name==='Run');return [h.track,h.unit,h.goal,Object.values(d.amt[h.id])[0]]})()")
+    check('amount habit logs km and completes at its goal', part.strip() == '3.5' and not part_on and done and '5.5 / 5 km today' in meta and saved == ['amount', 'km', 5, 5.5])
+    await pg.evaluate("location.hash='tasks'"); await pg.wait_for_timeout(100)
+    check('repeating task lands on every matching day', until_shown and reps == want)
+    await pg.locator('.tk', has_text='Weekly review').first.locator('[data-act=tdel]').click(); await pg.click('#toast [data-act=tdelrep]'); await pg.wait_for_timeout(100)
+    left = await pg.evaluate("Object.values(JSON.parse(localStorage.getItem('daybook-v2')).tasks).flatMap(t=>t.items).filter(i=>i.text==='Weekly review').length")
+    check('delete one repeat and the later ones', left == 0)
     await pg.click('[data-act=search]'); await pg.fill('#sq', 'bank')
     hits = await pg.locator('.shit').count(); await pg.locator('.shit').first.click(); await pg.wait_for_timeout(150)
     check('search finds a task and opens the Tasks tab', hits >= 1 and pg.url.endswith('#tasks') and await pg.locator('#modal .mod').count() == 0)
@@ -214,11 +241,15 @@ async def desktop(b):
     await pg.fill('#pinIn', '2468'); await pg.keyboard.press('Enter'); await pg.wait_for_timeout(200)
     check('PIN lock hides data and only the right PIN opens it', hidden and wrong and await pg.locator('#lock').is_hidden() and await pg.locator('.trow').count() > 0)
     await pg.evaluate("localStorage.removeItem('daybook-prefs')"); await pg.reload()
+    fresh = await b.new_context(); fp = await fresh.new_page(); await fp.goto(URL); await fp.wait_for_timeout(200)
+    first = await fp.locator('.mod.tips').count() == 1; await fp.click('[data-act=tipsok]'); await fp.reload(); await fp.wait_for_timeout(150)
+    check('tips show on first open only', first and await fp.locator('.mod.tips').count() == 0); await fresh.close()
     check('no JS errors (desktop)', not errs, errs)
     await ctx.close()
 
 async def mobile(b):
     ctx = await b.new_context(viewport={'width': 390, 'height': 800}, has_touch=True, is_mobile=True)
+    await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')")
     pg = await ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)))
     await pg.goto(URL); await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(150)
@@ -244,7 +275,19 @@ async def mobile(b):
     check('no JS errors (mobile)', not errs, errs)
     await ctx.close()
 
+def syntax_check():
+    import shutil, re as _re, tempfile, os as _os
+    node = shutil.which('node')
+    if not node: return
+    html = open(os.path.join(os.path.dirname(__file__), '..', 'www', 'index.html'), encoding='utf-8').read()
+    js = max(_re.findall(r'<script>(.*?)</script>', html, _re.S), key=len)
+    f = tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8'); f.write(js); f.close()
+    r = subprocess.run([node, '--check', f.name], capture_output=True, text=True); _os.unlink(f.name)
+    check('app script has no syntax errors', r.returncode == 0, (r.stderr or '')[:300])
+    if r.returncode: raise SystemExit(1)
+
 async def main():
+    syntax_check()
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()

@@ -30,6 +30,19 @@ LAYOUT = r"""(()=>{const out=[],W=document.documentElement.clientWidth;
    if((e.tagName==='BUTTON'||e.classList.contains('lbl'))&&e.scrollWidth>e.clientWidth+2&&s.overflow!=='hidden'&&s.textOverflow!=='ellipsis')out.push('text spills out of '+e.tagName+'.'+e.className+' "'+e.textContent.trim().slice(0,30)+'"');});
  document.querySelectorAll('button,[role=switch],input,select,textarea').forEach(e=>{const r=e.getBoundingClientRect();if(r.width&&r.height&&(r.width<14||r.height<14)&&!e.closest('.dghost'))out.push('tiny control '+e.tagName+'.'+e.className+' '+Math.round(r.width)+'x'+Math.round(r.height))});
  document.querySelectorAll('button:not([aria-label])').forEach(b=>{if(!b.textContent.trim())out.push('icon button without label: '+b.className+' act='+b.dataset.act)});
+ // key elements must not be covered by something else: probe points just inside their edges
+ const H=innerHeight;if(!document.querySelector('#modal .ov'))document.querySelectorAll('#main .ringw svg, #main .tk span[contenteditable], #main .gname .nb, #main .cell, #main .cb, #main .trow .nm').forEach(e=>{
+   const r=e.getBoundingClientRect();if(r.width<6||r.height<6||r.top<70||r.bottom>H-100)return;
+   const pts=[[r.left+r.width/2,r.bottom-2],[r.left+r.width/2,r.top+2],[r.left+2,r.top+r.height/2],[r.right-2,r.top+r.height/2]];
+   for(const [x,y] of pts){if(x<0||x>W)continue;const t=document.elementFromPoint(x,y);if(t&&!e.contains(t)&&!t.contains(e)&&!t.closest('.pnav,.toast,#focusbar,.gstat,.gname,.rin')){out.push('covered: '+e.tagName+'.'+(typeof e.className==='string'?e.className:'svg')+' by '+t.tagName+'.'+(typeof t.className==='string'?t.className:'')+' "'+(e.textContent||'').trim().slice(0,20)+'"');break}}});
+ // siblings in normal flow must not overlap (catches clipped rings, grips on top of text, squashed rows)
+ const flow=e=>{const s=getComputedStyle(e);return !/absolute|fixed/.test(s.position)&&s.display!=='none'&&s.visibility!=='hidden'};
+ document.querySelectorAll('#main *, #modal *').forEach(p=>{
+   if(p.closest('svg,.grow,.wrow,.hgrid,.hmon,.dghost'))return;
+   const kids=[...p.children].filter(flow).map(k=>[k,k.getBoundingClientRect()]).filter(([k,r])=>r.width>2&&r.height>2);
+   for(let i=0;i<kids.length;i++)for(let j=i+1;j<kids.length;j++){const a=kids[i][1],b=kids[j][1];
+     const w=Math.min(a.right,b.right)-Math.max(a.left,b.left),h=Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top);
+     if(w>3&&h>3)out.push('overlap in '+p.tagName+'.'+(typeof p.className==='string'?p.className:'')+': '+kids[i][0].className+' / '+kids[j][0].className)}});
  return [...new Set(out)].slice(0,25)})()"""
 
 def dump(findings):
@@ -47,6 +60,7 @@ async def run():
         for w, h in [(320, 640), (390, 844), (768, 1024), (1024, 768), (1280, 800), (1920, 1080)]:
             for th in ['dark', 'light', 'amoled']:
                 ctx = await b.new_context(viewport={'width': w, 'height': h}, has_touch=w < 800, is_mobile=w < 800)
+                await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')")
                 pg = await ctx.new_page(); errs = []
                 pg.on('pageerror', lambda e: errs.append(str(e)))
                 await pg.goto(URL)
@@ -73,7 +87,8 @@ async def run():
         # 2. random clicking (monkey) with heavy data, desktop and phone
         SAFE_SKIP = {'fresh', 'demo', 'import', 'export', 'csv', 'calexport', 'pickdir', 'resetdir', 'widget', 'calset', 'pinset', 'pinforgot', 'wmain', 'calsync', 'goto'}
         for w, h in [(1280, 800), (390, 844)]:
-            ctx = await b.new_context(viewport={'width': w, 'height': h}, accept_downloads=True); pg = await ctx.new_page(); errs = []
+            ctx = await b.new_context(viewport={'width': w, 'height': h}, accept_downloads=True); pg = await ctx.new_page()
+            await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')"); errs = []
             pg.on('pageerror', lambda e: errs.append(str(e)))
             await pg.goto(URL); big = await pg.evaluate(BIG); await pg.evaluate("d=>{localStorage.setItem('daybook-v2',d);localStorage.removeItem('daybook-prefs')}", big); await pg.reload()
             random.seed(7 + w)
@@ -93,7 +108,8 @@ async def run():
             await ctx.close()
         # 3. edge dates via a fixed clock
         for label, iso in [('leap day', '2028-02-29T10:00:00'), ('new year eve 23:59', '2026-12-31T23:59:30'), ('Sunday', '2026-11-08T09:00:00'), ('DST change', '2027-03-28T12:00:00'), ('1st of month', '2027-01-01T08:00:00')]:
-            ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); pg = await ctx.new_page(); errs = []
+            ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); pg = await ctx.new_page()
+            await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')"); errs = []
             pg.on('pageerror', lambda e: errs.append(str(e)))
             await pg.clock.install(time=iso)
             await pg.goto(URL); await pg.evaluate("s=>{const e=document.querySelector(s);e&&e.click()}", '.empty [data-act=demo]'); await pg.wait_for_timeout(100)
@@ -101,6 +117,7 @@ async def run():
                 await pg.evaluate(f"location.hash='{v}'"); await pg.wait_for_timeout(150)
             if 'eve' in label:
                 await pg.clock.run_for(60_000); await pg.evaluate("window.dispatchEvent(new Event('focus'))"); await pg.wait_for_timeout(150)
+                await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(150)
                 errs += [] if '1 Jan' in await pg.locator('#main').inner_text() or 'January' in await pg.locator('#main').inner_text() else ['did not roll over to the new year after midnight']
             await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(100)
             await pg.evaluate("for(let i=0;i<3;i++){const b=document.querySelector('[data-act=next]');b&&b.click()}")

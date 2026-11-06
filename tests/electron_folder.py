@@ -62,6 +62,8 @@ async def launch(p, exe, prof, env):
     assert b, 'could not connect to Electron'
     while not b.contexts or not b.contexts[0].pages: await asyncio.sleep(.2)
     pg = b.contexts[0].pages[0]; await pg.wait_for_selector('#main')
+    if not await pg.evaluate("localStorage.getItem('daybook-tips')"):
+        await pg.evaluate("localStorage.setItem('daybook-tips','1')"); await pg.reload(); await pg.wait_for_selector('#main')
     return proc, b, pg
 
 async def choose_flow(p, exe, tmp):

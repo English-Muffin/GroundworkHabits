@@ -1,51 +1,166 @@
-# Daybook
+<div align="center">
 
-Habits, tasks and goals in one calm place. Works offline. Your data stays on your device.
+<p>
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="assets/readme/today-light.png">
+  <img src="assets/readme/today.png" alt="Daybook: habits, tasks and goals in one calm place" width="100%">
+</picture>
+</p>
 
-## Pick how you want to run it
+<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest"><img src="https://img.shields.io/github/v/release/English-Muffin/Free-Habit-Tracker?label=release&style=flat-square&labelColor=0f0f0f&color=22d3be" alt="Release"></a>
+<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases"><img src="https://img.shields.io/github/downloads/English-Muffin/Free-Habit-Tracker/total?label=downloads&style=flat-square&labelColor=0f0f0f&color=22d3be" alt="Downloads"></a>
+<a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/English-Muffin/Free-Habit-Tracker/build.yml?branch=main&label=build&style=flat-square&labelColor=0f0f0f&color=22d3be" alt="Build"></a>
+<a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/English-Muffin/Free-Habit-Tracker/test.yml?branch=main&label=tests&style=flat-square&labelColor=0f0f0f&color=22d3be" alt="Tests"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22d3be?style=flat-square&labelColor=0f0f0f" alt="MIT licence"></a>
 
-**1. Quickest (Windows or any desktop):** double-click `www/index.html`. It opens in your browser and works offline.
+**[Download for Windows](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest)** ·
+**[macOS](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest)** ·
+**[Android](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest)**
 
-**2. Install it like an app (Windows and Android):**
-Upload the `www` folder to any HTTPS static host (Netlify Drop, GitHub Pages, Cloudflare Pages).
-- Windows: open the site in Edge or Chrome, then click the install icon in the address bar.
-- Android: open the site in Chrome, then menu, then "Install app".
-After the first visit it works offline.
+[Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-**3. Downloadable apps: Windows portable .exe, macOS app, Android .apk**
+</div>
 
-*Easiest, nothing to install:*
-1. Put this folder in a new GitHub repository (branch `main`).
-2. Open the Actions tab, choose "Build Windows, macOS and Android apps", press Run workflow.
-3. Download the artifacts when it finishes:
-   - `Daybook-Windows`: `Daybook-<version>-Windows-portable.exe` (no install, just run it)
-   - `Daybook-macOS`: `Daybook-<version>-mac-universal.zip` (unzip, drag Daybook to Applications; Intel and Apple Silicon)
-   - `Daybook-Android`: `Daybook-<version>-Android.apk`
+## Why Daybook
 
-*Publish a release for users:* bump `version` in `package.json`, then push a tag, e.g. `git tag v1.0.0 && git push origin v1.0.0`.
-The same workflow builds all three and attaches them to a GitHub Release, which gives you one public download page.
+Most habit trackers want an account, a subscription and your data on their servers. Daybook is one
+offline app that keeps everything on your device: daily, weekly and monthly habits, a weekly task
+planner, goals, quit streaks and the insights that tie them together.
 
-*On your own machine:*
-- Windows: install Node 20, then `npm install` and `npm run dist:win`. Output goes to `dist/`.
-  If it fails with "Cannot create symbolic link", turn on Windows Developer Mode (or run the terminal as admin) once.
-- macOS (needs a Mac): `npm install` and `npm run dist:mac`.
-- Android: install Node 20, JDK 17 and Android Studio, then
-  `npm install`, `npx cap add android`, `npx @capacitor/assets generate --android`,
-  `npx cap sync android`, `npx cap open android`, and press Build > Build APK.
+No account, no subscription, no ads, no tracking. Back it up to a file, or point the desktop app at
+a Google Drive, OneDrive or Dropbox folder and it syncs between your computers.
 
-## Good to know
-- The apps are not code-signed. Windows SmartScreen may say "unknown publisher": choose More info, then Run anyway.
-  macOS will say the app "cannot be verified": right-click Daybook, choose Open, then Open again
-  (on macOS 15+: try to open it once, then System Settings > Privacy & Security > Open Anyway).
-  On Android, allow "install unknown apps" for the app you use to open the APK. A Play Store release needs a signed release build.
-- Desktop app: Settings (gear) > Data folder > Choose folder… saves your data as `daybook.json` in any folder.
-  Pick your Google Drive, OneDrive or Dropbox folder (with their desktop app installed) and it syncs between PCs automatically.
-- Google Calendar (no Google login needed):
-  - Calendar to Daybook (desktop app): gear menu > Connect a calendar…, paste the calendar's "Secret address in iCal format"
-    (Google Calendar on the web > Settings > your calendar). Events from the last 30 and next 90 days appear as tasks with a blue dot and refresh every 15 minutes.
-  - Daybook to calendar (all versions): gear menu > Export tasks to calendar (.ics), then in Google Calendar: Settings > Import & export > Import.
-    Each task keeps the same event ID in every export, so Google should recognise events it already has, but check for duplicates the first time you re-import.
-- Data is otherwise saved locally on each device. Use the gear menu, "Export backup" and "Import backup", to move it between devices.
-- The Space Grotesk font loads from Google Fonts on the first online launch and is then cached. Offline before that, a system font is used.
-  To bundle it, add the font files under `www/fonts` and an `@font-face` rule in `www/index.html`.
-- To ship an update to the installed web version, change `VERSION` in `www/sw.js`.
+## Features
+
+**Habits**
+
+- Daily, weekly and monthly habits on a month grid, with streaks, best streaks and completion rates
+  that stay visible while you scroll.
+- Track each habit the way it works: done or not, a count (8 glasses of water), or an amount with a
+  unit and an optional goal (5 km run, 30 pages, 2 hours).
+- Days per week for habits you don't do every day ("gym 3 times a week").
+- A short note per day ("new PR on squats"), and a smooth trend line over the month.
+
+**Tasks**
+
+- A week of task columns with a progress ring per day and a mindset tracker (energy, focus, motivation).
+- Repeating tasks: every day, every weekday, weekly or monthly, until the end of the month or year.
+- Unfinished tasks on past days are marked missed, and one tap fixes it if you just forgot.
+- A focus timer for any of today's tasks.
+
+**Goals and achievements**
+
+- Goals with a progress slider across ten life areas.
+- Quit streaks for things you've stopped ("smoking: 249 days"), with milestones and your best run.
+
+**Insights**
+
+- Overall consistency over 7, 14 or 30 days, a six-month heatmap, a weekly review, leaderboards and
+  top streaks, plus a monthly reflection.
+
+**Make it yours**
+
+- Dark, AMOLED and light themes, any accent colour (presets, picker, hex or RGB).
+- Drag tasks, habits, goals and whole cards into the order you like (press and hold on touch screens).
+- Switch optional parts on and off in Settings → Features. Undo after every delete.
+- Search across tasks, notes, reflections, goals, habits and streaks.
+
+**Your data**
+
+- Everything is stored on the device. Export a full backup (JSON) or a spreadsheet (CSV) any time.
+- Desktop: save to a folder you choose, so Google Drive, OneDrive or Dropbox can sync it.
+- Google Calendar without a Google login: read events from your calendar's private iCal address
+  (desktop) and export tasks as an `.ics` file to import (all versions).
+- An optional PIN lock that hides your data on screen.
+
+**Desktop and phone**
+
+- Windows (portable `.exe`), macOS (universal for Intel and Apple Silicon) and Android (`.apk`).
+- A small always-on-top widget on desktop with today's habits and tasks.
+- A daily reminder: a system notification on Android even when the app is closed, and on desktop
+  while it's running.
+
+<p align="center">
+  <img src="assets/readme/habits.png" alt="Habits grid with streaks and completion rates" width="49%">
+  <img src="assets/readme/insights.png" alt="Insights: consistency, weekly review and heatmap" width="49%">
+</p>
+<p align="center">
+  <img src="assets/readme/phone-today.png" alt="Today on a phone" width="24%">
+  <img src="assets/readme/phone-habits.png" alt="Habits on a phone" width="24%">
+  <img src="assets/readme/phone-tasks.png" alt="Tasks on a phone" width="24%">
+</p>
+
+## Get it
+
+| | How |
+|---|---|
+| **Windows** | Download `Daybook-X.Y.Z-Windows-portable.exe` from the [latest release](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest) and run it. Nothing to install |
+| **macOS** | Download `Daybook-X.Y.Z-mac-universal.zip`, unzip it and drag Daybook to Applications |
+| **Android** | Download `Daybook-X.Y.Z-Android.apk` on the phone and open it. Installing a newer APK keeps your data |
+| **Any browser** | Open `www/index.html`, or host the `www` folder on any HTTPS static host and install it as an app |
+
+> [!NOTE]
+> The builds are not code-signed yet. Windows SmartScreen may say "unknown publisher": choose
+> **More info**, then **Run anyway**. macOS will say the app "cannot be verified": right-click
+> Daybook and choose **Open** (on macOS 15+, try once, then **System Settings → Privacy & Security →
+> Open Anyway**). On Android, allow "install unknown apps" for the app you open the APK with.
+
+## Your data
+
+Daybook keeps one document on the device: habits, ticks, amounts, notes, tasks, goals, streaks and
+your monthly reflections. Nothing is sent anywhere.
+
+| Where | What |
+|---|---|
+| App storage | The data itself (browser `localStorage`, or the app's own storage on desktop and Android) |
+| `daybook.json` in your data folder | Desktop only, when you choose a folder. Written on every change; read again when you return to the app |
+| `daybook-replaced-<time>.json` | A copy of a save you chose to replace when picking a folder |
+
+Backups are plain JSON and can be imported on any device. Imported data is checked field by field
+before it's used.
+
+## Build it yourself
+
+The app is a single file, [`www/index.html`](www/index.html), with no build step and no runtime
+dependencies. Electron wraps it for Windows and macOS, Capacitor for Android.
+
+```bash
+git clone https://github.com/English-Muffin/Free-Habit-Tracker
+cd Free-Habit-Tracker
+python -m http.server 8765 --directory www   # then open http://localhost:8765
+```
+
+| Build | Command |
+|---|---|
+| Windows portable `.exe` | `npm install && npm run dist:win` (output in `dist/`) |
+| macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac) |
+| Android `.apk` | `npm install && npx cap add android && npx cap sync android`, then build in Android Studio |
+| All three, in the cloud | Push a tag like `v1.3.0`: [GitHub Actions](.github/workflows/build.yml) builds them and attaches them to a release |
+
+### Tests
+
+```bash
+pip install playwright && playwright install chromium
+python tests/smoke.py            # 60+ checks in a desktop and a phone-sized browser
+python tests/electron_folder.py  # the desktop app: data folder, widget, app lock (needs npm install)
+python tests/stress.py out/      # heavy data, 320 to 1920 px, three themes, layout and overlap checks
+```
+
+## How Daybook is built
+
+Daybook is developed with [Claude Code](https://claude.com/claude-code), Anthropic's coding agent.
+Most of the code, tests and documentation are drafted in Claude Code sessions, and the repository
+carries a [`CLAUDE.md`](CLAUDE.md) with the project context those sessions start from. What goes in,
+what gets released, and testing on real devices are the maintainer's call. The app itself doesn't
+use any AI service.
+
+## Contributing
+
+Bug reports and ideas are welcome in [Issues](https://github.com/English-Muffin/Free-Habit-Tracker/issues).
+Pull requests too: start with [CONTRIBUTING.md](CONTRIBUTING.md). Found a security problem? Please
+follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
+
+## License
+
+Daybook is released under the [MIT License](LICENSE). The Space Grotesk font is loaded from Google
+Fonts under the SIL Open Font License.
