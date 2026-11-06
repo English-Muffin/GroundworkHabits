@@ -10,7 +10,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `www/index.html`  the whole app (CSS + HTML shell + JS in one file, no build step, no dependencies)
 - `www/sw.js`  offline cache. Bump `VERSION` whenever shipped files change
 - `www/manifest.webmanifest`, `www/icons/`  PWA metadata and icons
-- `electron/main.js` + `preload.js`  desktop wrapper. The preload exposes `window.daybookFS` so the user can pick a data folder (Settings > Data folder); data is mirrored to `<folder>/daybook.json` (sync, tmp+rename), re-read on focus. Picking a Google Drive/OneDrive/Dropbox synced folder is the cloud sync story. `package.json` holds the electron-builder config
+- `electron/main.js` + `preload.js`  desktop wrapper. The preload exposes `window.daybookFS` so the user can pick a data folder (Settings > Data folder); data is mirrored to `<folder>/daybook.json` (sync, tmp+rename), re-read on focus. Picking a folder that already has a save asks: replace (old file kept as `daybook-replaced-*.json`) or load (second warning). Picking a Google Drive/OneDrive/Dropbox synced folder is the cloud sync story. `package.json` holds the electron-builder config
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI

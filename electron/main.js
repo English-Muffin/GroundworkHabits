@@ -15,11 +15,41 @@ ipcMain.on('fs:write', (e, text) => {
   const f = dataFile(); if (!f || typeof text !== 'string') { e.returnValue = false; return; }
   try { fs.writeFileSync(f + '.tmp', text); fs.renameSync(f + '.tmp', f); e.returnValue = true; } catch (err) { e.returnValue = false; } // tmp+rename: never a half-written file
 });
+// tests: DAYBOOK_TEST_PICK = folder to "pick", DAYBOOK_TEST_ANSWERS = comma list of message box button indexes
+const testAnswers = (process.env.DAYBOOK_TEST_ANSWERS || '').split(',').filter(Boolean).map(Number);
+const ask = async opts => testAnswers.length ? testAnswers.shift() : (await dialog.showMessageBox(win, opts)).response;
 ipcMain.handle('fs:choose', async () => {
-  const r = await dialog.showOpenDialog(win, { title: 'Choose where Daybook saves your data', properties: ['openDirectory', 'createDirectory'] });
-  if (r.canceled || !r.filePaths[0]) return null;
-  const c = readCfg(); c.folder = r.filePaths[0]; writeCfg(c);
-  return { folder: c.folder, text: readData() };
+  let folder = process.env.DAYBOOK_TEST_PICK;
+  if (!folder) {
+    const r = await dialog.showOpenDialog(win, { title: 'Choose where Daybook saves your data', properties: ['openDirectory', 'createDirectory'] });
+    if (r.canceled || !r.filePaths[0]) return null;
+    folder = r.filePaths[0];
+  }
+  const file = path.join(folder, 'daybook.json');
+  let mode = 'replace';
+  if (fs.existsSync(file)) {
+    let info = '';
+    try { const st = fs.statSync(file), d = JSON.parse(fs.readFileSync(file, 'utf8'));
+      info = `
+
+That save was last changed ${st.mtime.toLocaleString()} and has ${(d.habits || []).length} habits and ${(d.goals || []).length} goals.`; } catch (e) {}
+    const a = await ask({ type: 'question', title: 'Daybook', message: 'There’s already a Daybook save in this folder.',
+      detail: 'Do you want to replace it with your current data, or load the save that’s in the folder?' + info,
+      buttons: ['Replace with my current data', 'Load the save in this folder', 'Cancel'], defaultId: 0, cancelId: 2, noLink: true });
+    if (a === 2) return null;
+    if (a === 1) {
+      const b = await ask({ type: 'warning', title: 'Daybook', message: 'Load the save from this folder?',
+        detail: 'This will overwrite the data you have now with the save from the folder. Make sure it isn’t an old save before continuing. Your current data can’t be recovered afterwards unless you’ve exported a backup.',
+        buttons: ['Load folder save', 'Cancel'], defaultId: 1, cancelId: 1, noLink: true });
+      if (b !== 0) return null;
+      mode = 'load';
+    } else {
+      // keep the file being replaced, just in case
+      try { fs.copyFileSync(file, path.join(folder, `daybook-replaced-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`)); } catch (e) {}
+    }
+  }
+  const c = readCfg(); c.folder = folder; writeCfg(c);
+  return { folder, mode };
 });
 
 if (process.env.DAYBOOK_USER_DATA) app.setPath('userData', process.env.DAYBOOK_USER_DATA); // tests use a throwaway profile

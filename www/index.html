@@ -787,7 +787,7 @@ document.addEventListener('click',e=>{
       if(S.habits.length&&!confirmDemo){confirmDemo=true;persist=false;break}
       S=seed();confirmDemo=false;menuOpen=false;toast('Demo data loaded');break;
     case 'pickdir':persist=false;menuOpen=false;DFS.choose().then(res=>{if(!res)return;dataDir=res.folder;fileText=null;
-      if(readFile()){render();toast('Loaded your data from that folder')}else{writeFile();render();toast('Daybook now saves to that folder')}});break;
+      if(res.mode==='load'&&readFile()){render();toast('Loaded the save from that folder')}else{writeFile();render();toast('Daybook now saves to that folder')}});break;
     case 'resetdir':DFS.reset();dataDir='';fileText=null;persist=false;toast('Saving to app storage only');break;
     case 'export':menuOpen=false;persist=false;exportData();break;
     case 'import':menuOpen=false;persist=false;$('#impFile').click();break;
