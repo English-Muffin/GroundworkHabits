@@ -118,6 +118,12 @@ async def desktop(b):
     check('quit streak counts days since and persists', (await pg.locator('.ach .pc').first.inner_text()).startswith('10') and await pg.locator('.miles span').count() == 3)
     await pg.click('[data-act=editquit]'); await pg.click('[data-act=qreset]'); await pg.click('[data-act=qreset]')
     check('restart keeps best streak', (await pg.locator('.ach .pc').first.inner_text()).startswith('0') and 'Best: 10' in await pg.locator('.ach').first.inner_text())
+    await pg.evaluate("""localStorage.setItem('daybook-v2',JSON.stringify({habits:[],log:{},tasks:{},goals:[{id:'g',title:'Keep me',area:'Health',pct:40}],journal:{},quits:[{id:'q',name:'Smoking',since:'2025-01-01T08:00',best:0}]}))"""); await pg.reload(); await pg.wait_for_timeout(150)
+    await pg.click('[data-act=gear]'); await pg.click('#menu [data-act=demo]'); await pg.wait_for_timeout(100)
+    check('demo asks first when only goals/streaks exist', 'Keep me' in await pg.evaluate("localStorage.getItem('daybook-v2')") and 'Tap again' in await pg.locator('#menu [data-act=demo]').inner_text())
+    await pg.keyboard.press('Escape'); await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(150)
+    await pg.click('[data-act=gdel]'); one = await pg.locator('.goal').count(); await pg.click('[data-act=gdel]')
+    check('goal delete needs two taps', one == 1 and await pg.locator('.goal').count() == 0)
     check('no JS errors (desktop)', not errs, errs)
     await ctx.close()
 

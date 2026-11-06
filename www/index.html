@@ -416,6 +416,8 @@ function applyPrefs(){const d=document.documentElement;d.style.setProperty('--ac
 applyPrefs();
 const empty=()=>({v:DATA_V,habits:[],log:{},tasks:{},goals:[],journal:{},quits:[]});
 
+// true when there is anything the user would lose (not just habits)
+const hasData=()=>S.habits.length||S.goals.length||S.quits.length||Object.values(S.tasks).some(t=>t.items.length||t.mind)||Object.values(S.journal).some(Boolean);
 function seed(){
   const H=[
     ['Wake up at 5am','daily',0,.78],['Meditation','daily',1,.5],['Gym','daily',2,.76],['Read 10 pages','daily',1,.8],
@@ -486,7 +488,7 @@ if(!S.v)S.v=1; // pre-versioned saves are v1; add 'if(S.v<2){...;S.v=2}' steps h
 let view=(location.hash||'#habits').slice(1);
 const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tasks','tasks'],['goals','Goals','goals'],['insights','Insights','insights'],['achievements','Achievements','trophy']];
 if(!VIEWS.some(v=>v[0]===view))view='habits';
-let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',confirmDemo=false,menuOpen=false,confirmReset=false,
+let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',confirmDemo=false,confirmGoal=null,menuOpen=false,confirmReset=false,
     taskWeek=wkStart(TODAY),addingTask=null,openMind={},insHabit='all',insRange=7,insMenu=null,lbTab='daily',modal=null,insSeries=[];
 
 /* ---------- habit logic ---------- */
@@ -757,10 +759,10 @@ function vGoals(){
   const gd=S.goals.filter(g=>g.pct>=100).length,ga=S.goals.length?Math.round(S.goals.reduce((s,g)=>s+g.pct,0)/S.goals.length):0;
   let o='<div class="sum"><div><div class="lbl">GOAL PLANNER</div><b>'+gd+' / '+S.goals.length+' completed, average progress '+ga+'%</b></div><button class="btn" data-act="newgoal">+ New Goal</button><div class="bar"><i style="width:'+ga+'%"></i></div></div>';
   if(!S.goals.length)return o+'<div class="empty">Set a goal in any of your 10 life areas.<br><button class="btn" data-act="newgoal">+ New Goal</button></div>';
-  o+='<div class="gg">'+S.goals.map(g=>'<section class="card goal"><div class="hd"><span class="lbl">'+esc(g.area)+'</span>'+(g.pct>=100?'<span class="badge">Completed</span>':'<button class="x" data-act="gdel" data-g="'+g.id+'" aria-label="Delete goal">&times;</button>')+'</div>'
+  o+='<div class="gg">'+S.goals.map(g=>'<section class="card goal"><div class="hd"><span class="lbl">'+esc(g.area)+'</span>'+(g.pct>=100?'<span class="badge">Completed</span>':(confirmGoal===g.id?'<button class="x" style="font-size:11px;color:var(--red)" data-act="gdel" data-g="'+g.id+'">Tap again to delete</button>':'<button class="x" data-act="gdel" data-g="'+g.id+'" aria-label="Delete goal">&times;</button>'))+'</div>'
     +'<h3 contenteditable="plaintext-only" role="textbox" aria-label="Goal title" data-eg="'+g.id+'">'+esc(g.title)+'</h3><div class="pc '+(g.pct>=100?'done':'')+'" id="gp-'+g.id+'">'+g.pct+'%</div><div class="tr"><i style="width:'+g.pct+'%" id="gb-'+g.id+'"></i></div>'
     +'<input type="range" min="0" max="100" step="5" value="'+g.pct+'" data-goal="'+g.id+'" aria-label="Progress for '+esc(g.title)+'">'
-    +(g.pct>=100?'<button class="x" style="align-self:flex-start;font-size:11px" data-act="gdel" data-g="'+g.id+'">Delete goal</button>':'')+'</section>').join('')+'</div>';
+    +(g.pct>=100?'<button class="x" style="align-self:flex-start;font-size:11px" data-act="gdel" data-g="'+g.id+'">'+(confirmGoal===g.id?'Tap again to delete':'Delete goal')+'</button>':'')+'</section>').join('')+'</div>';
   return o;
 }
 
@@ -850,6 +852,7 @@ document.addEventListener('click',e=>{
   if(insMenu&&act!=='menu'&&act!=='pick'){insMenu=null;changed=true}
   if(addingTask&&!e.target.closest('#taskInput')&&act!=='tadd'){addingTask=null;changed=true;if(e.target.dataset.et)focusSel='[data-i="'+e.target.dataset.i+'"][data-et]'}
   if(confirmDemo&&act!=='demo')confirmDemo=false;
+  if(confirmGoal&&act!=='gdel')confirmGoal=null;
   if(confirmReset&&act!=='fresh'){confirmReset=false;changed=true}
   if(!t){if(changed)render();return}
   let persist=true;
@@ -858,7 +861,7 @@ document.addEventListener('click',e=>{
     case 'ptheme':P.theme=t.dataset.v;applyPrefs();persist=false;break;
     case 'paccent':setColor('accent',t.dataset.v);persist=false;break;
     case 'demo':
-      if(S.habits.length&&!confirmDemo){confirmDemo=true;persist=false;break}
+      if(hasData()&&!confirmDemo){confirmDemo=true;persist=false;break}
       S=seed();confirmDemo=false;menuOpen=false;toast('Demo data loaded');break;
     case 'pickdir':persist=false;menuOpen=false;DFS.choose().then(res=>{if(!res)return;dataDir=res.folder;fileText=null;
       if(res.mode==='load'&&readFile()){render();toast('Loaded the save from that folder')}else{writeFile();render();toast('Daybook now saves to that folder')}});break;
@@ -907,7 +910,8 @@ document.addEventListener('click',e=>{
       const q=S.quits.find(x=>x.id===modal.id);if(q){q.best=Math.max(q.best||0,qDays(q));q.since=nowLocal()}modal=null;toast('Streak restarted. You’ve got this.');break}
     case 'qdel':{if(modal.confirm!=='del'){modal.confirm='del';persist=false;break}
       S.quits=S.quits.filter(x=>x.id!==modal.id);modal=null;toast('Streak deleted');break}
-    case 'gdel':S.goals=S.goals.filter(g=>g.id!==t.dataset.g);break;
+    case 'gdel':if(confirmGoal!==t.dataset.g){confirmGoal=t.dataset.g;persist=false;break}
+      S.goals=S.goals.filter(g=>g.id!==t.dataset.g);confirmGoal=null;toast('Goal deleted');break;
     case 'tprev':taskWeek=addDays(taskWeek,-7);persist=false;break;
     case 'tnext':taskWeek=addDays(taskWeek,7);persist=false;break;
     case 'tnow':taskWeek=wkStart(TODAY);persist=false;break;
