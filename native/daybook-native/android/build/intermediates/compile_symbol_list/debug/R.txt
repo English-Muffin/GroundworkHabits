@@ -1,0 +1,1 @@
+int drawable dbk_stat 0x0
