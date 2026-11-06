@@ -73,7 +73,7 @@ async def desktop(b):
     past = pg.locator('.tk', has_text='Past task').locator('.cb')
     if await pg.evaluate("new Date().getDay()") > 0:  # Sunday has no earlier day in the week
         x1 = await past.get_attribute('class'); await past.click(); on = await past.get_attribute('class'); await past.click(); x2 = await past.get_attribute('class')
-        check('missed past task shows X, toggles to done and back', 'x' in x1.split() and 'on' in on.split() and 'x' in x2.split())
+        check('missed past task shows X, toggles to done and back', 'cbx' in x1.split() and 'on' in on.split() and 'cbx' in x2.split())
     box = await pg.locator('#mchart').bounding_box()
     await pg.mouse.move(box['x'] + box['width'] * .3, box['y'] + 60); await pg.wait_for_timeout(100)
     check('mindset chart hover tooltip', len(await pg.locator('#mchart .tip small').inner_text()) > 3 and await pg.locator('#mchart path').count() == 6)

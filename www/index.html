@@ -199,8 +199,8 @@ textarea.field{min-height:130px;resize:vertical;line-height:1.5}
 .tk.done span{color:var(--g6a);text-decoration:line-through}
 .cb{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--g3b);background:transparent;flex:none;padding:0;margin-top:1px;display:grid;place-items:center}
 .cb.on{background:var(--teal);border-color:var(--teal)}
-.cb.x{border-color:color-mix(in srgb,var(--red) 70%,transparent);background:color-mix(in srgb,var(--red) 14%,transparent)}
-.cb.x svg{width:10px;height:10px;stroke:var(--red);stroke-width:3.2;fill:none;stroke-linecap:round}
+.cb.cbx{border-color:color-mix(in srgb,var(--red) 70%,transparent);background:color-mix(in srgb,var(--red) 14%,transparent)}
+.cb.cbx svg{width:10px;height:10px;stroke:var(--red);stroke-width:3.2;fill:none;stroke-linecap:round}
 .tk.miss span{color:var(--muted)}
 .cb.on svg{width:10px;height:10px;stroke:var(--on);stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .tkx{background:none;border:0;color:var(--g55);padding:0 2px;font-size:14px;line-height:1;opacity:0}
@@ -615,7 +615,7 @@ function vToday(){
 function taskChip(k,it){
   // a past day's unfinished task shows as missed (X); tapping still toggles it done and back
   const miss=!it.done&&k<dk(TODAY);
-  return '<div class="tk '+(it.done?'done':miss?'miss':'')+'"><button class="cb '+(it.done?'on':miss?'x':'')+'" data-act="tdone" data-k="'+k+'" data-i="'+it.id+'" aria-pressed="'+it.done+'" aria-label="'+esc(it.text)+(miss?', missed. Tap to mark as done':'')+'">'+(it.done?CHECK:miss?XMARK:'')+'</button><span contenteditable="plaintext-only" role="textbox" aria-label="Task text" data-et="'+k+'" data-i="'+it.id+'">'+esc(it.text)+'</span><button class="tkx" data-act="tdel" data-k="'+k+'" data-i="'+it.id+'" aria-label="Delete task">&times;</button></div>';
+  return '<div class="tk '+(it.done?'done':miss?'miss':'')+'"><button class="cb '+(it.done?'on':miss?'cbx':'')+'" data-act="tdone" data-k="'+k+'" data-i="'+it.id+'" aria-pressed="'+it.done+'" aria-label="'+esc(it.text)+(miss?', missed. Tap to mark as done':'')+'">'+(it.done?CHECK:miss?XMARK:'')+'</button><span contenteditable="plaintext-only" role="textbox" aria-label="Task text" data-et="'+k+'" data-i="'+it.id+'">'+esc(it.text)+'</span><button class="tkx" data-act="tdel" data-k="'+k+'" data-i="'+it.id+'" aria-label="Delete task">&times;</button></div>';
 }
 function taskAdder(k,copy){
   const items=(S.tasks[k]||{items:[]}).items;
