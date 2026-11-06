@@ -40,6 +40,11 @@ The same workflow builds all three and attaches them to a GitHub Release, which 
   On Android, allow "install unknown apps" for the app you use to open the APK. A Play Store release needs a signed release build.
 - Desktop app: Settings (gear) > Data folder > Choose folder… saves your data as `daybook.json` in any folder.
   Pick your Google Drive, OneDrive or Dropbox folder (with their desktop app installed) and it syncs between PCs automatically.
+- Google Calendar (no Google login needed):
+  - Calendar to Daybook (desktop app): gear menu > Connect a calendar…, paste the calendar's "Secret address in iCal format"
+    (Google Calendar on the web > Settings > your calendar). Events from the last 30 and next 90 days appear as tasks with a blue dot and refresh every 15 minutes.
+  - Daybook to calendar (all versions): gear menu > Export tasks to calendar (.ics), then in Google Calendar: Settings > Import & export > Import.
+    Re-importing the newer file updates the same events instead of duplicating them.
 - Data is otherwise saved locally on each device. Use the gear menu, "Export backup" and "Import backup", to move it between devices.
 - The Space Grotesk font loads from Google Fonts on the first online launch and is then cached. Offline before that, a system font is used.
   To bundle it, add the font files under `www/fonts` and an `@font-face` rule in `www/index.html`.

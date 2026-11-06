@@ -14,7 +14,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
-- `tests/smoke.py`  Playwright smoke tests (32 checks, desktop and phone)
+- `tests/smoke.py`  Playwright smoke tests (35 checks, desktop and phone)
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
 ## Commands
@@ -28,7 +28,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - State is one object `S`: `{v, habits, log, tasks, goals, journal, quits}` (`v` = data version, migrations go after `let S=load()`), saved to `localStorage` key `daybook-v2` by `save()`.
   - `habits`: `{id, name, type: 'daily'|'weekly'|'monthly', color}`
   - `log[habitId]`: set of keys. Daily `YYYY-MM-DD`, weekly `YYYY-MM-Wn` (W1 = days 1-7 of the month), monthly `YYYY-MM`
-  - `tasks['YYYY-MM-DD']`: `{items: [{id, text, done}], mind: {energy, focus, motivation} | null}`
+  - `tasks['YYYY-MM-DD']`: `{items: [{id, text, done, cal?}], mind: {energy, focus, motivation} | null}`
   - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Achievements tab
   - `goals`: `{id, title, area, pct}`. `journal['YYYY-MM']`: monthly reflection text
 - `render()` rebuilds `#main` from string templates (`vToday`, `vHabits`, `vTasks`, `vGoals`, `vInsights`, `vAch`) and `#modal`.
@@ -68,6 +68,8 @@ Run `python tests/smoke.py`. When you fix a bug, add a check for it. Test at 390
 - Today and Goals screens were designed without a reference. They deserve a polish pass
 - Local notifications / daily reminder (Capacitor Local Notifications; Notification API on the web)
 - Reorder habits, undo for deletes
+- Google Calendar: no OAuth (user chose no Google Cloud project). Desktop pulls the calendar's secret iCal URL via `cal:fetch` in main (`P.cal`, every 15 min) and mirrors events into tasks with `cal` = event UID; export writes an .ics of non-calendar tasks. Real two-way sync / Google Tasks would need an OAuth client ID. Recurring events only show their first date (RRULE not expanded).
+- The script runs inside an IIFE; tests reach internals through `window.DaybookTest`.
 - Cloud sync on web/Android (desktop has it via a synced data folder); a real Google Drive API login would need an OAuth client ID
 - Bundle the font files
 - Signed Windows build and a signed Android release build for the Play Store

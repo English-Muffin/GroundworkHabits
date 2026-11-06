@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, shell, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, shell, ipcMain, dialog, net } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -14,6 +14,17 @@ ipcMain.on('fs:reset', e => { const c = readCfg(); delete c.folder; writeCfg(c);
 ipcMain.on('fs:write', (e, text) => {
   const f = dataFile(); if (!f || typeof text !== 'string') { e.returnValue = false; return; }
   try { fs.writeFileSync(f + '.tmp', text); fs.renameSync(f + '.tmp', f); e.returnValue = true; } catch (err) { e.returnValue = false; } // tmp+rename: never a half-written file
+});
+// calendar feed: fetched here because the page itself is blocked by CORS; https only, size-capped
+ipcMain.handle('cal:fetch', async (e, url) => {
+  try {
+    const u = new URL(url); if (u.protocol !== 'https:') return { ok: false, error: 'The address must start with https://' };
+    const res = await net.fetch(u.href, { redirect: 'follow' });
+    if (!res.ok) return { ok: false, error: res.status === 404 ? 'Calendar address not found. Copy the secret iCal address again' : 'Calendar returned an error (' + res.status + ')' };
+    const text = await res.text();
+    if (text.length > 5e6 || !text.includes('BEGIN:VCALENDAR')) return { ok: false, error: 'That address is not an iCal calendar' };
+    return { ok: true, text };
+  } catch (err) { return { ok: false, error: 'Could not reach your calendar' }; }
 });
 // tests: DAYBOOK_TEST_PICK = folder to "pick", DAYBOOK_TEST_ANSWERS = comma list of message box button indexes
 const testAnswers = (process.env.DAYBOOK_TEST_ANSWERS || '').split(',').filter(Boolean).map(Number);

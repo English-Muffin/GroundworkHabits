@@ -202,6 +202,7 @@ textarea.field{min-height:130px;resize:vertical;line-height:1.5}
 .cb.cbx{border-color:color-mix(in srgb,var(--red) 70%,transparent);background:color-mix(in srgb,var(--red) 14%,transparent)}
 .cb.cbx svg{width:10px;height:10px;stroke:var(--red);stroke-width:3.2;fill:none;stroke-linecap:round}
 .tk.miss span{color:var(--muted)}
+.tk .calb{flex:none;width:6px;height:6px;border-radius:50%;background:var(--blue);margin-top:5px}
 .cb.on svg{width:10px;height:10px;stroke:var(--on);stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .tkx{background:none;border:0;color:var(--g55);padding:0 2px;font-size:14px;line-height:1;opacity:0}
 .tk:hover .tkx,.tkx:focus-visible{opacity:1}
@@ -467,7 +468,7 @@ function clean(d){
     o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0]});
     const l=obj(d.log)&&obj(d.log[h.id])?d.log[h.id]:{};o.log[i]={};Object.keys(l).forEach(k=>{if(/^\d{4}-\d{2}(-\d{2}|-W\d)?$/.test(k)&&l[k])o.log[i][k]=1})});
   if(obj(d.tasks))Object.keys(d.tasks).forEach(k=>{const t=d.tasks[k];if(!DK.test(k)||!obj(t))return;const m=obj(t.mind)?t.mind:null;
-    o.tasks[k]={items:(Array.isArray(t.items)?t.items:[]).filter(obj).map(x=>({id:id(x.id),text:str(x.text),done:!!x.done})),
+    o.tasks[k]={items:(Array.isArray(t.items)?t.items:[]).filter(obj).map(x=>Object.assign({id:id(x.id),text:str(x.text),done:!!x.done},typeof x.cal==='string'&&x.cal.length<300?{cal:x.cal}:{})),
       mind:m?{energy:num(m.energy,0,10,5),focus:num(m.focus,0,10,5),motivation:num(m.motivation,0,10,5)}:null}});
   (Array.isArray(d.goals)?d.goals:[]).forEach(g=>{if(obj(g))o.goals.push({id:id(g.id),title:str(g.title),area:AREAS.includes(g.area)?g.area:AREAS[0],pct:num(g.pct,0,100,0)})});
   (Array.isArray(d.quits)?d.quits:[]).forEach(q=>{if(obj(q)&&QT.test(q.since))o.quits.push({id:id(q.id),name:str(q.name),since:q.since,best:num(q.best,0,100000,0)})});
@@ -614,7 +615,11 @@ function vToday(){
 /* ---------- Tasks ---------- */
 function taskChip(k,it){
   // a past day's unfinished task shows as missed (X); tapping still toggles it done and back
-  const miss=!it.done&&k<dk(TODAY);
+  const miss=!it.done&&!it.cal&&k<dk(TODAY); // calendar events are not to-dos, so they never show as missed
+  if(it.cal)return taskChipHtml(k,it,miss).replace('<span contenteditable="plaintext-only"','<span class="calb" title="From Google Calendar" aria-label="From Google Calendar"></span><span contenteditable="plaintext-only"');
+  return taskChipHtml(k,it,miss);
+}
+function taskChipHtml(k,it,miss){
   return '<div class="tk '+(it.done?'done':miss?'miss':'')+'"><button class="cb '+(it.done?'on':miss?'cbx':'')+'" data-act="tdone" data-k="'+k+'" data-i="'+it.id+'" aria-pressed="'+it.done+'" aria-label="'+esc(it.text)+(miss?', missed. Tap to mark as done':'')+'">'+(it.done?CHECK:miss?XMARK:'')+'</button><span contenteditable="plaintext-only" role="textbox" aria-label="Task text" data-et="'+k+'" data-i="'+it.id+'">'+esc(it.text)+'</span><button class="tkx" data-act="tdel" data-k="'+k+'" data-i="'+it.id+'" aria-label="Delete task">&times;</button></div>';
 }
 function taskAdder(k,copy){
@@ -785,6 +790,10 @@ function vModal(){
      +'<div class="colors" role="group" aria-label="Colour">'+COLORS.map((c,i)=>'<button style="--c:'+c+'" class="'+(modal.color===c?'on':'')+'" data-act="mcolor" data-sw="habit" data-v="'+c+'" aria-pressed="'+(modal.color===c)+'" aria-label="Colour '+(i+1)+'"></button>').join('')+'</div>'+colorFields('habit',modal.color,'habit colour')
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button>'+(modal.id?'<button class="btn danger" data-act="mdel">'+(modal.confirm?'Tap again to delete':'Delete')+'</button>':'')+'<button class="btn" data-act="msave">'+(modal.id?'Save':'Add habit')+'</button></div></div></div>';
   }
+  if(modal.kind==='cal')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Connect Google Calendar"><h2>Connect Google Calendar</h2>'
+     +'<p class="sub" style="margin:0;font-size:12px;line-height:1.5">In Google Calendar on a computer: Settings, pick your calendar under “Settings for my calendars”, then copy <b>Secret address in iCal format</b> and paste it here. Daybook adds events from the last 30 days and next 90 days to your tasks and refreshes every 15 minutes. Keep this address private.</p>'
+     +'<input class="field" id="calUrl" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" aria-label="Secret iCal address" spellcheck="false">'
+     +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button><button class="btn" data-act="calsave">Connect</button></div></div></div>';
   if(modal.kind==='quit'){const t=modal.id?'Edit streak':'New streak';
     return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="'+t+'"><h2>'+t+'</h2>'
      +'<input class="field" id="qName" maxlength="60" placeholder="What did you stop? e.g. Smoking" value="'+esc(modal.name||'')+'" aria-label="What did you stop">'
@@ -813,6 +822,9 @@ function render(){
     +'<div class="mlbl">Accent colour</div><div class="mrow">'+ACCENTS.map(a=>'<button class="sw" data-act="paccent" data-sw="accent" data-v="'+a[1]+'" style="background:'+a[1]+'" aria-label="'+a[0]+' accent" aria-pressed="'+(P.accent===a[1])+'"></button>').join('')+'</div>'
     +'<div class="mrow" style="display:block">'+colorFields('accent',P.accent,'accent colour')+'</div><div class="sep"></div>'
     +(DFS?'<div class="mlbl">Data folder</div><div class="mpath">'+(dataDir?esc(dataDir):'App storage (this PC only)')+'</div><button data-act="pickdir">Choose folder…</button>'+(dataDir?'<button data-act="resetdir">Stop using this folder</button>':'')+'<div class="sep"></div>':'')
+    +'<div class="mlbl">Google Calendar</div>'
+    +(DFS&&DFS.fetchCal?(P.cal?'<div class="mpath">Syncing from your calendar'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):'')+'</div><button data-act="calsync">Sync now</button><button data-act="caloff">Stop calendar sync</button>':'<button data-act="calset">Connect a calendar…</button>'):'')
+    +'<button data-act="calexport">Export tasks to calendar (.ics)</button><div class="sep"></div>'
     +'<button data-act="export">Export backup</button><button data-act="import">Import backup</button><div class="sep"></div><button data-act="demo">'+(confirmDemo?'Tap again: replace my data with demo':'Load demo data')+'</button><button data-act="fresh">'+(confirmReset?'Click again to erase everything':'Start fresh')+'</button>';
   $('#modal').innerHTML=vModal();
   keep.forEach(k=>{const el=$(k[0]);if(el){el.scrollLeft=k[1];el.scrollTop=k[2]}});
@@ -848,6 +860,13 @@ document.addEventListener('click',e=>{
     case 'pickdir':persist=false;menuOpen=false;DFS.choose().then(res=>{if(!res)return;dataDir=res.folder;fileText=null;
       if(res.mode==='load'&&readFile()){render();toast('Loaded the save from that folder')}else{writeFile();render();toast('Daybook now saves to that folder')}});break;
     case 'resetdir':DFS.reset();dataDir='';fileText=null;persist=false;toast('Saving to app storage only');break;
+    case 'calexport':menuOpen=false;persist=false;shareFile(tasksToIcs(),'daybook-tasks-'+dk(TODAY)+'.ics','text/calendar','Daybook tasks','Calendar file downloaded. Import it in Google Calendar: Settings, Import & export');break;
+    case 'calset':menuOpen=false;persist=false;modal={kind:'cal',url:''};focusSel='#calUrl';break;
+    case 'calsave':{const u=($('#calUrl').value||'').trim().replace(/^webcal:/i,'https:');
+      if(!/^https:\/\/\S+$/i.test(u)){$('#calUrl').focus();toast('Paste the calendar’s secret iCal address (starts with https://)');return}
+      P.cal=u;applyPrefs();modal=null;persist=false;pullCalendar(true);break}
+    case 'calsync':menuOpen=false;persist=false;pullCalendar(true);break;
+    case 'caloff':{P.cal='';P.calAt=0;applyPrefs();Object.keys(S.tasks).forEach(k=>{S.tasks[k].items=S.tasks[k].items.filter(it=>!it.cal)});toast('Calendar sync stopped');break}
     case 'export':menuOpen=false;persist=false;exportData();break;
     case 'import':menuOpen=false;persist=false;$('#impFile').click();break;
     case 'fresh':
@@ -914,7 +933,7 @@ document.addEventListener('keydown',e=>{
   }
   if(e.target.dataset&&(e.target.dataset.et||e.target.dataset.eg)&&(e.key==='Enter'||e.key==='Escape')){e.preventDefault();e.target.blur();return}
   if(modal&&e.key==='Escape'){modal=null;render()}
-  if(modal&&e.key==='Enter'&&(e.target.id==='mName'||e.target.id==='gTitle'||e.target.id==='qName')){e.preventDefault();const b=$('[data-act="'+({habit:'msave',quit:'qsave'}[modal.kind]||'gsave')+'"]');if(b)b.click()}
+  if(modal&&e.key==='Enter'&&(e.target.id==='mName'||e.target.id==='gTitle'||e.target.id==='qName'||e.target.id==='calUrl')){e.preventDefault();const b=$('[data-act="'+({habit:'msave',quit:'qsave',cal:'calsave'}[modal.kind]||'gsave')+'"]');if(b)b.click()}
   if(e.key==='Escape'&&(menuOpen||insMenu)){menuOpen=false;insMenu=null;render()}
 });
 
@@ -964,18 +983,68 @@ window.addEventListener('hashchange',()=>{
   const v=(location.hash||'#habits').slice(1);
   if(VIEWS.some(x=>x[0]===v)){view=v;menuOpen=false;insMenu=null;addingTask=null;modal=null;render();window.scrollTo(0,0)}
 });
-async function exportData(){
-  const json=JSON.stringify(S,null,1),name='daybook-backup-'+dk(TODAY)+'.json';
+async function shareFile(text,name,type,title,done){
   try{
     if(/Android|iPhone|iPad/i.test(navigator.userAgent)&&navigator.canShare){
-      const file=new File([json],name,{type:'application/json'});
-      if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Daybook backup'});return}
+      const file=new File([text],name,{type});
+      if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title});return}
     }
   }catch(err){if(err&&err.name==='AbortError')return}
   try{
-    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=name;
-    document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Backup downloaded');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;
+    document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast(done);
   }catch(err){toast('Export failed')}
+}
+const exportData=()=>shareFile(JSON.stringify(S,null,1),'daybook-backup-'+dk(TODAY)+'.json','application/json','Daybook backup','Backup downloaded');
+
+/* ---------- Google Calendar (no login) ----------
+   In: the desktop app reads a calendar's "secret address in iCal format" and mirrors its events into tasks.
+   Out: tasks export as an .ics file the user imports in Google Calendar (same UIDs, so re-importing updates). */
+const icsEsc=t=>String(t).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
+const icsUnesc=t=>t.replace(/\\n/gi,' ').replace(/\\([,;\\])/g,'$1');
+function tasksToIcs(){
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Daybook//Tasks//EN','CALSCALE:GREGORIAN','X-WR-CALNAME:Daybook tasks'],stamp=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
+  Object.keys(S.tasks).sort().forEach(k=>S.tasks[k].items.forEach(it=>{if(it.cal||!it.text.trim())return; // calendar events stay in the calendar
+    const d=k.replace(/-/g,''),n=dk(addDays(new Date(k+'T00:00'),1)).replace(/-/g,'');
+    L.push('BEGIN:VEVENT','UID:'+it.id+'@daybook','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+d,'DTEND;VALUE=DATE:'+n,'SUMMARY:'+icsEsc((it.done?'[done] ':'')+it.text),'TRANSP:TRANSPARENT','END:VEVENT')}));
+  L.push('END:VCALENDAR');return L.join('\r\n')+'\r\n';
+}
+// parse VEVENTs into {uid,text,day}; shortcut: recurring events (RRULE) only appear on their first date, expand RRULE if users need repeats
+function parseIcs(txt){
+  const lines=txt.replace(/\r?\n[ \t]/g,'').split(/\r?\n/),out=[];let ev=null;
+  for(const ln of lines){
+    if(ln==='BEGIN:VEVENT'){ev={};continue}
+    if(ln==='END:VEVENT'){if(ev&&ev.uid&&ev.day&&ev.status!=='CANCELLED')out.push(ev);ev=null;continue}
+    if(!ev)continue;
+    const i=ln.indexOf(':');if(i<0)continue;const key=ln.slice(0,i).toUpperCase(),val=ln.slice(i+1),name=key.split(';')[0];
+    if(name==='UID')ev.uid=val.trim();
+    else if(name==='SUMMARY')ev.text=icsUnesc(val).trim();
+    else if(name==='STATUS')ev.status=val.trim().toUpperCase();
+    else if(name==='DTSTART'){const m=val.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?/);if(!m)continue;
+      // UTC times convert to local; times with a TZID are read as local time (close enough for a day bucket)
+      const d=m[7]?new Date(Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5],+m[6])):new Date(+m[1],m[2]-1,+m[3],+(m[4]||0),+(m[5]||0));
+      ev.day=dk(d);ev.time=m[4]&&!/VALUE=DATE(?!-)/.test(key)?p2(d.getHours())+':'+p2(d.getMinutes()):''}
+  }
+  return out;
+}
+// mirror events from 30 days back to 90 days ahead into tasks; returns count of events applied
+function applyCalendar(evs){
+  const lo=dk(addDays(TODAY,-30)),hi=dk(addDays(TODAY,90)),seen=new Set(),where={};
+  Object.keys(S.tasks).forEach(k=>S.tasks[k].items.forEach(it=>{if(it.cal)where[it.cal]={k,it}}));
+  let n=0;
+  evs.forEach(e=>{if(e.day<lo||e.day>hi||seen.has(e.uid))return;seen.add(e.uid);n++;
+    const text=((e.time?e.time+' ':'')+(e.text||'(No title)')).slice(0,200),w=where[e.uid];
+    if(w){w.it.text=text;if(w.k!==e.day){S.tasks[w.k].items=S.tasks[w.k].items.filter(x=>x!==w.it);(S.tasks[e.day]=S.tasks[e.day]||{items:[],mind:null}).items.push(w.it)}}
+    else (S.tasks[e.day]=S.tasks[e.day]||{items:[],mind:null}).items.push({id:uid(),text,done:false,cal:e.uid})});
+  // events deleted in the calendar disappear here too (only inside the synced window)
+  Object.keys(S.tasks).forEach(k=>{if(k<lo||k>hi)return;S.tasks[k].items=S.tasks[k].items.filter(it=>!it.cal||seen.has(it.cal))});
+  return n;
+}
+async function pullCalendar(manual){
+  if(!DFS||!DFS.fetchCal||!P.cal)return;
+  const r=await DFS.fetchCal(P.cal);
+  if(!r||!r.ok){if(manual)toast(r&&r.error?r.error:'Could not reach your calendar');return}
+  const n=applyCalendar(parseIcs(r.text));P.calAt=Date.now();applyPrefs();save();if(!modal&&!addingTask)render();if(manual)toast(n+' calendar events synced');
 }
 /* keep "today" correct if the app stays open past midnight */
 function refreshToday(){
@@ -987,7 +1056,9 @@ function refreshToday(){
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshToday()});
 window.addEventListener('focus',refreshToday);
-setInterval(()=>{refreshToday();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
+window.DaybookTest={parseIcs,applyCalendar,tasksToIcs,state:()=>S}; // smoke tests only
+pullCalendar();let calTick=0;
+setInterval(()=>{refreshToday();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/.test(navigator.userAgent)){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
