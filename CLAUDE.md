@@ -14,7 +14,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
-- `tests/smoke.py`  Playwright smoke tests (27 checks, desktop and phone)
+- `tests/smoke.py`  Playwright smoke tests (28 checks, desktop and phone)
 
 ## Commands
 - Run locally: `python -m http.server 8765 --directory www`, then open http://localhost:8765

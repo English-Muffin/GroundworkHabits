@@ -441,7 +441,23 @@ function seed(){
   s.goals=[{id:'g1',title:'Learn Spanish to B1',area:'Learning',pct:100},{id:'g2',title:'Run a half marathon',area:'Fitness',pct:66},{id:'g3',title:'Save three months of expenses',area:'Money',pct:50}];
   return s;
 }
-let S=load()||empty();
+// rebuild saved/imported data from known fields only: templates interpolate ids, colours and numbers unescaped
+function clean(d){
+  const o=empty(),obj=x=>x&&typeof x==='object'&&!Array.isArray(x),str=x=>typeof x==='string'?x:'',ID=/^[A-Za-z0-9_-]{1,40}$/,DK=/^\d{4}-\d{2}-\d{2}$/;
+  const num=(x,lo,hi,dflt)=>Number.isFinite(+x)&&x!==null&&x!==''?Math.max(lo,Math.min(hi,Math.round(+x))):dflt,id=x=>ID.test(x)?x:uid();
+  if(!obj(d))return o;
+  o.v=num(d.v,1,999,1);
+  (Array.isArray(d.habits)?d.habits:[]).forEach(h=>{if(!obj(h))return;const i=id(h.id);
+    o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0]});
+    const l=obj(d.log)&&obj(d.log[h.id])?d.log[h.id]:{};o.log[i]={};Object.keys(l).forEach(k=>{if(/^\d{4}-\d{2}(-\d{2}|-W\d)?$/.test(k)&&l[k])o.log[i][k]=1})});
+  if(obj(d.tasks))Object.keys(d.tasks).forEach(k=>{const t=d.tasks[k];if(!DK.test(k)||!obj(t))return;const m=obj(t.mind)?t.mind:null;
+    o.tasks[k]={items:(Array.isArray(t.items)?t.items:[]).filter(obj).map(x=>({id:id(x.id),text:str(x.text),done:!!x.done})),
+      mind:m?{energy:num(m.energy,0,10,5),focus:num(m.focus,0,10,5),motivation:num(m.motivation,0,10,5)}:null}});
+  (Array.isArray(d.goals)?d.goals:[]).forEach(g=>{if(obj(g))o.goals.push({id:id(g.id),title:str(g.title),area:AREAS.includes(g.area)?g.area:AREAS[0],pct:num(g.pct,0,100,0)})});
+  if(obj(d.journal))Object.keys(d.journal).forEach(k=>{if(/^\d{4}-\d{2}$/.test(k))o.journal[k]=str(d.journal[k])});
+  return o;
+}
+let S=clean(load());
 ['habits','log','tasks','goals','journal'].forEach(k=>{if(!S[k])S[k]=(k==='habits'||k==='goals')?[]:{}});
 if(!S.v)S.v=1; // pre-versioned saves are v1; add 'if(S.v<2){...;S.v=2}' steps here
 
@@ -854,7 +870,7 @@ document.addEventListener('change',e=>{
     const r=new FileReader();
     r.onload=()=>{try{
       const d=JSON.parse(r.result);if(!d||!Array.isArray(d.habits))throw new Error('bad');
-      S=Object.assign(empty(),d);
+      S=clean(d);
       ['habits','goals'].forEach(k=>{if(!Array.isArray(S[k]))S[k]=[]});
       ['log','tasks','journal'].forEach(k=>{if(!S[k]||typeof S[k]!=='object')S[k]={}});
       save();render();toast('Backup restored');

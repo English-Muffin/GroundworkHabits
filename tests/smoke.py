@@ -80,6 +80,10 @@ async def desktop(b):
     await pg.fill('[data-cf=accent][data-k="2"]', '255')
     check('accent hex and RGB inputs sync', rgb == ['255', '136', '0'] and await pg.input_value('[data-cf=accent][data-k=hex]') == '#ff88ff' and await pg.evaluate("JSON.parse(localStorage.getItem('daybook-prefs')).accent") == '#ff88ff')
     await pg.evaluate("localStorage.removeItem('daybook-prefs')"); await pg.reload()
+    await pg.evaluate("""localStorage.setItem('daybook-v2',JSON.stringify({habits:[{id:'x\\"><img src=x onerror=window.pwn=1>',name:'H',type:'daily',color:'red\\"><img src=x onerror=window.pwn=1>'}],log:{},tasks:{},goals:[{id:'g',title:'G',area:'Health',pct:'<img src=x onerror=window.pwn=1>'}],journal:{}}))""")
+    await pg.reload(); await pg.wait_for_timeout(200); await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(200)
+    check('malicious saved data is sanitised', not await pg.evaluate('window.pwn') and await pg.locator('.goal .pc').first.inner_text() == '0%')
+    await pg.evaluate("localStorage.removeItem('daybook-v2')")
     check('no JS errors (desktop)', not errs, errs)
     await ctx.close()
 
