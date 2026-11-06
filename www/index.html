@@ -185,8 +185,6 @@ textarea.field{min-height:130px;resize:vertical;line-height:1.5}
 .mind .t{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .leg{display:flex;gap:14px;font-size:10px;color:var(--g77);margin:6px 0 2px;justify-content:flex-start}
 .leg i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px}
-.mchart{position:relative;height:130px;margin-top:4px}
-.mchart svg{position:absolute;inset:0;width:100%;height:100%}
 .mx{display:flex;justify-content:space-around;font-size:9px;color:var(--g55);margin-top:6px}
 .days{display:grid;grid-template-columns:repeat(7,minmax(148px,1fr));gap:10px;overflow-x:auto;padding-bottom:8px}
 .day{background:var(--g0e);border:1px solid var(--g14);border-radius:18px;padding:16px 12px;display:flex;flex-direction:column;align-items:stretch;min-width:0}
@@ -242,6 +240,8 @@ input[type=range]{width:100%;accent-color:var(--teal);height:16px;margin:0}
 .ichart .tip{position:absolute;transform:translate(-50%,-100%);text-align:center;opacity:0;pointer-events:none;font-size:10px;line-height:1.3;margin-top:-10px}
 .ichart .tip small{display:block;color:var(--g66);font-size:9px}
 .ichart .tip b{color:var(--teal);font-size:13px;font-weight:600}
+.ichart.mchart{height:170px;margin-top:4px}
+.mchart .tip b{font-size:12px;white-space:nowrap}
 .ix{display:flex;justify-content:space-between;font-size:10px;color:var(--g55);margin-top:10px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
 .stat{text-align:center;padding:20px 12px;border-radius:20px}
@@ -632,10 +632,14 @@ function vTasks(){
       return '<div class="bcol"><div class="bt" style="height:'+th+'px"><i style="height:'+fh+'px"></i></div><span>'+x.d.toLocaleDateString('en-GB',{weekday:'short'})+'</span></div>'}).join('')+'</div></div>'
    +'<div class="ovr">'+ring(pct,92,8,'<span class="big">'+pct+'%</span>')+'<span>'+done+' / '+tot+' completed</span></div></div></section>';
   // mindset chart
-  const X=i=>(i+.5)/7*100,Y=v=>62-(v/10)*54;
-  const line=(f,c)=>'<polyline points="'+data.map((x,i)=>X(i).toFixed(2)+','+Y(x.mind?x.mind[f]:0).toFixed(2)).join(' ')+'" fill="none" style="stroke:'+c+'" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>';
+  // same look as the Insights consistency chart: smooth curves, soft gradient fill, hover/tap readout
+  mindSeries=data;
+  const pts=f=>data.map((x,i)=>[+MX(i).toFixed(2),+MY(x.mind?x.mind[f]:0).toFixed(2)]);
+  const line=(f,c,g)=>{const d=smooth(pts(f));return '<defs><linearGradient id="'+g+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:'+c+'" stop-opacity=".18"/><stop offset="1" style="stop-color:'+c+'" stop-opacity="0"/></linearGradient></defs>'
+    +'<path d="'+d+' L'+MX(6).toFixed(2)+',100 L'+MX(0).toFixed(2)+',100 Z" fill="url(#'+g+')"/><path d="'+d+'" fill="none" style="stroke:'+c+'" stroke-width="2" vector-effect="non-scaling-stroke"/>'};
   o+='<section class="card mind"><div class="t">Mindset tracker</div><div class="leg"><span><i style="background:var(--red)"></i>Energy</span><span><i style="background:var(--teal)"></i>Focus</span><span><i style="background:var(--purple)"></i>Motivation</span></div>'
-   +'<div class="mchart"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Mindset trend for the week" role="img">'+line('energy','#f43f5e')+line('focus','var(--teal)')+line('motivation','#8b5cf6')+'</svg></div>'
+   +'<div class="ichart mchart" id="mchart"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Mindset trend for the week" role="img">'+MF.map(f=>line(f[0],f[1],'mg-'+f[0])).join('')+'</svg>'
+   +'<div class="vl"></div>'+MF.map(f=>'<div class="dt" data-f="'+f[0]+'" style="border-color:'+f[1]+'"></div>').join('')+'<div class="tip"><small></small><b></b></div></div>'
    +'<div class="mx">'+data.map(x=>'<span>'+x.d.toLocaleDateString('en-GB',{weekday:'short'})+'</span>').join('')+'</div></section></div>';
   // day columns
   o+='<div class="days">'+data.map(x=>{
@@ -703,6 +707,22 @@ function vInsights(){
   const rk=mkey(TODAY.getFullYear(),TODAY.getMonth());
   o+='<section class="card"><h3 style="margin:0 0 12px;font-size:15px;font-weight:600">Monthly Reflection</h3><textarea class="field" id="reflect" placeholder="How was this month? What did you learn?" aria-label="Monthly reflection">'+esc(S.journal[rk]||'')+'</textarea></section>';
   return o;
+}
+const MF=[['energy','var(--red)','Energy'],['focus','var(--teal)','Focus'],['motivation','var(--purple)','Motivation']];
+const MX=i=>(i+.5)/7*100,MY=v=>96-(v/10)*64;let mindSeries=[];
+function bindMind(){
+  const box=$('#mchart');if(!box||!mindSeries.length)return;
+  const vl=box.querySelector('.vl'),tip=box.querySelector('.tip'),dots=box.querySelectorAll('.dt');
+  function at(ev){
+    const r=box.getBoundingClientRect(),i=clamp(Math.floor((ev.clientX-r.left)/r.width*7),0,6),x=mindSeries[i],m=x.mind||{},lx=MX(i)/100*r.width;
+    vl.style.left=lx+'px';vl.style.opacity=1;
+    dots.forEach(d=>{d.style.left=lx+'px';d.style.top=MY(m[d.dataset.f]||0)/100*r.height+'px';d.style.opacity=1});
+    tip.style.left=clamp(lx,60,r.width-60)+'px';tip.style.top=Math.max(40,MY(Math.max(m.energy||0,m.focus||0,m.motivation||0))/100*r.height)+'px';tip.style.opacity=1;
+    tip.firstChild.textContent=x.d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    tip.lastChild.innerHTML=x.mind?MF.map(f=>'<span style="color:'+f[1]+'">'+m[f[0]]+'</span>').join(' · '):'<span style="color:var(--muted)">Not logged</span>';
+  }
+  box.addEventListener('pointermove',at);box.addEventListener('pointerdown',at);
+  box.addEventListener('pointerleave',()=>{vl.style.opacity=0;tip.style.opacity=0;dots.forEach(d=>d.style.opacity=0)});
 }
 function bindChart(){
   const box=$('#ichart');if(!box||!insSeries.length)return;
@@ -793,6 +813,7 @@ function render(){
   if(lastView===view&&sy>0)window.scrollTo(0,sy);
   lastView=view;
   if(view==='insights')bindChart();
+  if(view==='tasks')bindMind();
   if(focusSel){const el=$(focusSel);if(el)el.focus();focusSel=null}
 }
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true},2600)}
