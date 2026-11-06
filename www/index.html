@@ -325,6 +325,9 @@ input[type=range]{width:100%;accent-color:var(--teal);height:16px;margin:0}
   .ibig .big{font-size:38px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* AMOLED: page, cards and fields pure black (pixels off on OLED screens); inner chips, borders and text keep the dark values */
+html.amoled{--g08:#000;--g0a:#000;--g0b:#000;--g0c:#000;--g0d:#000;--g0e:#000;--g0f:#000;--g10:#000}
+html.amoled body{background:#000}
 /* light theme: same tokens, hand-mapped greys; accent darkened for contrast on white */
 html.light{--g0a:#ffffff; --g0b:#ffffff; --g0c:#ffffff; --g0d:#ffffff; --g0e:#ffffff; --g10:#fefefe; --g11:#fcfcfc; --g12:#fbfbfb; --g13:#fafafa; --g16:#f6f6f6; --g17:#f5f5f5; --g18:#f4f4f4; --g1a:#f1f1f1; --g1d:#eeeeee; --g22:#e7e7e7; --g33:#c7c7c7; --g3a:#bfbfbf; --g3b:#bebebe; --g4a:#aeaeae; --g4d:#aaaaaa; --g4f:#a8a8a8; --g55:#a2a2a2; --g5a:#9c9c9c; --g5e:#989898; --g66:#8f8f8f; --g6a:#8a8a8a; --g6b:#898989; --g77:#7c7c7c; --g7d:#767676; --g8a:#676767; --gaa:#444444; --gbb:#313131; --gcf:#1b1b1b; --gdd:#141414; --gff:#141414; --g08:#f3f3f1; --g0f:#ffffff; --g14:#f9f9f9; --g15:#f8f8f8; --g1b:#f0f0f0; --g1c:#efefef; --g2a:#dddddd; --g45:#b3b3b3; --g6f:#858585; --gf2:#141414;
   --teal:color-mix(in srgb,var(--accent) 72%,#000); --on:#fff; color-scheme:light}
@@ -408,8 +411,8 @@ const COLOR_SET={accent:h=>{P.accent=h;applyPrefs()},habit:h=>{if(modal)modal.co
 function setColor(f,hex,from){COLOR_SET[f](hex);
   document.querySelectorAll('[data-cf="'+f+'"]').forEach(e=>{if(e===from)return;const k=e.dataset.k;e.value=k==='pick'||k==='hex'?hex:hexRgb(hex)[+k]});
   document.querySelectorAll('[data-sw="'+f+'"]').forEach(b=>{const on=b.dataset.v===hex;b.setAttribute('aria-pressed',on);b.classList.toggle('on',on)})}
-function applyPrefs(){const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');
-  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=P.theme==='light'?'#f7f7f7':'#080808';try{localStorage.setItem(PKEY,JSON.stringify(P))}catch(e){}}
+function applyPrefs(){const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=P.theme==='light'?'#f7f7f7':P.theme==='amoled'?'#000000':'#080808';try{localStorage.setItem(PKEY,JSON.stringify(P))}catch(e){}}
 applyPrefs();
 const empty=()=>({v:DATA_V,habits:[],log:{},tasks:{},goals:[],journal:{},quits:[]});
 
@@ -818,7 +821,7 @@ function render(){
   document.title=vi[1]+' | Daybook';
   $('#main').innerHTML=({today:vToday,habits:vHabits,tasks:vTasks,goals:vGoals,insights:vInsights,achievements:vAch})[view]();
   const mn=$('#menu');mn.hidden=!menuOpen;
-  mn.innerHTML='<div class="mlbl">Customize</div><div class="mlbl">Theme</div><div class="mrow">'+[['dark','Dark'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+(P.theme===t[0])+'">'+t[1]+'</button>').join('')+'</div>'
+  mn.innerHTML='<div class="mlbl">Customize</div><div class="mlbl">Theme</div><div class="mrow">'+[['dark','Dark'],['amoled','AMOLED'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+(P.theme===t[0])+'">'+t[1]+'</button>').join('')+'</div>'
     +'<div class="mlbl">Accent colour</div><div class="mrow">'+ACCENTS.map(a=>'<button class="sw" data-act="paccent" data-sw="accent" data-v="'+a[1]+'" style="background:'+a[1]+'" aria-label="'+a[0]+' accent" aria-pressed="'+(P.accent===a[1])+'"></button>').join('')+'</div>'
     +'<div class="mrow" style="display:block">'+colorFields('accent',P.accent,'accent colour')+'</div><div class="sep"></div>'
     +(DFS?'<div class="mlbl">Data folder</div><div class="mpath">'+(dataDir?esc(dataDir):'App storage (this PC only)')+'</div><button data-act="pickdir">Choose folder…</button>'+(dataDir?'<button data-act="resetdir">Stop using this folder</button>':'')+'<div class="sep"></div>':'')

@@ -88,6 +88,8 @@ async def desktop(b):
     rgb = [await pg.input_value(f'[data-cf=accent][data-k="{i}"]') for i in range(3)]
     await pg.fill('[data-cf=accent][data-k="2"]', '255')
     check('accent hex and RGB inputs sync', rgb == ['255', '136', '0'] and await pg.input_value('[data-cf=accent][data-k=hex]') == '#ff88ff' and await pg.evaluate("JSON.parse(localStorage.getItem('daybook-prefs')).accent") == '#ff88ff')
+    await pg.click('[data-act=ptheme][data-v=amoled]'); await pg.reload(); await pg.wait_for_timeout(150)
+    check('AMOLED theme is pure black and persists', await pg.evaluate("document.documentElement.classList.contains('amoled')&&getComputedStyle(document.body).backgroundColor==='rgb(0, 0, 0)'&&getComputedStyle(document.querySelector('.card,.gcard,.sum')).backgroundColor==='rgb(0, 0, 0)'"))
     await pg.evaluate("localStorage.removeItem('daybook-prefs')"); await pg.reload()
     cal = await pg.evaluate(r"""(()=>{
       const T=window.DaybookTest,S=T.state(),applyCalendar=T.applyCalendar,parseIcs=T.parseIcs,tasksToIcs=T.tasksToIcs;
