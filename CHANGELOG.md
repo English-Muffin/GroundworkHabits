@@ -2,7 +2,7 @@
 
 All notable changes to Daybook. Versions match the GitHub releases.
 
-## Unreleased
+## 1.3.1
 
 - A spacing scale (4, 8, 12, 16, 24 px) for gaps between blocks; progress rings keep their distance from tasks.
 - Phones: the new-task field and its options stay above the keyboard, and the bottom bar hides while typing.
