@@ -1001,7 +1001,7 @@ function render(){
     +(feat('reminder')?(LN||'Notification' in window?'<div class="mrow" style="align-items:center"><label class="sub" for="remTime" style="margin:0">Remind me at</label><input type="time" class="ain" id="remTime" value="'+esc(P.remTime||'21:00')+'"></div><div class="mpath" style="color:var(--muted)">'+(LN?'A daily notification, even when Daybook is closed.':'Only while Daybook is open or in the background.')+'</div>':'<div class="mpath" style="color:var(--muted)">Reminders aren’t supported here yet.</div>'):'')
     +'<div class="sep"></div><div class="mlbl">App lock</div>'
     +(!canLock?'<div class="mpath" style="color:var(--muted)">Not available here.</div>':P.lock?'<button data-act="pinset">Change PIN…</button><button data-act="pinoff">'+(confirmPinOff?'Tap again to remove the PIN':'Remove PIN')+'</button>':'<button data-act="pinset">Set a PIN…</button>')
-    +'<div class="mpath" style="color:var(--muted)">Locks when Daybook opens and after a minute in the background. It hides your data on screen; it doesn’t encrypt it.</div>'
+    +'<div class="mpath" style="color:var(--muted)">Locks when Daybook opens, after a minute in the background or 5 minutes without use. It hides your data on screen; it doesn’t encrypt it.</div>'
     +(P.layout&&Object.keys(P.layout).length?'<button data-act="resetlayout">Reset card layout</button>':'')
     +'<div class="sep"></div>'
     +'<div class="mlbl">Google Calendar</div>'
@@ -1147,7 +1147,12 @@ async function tryUnlock(){
   lockTries++;el.value='';if(lockTries>=5){lockUntil=Date.now()+30000;lockTries=0}
   msg.textContent=lockUntil>Date.now()?'Too many tries. Wait 30 seconds.':'Wrong PIN. Try again.';el.focus();
 }
-document.addEventListener('visibilitychange',()=>{if(!P.lock)return;if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>60000&&!locked){locked=true;modal=null;menuOpen=false;render()}});
+// lock: after a minute hidden, or 5 minutes without input (the widget is never hidden); locking one window locks every window
+let lastInput=Date.now();
+function lockNow(share){if(!P.lock||locked)return;locked=true;modal=null;menuOpen=false;render();if(share)try{localStorage.setItem('daybook-locked',String(Date.now()))}catch(e){}}
+['pointerdown','keydown','wheel','touchstart'].forEach(t=>document.addEventListener(t,()=>{lastInput=Date.now()},{passive:true,capture:true}));
+setInterval(()=>{if(P.lock&&!locked&&Date.now()-lastInput>300000)lockNow(true)},15000);
+document.addEventListener('visibilitychange',()=>{if(!P.lock)return;if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>60000)lockNow(true)});
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true},2600)}
 
 /* ---------- events ---------- */
@@ -1438,7 +1443,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshTod
 window.addEventListener('focus',refreshToday);
 window.addEventListener('storage',e=>{
   if(e.key===KEY&&e.newValue&&e.newValue!==JSON.stringify(S)){try{S=clean(JSON.parse(e.newValue));if(!modal&&!drag)render()}catch(_){}}
-  if(e.key===PKEY&&e.newValue){try{Object.assign(P,JSON.parse(e.newValue));const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');if(!modal&&!drag)render()}catch(_){}}
+  if(e.key==='daybook-locked'){lockNow(false);return}
+  if(e.key===PKEY&&e.newValue){try{const was=P.lock&&P.lock.hash;Object.assign(P,JSON.parse(e.newValue));if(P.lock&&P.lock.hash&&P.lock.hash!==was)locked=true;if(!P.lock)P.lock=null;const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');if(!modal&&!drag)render()}catch(_){}}
 });
 window.DaybookTest={parseIcs,applyCalendar,tasksToIcs,state:()=>S}; // smoke tests only
 pullCalendar();let calTick=0;

@@ -41,6 +41,12 @@ async def main():
         await wpg.locator('.trow', has_text='Saved to folder').locator('.cell').click(); await asyncio.sleep(.4)
         await pg.evaluate("location.hash='today'"); await asyncio.sleep(.3)
         check('widget window ticks a habit and the main window updates', await pg.locator('.trow', has_text='Saved to folder').locator('.cell.on').count() == 1)
+        # app lock covers every window: setting a PIN in the main window locks the widget, and locking one locks the other
+        await pg.click('[data-act=gear]'); await pg.click('[data-act=pinset]'); await pg.fill('#pin1', '1357'); await pg.fill('#pin2', '1357'); await pg.click('[data-act=pinsave]'); await asyncio.sleep(.5)
+        widget_locked = await wpg.locator('#lock').is_visible() and await wpg.locator('#main').inner_text() == ''
+        await wpg.fill('#pinIn', '1357'); await wpg.keyboard.press('Enter'); await asyncio.sleep(.3)
+        await pg.evaluate("localStorage.setItem('daybook-locked', String(Date.now()))"); await asyncio.sleep(.4)
+        check('PIN lock applies to the widget window too', widget_locked and await wpg.locator('#lock').is_visible())
         await b.close(); kill(proc)
         await choose_flow(p, exe, tmp)
     print('\nAll checks passed' if not fails else f'\n{fails} failed'); raise SystemExit(1 if fails else 0)
