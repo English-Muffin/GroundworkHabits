@@ -2,6 +2,13 @@
 
 All notable changes to Daybook. Versions match the GitHub releases.
 
+## Unreleased
+
+- A spacing scale (4, 8, 12, 16, 24 px) for gaps between blocks; progress rings keep their distance from tasks.
+- Phones: the new-task field and its options stay above the keyboard, and the bottom bar hides while typing.
+- The repeat options are an in-app menu in the app's style instead of the system picker, with an Add button next to the field.
+- Tests: a ring-clearance check and a phone-keyboard check.
+
 ## 1.3.0
 
 - Habits can track an amount with a unit and an optional goal (km, pages, hours), next to done/not done and counts.

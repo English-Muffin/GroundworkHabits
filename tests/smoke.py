@@ -202,8 +202,12 @@ async def desktop(b):
     await pg.evaluate("location.hash='tasks'"); await pg.wait_for_timeout(150)
     # repeating task: weekly on this weekday until the end of the year, then delete one and the later repeats
     k0 = await pg.evaluate("(()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())})()")
-    await pg.click(f'[data-act=tadd][data-k="{k0}"]'); await pg.fill('#taskInput', 'Weekly review'); await pg.select_option('#tRep', 'w')
-    until_shown = await pg.locator('#tUntil').is_visible(); await pg.select_option('#tUntil', 'y'); await pg.locator('#taskInput').press('Enter'); await pg.wait_for_timeout(100)
+    await pg.click(f'[data-act=tadd][data-k="{k0}"]'); await pg.fill('#taskInput', 'Weekly review')
+    await pg.click('[data-act=repmenu][data-v=rep]'); await pg.click('[data-act=reppick][data-m=rep][data-v=w]')
+    typed_kept = await pg.input_value('#taskInput') == 'Weekly review'
+    until_shown = await pg.locator('[data-act=repmenu][data-v=until]').is_visible()
+    await pg.click('[data-act=repmenu][data-v=until]'); await pg.click('[data-act=reppick][data-m=until][data-v=y]'); await pg.locator('#taskInput').press('Enter'); await pg.wait_for_timeout(100)
+    until_shown = until_shown and typed_kept
     reps = await pg.evaluate("(()=>{const d=JSON.parse(localStorage.getItem('daybook-v2'));return Object.entries(d.tasks).filter(([k,t])=>t.items.some(i=>i.text==='Weekly review')).map(([k])=>k).sort()})()")
     want = await pg.evaluate(f"(()=>{{const o=[],d=new Date('{k0}T00:00'),y=d.getFullYear(),p=n=>String(n).padStart(2,'0');for(;d.getFullYear()===y;d.setDate(d.getDate()+7))o.push(d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()));return o}})()")
     # amount habit: log km, reach the goal
@@ -272,6 +276,13 @@ async def mobile(b):
         await cdp.send('Input.dispatchTouchEvent', {'type': 'touchMove', 'touchPoints': [{'x': x, 'y': y + (t['y'] - 6 - y) * i / 8}]})
     await cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []}); await pg.wait_for_timeout(200)
     check('touch: press and hold, then drag a habit to the top', await nm(0) == want)
+    # phone keyboard: the new-task field and its repeat menu scroll into view, the bottom bar hides
+    await pg.evaluate("location.hash='tasks'"); await pg.wait_for_timeout(200)
+    k0 = await pg.evaluate("(()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())})()")
+    await pg.locator(f'[data-act=tadd][data-k="{k0}"]').tap(); await pg.set_viewport_size({'width': 390, 'height': 430}); await pg.wait_for_timeout(700)
+    vis = await pg.evaluate("(()=>{const r=document.querySelector('.tadd').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight})()")
+    check('phone keyboard: new task box stays visible, bottom bar hidden', vis and await pg.locator('.pnav').is_hidden())
+    await pg.set_viewport_size({'width': 390, 'height': 800})
     check('no JS errors (mobile)', not errs, errs)
     await ctx.close()
 

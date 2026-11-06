@@ -35,8 +35,13 @@ LAYOUT = r"""(()=>{const out=[],W=document.documentElement.clientWidth;
    const r=e.getBoundingClientRect();if(r.width<6||r.height<6||r.top<70||r.bottom>H-100)return;
    const pts=[[r.left+r.width/2,r.bottom-2],[r.left+r.width/2,r.top+2],[r.left+2,r.top+r.height/2],[r.right-2,r.top+r.height/2]];
    for(const [x,y] of pts){if(x<0||x>W)continue;const t=document.elementFromPoint(x,y);if(t&&!e.contains(t)&&!t.contains(e)&&!t.closest('.pnav,.toast,#focusbar,.gstat,.gname,.rin')){out.push('covered: '+e.tagName+'.'+(typeof e.className==='string'?e.className:'svg')+' by '+t.tagName+'.'+(typeof t.className==='string'?t.className:'')+' "'+(e.textContent||'').trim().slice(0,20)+'"');break}}});
+ // breathing room: a progress ring keeps at least 10px from any block it sits next to (spacing rule)
+ document.querySelectorAll('#main .ringw').forEach(rg=>{const card=rg.closest('.card,.day,section');if(!card)return;const R=rg.getBoundingClientRect();if(!R.width)return;
+   [...card.querySelectorAll('.tk,.tlist>*,.addt,.tl,.mh,.wkbody>*:not(.ovr),.cnt')].forEach(e=>{if(e.contains(rg)||rg.contains(e))return;const B=e.getBoundingClientRect();if(!B.width||!B.height)return;
+     const hx=Math.min(R.right,B.right)-Math.max(R.left,B.left),vy=Math.max(B.top-R.bottom,R.top-B.bottom);
+     if(hx>0&&vy<10)out.push('too close to a ring ('+Math.round(vy)+'px): '+e.className)})});
  // siblings in normal flow must not overlap (catches clipped rings, grips on top of text, squashed rows)
- const flow=e=>{const s=getComputedStyle(e);return !/absolute|fixed/.test(s.position)&&s.display!=='none'&&s.visibility!=='hidden'};
+ const flow=e=>{const s=getComputedStyle(e);return !/absolute|fixed/.test(s.position)&&s.display!=='none'&&s.display!=='inline'&&s.visibility!=='hidden'}; // inline text that wraps has overlapping boxes by nature
  document.querySelectorAll('#main *, #modal *').forEach(p=>{
    if(p.closest('svg,.grow,.wrow,.hgrid,.hmon,.dghost'))return;
    const kids=[...p.children].filter(flow).map(k=>[k,k.getBoundingClientRect()]).filter(([k,r])=>r.width>2&&r.height>2);
