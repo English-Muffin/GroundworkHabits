@@ -271,6 +271,10 @@ input[type=range]{width:100%;accent-color:var(--teal);height:16px;margin:0}
 .goal h3{margin:0;font-size:16px;font-weight:600;line-height:1.25}
 .goal .pc{font-size:26px;font-weight:700;letter-spacing:-.02em}
 .goal .pc.done{color:var(--teal)}
+.ach .pc small{font-size:14px;font-weight:500;color:var(--muted)}
+.ach .hd .nb{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.miles{display:flex;flex-wrap:wrap;gap:6px}
+.miles span{font-size:10px;font-weight:600;color:var(--teal);background:var(--teal-dim);border-radius:99px;padding:3px 9px}
 .badge{font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--on);background:var(--teal);border-radius:99px;padding:3px 9px}
 .goal .tr{height:6px;background:var(--g18);border-radius:99px;overflow:hidden}
 .goal .tr i{display:block;height:100%;background:var(--teal);border-radius:99px}
@@ -310,7 +314,7 @@ input[type=range]{width:100%;accent-color:var(--teal);height:16px;margin:0}
   .top{grid-template-columns:1fr auto}
   .ttl{padding-left:6px}
   .pnav{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:45;justify-content:space-around;background:var(--g0d);box-shadow:0 10px 30px rgba(0,0,0,.7)}
-  .pnav a{flex-direction:column;gap:3px;font-size:10px;padding:7px 8px}
+  .pnav a{flex-direction:column;gap:3px;font-size:10px;padding:7px 4px;min-width:0}
   .sum{padding:14px 16px}
   .tabs{flex-wrap:wrap}
   .seg{flex:1 0 100%}
@@ -366,6 +370,7 @@ const ICON={
   tasks:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l3 3 5-6"/>',
   goals:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/>',
   insights:'<path d="M6 20v-9M12 20V4M18 20v-6"/>',
+  trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   prev:'<path d="M15 6l-6 6 6 6"/>',next:'<path d="M9 6l6 6-6 6"/>'
 };
@@ -401,7 +406,7 @@ function setColor(f,hex,from){COLOR_SET[f](hex);
 function applyPrefs(){const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=P.theme==='light'?'#f7f7f7':'#080808';try{localStorage.setItem(PKEY,JSON.stringify(P))}catch(e){}}
 applyPrefs();
-const empty=()=>({v:DATA_V,habits:[],log:{},tasks:{},goals:[],journal:{}});
+const empty=()=>({v:DATA_V,habits:[],log:{},tasks:{},goals:[],journal:{},quits:[]});
 
 function seed(){
   const H=[
@@ -447,6 +452,7 @@ function seed(){
   s.goals=[{id:'g1',title:'Learn Spanish to B1',area:'Learning',pct:100},{id:'g2',title:'Run a half marathon',area:'Fitness',pct:66},{id:'g3',title:'Save three months of expenses',area:'Money',pct:50}];
   return s;
 }
+const QT=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/; // quit time, local 'YYYY-MM-DDTHH:MM'
 // rebuild saved/imported data from known fields only: templates interpolate ids, colours and numbers unescaped
 function clean(d){
   const o=empty(),obj=x=>x&&typeof x==='object'&&!Array.isArray(x),str=x=>typeof x==='string'?x:'',ID=/^[A-Za-z0-9_-]{1,40}$/,DK=/^\d{4}-\d{2}-\d{2}$/;
@@ -460,6 +466,7 @@ function clean(d){
     o.tasks[k]={items:(Array.isArray(t.items)?t.items:[]).filter(obj).map(x=>({id:id(x.id),text:str(x.text),done:!!x.done})),
       mind:m?{energy:num(m.energy,0,10,5),focus:num(m.focus,0,10,5),motivation:num(m.motivation,0,10,5)}:null}});
   (Array.isArray(d.goals)?d.goals:[]).forEach(g=>{if(obj(g))o.goals.push({id:id(g.id),title:str(g.title),area:AREAS.includes(g.area)?g.area:AREAS[0],pct:num(g.pct,0,100,0)})});
+  (Array.isArray(d.quits)?d.quits:[]).forEach(q=>{if(obj(q)&&QT.test(q.since))o.quits.push({id:id(q.id),name:str(q.name),since:q.since,best:num(q.best,0,100000,0)})});
   if(obj(d.journal))Object.keys(d.journal).forEach(k=>{if(/^\d{4}-\d{2}$/.test(k))o.journal[k]=str(d.journal[k])});
   return o;
 }
@@ -469,7 +476,7 @@ if(dataDir&&!readFile())writeFile(); // folder file wins; a new folder gets curr
 if(!S.v)S.v=1; // pre-versioned saves are v1; add 'if(S.v<2){...;S.v=2}' steps here
 
 let view=(location.hash||'#habits').slice(1);
-const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tasks','tasks'],['goals','Goals','goals'],['insights','Insights','insights']];
+const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tasks','tasks'],['goals','Goals','goals'],['insights','Insights','insights'],['achievements','Achievements','trophy']];
 if(!VIEWS.some(v=>v[0]===view))view='habits';
 let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',confirmDemo=false,menuOpen=false,confirmReset=false,
     taskWeek=wkStart(TODAY),addingTask=null,openMind={},insHabit='all',insRange=7,insMenu=null,lbTab='daily',modal=null,insSeries=[];
@@ -724,6 +731,25 @@ function vGoals(){
 }
 
 /* ---------- modal ---------- */
+/* achievements: quit streaks ("stopped smoking"), counted from a date and time */
+const qDate=q=>new Date(q.since),qDays=q=>Math.max(0,Math.floor((Date.now()-qDate(q))/864e5));
+const MILES=[1,3,7,14,30,60,90,180,365,730,1095,1825,3650];
+const nowLocal=()=>{const d=new Date();return dk(d)+'T'+p2(d.getHours())+':'+p2(d.getMinutes())};
+const dur=d=>d>=365?(Math.floor(d/365)+(d>=730?' years':' year')):d>=30?(Math.floor(d/30)+(d>=60?' months':' month')):d+(d===1?' day':' days');
+function vAch(){
+  let o='<div class="sum"><div><div class="lbl">ACHIEVEMENTS</div><b>Things you’ve stopped, and how long it’s been</b></div><button class="btn" data-act="newquit">+ New streak</button></div>';
+  if(!S.quits.length)return o+'<div class="empty">Track something you’ve stopped, like smoking or sugar.<br>Pick when you stopped and watch the streak grow.<br><button class="btn" data-act="newquit">+ New streak</button></div>';
+  return o+'<div class="gg">'+S.quits.map(q=>{
+    const ms=Math.max(0,Date.now()-qDate(q)),d=Math.floor(ms/864e5),h=Math.floor(ms/36e5)%24,m=Math.floor(ms/6e4)%60;
+    const next=MILES.find(x=>x>d),got=MILES.filter(x=>x<=d),best=Math.max(q.best||0,d),prev=got.length?got[got.length-1]:0;
+    const pct=next?Math.round((d-prev)/(next-prev)*100):100;
+    return '<section class="card goal ach"><div class="hd"><button class="nb" data-act="editquit" data-q="'+q.id+'" aria-label="Edit '+esc(q.name)+'">'+esc(q.name)+'</button>'+(d>=best&&d>0?'<span class="badge">Best yet</span>':'')+'</div>'
+     +'<div class="pc">'+d+'<small> '+(d===1?'day':'days')+'</small></div><div class="sub" style="margin-top:0">'+h+'h '+m+'m · since '+dmy(qDate(q))+' '+q.since.slice(11)+'</div>'
+     +'<div class="tr"><i style="width:'+pct+'%"></i></div>'
+     +'<div class="sub" style="margin-top:0">'+(next?'Next: '+dur(next)+' in '+(next-d)+(next-d===1?' day':' days'):'Every milestone reached')+(best>d?' · Best: '+best+' days':'')+'</div>'
+     +(got.length?'<div class="miles">'+got.map(x=>'<span>'+dur(x)+'</span>').join('')+'</div>':'')
+     +'</section>'}).join('')+'</div>';
+}
 function vModal(){
   if(!modal)return '';
   if(modal.kind==='habit'){
@@ -733,6 +759,12 @@ function vModal(){
      +'<div class="colors" role="group" aria-label="Colour">'+COLORS.map((c,i)=>'<button style="--c:'+c+'" class="'+(modal.color===c?'on':'')+'" data-act="mcolor" data-sw="habit" data-v="'+c+'" aria-pressed="'+(modal.color===c)+'" aria-label="Colour '+(i+1)+'"></button>').join('')+'</div>'+colorFields('habit',modal.color,'habit colour')
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button>'+(modal.id?'<button class="btn danger" data-act="mdel">'+(modal.confirm?'Tap again to delete':'Delete')+'</button>':'')+'<button class="btn" data-act="msave">'+(modal.id?'Save':'Add habit')+'</button></div></div></div>';
   }
+  if(modal.kind==='quit'){const t=modal.id?'Edit streak':'New streak';
+    return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="'+t+'"><h2>'+t+'</h2>'
+     +'<input class="field" id="qName" maxlength="60" placeholder="What did you stop? e.g. Smoking" value="'+esc(modal.name||'')+'" aria-label="What did you stop">'
+     +'<label class="sub" for="qSince" style="margin:0">When did you stop?</label><input class="field" type="datetime-local" id="qSince" max="'+nowLocal()+'" value="'+modal.since+'">'
+     +(modal.id?'<button class="btn ghost" data-act="qreset">'+(modal.confirm==='reset'?'Tap again: restart from now':'I slipped, restart the streak')+'</button>':'')
+     +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button>'+(modal.id?'<button class="btn danger" data-act="qdel">'+(modal.confirm==='del'?'Tap again to delete':'Delete')+'</button>':'')+'<button class="btn" data-act="qsave">'+(modal.id?'Save':'Start streak')+'</button></div></div></div>'}
   return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="New goal"><h2>New goal</h2>'
    +'<input class="field" id="gTitle" maxlength="80" placeholder="What do you want to achieve?" value="'+esc(modal.title||'')+'" aria-label="Goal title">'
    +'<select class="field" id="gArea" aria-label="Life area">'+AREAS.map(a=>'<option '+(modal.area===a?'selected':'')+'>'+a+'</option>').join('')+'</select>'
@@ -749,7 +781,7 @@ function render(){
   $('#ttl').textContent=view==='tasks'?'Task Tracker':vi[1];
   $('#gearBtn').innerHTML=ic('gear');
   document.title=vi[1]+' | Daybook';
-  $('#main').innerHTML=({today:vToday,habits:vHabits,tasks:vTasks,goals:vGoals,insights:vInsights})[view]();
+  $('#main').innerHTML=({today:vToday,habits:vHabits,tasks:vTasks,goals:vGoals,insights:vInsights,achievements:vAch})[view]();
   const mn=$('#menu');mn.hidden=!menuOpen;
   mn.innerHTML='<div class="mlbl">Customize</div><div class="mlbl">Theme</div><div class="mrow">'+[['dark','Dark'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+(P.theme===t[0])+'">'+t[1]+'</button>').join('')+'</div>'
     +'<div class="mlbl">Accent colour</div><div class="mrow">'+ACCENTS.map(a=>'<button class="sw" data-act="paccent" data-sw="accent" data-v="'+a[1]+'" style="background:'+a[1]+'" aria-label="'+a[0]+' accent" aria-pressed="'+(P.accent===a[1])+'"></button>').join('')+'</div>'
@@ -816,6 +848,16 @@ document.addEventListener('click',e=>{
     case 'gsave':{
       const ti=($('#gTitle').value||'').trim();if(!ti){$('#gTitle').focus();return}
       S.goals.push({id:uid(),title:ti,area:$('#gArea').value,pct:0});modal=null;break}
+    case 'newquit':modal={kind:'quit',name:'',since:nowLocal()};focusSel='#qName';persist=false;break;
+    case 'editquit':{const q=S.quits.find(x=>x.id===t.dataset.q);if(!q)break;modal={kind:'quit',id:q.id,name:q.name,since:q.since};focusSel='#qName';persist=false;break}
+    case 'qsave':{
+      const nm=($('#qName').value||'').trim(),sv=$('#qSince').value.slice(0,16);if(!nm){$('#qName').focus();return}
+      if(!QT.test(sv)||new Date(sv)>new Date()){$('#qSince').focus();toast('Pick a date and time that isn’t in the future');return}
+      if(modal.id){const q=S.quits.find(x=>x.id===modal.id);if(q){q.name=nm;q.since=sv}}else S.quits.push({id:uid(),name:nm,since:sv,best:0});modal=null;break}
+    case 'qreset':{if(modal.confirm!=='reset'){modal.confirm='reset';persist=false;break}
+      const q=S.quits.find(x=>x.id===modal.id);if(q){q.best=Math.max(q.best||0,qDays(q));q.since=nowLocal()}modal=null;toast('Streak restarted. You’ve got this.');break}
+    case 'qdel':{if(modal.confirm!=='del'){modal.confirm='del';persist=false;break}
+      S.quits=S.quits.filter(x=>x.id!==modal.id);modal=null;toast('Streak deleted');break}
     case 'gdel':S.goals=S.goals.filter(g=>g.id!==t.dataset.g);break;
     case 'tprev':taskWeek=addDays(taskWeek,-7);persist=false;break;
     case 'tnext':taskWeek=addDays(taskWeek,7);persist=false;break;
@@ -845,7 +887,7 @@ document.addEventListener('keydown',e=>{
   }
   if(e.target.dataset&&(e.target.dataset.et||e.target.dataset.eg)&&(e.key==='Enter'||e.key==='Escape')){e.preventDefault();e.target.blur();return}
   if(modal&&e.key==='Escape'){modal=null;render()}
-  if(modal&&e.key==='Enter'&&(e.target.id==='mName'||e.target.id==='gTitle')){e.preventDefault();const b=$('[data-act="'+(modal.kind==='habit'?'msave':'gsave')+'"]');if(b)b.click()}
+  if(modal&&e.key==='Enter'&&(e.target.id==='mName'||e.target.id==='gTitle'||e.target.id==='qName')){e.preventDefault();const b=$('[data-act="'+({habit:'msave',quit:'qsave'}[modal.kind]||'gsave')+'"]');if(b)b.click()}
   if(e.key==='Escape'&&(menuOpen||insMenu)){menuOpen=false;insMenu=null;render()}
 });
 
@@ -918,7 +960,7 @@ function refreshToday(){
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshToday()});
 window.addEventListener('focus',refreshToday);
-setInterval(refreshToday,60000);
+setInterval(()=>{refreshToday();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/.test(navigator.userAgent)){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));

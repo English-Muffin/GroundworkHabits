@@ -14,7 +14,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
-- `tests/smoke.py`  Playwright smoke tests (28 checks, desktop and phone)
+- `tests/smoke.py`  Playwright smoke tests (30 checks, desktop and phone)
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
 ## Commands
@@ -25,12 +25,13 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - Android app: `npm install && npx cap add android && npx cap sync android && npx cap open android`
 
 ## How `www/index.html` works
-- State is one object `S`: `{v, habits, log, tasks, goals, journal}` (`v` = data version, migrations go after `let S=load()`), saved to `localStorage` key `daybook-v2` by `save()`.
+- State is one object `S`: `{v, habits, log, tasks, goals, journal, quits}` (`v` = data version, migrations go after `let S=load()`), saved to `localStorage` key `daybook-v2` by `save()`.
   - `habits`: `{id, name, type: 'daily'|'weekly'|'monthly', color}`
   - `log[habitId]`: set of keys. Daily `YYYY-MM-DD`, weekly `YYYY-MM-Wn` (W1 = days 1-7 of the month), monthly `YYYY-MM`
   - `tasks['YYYY-MM-DD']`: `{items: [{id, text, done}], mind: {energy, focus, motivation} | null}`
+  - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Achievements tab
   - `goals`: `{id, title, area, pct}`. `journal['YYYY-MM']`: monthly reflection text
-- `render()` rebuilds `#main` from string templates (`vToday`, `vHabits`, `vTasks`, `vGoals`, `vInsights`) and `#modal`.
+- `render()` rebuilds `#main` from string templates (`vToday`, `vHabits`, `vTasks`, `vGoals`, `vInsights`, `vAch`) and `#modal`.
   It preserves scroll positions, so keep that behaviour if you change it.
 - One delegated `click` listener handles every `data-act="..."` button. Add new actions to its `switch`.
   Actions that only change UI state set `persist=false` so nothing is saved.
@@ -38,7 +39,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
   (it would steal focus). Use `focusSel` to re-focus after a deliberate re-render.
 - `TODAY` is a `let` and is refreshed on focus, visibility change and every minute (`refreshToday`).
 - Dates are local time. Task weeks start on Sunday. Always escape user text with `esc()`.
-- Hash routes: `#today #habits #tasks #goals #insights`.
+- Hash routes: `#today #habits #tasks #goals #insights #achievements`.
 
 ## Design tokens (CSS variables in `:root`)
 `--bg #080808`, `--card #0f0f0f`, `--teal #22d3be`, `--red`, `--purple`, `--flame`, `--star`. Font: Space Grotesk (Google Fonts, system fallback).

@@ -84,6 +84,13 @@ async def desktop(b):
     await pg.reload(); await pg.wait_for_timeout(200); await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(200)
     check('malicious saved data is sanitised', not await pg.evaluate('window.pwn') and await pg.locator('.goal .pc').first.inner_text() == '0%')
     await pg.evaluate("localStorage.removeItem('daybook-v2')")
+    await pg.evaluate("location.hash='achievements'"); await pg.wait_for_timeout(150)
+    await pg.click('[data-act=newquit] >> nth=0'); await pg.fill('#qName', 'Smoking')
+    await pg.fill('#qSince', await pg.evaluate("(()=>{const d=new Date(Date.now()-10*864e5-2*36e5);const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())})()"))
+    await pg.click('[data-act=qsave]'); await pg.reload(); await pg.wait_for_timeout(200)
+    check('quit streak counts days since and persists', (await pg.locator('.ach .pc').first.inner_text()).startswith('10') and await pg.locator('.miles span').count() == 3)
+    await pg.click('[data-act=editquit]'); await pg.click('[data-act=qreset]'); await pg.click('[data-act=qreset]')
+    check('restart keeps best streak', (await pg.locator('.ach .pc').first.inner_text()).startswith('0') and 'Best: 10' in await pg.locator('.ach').first.inner_text())
     check('no JS errors (desktop)', not errs, errs)
     await ctx.close()
 
