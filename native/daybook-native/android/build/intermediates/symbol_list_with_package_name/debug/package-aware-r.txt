@@ -1,2 +1,0 @@
-app.daybook.nativebridge
-drawable dbk_stat

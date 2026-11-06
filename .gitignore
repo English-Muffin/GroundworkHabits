@@ -2,3 +2,4 @@ node_modules/
 dist/
 /android/
 __pycache__/
+native/*/android/build/
