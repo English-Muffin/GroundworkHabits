@@ -14,7 +14,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
-- `tests/smoke.py`  Playwright smoke tests (45 checks, desktop and phone)
+- `tests/smoke.py`  Playwright smoke tests (50 checks, desktop and phone)
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
 ## Commands
@@ -46,6 +46,9 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 ## Feature switches
 `P.feat` (Settings > Features): streaks on Today, weekly review, year heatmap, habit notes, missed X, Achievements tab, daily reminder (`P.remTime`, Notification API, only while the app runs). Read with `feat(key)`. Deletes snapshot `S` (`snap()`) and show `toastUndo()`.
 
+## Drag to rearrange
+Any `[data-drop=LIST]` container whose children are `[data-drag=LIST][data-id]` with a `.grip` button can be reordered by pointer (mouse and touch, `touch-action:none` on the grip) or arrow keys on the grip. `commitDrag()` writes the order: tasks (between days via `.tlist[data-k]`), `habits-<type>`, goals, quits, and `cards` (top-level blocks of Today/Insights, order in `P.layout[view]`). Calendar tasks have no grip. Switch: `feat('drag')`.
+
 ## Design tokens (CSS variables in `:root`)
 `--bg #080808`, `--card #0f0f0f`, `--teal #22d3be`, `--red`, `--purple`, `--flame`, `--star`. Font: Space Grotesk (Google Fonts, system fallback).
 Dark is the designed theme. Settings > Customize adds accent colours (sets `--teal`) an AMOLED theme (`html.amoled`, darkest greys set to #000) and a light theme (`html.light` overrides the `--gXX` grey tokens, one per original dark grey, and darkens the accent), stored in localStorage `daybook-prefs`, separate from data. Use `var(--teal)` (style, not SVG attributes) for accent colour and `var(--gXX)` tokens, never raw greys, so both themes work. Breakpoints: 900px (stack columns) and 760px (bottom nav, narrower sticky name column).
@@ -72,7 +75,7 @@ Run `python tests/smoke.py`. When you fix a bug, add a check for it. Test at 390
 ## Ideas not done yet
 - Today and Goals screens were designed without a reference. They deserve a polish pass
 - Local notifications / daily reminder (Capacitor Local Notifications; Notification API on the web)
-- Reorder habits, undo for deletes
+- Undo also covers only the latest delete (any other saved change clears it)
 - Google Calendar: no OAuth (user chose no Google Cloud project). Desktop pulls the calendar's secret iCal URL via `cal:fetch` in main (`P.cal`, every 15 min) and mirrors events into tasks with `cal` = event UID (deleting one sets `hidden`; events never count towards completion or get copied); export writes an .ics of non-calendar tasks. Fetch uses Node https with a DNS lookup that only returns public addresses (checked at connect time, so no rebinding window). Real two-way sync / Google Tasks would need an OAuth client ID. Recurring events only show their first date (RRULE not expanded).
 - The script runs inside an IIFE; tests reach internals through `window.DaybookTest`.
 - Cloud sync on web/Android (desktop has it via a synced data folder); a real Google Drive API login would need an OAuth client ID
