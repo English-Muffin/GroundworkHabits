@@ -155,7 +155,9 @@ async def desktop(b):
     check('undo restores a deleted habit', gone == 1 and await pg.locator('.hrow').count() == 2)
     await pg.evaluate("location.hash='insights'"); await pg.wait_for_timeout(150)
     check('insights shows weekly review and heatmap', await pg.locator('.review').count() == 1 and await pg.locator('.hgrid .hcol').count() == 26)
-    await pg.click('[data-act=gear]'); await pg.click('[data-act=feat][data-v=heatmap]'); await pg.click('[data-act=feat][data-v=ach]')
+    await pg.click('[data-act=gear]'); folded = await pg.locator('#menu [data-act=feat]').count() == 0
+    await pg.click('[data-act=featfold]'); await pg.click('[data-act=feat][data-v=heatmap]'); await pg.click('[data-act=feat][data-v=ach]')
+    check('Features section starts collapsed', folded)
     check('feature toggles hide the heatmap and the Achievements tab', await pg.locator('.heat').count() == 0 and await pg.locator('#nav a[href="#achievements"]').count() == 0)
     await pg.evaluate("localStorage.removeItem('daybook-prefs')")
     # --- drag to rearrange: tasks between days, Today cards, goals; switch off hides grips ---
@@ -177,7 +179,7 @@ async def desktop(b):
     await pg.mouse.move(gb['x'] + 10, gb['y'] + 6); await pg.mouse.down(); await pg.mouse.move(tb['x'] + 300, tb['y'] + 10, steps=10); await pg.mouse.up(); await pg.wait_for_timeout(150)
     await pg.reload(); await pg.wait_for_timeout(200)
     check('Today card order is remembered', await pg.locator('#main > [data-drag="cards"]').first.get_attribute('data-id') == 'daily')
-    await pg.click('[data-act=gear]'); await pg.click('[data-act=feat][data-v=drag]')
+    await pg.click('[data-act=gear]'); await pg.click('[data-act=featfold]'); await pg.click('[data-act=feat][data-v=drag]')
     check('drag switch off hides every grip', await pg.locator('#main .grip').count() == 0)
     await pg.evaluate("localStorage.removeItem('daybook-prefs')")
     # --- category change, days per week, templates, search, CSV, focus timer, PIN lock ---

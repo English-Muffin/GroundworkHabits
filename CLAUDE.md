@@ -15,6 +15,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
 - `tests/smoke.py`  Playwright smoke tests (58 checks, plus 10 desktop checks in `tests/electron_folder.py`, desktop and phone)
+- `tests/stress.py`  stress test (heavy data, 320-1920px, all themes, random clicks, edge dates); writes report.txt
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
 ## Commands

@@ -56,15 +56,20 @@ svg{display:block}
 .menu{max-height:calc(100dvh - 90px);overflow:auto;overscroll-behavior:contain}
 .menu .sep{height:1px;background:var(--line);margin:4px 6px}
 .menu .mpath{font-size:11px;color:var(--text);padding:0 12px 6px;overflow-wrap:anywhere;max-width:260px}
+.menu .mfold{display:flex;align-items:center;gap:8px;padding:8px 12px}
+.menu .mfold .sub{flex:1;text-align:right;font-size:11px}
+.menu .mfold .ic{width:14px;height:14px;color:var(--muted);transition:transform .15s}
+.menu .mfold[aria-expanded=true] .ic{transform:rotate(90deg)}
 .menu .mlbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 12px 4px}
-.menu .mrow{display:flex;gap:6px;padding:4px 12px 8px;flex-wrap:wrap}
-.menu .mrow button{width:auto;padding:6px 12px;border:1px solid var(--line2);border-radius:999px;font-size:12px}
-.menu .mrow button[aria-pressed=true]{border-color:var(--teal);color:var(--text)}
-.menu .mrow .sw{width:26px;height:26px;padding:0;border-radius:50%;border:2px solid transparent}
-.menu .mrow .sw[aria-pressed=true]{border-color:var(--text)}
+.menu .mrw{display:flex;gap:6px;padding:4px 12px 8px;flex-wrap:wrap}
+.menu .mrw button{width:auto;padding:6px 12px;border:1px solid var(--line2);border-radius:999px;font-size:12px}
+.menu .mrw button[aria-pressed=true]{border-color:var(--teal);color:var(--text)}
+.menu .mrw .sw{width:26px;height:26px;padding:0;border-radius:50%;border:2px solid transparent}
+.menu .mrw .sw[aria-pressed=true]{border-color:var(--text)}
 .cpick{width:34px;height:30px;padding:0;border:1px solid var(--line2);border-radius:8px;background:none;cursor:pointer}
 .cfx{display:flex;gap:6px;flex-wrap:wrap}
 .cfx .ainl{min-width:60px}
+.ain::-webkit-inner-spin-button,.ain::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.ain[type=number]{-moz-appearance:textfield;appearance:textfield}
 .ain{background:var(--g0c);border:1px solid var(--line2);border-radius:8px;color:var(--text);font:inherit;font-size:12px;height:30px;padding:0 8px;width:84px;min-width:0}
 .ainl{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);flex:1}
 .ainl .ain{width:100%;padding:0 4px}
@@ -206,7 +211,7 @@ textarea.field{min-height:130px;resize:vertical;line-height:1.5}
 .tk.miss span{color:var(--muted)}
 .tk .calb{flex:none;width:6px;height:6px;border-radius:50%;background:var(--blue);margin-top:5px}
 .cb.on svg{width:10px;height:10px;stroke:var(--on);stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.tkx{background:none;border:0;color:var(--g55);padding:0 2px;font-size:14px;line-height:1;opacity:0}
+.tkx{background:none;border:0;color:var(--g55);padding:0;font-size:14px;line-height:1;opacity:0;min-width:24px;min-height:24px;display:grid;place-items:center;margin:-4px -6px -4px 0}
 .tk:hover .tkx,.tkx:focus-visible{opacity:1}
 .tkx:hover{color:var(--red)}
 @media (hover:none){.tkx{opacity:.7}}
@@ -299,7 +304,7 @@ input[type=range]{width:100%;accent-color:var(--teal);height:16px;margin:0}
 .grip .ic{width:13px;height:13px}
 .grip:hover,.grip:focus-visible{color:var(--text)}
 .gname .grip{position:absolute;left:2px;top:50%;transform:translateY(-50%)}
-.tk .grip{width:12px;height:18px;margin:-1px -4px 0 -4px}
+.tk .grip{width:14px;height:22px;margin:-3px -4px -2px -5px}
 .grip.cg{position:absolute;top:3px;left:50%;transform:translateX(-50%);width:36px;height:16px;z-index:3}
 .grip.cg .ic{transform:rotate(90deg)}
 [data-drag=cards],[data-drag=goals],[data-drag=quits]{position:relative}
@@ -349,7 +354,7 @@ html.widget .top{display:none}html.widget body{padding:12px}html.widget .app{pad
 .trow .meta{font-size:11px;color:var(--g66);display:flex;gap:6px;align-items:center}
 
 /* modal */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:50;padding:20px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;overflow-y:auto;z-index:50;padding:20px}
 .mod{background:var(--g0f);border:1px solid var(--g22);border-radius:22px;padding:24px;width:100%;max-width:440px;display:grid;gap:16px}
 .mod h2{margin:0;font-size:18px;font-weight:700}
 .mod .row{display:flex;gap:10px;justify-content:flex-end}
@@ -377,6 +382,19 @@ html.widget .top{display:none}html.widget body{padding:12px}html.widget .app{pad
   .seg{flex:1 0 100%}
   .ibig .big{font-size:38px}
 }
+/* tablets: six tabs plus search and settings must fit in the header */
+@media (min-width:761px) and (max-width:1100px){.top{grid-template-columns:auto 1fr auto}.pnav{justify-self:center;min-width:0}.pnav a{padding:7px 9px;gap:5px}.pnav a .ic{display:none}}
+/* very small phones: icon-only tabs (each link keeps an aria-label) */
+@media (max-width:400px){.pnav a span{display:none}.pnav a{padding:10px 4px}.pnav a .ic{width:20px;height:20px}}
+/* nothing in the Tasks header cards or dialogs may force the page wider than the screen */
+/* very long words (names without spaces) break instead of widening the page */
+#main,#modal,#menu{overflow-wrap:anywhere}
+.stats>*,.two>*,.tgrid>*,.gg>*,.rvg>*,.tsg>*,.lrow>*{min-width:0}
+.gname .nb{min-height:28px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding:7px 0}
+.grip.gsp{visibility:hidden}
+.ttop>*,.wkbody,.ovp,.mod,.mod>*{min-width:0}
+.mod select.field{max-width:100%;text-overflow:ellipsis}
+@media (max-width:420px){.wkbody{flex-wrap:wrap;justify-content:center}.bars{gap:3px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 /* AMOLED: page, cards and fields pure black (pixels off on OLED screens); inner chips, borders and text keep the dark values */
 html.amoled{--g08:#000;--g0a:#000;--g0b:#000;--g0c:#000;--g0d:#000;--g0e:#000;--g0f:#000;--g10:#000}
@@ -559,7 +577,7 @@ const WIDGET=view==='widget'; // the desktop mini window (#widget)
 const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tasks','tasks'],['goals','Goals','goals'],['insights','Insights','insights'],['achievements','Achievements','trophy']];
 const views=()=>VIEWS.filter(v=>v[0]!=='achievements'||feat('ach'));
 if(!WIDGET&&!views().some(v=>v[0]===view))view='habits';
-let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',confirmDemo=false,confirmGoal=null,confirmPinOff=false,menuOpen=false,confirmReset=false,
+let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',featOpen=false,confirmDemo=false,confirmGoal=null,confirmPinOff=false,menuOpen=false,confirmReset=false,
     taskWeek=wkStart(TODAY),addingTask=null,openMind={},insHabit='all',insRange=7,insMenu=null,lbTab='daily',modal=null,insSeries=[];
 
 /* ---------- habit logic ---------- */
@@ -611,7 +629,7 @@ function ring(p,size,sw,inner,cls){
 }
 const statCell=st=>'<span>'+st.pct+'%</span><span class="s f">'+FLAME+st.cur+'</span><span class="s t">'+STAR+st.best+'</span>';
 const GRIP=(what,cls)=>feat('drag')?'<button class="grip'+(cls?' '+cls:'')+'" type="button" aria-label="Move '+what+'. Drag, or use the arrow keys">'+ic('grip')+'</button>':'';
-const nameCell=h=>'<div class="gname" style="--c:'+h.color+'">'+GRIP('habit')+'<span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="Edit or delete this habit">'+esc(h.name)+'</button></div>';
+const nameCell=h=>'<div class="gname" style="--c:'+h.color+'">'+GRIP('habit')+'<span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="'+esc(h.name)+'. Tap to edit">'+esc(h.name)+'</button></div>';
 const emptyHabits=()=>'<div class="empty">No habits here yet.<br><button class="btn" data-act="newhabit">+ New Habit</button> <button class="btn ghost" data-act="demo">Load demo data</button></div>';
 
 /* ---------- Habits view ---------- */
@@ -673,7 +691,7 @@ function monthlyList(){
   const hs=byType('monthly');if(!hs.length)return emptyHabits();
   return '<div class="mlist" data-drop="habits-monthly">'+hs.map(h=>{
     const on=!!L(h)[mkey(vy,vm)],fut=isFutM(vy,vm);
-    return '<div class="mrow" data-drag="habits-monthly" data-id="'+h.id+'" style="--c:'+h.color+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" '+(fut?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,mkey(vy,vm))+'">'+cellIn(h,mkey(vy,vm),on)+'</button><span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="Edit or delete this habit">'+esc(h.name)+'</button><span class="st '+(on?'d':'')+'">'+(on?'Done':'Pending')+'</span></div>';
+    return '<div class="mrow" data-drag="habits-monthly" data-id="'+h.id+'" style="--c:'+h.color+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" '+(fut?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,mkey(vy,vm))+'">'+cellIn(h,mkey(vy,vm),on)+'</button><span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="'+esc(h.name)+'. Tap to edit">'+esc(h.name)+'</button><span class="st '+(on?'d':'')+'">'+(on?'Done':'Pending')+'</span></div>';
   }).join('')+'</div>';
 }
 
@@ -709,7 +727,7 @@ function taskChip(k,it){
   return taskChipHtml(k,it,miss);
 }
 function taskChipHtml(k,it,miss){
-  return '<div class="tk '+(it.done?'done':miss?'miss':'')+'"'+(it.cal?'':' data-drag="tasks" data-id="'+it.id+'">'+GRIP('task'))+(it.cal?'>':'')+'<button class="cb '+(it.done?'on':miss?'cbx':'')+'" data-act="tdone" data-k="'+k+'" data-i="'+it.id+'" aria-pressed="'+it.done+'" aria-label="'+esc(it.text)+(miss?', missed. Tap to mark as done':'')+'">'+(it.done?CHECK:miss?XMARK:'')+'</button><span contenteditable="plaintext-only" role="textbox" aria-label="Task text" data-et="'+k+'" data-i="'+it.id+'">'+esc(it.text)+'</span><button class="tkx" data-act="tdel" data-k="'+k+'" data-i="'+it.id+'" aria-label="Delete task">&times;</button></div>';
+  return '<div class="tk '+(it.done?'done':miss?'miss':'')+'"'+(it.cal?'':' data-drag="tasks" data-id="'+it.id+'">'+GRIP('task'))+(it.cal?'>'+(feat('drag')?'<span class="grip gsp" aria-hidden="true"></span>':''):'')+'<button class="cb '+(it.done?'on':miss?'cbx':'')+'" data-act="tdone" data-k="'+k+'" data-i="'+it.id+'" aria-pressed="'+it.done+'" aria-label="'+esc(it.text)+(miss?', missed. Tap to mark as done':'')+'">'+(it.done?CHECK:miss?XMARK:'')+'</button><span contenteditable="plaintext-only" role="textbox" aria-label="Task text" data-et="'+k+'" data-i="'+it.id+'">'+esc(it.text)+'</span><button class="tkx" data-act="tdel" data-k="'+k+'" data-i="'+it.id+'" aria-label="Delete task">&times;</button></div>';
 }
 function taskAdder(k,copy){
   const items=vis((S.tasks[k]||{items:[]}).items);
@@ -983,7 +1001,7 @@ let lastView=null;
 function render(){
   const keep=['.gcard','.wscroll','.days','.dd'].map(q=>{const el=$(q);return el?[q,el.scrollLeft,el.scrollTop]:null}).filter(Boolean),sy=window.scrollY;
   const vi=VIEWS.find(v=>v[0]===view)||['widget','Widget','home'];
-  $('#nav').innerHTML=views().map(v=>'<a href="#'+v[0]+'" class="'+(v[0]===view?'on':'')+'"'+(v[0]===view?' aria-current="page"':'')+'>'+ic(v[2])+'<span>'+v[1]+'</span></a>').join('');
+  $('#nav').innerHTML=views().map(v=>'<a href="#'+v[0]+'" aria-label="'+v[1]+'" title="'+v[1]+'" class="'+(v[0]===view?'on':'')+'"'+(v[0]===view?' aria-current="page"':'')+'>'+ic(v[2])+'<span>'+v[1]+'</span></a>').join('');
   $('#ttl').textContent=view==='tasks'?'Task Tracker':vi[1];
   $('#gearBtn').innerHTML=ic('gear');$('#searchBtn').innerHTML=ic('search');
   document.title=vi[1]+' | Daybook';
@@ -993,12 +1011,12 @@ function render(){
   lk.innerHTML='';
   $('#main').innerHTML=({today:vToday,habits:vHabits,tasks:vTasks,goals:vGoals,insights:vInsights,achievements:vAch,widget:vWidget})[view]();
   const mn=$('#menu');mn.hidden=!menuOpen;
-  mn.innerHTML='<div class="mlbl">Customize</div><div class="mlbl">Theme</div><div class="mrow">'+[['dark','Dark'],['amoled','AMOLED'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+(P.theme===t[0])+'">'+t[1]+'</button>').join('')+'</div>'
-    +'<div class="mlbl">Accent colour</div><div class="mrow">'+ACCENTS.map(a=>'<button class="sw" data-act="paccent" data-sw="accent" data-v="'+a[1]+'" style="background:'+a[1]+'" aria-label="'+a[0]+' accent" aria-pressed="'+(P.accent===a[1])+'"></button>').join('')+'</div>'
-    +'<div class="mrow" style="display:block">'+colorFields('accent',P.accent,'accent colour')+'</div><div class="sep"></div>'
+  mn.innerHTML='<div class="mlbl">Customize</div><div class="mlbl">Theme</div><div class="mrw">'+[['dark','Dark'],['amoled','AMOLED'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+(P.theme===t[0])+'">'+t[1]+'</button>').join('')+'</div>'
+    +'<div class="mlbl">Accent colour</div><div class="mrw">'+ACCENTS.map(a=>'<button class="sw" data-act="paccent" data-sw="accent" data-v="'+a[1]+'" style="background:'+a[1]+'" aria-label="'+a[0]+' accent" aria-pressed="'+(P.accent===a[1])+'"></button>').join('')+'</div>'
+    +'<div class="mrw" style="display:block">'+colorFields('accent',P.accent,'accent colour')+'</div><div class="sep"></div>'
     +(DFS?'<div class="mlbl">Data folder</div><div class="mpath">'+(dataDir?esc(dataDir):'App storage (this PC only)')+'</div><button data-act="pickdir">Choose folder…</button>'+(dataDir?'<button data-act="resetdir">Stop using this folder</button>':'')+'<div class="sep"></div>':'')
-    +'<div class="mlbl">Features</div>'+FEAT.map(f=>'<button class="ftg" data-act="feat" data-v="'+f[0]+'" role="switch" aria-checked="'+feat(f[0])+'"><span>'+f[1]+'</span><i></i></button>').join('')
-    +(feat('reminder')?(LN||'Notification' in window?'<div class="mrow" style="align-items:center"><label class="sub" for="remTime" style="margin:0">Remind me at</label><input type="time" class="ain" id="remTime" value="'+esc(P.remTime||'21:00')+'"></div><div class="mpath" style="color:var(--muted)">'+(LN?'A daily notification, even when Daybook is closed.':'Only while Daybook is open or in the background.')+'</div>':'<div class="mpath" style="color:var(--muted)">Reminders aren’t supported here yet.</div>'):'')
+    +'<button class="mfold" data-act="featfold" aria-expanded="'+featOpen+'"><span class="mlbl" style="padding:0">Features</span><span class="sub" style="margin:0">'+FEAT.filter(f=>feat(f[0])).length+' of '+FEAT.length+' on</span>'+ic('next')+'</button>'+(!featOpen?'':FEAT.map(f=>'<button class="ftg" data-act="feat" data-v="'+f[0]+'" role="switch" aria-checked="'+feat(f[0])+'"><span>'+f[1]+'</span><i></i></button>').join('')
+    +(feat('reminder')?(LN||'Notification' in window?'<div class="mrw" style="align-items:center"><label class="sub" for="remTime" style="margin:0">Remind me at</label><input type="time" class="ain" id="remTime" value="'+esc(P.remTime||'21:00')+'"></div><div class="mpath" style="color:var(--muted)">'+(LN?'A daily notification, even when Daybook is closed.':'Only while Daybook is open or in the background.')+'</div>':'<div class="mpath" style="color:var(--muted)">Reminders aren’t supported here yet.</div>'):''))
     +'<div class="sep"></div><div class="mlbl">App lock</div>'
     +(!canLock?'<div class="mpath" style="color:var(--muted)">Not available here.</div>':P.lock?'<button data-act="pinset">Change PIN…</button><button data-act="pinoff">'+(confirmPinOff?'Tap again to remove the PIN':'Remove PIN')+'</button>':'<button data-act="pinset">Set a PIN…</button>')
     +'<div class="mpath" style="color:var(--muted)">Locks when Daybook opens, after a minute in the background or 5 minutes without use. It hides your data on screen; it doesn’t encrypt it.</div>'
@@ -1270,6 +1288,7 @@ document.addEventListener('click',e=>{
       if(dataDir&&DFS){DFS.reset();dataDir=''}S=empty();P.lock=null;applyPrefs();locked=false;lockForgot=false;save();toast('PIN removed and data on this device erased');break;
     case 'widget':menuOpen=false;persist=false;if(DFS&&DFS.widget)DFS.widget();break;
     case 'wmain':persist=false;if(DFS&&DFS.showMain)DFS.showMain();break;
+    case 'featfold':featOpen=!featOpen;persist=false;break;
     case 'gdel':if(confirmGoal!==t.dataset.g){confirmGoal=t.dataset.g;persist=false;break}
       snap();S.goals=S.goals.filter(g=>g.id!==t.dataset.g);confirmGoal=null;toastUndo('Goal deleted');break;
     case 'tprev':taskWeek=addDays(taskWeek,-7);persist=false;break;
