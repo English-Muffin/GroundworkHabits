@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, shell, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, shell, ipcMain, dialog, screen } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -162,6 +162,22 @@ ipcMain.on('win:widget', () => {
   });
   widget.loadFile(path.join(__dirname, '..', 'www', 'index.html'), { hash: 'widget' });
   harden(widget);
+});
+// habit reminder: a small always-on-top pop-up in the bottom-right corner with Yes / No (closes itself after an answer)
+const asks = new Map();
+ipcMain.on('win:ask', (e, h, k) => {
+  if (typeof h !== 'string' || typeof k !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(h) || !/^\d{4}-\d{2}(-\d{2}|-W\d)?$/.test(k)) return;
+  const old = asks.get(h); if (old && !old.isDestroyed()) { old.showInactive(); return; }
+  const wa = screen.getPrimaryDisplay().workArea, n = asks.size;
+  const w = new BrowserWindow({
+    width: 340, height: 230, x: wa.x + wa.width - 356, y: Math.max(wa.y, wa.y + wa.height - 246 - n * 240),
+    frame: false, resizable: false, alwaysOnTop: true, show: false, title: 'Daybook reminder',
+    backgroundColor: '#080808', icon: path.join(__dirname, '..', 'assets', 'icon.png'),
+    webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: path.join(__dirname, 'preload.js') }
+  });
+  w.loadFile(path.join(__dirname, '..', 'www', 'index.html'), { hash: 'ask~' + h + '~' + k });
+  harden(w); w.once('ready-to-show', () => { w.showInactive(); w.flashFrame(true); });
+  asks.set(h, w); w.on('closed', () => asks.delete(h));
 });
 ipcMain.on('win:main', () => { if (!win || win.isDestroyed()) createWindow(); else { if (win.isMinimized()) win.restore(); win.show(); win.focus(); } });
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });

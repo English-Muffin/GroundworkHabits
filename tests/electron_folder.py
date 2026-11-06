@@ -41,6 +41,19 @@ async def main():
         await wpg.locator('.trow', has_text='Saved to folder').locator('.cell').click(); await asyncio.sleep(.4)
         await pg.evaluate("location.hash='today'"); await asyncio.sleep(.3)
         check('widget window ticks a habit and the main window updates', await pg.locator('.trow', has_text='Saved to folder').locator('.cell.on').count() == 1)
+        # habit reminder pop-up: Yes in the small window marks the habit done in the main window, then the pop-up closes
+        await pg.locator('.trow', has_text='Saved to folder').locator('.cell').click(); await asyncio.sleep(.3)
+        hid, k = await pg.evaluate("(()=>{const s=DaybookTest.state(),d=new Date();return [s.habits.find(h=>h.name==='Saved to folder').id,d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')]})()")
+        await pg.evaluate(f"window.daybookFS.ask('{hid}','{k}')")
+        apg = None
+        for _ in range(40):
+            apg = next((x for c in b.contexts for x in c.pages if '#ask~' in x.url), None)
+            if apg: break
+            await asyncio.sleep(.25)
+        await apg.wait_for_selector('[data-act=askyes]'); asked = 'Saved to folder' in await apg.locator('.ask').inner_text()
+        await apg.click('[data-act=askyes]'); await asyncio.sleep(.6)
+        closed = not any('#ask~' in x.url for c in b.contexts for x in c.pages)
+        check('reminder pop-up asks, Yes marks the habit done in the main window and closes', asked and closed and await pg.locator('.trow', has_text='Saved to folder').locator('.cell.on').count() == 1)
         # app lock covers every window: setting a PIN in the main window locks the widget, and locking one locks the other
         await pg.click('[data-act=gear]'); await pg.click('[data-act=pinset]'); await pg.fill('#pin1', '1357'); await pg.fill('#pin2', '1357'); await pg.click('[data-act=pinsave]'); await asyncio.sleep(.5)
         widget_locked = await wpg.locator('#lock').is_visible() and await wpg.locator('#main').inner_text() == ''

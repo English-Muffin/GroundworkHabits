@@ -70,7 +70,7 @@ a Google Drive, OneDrive or Dropbox folder and it syncs between your computers.
 - Everything is stored on the device. Export a full backup (JSON) or a spreadsheet (CSV) any time.
 - Desktop: save to a folder you choose, so Google Drive, OneDrive or Dropbox can sync it.
 - Google Calendar without a Google login: read events from your calendar's private iCal address
-  (desktop) and export tasks as an `.ics` file to import (all versions).
+  (desktop and Android) and export tasks as an `.ics` file to import (all versions).
 - An optional PIN lock that hides your data on screen.
 
 **Desktop and phone**

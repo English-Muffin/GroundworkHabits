@@ -14,7 +14,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
-- `tests/smoke.py`  Playwright smoke tests (65 checks, plus 10 desktop checks in `tests/electron_folder.py`, desktop and phone)
+- `tests/smoke.py`  Playwright smoke tests (73 checks, plus 11 desktop checks in `tests/electron_folder.py`, desktop and phone)
 - `tests/stress.py`  stress test (heavy data, 320-1920px, all themes, random clicks, edge dates); writes report.txt
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
@@ -24,6 +24,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - Windows portable exe: `npm install && npm run dist:win` (output in `dist/`). macOS zip: `npm run dist:mac` on a Mac
 - Release: push a `v*` tag; CI builds Windows, macOS, Android and attaches them to a GitHub Release
 - Android app: `npm install && npx cap add android && npx cap sync android && npx cap open android`
+- Local APK build: needs `ANDROID_HOME`; if Gradle fails with "Unable to establish loopback connection", set `JAVA_TOOL_OPTIONS=-Djdk.net.unixdomain.tmpdir=C:\tmp\jdk`
 
 ## How `www/index.html` works
 - State is one object `S`: `{v, habits, log, tasks, goals, journal, quits, count, notes, amt}` (`v` = data version, migrations go after `let S=load()`), saved to `localStorage` key `daybook-v2` by `save()`.
@@ -34,6 +35,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
   - `habits[].per` (1-7): days per week for daily habits (Today shows `n/per this week`). A habit's type can change; ticks of the old type stay in `log` under their own key format
   - `habits[].track`: `check` | `count` (uses `target`) | `amount` (`unit`, optional `goal`; numbers in `amt[habitId][key]`, `log` marks done once the goal is met; `setAmt()`)
   - task items may carry `rep` (series id of a repeating task, see `repeatDates()`), `cal`/`hidden`/`pin` (calendar events; `pin` = user moved it to another day)
+  - `habits[].rem`: `{t:'HH:MM', m:'ask'|'alarm'}` or null, a per-habit reminder (see Habit reminders)
   - `notes[habitId][key]`: short note for that day/week/month
   - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Achievements tab
   - `goals`: `{id, title, area, pct}`. `journal['YYYY-MM']`: monthly reflection text
@@ -53,6 +55,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 ## More features
 - Search (header): `searchHits()` over tasks, notes, reflections, goals, habits, streaks, templates.
 - Focus timer (`focusRun`, bar `#focusbar`), CSV export (`toCsv()`, formula-safe), PIN lock (`P.lock` salted SHA-256; privacy screen only, not encryption; `#lock`).
+- Habit reminders (`h.rem`): Android uses the local plugin `native/daybook-native` (`DaybookNative`, a `file:` dependency so `cap sync` picks it up). `syncReminders()` sends the next 14 days (`NB.schedule({items:[{id,at,title,body,h,k,alarm}]})`); Java sets AlarmManager alarms (exact via `USE_EXACT_ALARM`, restored on reboot), posts the notification with Yes/No broadcast actions (channels `dbk-ask` quiet+ongoing, `dbk-alarm` alarm sound + insistent) and stores answers in SharedPreferences without opening the app; `takeAnswers()` applies them on start, resume and the `answer` event. Rescheduled 1.5 s after every `save()`, so a done period is skipped. LocalNotifications is only used for the permission prompt and the old daily reminder. Desktop: `checkHabitReminders()` calls `daybookFS.ask()`, an always-on-top pop-up at `#ask~<habit>~<key>` (`askHtml`). Web: a notification plus the in-app `ask` modal. Alarm mode beeps (`alarmStart`). Fired-today state is `P.remFired` (per device).
 - Desktop mini widget: `#widget` route (`vWidget`, `html.widget`), opened via `daybookFS.widget()`; windows stay in sync through the `storage` event.
 - Android reminder: `@capacitor/local-notifications` (a real `dependencies` entry so `cap sync` picks it up) schedules a daily notification; web/desktop use the Notification API while running.
 - Touch dragging uses touch events (grip = immediate, press-and-hold 380 ms anywhere on an item); mouse/pen use pointer events on the grip.
@@ -75,7 +78,7 @@ Dark is the designed theme. Settings > Customize adds accent colours (sets `--te
 - UI copy: sentence case, typographic apostrophes (’), no emoji.
 - Icon-only buttons need `aria-label`. Keep visible `:focus-visible` outlines.
 - Nothing may depend on hover: it must also work by touch.
-- Do not add runtime dependencies for the web app. Electron/Playwright are dev tools; the only `dependencies` entry is the Capacitor notifications plugin for the Android build.
+- Do not add runtime dependencies for the web app. Electron/Playwright are dev tools; the only `dependencies` entries are the Capacitor notifications plugin and the local `daybook-native` plugin, both for the Android build.
 
 ## Gotchas already hit
 - Replacing `innerHTML` resets scroll. `render()` saves and restores it.
@@ -94,7 +97,7 @@ Run `python tests/smoke.py`. When you fix a bug, add a check for it. Test at 390
 - Today and Goals screens were designed without a reference. They deserve a polish pass
 - Local notifications / daily reminder (Capacitor Local Notifications; Notification API on the web)
 - Undo also covers only the latest delete (any other saved change clears it)
-- Google Calendar: no OAuth (user chose no Google Cloud project). Desktop pulls the calendar's secret iCal URL via `cal:fetch` in main (`P.cal`, every 15 min) and mirrors events into tasks with `cal` = event UID (deleting one sets `hidden`; events never count towards completion or get copied); export writes an .ics of non-calendar tasks. Fetch uses Node https with a DNS lookup that only returns public addresses (checked at connect time, so no rebinding window). Real two-way sync / Google Tasks would need an OAuth client ID. Recurring events only show their first date (RRULE not expanded).
+- Google Calendar: no OAuth (user chose no Google Cloud project). Desktop pulls the calendar's secret iCal URL via `cal:fetch` in main, Android via `DaybookNative.fetchCal` (`CalFetch.java`, same rules); the app uses `calFetch` (`P.cal`, every 15 min) and mirrors events into tasks with `cal` = event UID (deleting one sets `hidden`; events never count towards completion or get copied); export writes an .ics of non-calendar tasks. Fetch uses Node https with a DNS lookup that only returns public addresses (checked at connect time, so no rebinding window). Real two-way sync / Google Tasks would need an OAuth client ID. Recurring events only show their first date (RRULE not expanded).
 - The script runs inside an IIFE; tests reach internals through `window.DaybookTest`.
 - Cloud sync on web/Android (desktop has it via a synced data folder); a real Google Drive API login would need an OAuth client ID
 - Bundle the font files

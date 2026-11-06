@@ -1,0 +1,9 @@
+{
+  "name": "daybook-native",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Daybook's Android helpers: habit reminders answered from the notification, and calendar fetching",
+  "files": ["android/src/main/", "android/build.gradle"],
+  "capacitor": { "android": { "src": "android" } },
+  "peerDependencies": { "@capacitor/core": "^6.0.0" }
+}

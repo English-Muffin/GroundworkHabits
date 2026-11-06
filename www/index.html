@@ -327,6 +327,7 @@ input[type=range]{width:100%;accent-color:var(--teal);height:16px;margin:0}
 .dghost{position:fixed;z-index:200;pointer-events:none;opacity:.94;margin:0;box-shadow:0 18px 40px rgba(0,0,0,.55);transform:rotate(.8deg)}
 body.dragging,body.dragging *{cursor:grabbing!important;user-select:none}
 .tlist{min-height:8px}
+.remcfg{display:grid;gap:var(--sp-2)}.ask{display:grid;gap:var(--sp-2)}.ask b{font-size:18px}.ask .row{margin-top:var(--sp-1)}html.widget .ask{padding:var(--sp-2)}
 body.kb .pnav,body.kb #focusbar{display:none}
 .cell .cn.on{color:var(--on)}.cell .cn{font-size:9px;letter-spacing:-.02em}
 .amtrow{display:flex;align-items:center;gap:8px}.amtrow .field{text-align:center;font-size:20px;flex:1;min-width:0}.amtrow .btn{width:44px;padding:0;font-size:20px;flex:none}.amtu{color:var(--muted);font-size:13px;min-width:0}
@@ -460,7 +461,7 @@ html.light .menu,html.light .dd,html.light .pnav{box-shadow:0 12px 30px rgba(0,0
 </style>
 </head>
 <body>
-<script>if(location.hash==='#widget')document.documentElement.classList.add('widget')</script>
+<script>if(location.hash==='#widget'||location.hash.startsWith('#ask~'))document.documentElement.classList.add('widget')</script>
 <div class="app">
   <header class="top">
     <div class="ttl" id="ttl">Habits</div>
@@ -526,9 +527,9 @@ const KEY='daybook-v2';
 const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'];
 const AREAS=['Health','Fitness','Career','Money','Learning','Relationships','Family','Fun','Home','Mindset'];
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){return null}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}clearTimeout(save.r);save.r=setTimeout(()=>syncReminders(),1500);if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
 /* desktop only: mirror data to <folder>/daybook.json (a Drive/OneDrive/Dropbox folder gives cloud sync) */
-const DFS=window.daybookFS||null;let dataDir=DFS?DFS.folder():'',fileText=null;
+const DFS=window.daybookFS||null,NB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.DaybookNative||null,calFetch=DFS&&DFS.fetchCal?DFS.fetchCal:NB?(u=>NB.fetchCal({url:u})):null;let dataDir=DFS?DFS.folder():'',fileText=null;
 function writeFile(){clearTimeout(save.t);save.t=0;if(!dataDir)return;const t=JSON.stringify(S);if(t===fileText)return;if(DFS.write(t))fileText=t;else toast('Could not save to your data folder')}
 function readFile(){const t=DFS.read();if(!t||t===fileText)return false;try{S=clean(JSON.parse(t));fileText=t;try{localStorage.setItem(KEY,t)}catch(e){}return true}catch(e){return false}}
 window.addEventListener('beforeunload',()=>{if(save.t)writeFile()});
@@ -608,7 +609,7 @@ function clean(d){
   if(!obj(d))return o;
   o.v=num(d.v,1,999,1);
   (Array.isArray(d.habits)?d.habits:[]).forEach(h=>{if(!obj(h))return;const i=id(h.id);
-    o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0],target:num(h.target,1,99,1),per:num(h.per,1,7,7),track:['check','count','amount'].includes(h.track)?h.track:(num(h.target,1,99,1)>1?'count':'check'),unit:str(h.unit).replace(/[<>"'&`=]/g,'').slice(0,12),goal:Number.isFinite(+h.goal)&&+h.goal>0?Math.min(1e6,+h.goal):0});
+    o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0],target:num(h.target,1,99,1),per:num(h.per,1,7,7),track:['check','count','amount'].includes(h.track)?h.track:(num(h.target,1,99,1)>1?'count':'check'),unit:str(h.unit).replace(/[<>"'&`=]/g,'').slice(0,12),goal:Number.isFinite(+h.goal)&&+h.goal>0?Math.min(1e6,+h.goal):0,rem:obj(h.rem)&&/^([01]\d|2[0-3]):[0-5]\d$/.test(h.rem.t)&&['ask','alarm'].includes(h.rem.m)?{t:h.rem.t,m:h.rem.m}:null});
     const LK=/^\d{4}-\d{2}(-\d{2}|-W\d)?$/,cn=obj(d.count)&&obj(d.count[h.id])?d.count[h.id]:{},nt=obj(d.notes)&&obj(d.notes[h.id])?d.notes[h.id]:{};
     o.count[i]={};Object.keys(cn).forEach(k=>{if(LK.test(k))o.count[i][k]=num(cn[k],1,99,1)});
     const am=obj(d.amt)&&obj(d.amt[h.id])?d.amt[h.id]:{};o.amt[i]={};Object.keys(am).forEach(k=>{const v=+am[k];if(LK.test(k)&&Number.isFinite(v)&&v>0)o.amt[i][k]=Math.min(1e6,Math.round(v*100)/100)});
@@ -628,7 +629,8 @@ if(dataDir&&!readFile())writeFile(); // folder file wins; a new folder gets curr
 if(!S.v)S.v=1; // pre-versioned saves are v1; add 'if(S.v<2){...;S.v=2}' steps here
 
 let view=(location.hash||'#habits').slice(1);
-const WIDGET=view==='widget'; // the desktop mini window (#widget)
+const AM=/^ask~([A-Za-z0-9_-]{1,40})~(\d{4}-\d{2}(?:-\d{2}|-W\d)?)$/.exec(view),ASK=AM?{h:AM[1],k:AM[2]}:null;if(ASK)view='ask';
+const WIDGET=view==='widget'||!!ASK; // the desktop mini window (#widget) and reminder pop-up (#ask~h~k)
 const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tasks','tasks'],['goals','Goals','goals'],['insights','Insights','insights'],['achievements','Achievements','trophy']];
 const views=()=>VIEWS.filter(v=>v[0]!=='achievements'||feat('ach'));
 if(!WIDGET&&!views().some(v=>v[0]===view))view='habits';
@@ -1053,8 +1055,11 @@ function vModal(){
      +(modal.track==='count'?'<label class="sub" style="margin:0" for="mTarget">Times per '+{daily:'day',weekly:'week',monthly:'month'}[modal.type]+', e.g. 8 glasses</label><input class="field" type="number" inputmode="numeric" min="2" max="99" id="mTarget" value="'+Math.max(2,modal.target||8)+'">':'')
      +(modal.track==='amount'?'<div class="amtcfg"><div><label class="sub" style="margin:0" for="mUnit">Unit</label><input class="field" id="mUnit" list="units" maxlength="12" placeholder="km, pages, hours…" value="'+esc(modal.unit||'')+'"><datalist id="units">'+['km','miles','hours','minutes','pages','steps','glasses','reps','€'].map(u=>'<option value="'+u+'">').join('')+'</datalist></div>'
        +'<div><label class="sub" style="margin:0" for="mGoal">Goal per '+{daily:'day',weekly:'week',monthly:'month'}[modal.type]+' (optional)</label><input class="field" id="mGoal" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 5" value="'+(modal.goal||'')+'"></div></div>':'')
+     +'<div class="lbl" style="font-size:9px">Reminder</div><div class="seg trk">'+[['','Off'],['ask','Yes or no'],['alarm','Alarm']].map(x=>'<button class="'+(modal.rem===x[0]?'on':'')+'" data-act="mrem" data-v="'+x[0]+'" aria-pressed="'+(modal.rem===x[0])+'">'+x[1]+'</button>').join('')+'</div>'
+     +(modal.rem?'<div class="remcfg"><input class="field" type="time" id="mRemT" aria-label="Reminder time" value="'+esc(modal.remT||'09:00')+'"><p class="sub" style="margin:0">'+(modal.rem==='alarm'?'Rings and vibrates at this time, with Yes and No buttons.':'A quiet notification that stays until you answer Yes or No.')+' Skipped once the habit is done.</p></div>':'')
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button>'+(modal.id?'<button class="btn danger" data-act="mdel">'+(modal.confirm?'Tap again to delete':'Delete')+'</button>':'')+'<button class="btn" data-act="msave">'+(modal.id?'Save':'Add habit')+'</button></div></div></div>';
   }
+  if(modal.kind==='ask')return '<div class="ov"><div class="mod" role="alertdialog" aria-modal="true" aria-label="Reminder">'+askHtml(modal.h,modal.k)+'</div></div>';
   if(modal.kind==='note'){const h=findH(modal.h);
     return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Note"><h2>Note</h2><p class="sub" style="margin:0">'+esc(h?h.name:'')+' · '+dmy(new Date(modal.k+'T00:00'))+'</p>'
      +'<textarea class="field" id="nText" maxlength="300" placeholder="e.g. Ran 5 km, felt great" aria-label="Note">'+esc(modal.text||'')+'</textarea>'
@@ -1098,7 +1103,7 @@ let focusSel=null;
 let lastView=null;
 function render(){
   const keep=['.gcard','.wscroll','.days','.dd'].map(q=>{const el=$(q);return el?[q,el.scrollLeft,el.scrollTop]:null}).filter(Boolean),sy=window.scrollY;
-  const vi=VIEWS.find(v=>v[0]===view)||['widget','Widget','home'];
+  const vi=VIEWS.find(v=>v[0]===view)||(ASK?['ask','Reminder','home']:['widget','Widget','home']);
   $('#nav').innerHTML=views().map(v=>'<a href="#'+v[0]+'" aria-label="'+v[1]+'" title="'+v[1]+'" class="'+(v[0]===view?'on':'')+'"'+(v[0]===view?' aria-current="page"':'')+'>'+ic(v[2])+'<span>'+v[1]+'</span></a>').join('');
   $('#ttl').textContent=view==='tasks'?'Task Tracker':vi[1];
   $('#gearBtn').innerHTML=ic('gear');$('#searchBtn').innerHTML=ic('search');
@@ -1107,7 +1112,7 @@ function render(){
   if(locked){$('#main').innerHTML='';$('#menu').hidden=true;$('#modal').innerHTML='';if(!lk.firstChild)lk.innerHTML=lockHtml();else lk.querySelector('[data-act=pinforgot]').textContent=lockForgot?'Tap again: remove the PIN and erase the data on this device':'Forgot your PIN?';
     if(!lk.contains(document.activeElement))setTimeout(()=>{const i=$('#pinIn');if(i)i.focus()},0);return}
   lk.innerHTML='';
-  $('#main').innerHTML=({today:vToday,habits:vHabits,tasks:vTasks,goals:vGoals,insights:vInsights,achievements:vAch,widget:vWidget})[view]();
+  $('#main').innerHTML=({today:vToday,habits:vHabits,tasks:vTasks,goals:vGoals,insights:vInsights,achievements:vAch,widget:vWidget,ask:()=>askHtml(ASK.h,ASK.k)})[view]();
   const mn=$('#menu');mn.hidden=!menuOpen;
   mn.innerHTML='<div class="mlbl">Customize</div><div class="mlbl">Theme</div><div class="mrw">'+[['dark','Dark'],['amoled','AMOLED'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+(P.theme===t[0])+'">'+t[1]+'</button>').join('')+'</div>'
     +'<div class="mlbl">Accent colour</div><div class="mrw">'+ACCENTS.map(a=>'<button class="sw" data-act="paccent" data-sw="accent" data-v="'+a[1]+'" style="background:'+a[1]+'" aria-label="'+a[0]+' accent" aria-pressed="'+(P.accent===a[1])+'"></button>').join('')+'</div>'
@@ -1121,7 +1126,7 @@ function render(){
     +(P.layout&&Object.keys(P.layout).length?'<button data-act="resetlayout">Reset card layout</button>':'')
     +'<div class="sep"></div>'
     +'<div class="mlbl">Google Calendar</div>'
-    +(DFS&&DFS.fetchCal?(P.cal?'<div class="mpath">Syncing from your calendar'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):'')+'</div><button data-act="calsync">Sync now</button><button data-act="caloff">Stop calendar sync</button>':'<button data-act="calset">Connect a calendar…</button>'):'')
+    +(calFetch?(P.cal?'<div class="mpath">Syncing from your calendar'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):'')+'</div><button data-act="calsync">Sync now</button><button data-act="caloff">Stop calendar sync</button>':'<button data-act="calset">Connect a calendar…</button>'):'')
     +'<button data-act="calexport">Export tasks to calendar (.ics)</button><div class="sep"></div>'
     +(DFS&&DFS.widget&&!WIDGET?'<button data-act="widget">Open mini widget</button>':'')
     +'<button data-act="tipsshow">Show tips</button>'
@@ -1332,20 +1337,24 @@ document.addEventListener('click',e=>{
     case 'cell':{const h=findH(t.dataset.h);if(isAmt(h)){openAmt(h,t.dataset.d);persist=false;break}tap(h,t.dataset.d);break}
     case 'wcell':{const h=findH(t.dataset.h),l=L(h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=wkey(y,m,t.dataset.w);if(isAmt(h)){openAmt(h,k);persist=false;break}tap(h,k);break}
     case 'mcell':{const h=findH(t.dataset.h),l=L(h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=mkey(y,m);if(isAmt(h)){openAmt(h,k);persist=false;break}tap(h,k);break}
-    case 'edithabit':{const h=findH(t.dataset.h);if(!h)break;modal={kind:'habit',id:h.id,type:h.type,origType:h.type,color:/^#[0-9a-f]{6}$/.test(h.color)?h.color:COLORS[0],name:h.name,target:h.target||1,per:h.per||7,track:h.track||((h.target||1)>1?'count':'check'),unit:h.unit||'',goal:h.goal||0,confirm:false};focusSel='#mName';persist=false;break}
+    case 'edithabit':{const h=findH(t.dataset.h);if(!h)break;modal={kind:'habit',id:h.id,type:h.type,origType:h.type,color:/^#[0-9a-f]{6}$/.test(h.color)?h.color:COLORS[0],name:h.name,target:h.target||1,per:h.per||7,track:h.track||((h.target||1)>1?'count':'check'),unit:h.unit||'',goal:h.goal||0,rem:h.rem?h.rem.m:'',remT:h.rem?h.rem.t:'09:00',confirm:false};focusSel='#mName';persist=false;break}
     case 'mdel':
       if(modal&&modal.id){if(modal.confirm){snap();S.habits=S.habits.filter(h=>h.id!==modal.id);delete S.log[modal.id];delete S.count[modal.id];delete S.notes[modal.id];modal=null;toastUndo('Habit deleted')}else{modal.confirm=true;persist=false}}break;
-    case 'newhabit':modal={kind:'habit',type:view==='habits'?tab:'daily',color:COLORS[0],name:'',target:1,per:7,track:'check',unit:'',goal:0};focusSel='#mName';persist=false;break;
+    case 'newhabit':modal={kind:'habit',type:view==='habits'?tab:'daily',color:COLORS[0],name:'',target:1,per:7,track:'check',unit:'',goal:0,rem:'',remT:'09:00'};focusSel='#mName';persist=false;break;
     case 'newgoal':modal={kind:'goal',area:'Health',title:''};focusSel='#gTitle';persist=false;break;
     case 'mtype':modal.type=t.dataset.v;persist=false;break;
+    case 'askyes':alarmStop();remYes(t.dataset.h,t.dataset.k);if(ASK){window.close();return}modal=null;break;
+    case 'askno':alarmStop();if(ASK){window.close();return}modal=null;persist=false;break;
     case 'mtrack':{const g=x=>{const e=$(x);return e?e.value:null};if(g('#mUnit')!==null)modal.unit=g('#mUnit');if(g('#mGoal')!==null)modal.goal=g('#mGoal');if(g('#mTarget')!==null)modal.target=g('#mTarget');modal.track=t.dataset.v;persist=false;break}
+    case 'mrem':modal.rem=t.dataset.v;persist=false;break;
     case 'mcolor':setColor('habit',t.dataset.v);persist=false;break;
     case 'modalclose':case 'ovclose':if(modal&&modal.kind==='tips')try{localStorage.setItem('daybook-tips','1')}catch(e){}modal=null;persist=false;break;
     case 'msave':{
       const nm=($('#mName').value||'').trim();if(!nm){$('#mName').focus();return}
-      const tg=modal.track==='count'&&$('#mTarget')?clamp(Math.round(+$('#mTarget').value)||2,2,99):1,tr=modal.track,un=tr==='amount'?(($('#mUnit')||{}).value||'').replace(/[<>"'&`=]/g,'').trim().slice(0,12):'',gl=tr==='amount'?Math.max(0,+(($('#mGoal')||{}).value)||0):0,per=modal.type==='daily'&&$('#mPer')?clamp(Math.round(+$('#mPer').value)||7,1,7):7;
-      if(modal.id){const h=findH(modal.id);if(h){h.name=nm;h.color=modal.color;h.target=tg;h.per=per;h.track=tr;h.unit=un;h.goal=gl;if(h.type!==modal.type){h.type=modal.type;if(view==='habits')tab=h.type}const c=S.count[h.id]||{};Object.keys(c).forEach(k=>{if(c[k]>=tg||tg<2){if(c[k]>=tg)L(h)[k]=1;delete c[k]}})}modal=null;break}
-      const id=uid();S.habits.push({id,name:nm,type:modal.type,color:modal.color,target:tg,per,track:tr,unit:un,goal:gl});S.log[id]={};
+      const tg=modal.track==='count'&&$('#mTarget')?clamp(Math.round(+$('#mTarget').value)||2,2,99):1,tr=modal.track,un=tr==='amount'?(($('#mUnit')||{}).value||'').replace(/[<>"'&`=]/g,'').trim().slice(0,12):'',gl=tr==='amount'?Math.max(0,+(($('#mGoal')||{}).value)||0):0,per=modal.type==='daily'&&$('#mPer')?clamp(Math.round(+$('#mPer').value)||7,1,7):7,rt=($('#mRemT')||{}).value||modal.remT,rem=modal.rem&&/^([01]\d|2[0-3]):[0-5]\d$/.test(rt)?{t:rt,m:modal.rem}:null;
+      if(rem)remAsk();
+      if(modal.id){const h=findH(modal.id);if(h){h.name=nm;h.color=modal.color;h.target=tg;h.per=per;h.track=tr;h.unit=un;h.goal=gl;if(JSON.stringify(h.rem||null)!==JSON.stringify(rem))remSkipToday(h.id,rem);h.rem=rem;if(h.type!==modal.type){h.type=modal.type;if(view==='habits')tab=h.type}const c=S.count[h.id]||{};Object.keys(c).forEach(k=>{if(c[k]>=tg||tg<2){if(c[k]>=tg)L(h)[k]=1;delete c[k]}})}modal=null;break}
+      const id=uid();S.habits.push({id,name:nm,type:modal.type,color:modal.color,target:tg,per,track:tr,unit:un,goal:gl,rem});remSkipToday(id,rem);S.log[id]={};
       if(view==='habits')tab=modal.type;modal=null;break}
     case 'gsave':{
       const ti=($('#gTitle').value||'').trim();if(!ti){$('#gTitle').focus();return}
@@ -1447,6 +1456,7 @@ document.addEventListener('input',e=>{
   if(t.id==='mPer'&&modal)modal.per=t.value;
   if(t.id==='mUnit'&&modal)modal.unit=t.value;
   if(t.id==='mGoal'&&modal)modal.goal=t.value;
+  if(t.id==='mRemT'&&modal)modal.remT=t.value;
   if(t.id==='taskInput')addingText=t.value;
   if(t.id==='sq'&&modal){modal.q=t.value;$('#sres').innerHTML=searchHtml(t.value)}
   if(t.id==='nText'&&modal)modal.text=t.value;
@@ -1563,8 +1573,8 @@ function applyCalendar(evs){
   return n;
 }
 async function pullCalendar(manual){
-  if(!DFS||!DFS.fetchCal||!P.cal)return;
-  const r=await DFS.fetchCal(P.cal);
+  if(!calFetch||!P.cal)return;
+  let r;try{r=await calFetch(P.cal)}catch(e){}
   if(!r||!r.ok){if(manual)toast(r&&r.error?r.error:'Could not reach your calendar');return}
   const n=applyCalendar(parseIcs(r.text));P.calAt=Date.now();applyPrefs();save();if(!modal&&!addingTask)render();if(manual)toast(n+' calendar events synced');
 }
@@ -1583,7 +1593,7 @@ window.addEventListener('storage',e=>{
   if(e.key==='daybook-locked'){lockNow(false);return}
   if(e.key===PKEY&&e.newValue){try{const was=P.lock&&P.lock.hash;Object.assign(P,JSON.parse(e.newValue));if(P.lock&&P.lock.hash&&P.lock.hash!==was)locked=true;if(!P.lock)P.lock=null;const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');if(!modal&&!drag)render()}catch(_){}}
 });
-window.DaybookTest={parseIcs,applyCalendar,tasksToIcs,state:()=>S}; // smoke tests only
+window.DaybookTest={parseIcs,applyCalendar,tasksToIcs,state:()=>S,remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
 pullCalendar();let calTick=0;
 // daily reminder: a notification at the chosen time if daily habits are still open (only while Daybook is running)
 // Android app: a real daily notification scheduled with Capacitor Local Notifications (works when the app is closed)
@@ -1606,8 +1616,52 @@ function checkReminder(){
   P.remDay=k;applyPrefs();const t=doneToday();
   if(t.total&&t.done<t.total)try{new Notification('Daybook',{body:(t.total-t.done)+' of '+t.total+' habits still to do today. You’ve got this.',tag:'daybook-reminder'})}catch(e){}
 }
-checkReminder();
-setInterval(()=>{refreshToday();checkReminder();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
+/* per-habit reminders: h.rem={t:'HH:MM', m:'ask'|'alarm'}. Android schedules real notifications with Yes/No buttons;
+   desktop opens a small always-on-top pop-up, the web app shows a notification and an in-app question (only while running) */
+const pKey=(h,d)=>h.type==='daily'?dk(d):h.type==='weekly'?wkey(d.getFullYear(),d.getMonth(),Math.ceil(d.getDate()/7)):mkey(d.getFullYear(),d.getMonth());
+const perWord=h=>({daily:'today',weekly:'this week',monthly:'this month'})[h.type];
+function remYes(id,k){const h=findH(id);if(!h||!/^\d{4}-\d{2}(-\d{2}|-W\d)?$/.test(k))return;L(h)[k]=1;if(S.count[h.id])delete S.count[h.id][k];save();render()}
+// a reminder set after its time today starts tomorrow
+function remSkipToday(id,rem){if(!rem)return;const n=new Date(),[hh,mm]=rem.t.split(':').map(Number);P.remFired=Object.assign({},P.remFired,{[id]:n.getHours()*60+n.getMinutes()>=hh*60+mm?dk(TODAY):''});applyPrefs()}
+function remAsk(){if(!LN&&'Notification' in window&&Notification.permission==='default')Notification.requestPermission()}
+function askHtml(id,k){const h=findH(id);if(!h)return '<div class="ask"><p class="sub">This habit no longer exists.</p><div class="row"><button class="btn" data-act="askno">Close</button></div></div>';
+  const done=!!L(h)[k];
+  return '<div class="ask"><div class="lbl">Reminder</div><b>'+esc(h.name)+'</b><p class="sub">'+(done?'Already done '+perWord(h)+'. Nice work.':'Have you done it '+perWord(h)+'?')+'</p>'
+    +'<div class="row"><button class="btn ghost" data-act="askno">'+(done?'Close':'No')+'</button>'+(done?'':'<button class="btn" data-act="askyes" data-h="'+h.id+'" data-k="'+k+'">Yes, done</button>')+'</div></div>'}
+let alarmT=null;
+function alarmStop(){clearInterval(alarmT);alarmT=null}
+function alarmStart(){ // short beeps every 1.5 s for up to a minute
+  alarmStop();let n=0;const beep=()=>{try{const A=alarmStart.a||(alarmStart.a=new (window.AudioContext||window.webkitAudioContext)()),o=A.createOscillator(),g=A.createGain();o.frequency.value=880;o.connect(g);g.connect(A.destination);g.gain.setValueAtTime(.2,A.currentTime);g.gain.exponentialRampToValueAtTime(.001,A.currentTime+.5);o.start();o.stop(A.currentTime+.5)}catch(e){}if(++n>=40)alarmStop()};
+  beep();alarmT=setInterval(beep,1500)}
+function checkHabitReminders(){
+  if(LN||WIDGET)return;const n=new Date(),now=n.getHours()*60+n.getMinutes(),d=dk(TODAY);
+  S.habits.forEach(h=>{if(!h.rem)return;const [hh,mm]=h.rem.t.split(':').map(Number),k=pKey(h,TODAY);
+    if((P.remFired||{})[h.id]===d||now<hh*60+mm)return;P.remFired=Object.assign({},P.remFired,{[h.id]:d});applyPrefs();if(L(h)[k])return;
+    if(DFS&&DFS.ask){DFS.ask(h.id,k);return}
+    try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(h.name,{body:'Have you done it '+perWord(h)+'?',tag:'daybook-h-'+h.id,requireInteraction:true,silent:h.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
+    if(!modal&&!locked){modal={kind:'ask',h:h.id,k};render()}if(h.rem.m==='alarm')alarmStart()})}
+if(ASK){const h=findH(ASK.h);if(h&&h.rem&&h.rem.m==='alarm'&&!L(h)[ASK.k])alarmStart()}
+// Android: the DaybookNative plugin posts the notifications; Yes/No are stored natively and applied here when the app runs
+async function takeAnswers(){
+  if(!NB)return;try{const r=await NB.takeAnswers();(r.answers||[]).forEach(a=>{const h=findH(a.h);if(a.a==='yes'&&h&&!L(h)[a.k])remYes(a.h,a.k)})}catch(e){}
+}
+async function syncReminders(){
+  if(!NB||WIDGET)return;
+  try{
+    const hs=S.habits.filter(h=>h.rem);
+    if(hs.length&&LN){const pr=await LN.checkPermissions();if(pr.display!=='granted'&&(await LN.requestPermissions()).display!=='granted'){toast('Notifications are blocked. Allow them in Android settings');return}}
+    // shortcut: schedules the next 14 days and reschedules on every change and app open; a phone left untouched for 2 weeks stops reminding
+    const now=new Date(),items=[];
+    hs.slice(0,25).forEach((h,i)=>{const [hh,mm]=h.rem.t.split(':').map(Number);
+      for(let d=0;d<14;d++){const at=new Date(now.getFullYear(),now.getMonth(),now.getDate()+d,hh,mm),k=pKey(h,at);if(at<=now||L(h)[k])continue;
+        items.push({id:1000+i*20+d,at:at.getTime(),title:h.name,body:'Have you done it '+perWord(h)+'?',h:h.id,k,alarm:h.rem.m==='alarm'})}});
+    await NB.schedule({items});
+  }catch(e){}
+}
+if(NB&&!WIDGET){NB.addListener('answer',takeAnswers);document.addEventListener('visibilitychange',()=>{if(!document.hidden)takeAnswers()})}
+takeAnswers().then(syncReminders);
+checkReminder();checkHabitReminders();
+setInterval(()=>{refreshToday();checkReminder();checkHabitReminders();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/.test(navigator.userAgent)){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));

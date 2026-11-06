@@ -8,5 +8,6 @@ contextBridge.exposeInMainWorld('daybookFS', {
   reset: () => ipcRenderer.sendSync('fs:reset'),
   widget: () => ipcRenderer.send('win:widget'),            // open the mini widget window
   showMain: () => ipcRenderer.send('win:main'),
+  ask: (h, k) => ipcRenderer.send('win:ask', h, k),           // habit reminder pop-up with Yes/No
   fetchCal: url => ipcRenderer.invoke('cal:fetch', url)        // {ok, text} | {ok:false, error}
 });

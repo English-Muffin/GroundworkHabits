@@ -251,6 +251,52 @@ async def desktop(b):
     check('no JS errors (desktop)', not errs, errs)
     await ctx.close()
 
+async def reminders(b):
+    TK = "(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})()"
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800})
+    await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')")
+    pg = await ctx.new_page(); errs = []
+    pg.on('pageerror', lambda e: errs.append(str(e)))
+    await pg.goto(URL); await pg.wait_for_timeout(300)
+    await pg.click('[data-act=newhabit]'); await pg.fill('#mName', 'Stretch')
+    await pg.click('[data-act=mrem][data-v=ask]'); await pg.fill('#mRemT', '00:00'); await pg.click('[data-act=msave]')
+    rem = await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).habits[0].rem")
+    await pg.evaluate("DaybookTest.remCheck()"); early = await pg.locator('#modal .ask').count()
+    await pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('daybook-prefs'));p.remFired={};localStorage.setItem('daybook-prefs',JSON.stringify(p))})()")
+    await pg.reload(); await pg.wait_for_timeout(300)
+    asked = await pg.locator('#modal .ask', has_text='Stretch').count()
+    await pg.click('#modal [data-act=askyes]')
+    done = await pg.evaluate(f"(()=>{{const s=JSON.parse(localStorage.getItem('daybook-v2'));return !!s.log[s.habits[0].id][{TK}]}})()")
+    check('habit reminder saves, skips a time already passed, asks Yes/No and marks done', rem == {'t': '00:00', 'm': 'ask'} and early == 0 and asked == 1 and done)
+    await pg.click('.gname .nb'); off = await pg.locator('[data-act=mrem][data-v=""]').get_attribute('aria-pressed') == 'false'
+    await pg.click('[data-act=mrem][data-v=""]'); await pg.click('[data-act=msave]')
+    check('habit reminder can be switched off', off and await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).habits[0].rem") is None)
+    check('no JS errors (reminders)', not errs, errs); await ctx.close()
+    # Android: fake LocalNotifications (permissions) and DaybookNative (scheduling, answers, calendar) plugins
+    ctx = await b.new_context(viewport={'width': 390, 'height': 800})
+    await ctx.add_init_script("""localStorage.setItem('daybook-tips','1');window.__nb={items:[],answers:[],cb:null,url:''};
+      window.Capacitor={Plugins:{LocalNotifications:{checkPermissions:async()=>({display:'granted'}),requestPermissions:async()=>({display:'granted'}),cancel:async()=>{},schedule:async()=>{}},
+        DaybookNative:{schedule:async o=>{__nb.items=o.items;return {exact:true}},takeAnswers:async()=>{const a=__nb.answers;__nb.answers=[];return {answers:a}},addListener:(n,f)=>{__nb.cb=f},
+          fetchCal:async o=>{__nb.url=o.url;return {ok:true,text:['BEGIN:VCALENDAR','BEGIN:VEVENT','UID:e1','DTSTART;VALUE=DATE:'+(d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'))(new Date()),'SUMMARY:Phone event','END:VEVENT','END:VCALENDAR'].join(String.fromCharCode(13,10))}}}}};""")
+    pg = await ctx.new_page(); errs = []
+    pg.on('pageerror', lambda e: errs.append(str(e)))
+    await pg.goto(URL); await pg.wait_for_timeout(200)
+    await pg.evaluate(f"""(()=>{{const k={TK};localStorage.setItem('daybook-v2',JSON.stringify({{v:1,habits:[{{id:'ha',name:'Walk',type:'daily',color:'#22d3be',rem:{{t:'23:59',m:'ask'}}}},{{id:'hb',name:'Read',type:'daily',color:'#22d3be',rem:{{t:'23:59',m:'alarm'}}}}],log:{{hb:{{[k]:1}}}},tasks:{{}},goals:[]}}))}})()""")
+    await pg.reload(); await pg.wait_for_timeout(300); await pg.evaluate("DaybookTest.remSync()"); await pg.wait_for_timeout(200)
+    sc = await pg.evaluate("__nb.items.map(n=>[n.h,n.alarm,n.k,typeof n.at])")
+    a = [x for x in sc if x[0] == 'ha']; bb = [x for x in sc if x[0] == 'hb']
+    late = await pg.evaluate("new Date().getHours()*60+new Date().getMinutes()>=1439")
+    check('Android schedules 14 days of reminders natively and skips a day already done',
+          len(a) in (13, 14) and (late or (len(a) == 14 and len(bb) == 13)) and a[0][1] is False and bb[0][1] is True and a[0][3] == 'number')
+    await pg.evaluate(f"__nb.answers=[{{h:'ha',k:{TK},a:'yes'}},{{h:'hb',k:'2020-01-01',a:'no'}}];__nb.cb()"); await pg.wait_for_timeout(300)
+    check('Yes answered in the notification (app closed) is applied when the app runs', await pg.evaluate(f"!!JSON.parse(localStorage.getItem('daybook-v2')).log.ha[{TK}]") and not await pg.evaluate("!!JSON.parse(localStorage.getItem('daybook-v2')).log.hb['2020-01-01']"))
+    await pg.wait_for_timeout(1700)
+    today = await pg.evaluate(TK)
+    check('a habit answered Yes drops out of the schedule', not any(x[0] == 'ha' and x[2] == today for x in await pg.evaluate("__nb.items.map(n=>[n.h,n.alarm,n.k])")))
+    await pg.click('[data-act=gear]'); await pg.click('[data-act=calset]'); await pg.fill('#calUrl', 'webcal://calendar.google.com/x/basic.ics'); await pg.click('[data-act=calsave]'); await pg.wait_for_timeout(400)
+    check('Android calendar sync fetches natively and adds events', await pg.evaluate("__nb.url") == 'https://calendar.google.com/x/basic.ics' and await pg.evaluate("Object.values(DaybookTest.state().tasks).some(d=>d.items.some(i=>i.text==='Phone event'&&i.cal))"))
+    check('no JS errors (Android reminders)', not errs, errs); await ctx.close()
+
 async def mobile(b):
     ctx = await b.new_context(viewport={'width': 390, 'height': 800}, has_touch=True, is_mobile=True)
     await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')")
@@ -302,7 +348,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await mobile(b)
+        await desktop(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")
