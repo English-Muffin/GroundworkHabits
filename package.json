@@ -7,11 +7,11 @@
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win portable",
+    "dist:win": "electron-builder --win portable --publish never",
     "android:add": "cap add android",
     "android:sync": "cap sync android",
     "android:open": "cap open android",
-    "dist:mac": "electron-builder --mac zip"
+    "dist:mac": "electron-builder --mac zip --publish never"
   },
   "devDependencies": {
     "@capacitor/android": "^6.1.2",
