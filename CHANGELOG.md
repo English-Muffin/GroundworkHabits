@@ -2,6 +2,11 @@
 
 All notable changes to Daybook. Versions match the GitHub releases.
 
+## Unreleased
+
+- Big windows: the layout uses the full width, so columns and cards get larger instead of staying small in the middle.
+- Tasks can have a reminder too (tap the bell on a task): Yes or no, or an alarm, with the same Yes and No buttons as habits.
+
 ## 1.4.0
 
 - Each habit can have its own reminder: a quiet notification that stays until you answer Yes or No, or a loud alarm. Yes marks the habit done. On Android, Yes and No work straight from the notification without opening the app, even when it’s closed or after a restart; on desktop a small pop-up appears in the corner while Daybook runs.

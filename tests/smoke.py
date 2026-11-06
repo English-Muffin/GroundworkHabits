@@ -251,6 +251,14 @@ async def desktop(b):
     check('no JS errors (desktop)', not errs, errs)
     await ctx.close()
 
+async def bigwindow(b):
+    ctx = await b.new_context(viewport={'width': 1920, 'height': 1080})
+    await ctx.add_init_script("localStorage.setItem('daybook-tips','1')")
+    pg = await ctx.new_page(); await pg.goto(URL + '#tasks'); await pg.wait_for_timeout(300)
+    w = await pg.evaluate("document.querySelector('.days').getBoundingClientRect().width")
+    check('big window: the layout grows and scales with the window', w > 1500 and await pg.evaluate("document.documentElement.scrollWidth<=innerWidth"), w)
+    await ctx.close()
+
 async def reminders(b):
     TK = "(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})()"
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800})
@@ -271,6 +279,20 @@ async def reminders(b):
     await pg.click('.gname .nb'); off = await pg.locator('[data-act=mrem][data-v=""]').get_attribute('aria-pressed') == 'false'
     await pg.click('[data-act=mrem][data-v=""]'); await pg.click('[data-act=msave]')
     check('habit reminder can be switched off', off and await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).habits[0].rem") is None)
+    # task reminder: bell on the task, Yes or no at a time, asks and marks the task done
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200)
+    await pg.locator('.ttasks [data-act=tadd]').click(); await pg.keyboard.type('Call the bank'); await pg.keyboard.press('Enter'); await pg.keyboard.press('Escape')
+    await pg.locator('.tk', has_text='Call the bank').hover(); await pg.locator('.tk', has_text='Call the bank').locator('[data-act=trem]').click()
+    await pg.click('[data-act=mrem][data-v=alarm]'); await pg.fill('#mRemT', '00:00'); await pg.click('[data-act=tremsave]')
+    trem = await pg.evaluate(f"DaybookTest.state().tasks[{TK}].items.find(i=>i.text==='Call the bank').rem")
+    await pg.evaluate("DaybookTest.remCheck()"); early = await pg.locator('#modal .ask').count()
+    on = await pg.locator('.tk', has_text='Call the bank').locator('.tkb.on').count()
+    await pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('daybook-prefs'));p.remFired={};localStorage.setItem('daybook-prefs',JSON.stringify(p))})()")
+    await pg.reload(); await pg.wait_for_timeout(300)
+    asked = await pg.locator('#modal .ask', has_text='Call the bank').count()
+    await pg.click('#modal [data-act=askyes]')
+    tdone = await pg.evaluate(f"JSON.parse(localStorage.getItem('daybook-v2')).tasks[{TK}].items.find(i=>i.text==='Call the bank').done")
+    check('task reminder: set from the bell, skips a passed time, asks and Yes ticks the task', trem == {'t': '00:00', 'm': 'alarm'} and early == 0 and on == 1 and asked == 1 and tdone)
     check('no JS errors (reminders)', not errs, errs); await ctx.close()
     # Android: fake LocalNotifications (permissions) and DaybookNative (scheduling, answers, calendar) plugins
     ctx = await b.new_context(viewport={'width': 390, 'height': 800})
@@ -281,11 +303,15 @@ async def reminders(b):
     pg = await ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)))
     await pg.goto(URL); await pg.wait_for_timeout(200)
-    await pg.evaluate(f"""(()=>{{const k={TK};localStorage.setItem('daybook-v2',JSON.stringify({{v:1,habits:[{{id:'ha',name:'Walk',type:'daily',color:'#22d3be',rem:{{t:'23:59',m:'ask'}}}},{{id:'hb',name:'Read',type:'daily',color:'#22d3be',rem:{{t:'23:59',m:'alarm'}}}}],log:{{hb:{{[k]:1}}}},tasks:{{}},goals:[]}}))}})()""")
+    await pg.evaluate(f"""(()=>{{const k={TK};localStorage.setItem('daybook-v2',JSON.stringify({{v:1,habits:[{{id:'ha',name:'Walk',type:'daily',color:'#22d3be',rem:{{t:'23:59',m:'ask'}}}},{{id:'hb',name:'Read',type:'daily',color:'#22d3be',rem:{{t:'23:59',m:'alarm'}}}}],log:{{hb:{{[k]:1}}}},tasks:{{'2099-01-01':{{items:[{{id:'tf',text:'Too far',done:false,rem:{{t:'09:00',m:'ask'}}}}]}},[(d=>{{d.setDate(d.getDate()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}})(new Date())]:{{items:[{{id:'tt',text:'Dentist call',done:false,rem:{{t:'08:15',m:'alarm'}}}}]}}}},goals:[]}}))}})()""")
     await pg.reload(); await pg.wait_for_timeout(300); await pg.evaluate("DaybookTest.remSync()"); await pg.wait_for_timeout(200)
     sc = await pg.evaluate("__nb.items.map(n=>[n.h,n.alarm,n.k,typeof n.at])")
     a = [x for x in sc if x[0] == 'ha']; bb = [x for x in sc if x[0] == 'hb']
     late = await pg.evaluate("new Date().getHours()*60+new Date().getMinutes()>=1439")
+    tk = await pg.evaluate("__nb.items.filter(n=>n.h==='tt'||n.h==='tf').map(n=>[n.h,n.title,n.alarm])")
+    check('Android schedules task reminders in the next 14 days only', tk == [['tt', 'Dentist call', True]])
+    await pg.evaluate("__nb.answers=[{h:'tt',k:Object.keys(DaybookTest.state().tasks).find(k=>DaybookTest.state().tasks[k].items.some(i=>i.id==='tt')),a:'yes'}];__nb.cb()"); await pg.wait_for_timeout(300)
+    check('Android Yes on a task reminder ticks the task', await pg.evaluate("Object.values(DaybookTest.state().tasks).some(d=>d.items.some(i=>i.id==='tt'&&i.done))"))
     check('Android schedules 14 days of reminders natively and skips a day already done',
           len(a) in (13, 14) and (late or (len(a) == 14 and len(bb) == 13)) and a[0][1] is False and bb[0][1] is True and a[0][3] == 'number')
     await pg.evaluate(f"__nb.answers=[{{h:'ha',k:{TK},a:'yes'}},{{h:'hb',k:'2020-01-01',a:'no'}}];__nb.cb()"); await pg.wait_for_timeout(300)
@@ -348,7 +374,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")

@@ -14,7 +14,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
-- `tests/smoke.py`  Playwright smoke tests (73 checks, plus 11 desktop checks in `tests/electron_folder.py`, desktop and phone)
+- `tests/smoke.py`  Playwright smoke tests (77 checks, plus 11 desktop checks in `tests/electron_folder.py`, desktop and phone)
 - `tests/stress.py`  stress test (heavy data, 320-1920px, all themes, random clicks, edge dates); writes report.txt
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
@@ -34,7 +34,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
   - `habits[].target` (1-99): taps needed per period. `count[habitId][key]` holds partial taps; `log` still marks done, so stats are unchanged. Use `tap(h,k)` to toggle
   - `habits[].per` (1-7): days per week for daily habits (Today shows `n/per this week`). A habit's type can change; ticks of the old type stay in `log` under their own key format
   - `habits[].track`: `check` | `count` (uses `target`) | `amount` (`unit`, optional `goal`; numbers in `amt[habitId][key]`, `log` marks done once the goal is met; `setAmt()`)
-  - task items may carry `rep` (series id of a repeating task, see `repeatDates()`), `cal`/`hidden`/`pin` (calendar events; `pin` = user moved it to another day)
+  - task items may carry `rem` `{t,m}` (a one-off reminder on that day: bell button `.tkb`, modal `trem`; same engine as habits, ids 2000+ on Android, `findT()`), `rep` (series id of a repeating task, see `repeatDates()`), `cal`/`hidden`/`pin` (calendar events; `pin` = user moved it to another day)
   - `habits[].rem`: `{t:'HH:MM', m:'ask'|'alarm'}` or null, a per-habit reminder (see Habit reminders)
   - `notes[habitId][key]`: short note for that day/week/month
   - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Achievements tab
@@ -71,7 +71,7 @@ Any `[data-drop=LIST]` container whose children are `[data-drag=LIST][data-id]` 
 ## Design tokens (CSS variables in `:root`)
 Spacing scale `--sp-1..5` = 4, 8, 12, 16, 24px: 12px between a header and its content, 8px between items, 16-24px around cards. The stress test flags anything closer than 10px to a progress ring.
 `--bg #080808`, `--card #0f0f0f`, `--teal #22d3be`, `--red`, `--purple`, `--flame`, `--star`. Font: Space Grotesk (Google Fonts, system fallback).
-Dark is the designed theme. Settings > Customize adds accent colours (sets `--teal`) an AMOLED theme (`html.amoled`, darkest greys set to #000) and a light theme (`html.light` overrides the `--gXX` grey tokens, one per original dark grey, and darkens the accent), stored in localStorage `daybook-prefs`, separate from data. Use `var(--teal)` (style, not SVG attributes) for accent colour and `var(--gXX)` tokens, never raw greys, so both themes work. Breakpoints: 900px (stack columns) and 760px (bottom nav, narrower sticky name column).
+Dark is the designed theme. Settings > Customize adds accent colours (sets `--teal`) an AMOLED theme (`html.amoled`, darkest greys set to #000) and a light theme (`html.light` overrides the `--gXX` grey tokens, one per original dark grey, and darkens the accent), stored in localStorage `daybook-prefs`, separate from data. Use `var(--teal)` (style, not SVG attributes) for accent colour and `var(--gXX)` tokens, never raw greys, so both themes work. Breakpoints: 900px (stack columns) and 760px (bottom nav, narrower sticky name column). From 1500px wide `.app` has no max width (3vw side padding), so columns and cards get larger on big screens; text stays the same size (Windows display scaling handles 4K).
 
 ## Conventions
 - Plain modern JS, no frameworks, no build step. Keep it one self-contained file unless there is a strong reason to split.
