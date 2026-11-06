@@ -2,7 +2,7 @@
 
 All notable changes to Daybook. Versions match the GitHub releases.
 
-## Unreleased
+## 1.4.0
 
 - Each habit can have its own reminder: a quiet notification that stays until you answer Yes or No, or a loud alarm. Yes marks the habit done. On Android, Yes and No work straight from the notification without opening the app, even when it’s closed or after a restart; on desktop a small pop-up appears in the corner while Daybook runs.
 - Google Calendar sync now works on Android too.
