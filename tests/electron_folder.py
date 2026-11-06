@@ -20,7 +20,7 @@ async def main():
         proc, b, pg = await launch(p, exe, prof, {}); await pg.wait_for_selector('.gname .nb')
         check('loads data from the chosen folder', await pg.locator('.gname .nb', has_text='From folder').count() == 1)
         await pg.click('[data-act=gear]')
-        check('menu shows the data folder', str(folder) in await pg.locator('.mpath').inner_text())
+        check('menu shows the data folder', str(folder) in await pg.locator('.mpath').first.inner_text())
         await pg.keyboard.press('Escape')
         await pg.click('[data-act=newhabit] >> nth=0'); await pg.fill('#mName', 'Saved to folder'); await pg.keyboard.press('Enter')
         await pg.wait_for_timeout(600)
@@ -30,6 +30,17 @@ async def main():
         (folder / 'daybook.json').write_text(json.dumps(d))
         await pg.evaluate("window.dispatchEvent(new Event('focus'))"); await pg.wait_for_timeout(200)
         check('picks up outside changes on focus', await pg.locator('.gname .nb', has_text='Synced in').count() == 1)
+        # mini widget: opens in its own window and stays in sync with the main window
+        await pg.evaluate("window.daybookFS.widget()")
+        wpg = None
+        for _ in range(40):
+            wpg = next((x for c in b.contexts for x in c.pages if x.url.endswith('#widget')), None)
+            if wpg: break
+            await asyncio.sleep(.25)
+        await wpg.wait_for_selector('.trow')
+        await wpg.locator('.trow', has_text='Saved to folder').locator('.cell').click(); await asyncio.sleep(.4)
+        await pg.evaluate("location.hash='today'"); await asyncio.sleep(.3)
+        check('widget window ticks a habit and the main window updates', await pg.locator('.trow', has_text='Saved to folder').locator('.cell.on').count() == 1)
         await b.close(); kill(proc)
         await choose_flow(p, exe, tmp)
     print('\nAll checks passed' if not fails else f'\n{fails} failed'); raise SystemExit(1 if fails else 0)

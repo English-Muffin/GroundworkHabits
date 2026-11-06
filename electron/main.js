@@ -141,13 +141,29 @@ function createWindow() {
   });
   Menu.setApplicationMenu(null);
   win.loadFile(path.join(__dirname, '..', 'www', 'index.html'));
-  // only web links leave the app; the window itself never navigates away from the bundled page
-  win.webContents.setWindowOpenHandler(({ url }) => {
+  harden(win);
+}
+// only web links leave the app; a window never navigates away from the bundled page
+function harden(w) {
+  w.webContents.setWindowOpenHandler(({ url }) => {
     try { if (['https:', 'http:'].includes(new URL(url).protocol)) shell.openExternal(url); } catch (e) {}
     return { action: 'deny' };
   });
-  win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('file:')) e.preventDefault(); });
+  w.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('file:')) e.preventDefault(); });
 }
+// mini widget: small always-on-top window showing today; shares localStorage with the main window
+let widget = null;
+ipcMain.on('win:widget', () => {
+  if (widget && !widget.isDestroyed()) { widget.show(); widget.focus(); return; }
+  widget = new BrowserWindow({
+    width: 340, height: 560, minWidth: 280, minHeight: 320, alwaysOnTop: true, title: 'Daybook widget',
+    backgroundColor: '#080808', icon: path.join(__dirname, '..', 'assets', 'icon.png'), autoHideMenuBar: true,
+    webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: path.join(__dirname, 'preload.js') }
+  });
+  widget.loadFile(path.join(__dirname, '..', 'www', 'index.html'), { hash: 'widget' });
+  harden(widget);
+});
+ipcMain.on('win:main', () => { if (!win || win.isDestroyed()) createWindow(); else { if (win.isMinimized()) win.restore(); win.show(); win.focus(); } });
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => app.quit());

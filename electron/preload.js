@@ -6,5 +6,7 @@ contextBridge.exposeInMainWorld('daybookFS', {
   write: text => ipcRenderer.sendSync('fs:write', text),     // true/false; sync so a save on close is never lost
   choose: () => ipcRenderer.invoke('fs:choose'),            // resolves {folder, mode: 'replace'|'load'} or null if cancelled
   reset: () => ipcRenderer.sendSync('fs:reset'),
+  widget: () => ipcRenderer.send('win:widget'),            // open the mini widget window
+  showMain: () => ipcRenderer.send('win:main'),
   fetchCal: url => ipcRenderer.invoke('cal:fetch', url)        // {ok, text} | {ok:false, error}
 });

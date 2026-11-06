@@ -14,7 +14,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
-- `tests/smoke.py`  Playwright smoke tests (50 checks, desktop and phone)
+- `tests/smoke.py`  Playwright smoke tests (58 checks, plus 9 desktop checks in `tests/electron_folder.py`, desktop and phone)
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
 ## Commands
@@ -25,11 +25,13 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - Android app: `npm install && npx cap add android && npx cap sync android && npx cap open android`
 
 ## How `www/index.html` works
-- State is one object `S`: `{v, habits, log, tasks, goals, journal, quits, count, notes}` (`v` = data version, migrations go after `let S=load()`), saved to `localStorage` key `daybook-v2` by `save()`.
+- State is one object `S`: `{v, habits, log, tasks, goals, journal, quits, count, notes, templates}` (`v` = data version, migrations go after `let S=load()`), saved to `localStorage` key `daybook-v2` by `save()`.
   - `habits`: `{id, name, type: 'daily'|'weekly'|'monthly', color}`
   - `log[habitId]`: set of keys. Daily `YYYY-MM-DD`, weekly `YYYY-MM-Wn` (W1 = days 1-7 of the month), monthly `YYYY-MM`
   - `tasks['YYYY-MM-DD']`: `{items: [{id, text, done, cal?}], mind: {energy, focus, motivation} | null}`
   - `habits[].target` (1-99): taps needed per period. `count[habitId][key]` holds partial taps; `log` still marks done, so stats are unchanged. Use `tap(h,k)` to toggle
+  - `habits[].per` (1-7): days per week for daily habits (Today shows `n/per this week`). A habit's type can change; ticks of the old type stay in `log` under their own key format
+  - `templates`: `{id, name, items: [text]}` task templates
   - `notes[habitId][key]`: short note for that day/week/month
   - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Achievements tab
   - `goals`: `{id, title, area, pct}`. `journal['YYYY-MM']`: monthly reflection text
@@ -46,6 +48,13 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 ## Feature switches
 `P.feat` (Settings > Features): streaks on Today, weekly review, year heatmap, habit notes, missed X, Achievements tab, daily reminder (`P.remTime`, Notification API, only while the app runs). Read with `feat(key)`. Deletes snapshot `S` (`snap()`) and show `toastUndo()`.
 
+## More features
+- Search (header): `searchHits()` over tasks, notes, reflections, goals, habits, streaks, templates.
+- Focus timer (`focusRun`, bar `#focusbar`), CSV export (`toCsv()`, formula-safe), PIN lock (`P.lock` salted SHA-256; privacy screen only, not encryption; `#lock`).
+- Desktop mini widget: `#widget` route (`vWidget`, `html.widget`), opened via `daybookFS.widget()`; windows stay in sync through the `storage` event.
+- Android reminder: `@capacitor/local-notifications` (a real `dependencies` entry so `cap sync` picks it up) schedules a daily notification; web/desktop use the Notification API while running.
+- Touch dragging uses touch events (grip = immediate, press-and-hold 380 ms anywhere on an item); mouse/pen use pointer events on the grip.
+
 ## Drag to rearrange
 Any `[data-drop=LIST]` container whose children are `[data-drag=LIST][data-id]` with a `.grip` button can be reordered by pointer (mouse and touch, `touch-action:none` on the grip) or arrow keys on the grip. `commitDrag()` writes the order: tasks (between days via `.tlist[data-k]`), `habits-<type>`, goals, quits, and `cards` (top-level blocks of Today/Insights, order in `P.layout[view]`). Calendar tasks have no grip. Switch: `feat('drag')`.
 
@@ -58,7 +67,7 @@ Dark is the designed theme. Settings > Customize adds accent colours (sets `--te
 - UI copy: sentence case, typographic apostrophes (’), no emoji.
 - Icon-only buttons need `aria-label`. Keep visible `:focus-visible` outlines.
 - Nothing may depend on hover: it must also work by touch.
-- Do not add runtime dependencies. Electron/Capacitor/Playwright are dev tools only.
+- Do not add runtime dependencies for the web app. Electron/Playwright are dev tools; the only `dependencies` entry is the Capacitor notifications plugin for the Android build.
 
 ## Gotchas already hit
 - Replacing `innerHTML` resets scroll. `render()` saves and restores it.
