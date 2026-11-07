@@ -1,0 +1,623 @@
+1|+ Añadir tarea
+2|+ Nuevo objetivo
+3|+ Nuevo hábito
+4|+ Nueva área
+5|+ Nueva racha
+6|Algunas cosas útiles:
+7|Una notificación discreta que se queda hasta que respondas Sí o No. No aparece si el hábito ya está hecho.
+8|Una tarea para este objetivo
+9|LOGROS
+10|Color de acento
+11|Logros
+12|Pestaña Logros
+13|Añadir
+14|Añadir un recordatorio
+15|Añadir una cantidad automáticamente
+16|Añade al menos una tarea
+17|Añadir objetivo
+18|Añadir hábito
+19|Añade los pasos que te llevan allí; marcarlos llena la barra.
+20|Añade lo que pones (o sacas) desde la tarjeta del objetivo; la barra se llena hacia la meta.
+21|Añade tu primer hábito para empezar el día.
+22|Alarma
+23|Las alarmas pueden retrasarse unos minutos
+24|Todos los objetivos
+25|Permitir alarmas exactas
+26|Acento ámbar
+27|Cantidad
+28|Bloqueo de la app
+29|Archivar
+30|MEJOR RACHA
+31|La copia de seguridad falló
+32|Copia de seguridad restaurada
+33|Copia de seguridad guardada
+34|Mejor racha
+35|Acento azul
+36|Sincronización del calendario detenida
+37|Cancelar
+38|Disposición de tarjetas restablecida
+39|Carrera
+40|Buscar actualizaciones
+41|Cerrar
+42|Color
+43|Completadas
+44|Copiar la lista de ayer
+45|No se pudo guardar en tu carpeta de datos
+46|No se pudo programar el recordatorio
+47|Recuento
+48|Contando desde
+49|Personalizar
+50|Diarios
+51|Recordatorio diario
+52|Oscuro
+53|Daybook ahora guarda en esa carpeta
+54|Días seguidos para ganar una congelación
+55|Eliminar
+56|Eliminar tarea
+57|Datos de demostración cargados
+58|No se repite
+59|Hecho o no
+60|Arrastra el asa punteada de tareas, hábitos, objetivos y tarjetas, o enfócala y usa las flechas. Las tareas pueden ir a otro día.
+61|Arrastrar para reordenar
+62|Gana una cada
+63|Editar un hábito
+64|Editar hábito
+65|Energía
+66|Intro para añadir, Esc para cancelar
+67|Todos los días
+68|Cuenta cada vez que hiciste ese hábito desde entonces.
+69|Cada semana el domingo
+70|Todos los días laborables (lun a vie)
+71|Todo borrado
+72|Todo se guarda en este dispositivo. Exporta una copia desde los ajustes o elige una carpeta sincronizada en el ordenador.
+73|Exportar como hoja de cálculo (.csv)
+74|Exportar copia de seguridad
+75|La exportación falló
+76|Exportar tareas al calendario (.ics)
+77|Familia
+78|Funciones
+79|El desbloqueo con huella no está disponible
+80|Desbloqueo con huella desactivado
+81|Desbloqueo con huella activado
+82|Las huellas han cambiado en este teléfono. Desbloquea con tu PIN y vuelve a activar la huella
+83|Terminar antes de
+84|Terminar antes de (opcional)
+85|Enfoque
+86|Sesión de enfoque terminada
+87|Sesión de enfoque terminada. Tómate un descanso corto.
+88|Temporizador de enfoque
+89|De → a
+90|Ocio
+91|OBJETIVOS
+92|Objetivo eliminado
+93|Meta por día (opcional)
+94|Título del objetivo
+95|Objetivos
+96|Objetivos logrados
+97|Google Calendar
+98|Entendido
+99|Acento verde
+100|HÁBITO
+101|CLASIFICACIÓN DE HÁBITOS
+102|Hábito
+103|Hábito eliminado
+104|Nombre del hábito
+105|Notas de hábitos
+106|Hábitos
+107|Salud
+108|Hogar
+109|¿Cómo lo mides?
+110|Cómo registrarlo
+111|¿Qué tal este mes? ¿Qué aprendiste?
+112|Ideas
+113|Importar copia de seguridad
+114|En curso
+115|Estadísticas
+116|Las estadísticas aparecen cuando tengas hábitos diarios.
+117|Guardar hasta
+118|Menos
+119|Área de vida
+120|Áreas de vida
+121|Claro
+122|Cargar datos de demostración
+123|Se cargó la copia de esa carpeta
+124|Registra el valor actual desde la tarjeta del objetivo; sirve hacia arriba (ingresos) o hacia abajo (peso, deuda pendiente).
+125|MENTALIDAD
+126|Marcar tareas fallidas
+127|Marcar tarea como hecha
+128|Mentalidad
+129|Registro de mentalidad
+130|Evolución de la mentalidad en la semana
+131|Mensuales
+132|Reflexión mensual
+133|Reflexión mensual
+134|Más
+135|Máximo de congelaciones guardadas
+136|Motivación
+137|Mover tarjeta. Arrastra o usa las flechas
+138|Mover objetivo. Arrastra o usa las flechas
+139|Mover hábito. Arrastra o usa las flechas
+140|Mueve o elimina primero los objetivos de esta área
+141|Mover tarea. Arrastra o usa las flechas
+142|Organízalo a tu manera
+143|NECESITA ATENCIÓN
+144|PIN nuevo
+145|Nuevo objetivo
+146|Nuevo hábito
+147|Paso nuevo
+148|Nueva racha
+149|Tarea nueva
+150|Tarea nueva para hoy
+151|Mes siguiente
+152|Semana siguiente
+153|Todavía no hay hábitos aquí.
+154|Sin completar
+155|Nada planeado todavía.
+156|No hay nada que copiar del día anterior
+157|Las notificaciones están bloqueadas. Permítelas en los ajustes de Android
+158|Las notificaciones están bloqueadas. Permítelas en los ajustes del sistema
+159|CONSTANCIA GENERAL
+160|De las tareas de esta semana están hechas
+161|Desactivado
+162|Activado
+163|Abrir
+164|Abrir →
+165|General
+166|Progreso general
+167|PIN eliminado
+168|PIN eliminado y datos de este dispositivo borrados
+169|PIN configurado. Tus datos ahora están cifrados
+170|Pega la dirección iCal secreta del calendario (empieza por https://)
+171|Porcentaje
+172|Elegir un color de acento
+173|Elegir un color para el hábito
+174|Elige una fecha y hora que no estén en el futuro
+175|Elige un hábito
+176|Elige un área de vida para empezar
+177|Elige cuándo lo dejaste y mira crecer la racha.
+178|Acento rosa
+179|Mes anterior
+180|Semana anterior
+181|Progreso
+182|Progreso:
+183|Añadir rápido
+184|Logrado
+185|Relaciones
+186|Recordatorio
+187|Hora del recordatorio
+188|Repetir
+189|Repetir una tarea
+190|Repite el PIN
+191|Suena y vibra a esta hora, con los botones Sí y No. No aparece si el hábito ya está hecho.
+192|ESTADÍSTICAS
+193|Guardar
+194|Guardar PIN
+195|Guardando solo en este teléfono
+196|Guardando solo en el almacenamiento de la app
+197|Buscar
+198|Búsqueda y ajustes
+199|Configurar un PIN
+200|Configurar un PIN…
+201|Pon un inicio y una meta distinta
+202|Pon la cantidad y la fecha de inicio para añadir automáticamente
+203|Mostrar nombres en los recordatorios
+204|Ver consejos
+205|Inicio
+206|Empezar de cero
+207|Empezar racha
+208|Fecha del paso (opcional)
+209|Pasos
+210|Racha eliminada
+211|Congelaciones de racha
+212|Racha reiniciada. Tú puedes.
+213|Rachas en Hoy
+214|TAREAS
+215|TAREAS DE ESTA SEMANA
+216|ESTA SEMANA
+217|MEJORES RACHAS
+218|Toca una casilla para marcarla. Las tareas sin hacer de días pasados muestran una X roja; tócala si solo se te olvidó.
+219|Toca su nombre para cambiar el nombre, el color, la categoría, la frecuencia, o para registrar una cantidad como km, horas o páginas.
+220|Meta
+221|Tareas
+222|Tarea añadida para hoy
+223|Tarea eliminada
+224|Tarea para hoy
+225|Texto de la tarea
+226|Tareas
+227|Tareas de hoy
+228|Tareas, notas, objetivos, hábitos…
+229|Acento turquesa
+230|Ese archivo no es una copia de seguridad de Daybook
+231|La lupa lo busca todo. El engranaje tiene temas, colores, funciones, copias de seguridad y el bloqueo de la app.
+232|La copia de tu carpeta de datos usa otro PIN
+233|Los dos PIN no coinciden
+234|Tema
+235|Estas tareas aparecen en su día en Tareas; al marcarlas allí se llena este objetivo.
+236|Cosas que has dejado y cuánto tiempo hace
+237|Este mes
+238|Esta semana
+239|Marcar un hábito
+240|Marca y corrige
+241|Veces
+242|Hoy
+243|Registra algo que has dejado, como fumar o el azúcar.
+244|Activar
+245|Unidad
+246|Unidad, p. ej. € o km
+247|¿Desbloquear con tu huella la próxima vez?
+248|¿Desbloquear también con tu huella?
+249|VS SEMANA PASADA
+250|Acento violeta
+251|SEMANA QUE EMPIEZA
+252|Semanales
+253|Resumen semanal
+254|Te damos la bienvenida a Daybook
+255|Qué dejaste
+256|¿Qué dejaste? p. ej. Fumar
+257|¿Qué quieres lograr?
+258|Al añadir una tarea, usa el menú de debajo para repetirla cada día, día laborable, semana o mes.
+259|¿Cuándo lo dejaste?
+260|PIN incorrecto
+261|PIN incorrecto, o no es una copia de Daybook
+262|Mapa del año
+263|Sí o no
+264|Tus datos se quedan aquí
+265|Tu propia área de vida
+266|Tu semana
+267|código hex del color de acento
+268|diario
+269|días
+270|hechas
+271|código hex del color del hábito
+272|km, páginas, horas…
+273|mensual
+274|semanal
+275|¿Lo has hecho hoy?
+276|¿Lo has hecho esta semana?
+277|¿Lo has hecho este mes?
+278|¿Lo has hecho?
+279|Sí, hecho
+280|No
+281|Ya está hecho. Bien hecho.
+282|Ya está hecho hoy. Bien hecho.
+283|Ya está hecho esta semana. Bien hecho.
+284|Ya está hecho este mes. Bien hecho.
+285|Recordatorio de tarea
+286|Este hábito ya no existe.
+287|Daybook está bloqueado
+288|Introduce tu PIN
+289|Desbloquear
+290|¿Olvidaste el PIN?
+291|Toca otra vez: quitar el PIN y borrar los datos de este dispositivo
+292|Usar huella
+293|PIN incorrecto. Inténtalo otra vez.
+294|Demasiados intentos. Espera 30 segundos.
+295|Desbloquear Daybook
+296|Confirma tu huella
+297|Desbloqueo con huella
+298|Introduce tu PIN una vez para activarlo.
+299|Continuar
+300|Desactivar el desbloqueo con huella
+301|Usar la huella para desbloquear…
+302|Cambiar PIN…
+303|Quitar PIN
+304|Toca otra vez para quitar el PIN
+305|Usa de 4 a 8 dígitos
+306|Copia cifrada
+307|Introduce el PIN que estaba configurado cuando se hizo esta copia. Restaurar sustituye los datos de este dispositivo.
+308|Restaurar
+309|Copia cifrada descargada. Al importarla se pide tu PIN
+310|Copia de seguridad descargada
+311|Carpeta de datos
+312|Solo este teléfono
+313|Elegir carpeta…
+314|Dejar de usar esta carpeta
+315|Almacenamiento de la app (solo este PC)
+316|Ya hay una copia de Daybook aquí
+317|¿Sustituirla por los datos de este teléfono o cargar la copia de la carpeta? Cargarla sobrescribe lo que hay en este teléfono.
+318|Cargar la copia de la carpeta
+319|Toca otra vez: cargar la copia de la carpeta
+320|Sustituir por mis datos
+321|No se puede usar esa carpeta
+322|Hacer copia ahora
+323|Abrir la carpeta de copias
+324|Copia de seguridad automática cada semana
+325|Idioma
+326|Editar objetivo
+327|Editar área
+328|Nueva área de vida
+329|p. ej. Fe, Mascotas, Proyecto personal
+330|Nombre del área
+331|Añadir área
+332|Toca otra vez para eliminar
+333|Archivados
+334|Otros objetivos
+335|Fijados
+336|Sin empezar
+337|Atrasado
+338|Vence hoy
+339|Añadir al objetivo
+340|Registrar el valor actual
+341|Registrar valor
+342|+ Añadir
+343|Fecha
+344|Valor
+345|Cada
+346|Mes
+347|Semana
+348|Empezando
+349|Añade primero un hábito y luego vincúlalo aquí.
+350|Objetivo archivado
+351|Objetivo restaurado
+352|Se acerca el plazo de un objetivo
+353|Un recordatorio de hábito espera tu respuesta
+354|Un recordatorio de tarea espera tu respuesta
+355|Añade un hábito diario en Daybook
+356|Añadir a un objetivo
+357|Añade un paso, p. ej. Correr 10 km
+358|Pon una meta mayor que 0
+359|Deshacer
+360|Restaurado
+361|Eliminar también las repeticiones siguientes
+362|No hay repeticiones siguientes
+363|Hasta final de mes
+364|Durante 3 meses
+365|Hasta final de año
+366|Toca Añadir cuando termines
+367|Conectar un calendario…
+368|Sincronizando desde tu calendario
+369|Sincronizar ahora
+370|Detener la sincronización del calendario
+371|Dirección iCal secreta
+372|Conectar
+373|Últimos 12 meses
+374|Meta por semana (opcional)
+375|Meta por mes (opcional)
+376|Días por semana (7 = todos los días)
+377|p. ej. Corrí 5 km, me sentí genial
+378|Nota
+379|Guardar nota
+380|Trabajar en
+381|Sin tarea, solo enfoque
+382|Minutos
+383|Detener
+384|De 4 a 8 dígitos. Si lo olvidas, la única forma de volver a entrar es borrar los datos de este dispositivo (se conserva una copia en la carpeta de datos).
+385|Se bloquea al abrir Daybook, tras un minuto en segundo plano o 5 minutos sin uso. Oculta tus datos en pantalla y cifra lo que se guarda en este dispositivo y en las copias.
+386|Restablecer la disposición de tarjetas
+387|Abrir el mini widget
+388|Abrir Daybook
+389|Todo hecho hoy
+390|Nada planeado.
+391|Todavía no hay hábitos diarios.
+392|Forma física
+393|Dinero
+394|Aprendizaje
+395|Veces por día, p. ej. 8 vasos
+396|Veces por semana, p. ej. 8 vasos
+397|Veces por mes, p. ej. 8 vasos
+398|Trabajando en 1 área de vida
+399|Hábitos diarios completados en los últimos 12 meses
+400|Editar
+401|Tareas de esta semana
+402|Llegar a un peso saludable
+403|Dormir 7 horas durante 60 noches
+404|Caminar 1000 km este año
+405|Hacerme un chequeo completo
+406|Correr 500 km este año
+407|Press de banca con 100 kg
+408|Hacer 10 000 flexiones
+409|Correr una media maratón
+410|Enviar 30 candidaturas
+411|Aumentar mis ingresos
+412|Conseguir una certificación
+413|Lanzar 4 proyectos personales
+414|Crear un fondo de emergencia
+415|Pagar una deuda
+416|Invertir cada mes
+417|Ahorrar para unas vacaciones
+418|Leer 12 libros
+419|Practicar 100 horas
+420|Aprender un idioma hasta B1
+421|Terminar un curso online
+422|Planear 12 citas en pareja
+423|Llamar a un amigo cada semana
+424|Conocer a 5 personas nuevas
+425|Visitar a la familia cada mes
+426|Cena familiar cada semana
+427|Planear un viaje en familia
+428|Visitar 5 lugares nuevos
+429|Aprender 10 canciones
+430|Cumplir mi lista de deseos
+431|Ahorrar para la entrada de una casa
+432|Ordenar todas las habitaciones
+433|Reformar una habitación
+434|Meditar 100 veces
+435|Escribir un diario durante 30 días
+436|Leer 20 minutos al día durante 90 días
+437|Llegar a una cifra
+438|Pasar de un valor a otro
+439|Completar una serie de pasos
+440|Crear un hábito
+P1|$1 / $2 hábitos completados
+P2|$1 / $2 completados
+P3|$1 objetivos · $2 logrados
+P4|$1 congelaciones de racha guardadas
+P5|$1 congelaciones de racha
+P6|$1 días perfectos en los últimos 12 meses
+P7|$1/$2 hábitos hechos hoy
+P8|$1% vs semana pasada
+P9|Progreso medio $1%
+P10|Constancia en los últimos $1 días
+P11|Últimos $1 días
+P12|Trabajando en $1 de $2 áreas de vida
+P13|Cada mes el día $1
+P14|Cada semana: $1
+P15|Añadir nota para $1
+P16|Editar nota de $1
+P17|$1. Toca para editar
+P18|Fijar $1
+P19|Desfijar $1
+P20|$1, sin hacer. Toca para marcarla como hecha
+P21|Editar área $1
+P22|Faltan $1 días
+P23|Falta 1 día
+P24|$1 días de retraso
+P25|$1 de $2 pasos
+P26|$1 de $2 tareas hechas
+P27|$1 de $2 tareas hechas · siguiente: $3
+P28|Siguiente paso: $1
+P29|$1 de $2 veces · $3
+P30|$1 de $2
+P31|$1 ahora · meta $2 (desde $3)
+P32|Añade $1 cada semana
+P33|Añade $1 cada mes
+P34|Añadida en $1 días
+P35|Daybook ahora guarda en $1
+P36|Objetivo logrado: $1
+P37|Guardado $1
+P38|Ya existe un área llamada $1
+P39|Añadido $1 a $2
+P40|$1 hecho
+P41|Restaurado. Quedan $1 por deshacer
+P42|$1 tareas eliminadas
+P43|$1 eventos del calendario sincronizados
+P44|Sincronizando desde tu calendario, última vez $1
+P45|Copia de seguridad automática cada semana, última $1
+P46|Color $1
+P47|$1/$2 esta semana
+P48|Energía $1
+P49|Enfoque $1
+P50|Motivación $1
+P51|Fija un objetivo en cualquiera de tus $1 áreas de vida.
+P52|Escribe al menos $1 letras.
+P53|Todavía no hay objetivos en $1.
+P54|Archivados ($1)
+P55|Recordatorio a las $1. Cambiar
+P56|$1 vence en una semana
+P57|$1 vence hoy
+P58|Eliminar $1
+P59|$1 días
+441|Copia automática
+442|Cada semana
+443|Cada mes
+444|Auto
+445|Aún no hay copia
+446|Meses visibles
+P60|Últimos $1 meses
+P61|$1 días perfectos en los últimos $2 meses
+P62|Copia automática, última $1
+P63|Hábitos diarios completados en los últimos $1 meses
+447|Un archivo con todos tus datos
+448|Una nota corta en cualquier día de un hábito
+449|Un resumen de la semana pasada los domingos
+450|Un temporizador para trabajar concentrado en una tarea
+451|Acerca de
+452|Añadir la tarea o guardar el diálogo
+453|Apariencia
+454|Flechas
+455|Atrás
+456|Calendario
+457|La sincronización del calendario funciona en las apps de ordenador y Android
+458|Comprueba que te llegan las notificaciones
+459|Cerrar un diálogo o salir de los ajustes
+460|Recordatorio diario desactivado
+461|Zona de peligro
+462|Datos y copias
+463|Daybook usa el idioma de este dispositivo salvo que elijas otro. Tus hábitos y tareas nunca se traducen.
+464|Borra todo en este dispositivo
+465|Hábitos, tareas y objetivos de ejemplo
+466|Exportar
+467|Exportar e importar
+468|Para Excel, Numbers o Google Sheets
+469|Recordatorios de hábitos y tareas
+470|Hábitos, tareas y objetivos en un lugar tranquilo
+471|Cómo funciona el bloqueo
+472|Importa el archivo en Google Calendar: Ajustes, Importar y exportar
+473|Atajos de teclado
+474|Disposición
+475|Licencias
+476|Bloquea Daybook y cifra tus datos en este dispositivo y en las copias
+477|Se bloquea al abrir Daybook, tras un minuto en segundo plano o el tiempo de arriba sin uso. Oculta tus datos en pantalla y cifra lo que se guarda en este dispositivo y en las copias.
+478|Licencia GNU AGPL-3.0
+479|Mueve tareas, hábitos, objetivos y tarjetas arrastrando
+480|Mueve la tarjeta, hábito, objetivo o tarea seleccionado
+481|Sin PIN
+482|Sin cuenta, sin anuncios, sin rastreo. Todo se guarda en tus dispositivos y solo va adonde tú lo envías: tus copias, tu carpeta de datos, el enlace de tu calendario.
+483|Ningún ajuste coincide.
+484|No conectado
+485|Las notificaciones dicen qué hábito o tarea; desactivado muestra solo “Daybook”
+486|Una notificación al día si quedan hábitos pendientes
+487|Abre un hábito (toca su nombre) o toca la campana de una tarea
+488|Las tareas pasadas sin hacer muestran una X roja
+489|Privacidad
+490|Vuelve a poner las tarjetas de Hoy y Estadísticas en su orden original
+491|Recordatorios
+492|Sustituye los datos de este dispositivo
+493|Restablecer
+494|SIL Open Font License
+495|Igual que este dispositivo
+496|Buscar ajustes
+497|Seguridad
+498|Enviar una notificación de prueba
+499|Poner un recordatorio
+500|Ajustes
+501|Secciones de ajustes
+502|Siete días seguidos dan una congelación que salva una racha en un día fallado
+503|Fuente Space Grotesk
+504|La breve introducción del primer inicio
+505|El año en cuadros en Estadísticas
+506|Registra cosas que has dejado, como fumar
+507|Deshacer la última eliminación
+508|Tus datos son tuyos
+509|Tus rachas de cosas dejadas en la pantalla Hoy
+510|Conectado
+511|Los eventos se sincronizan cada 15 minutos
+512|Pega la dirección iCal secreta de tu calendario; no hace falta iniciar sesión en Google
+513|Quita los eventos del calendario de tus tareas
+514|Copia de seguridad
+515|Conserva las 8 copias más recientes
+516|Carpeta
+517|Cambiar
+518|Elegir…
+519|Cifrada con tu PIN
+520|Desbloquea con tu huella en vez de escribir el PIN
+521|Bloquear tras
+522|Sin uso; Daybook también se bloquea un minuto después de salir
+523|Tus datos se descifran y se guardan legibles otra vez
+524|Abrir el mini widget
+525|Una ventanita siempre visible con los hábitos y tareas de hoy
+526|Ordenador
+527|Hora
+528|Una notificación cada día, aunque Daybook esté cerrado
+529|Solo con Daybook abierto o en segundo plano
+530|Android 14 o posterior: las alarmas suenan a su hora en vez de unos minutos tarde
+531|Copia cada día
+532|Copia cada semana
+533|Copia cada mes
+534|Copia automática desactivada
+535|PIN activado
+536|PIN activado · huella activada
+537|Las notificaciones funcionan
+538|Notificación de prueba enviada
+539|Turquesa
+540|Azul
+541|Violeta
+542|Rosa
+543|Ámbar
+544|Verde
+545|Personalizado
+546|Rojo (0 a 255)
+547|Verde (0 a 255)
+548|Azul (0 a 255)
+549|Almacenamiento de la app (solo este PC). Elige una carpeta de Google Drive, OneDrive o Dropbox para sincronizar entre ordenadores
+550|Solo este teléfono. Elige una carpeta que otra app mantenga sincronizada para compartir datos entre dispositivos
+551|Los recordatorios aún no funcionan aquí
+552|No disponible aquí
+P64|$1 · acento $2
+P65|$1 · última $2
+P66|A diario a las $1
+P67|$1 de $2 activadas
+P68|Última copia $1
+P69|Conserva las 8 copias más recientes en $1
+P70|Los eventos se sincronizan cada 15 minutos, última $1
+P71|$1 min

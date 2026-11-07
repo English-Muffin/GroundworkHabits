@@ -1,0 +1,623 @@
+1|+ Taak toevoegen
+2|+ Nieuw doel
+3|+ Nieuwe gewoonte
+4|+ Nieuw gebied
+5|+ Nieuwe reeks
+6|Een paar handige dingen:
+7|Een stille melding die blijft tot je Ja of Nee antwoordt. Vervalt als de gewoonte al gedaan is.
+8|Een taak voor dit doel
+9|PRESTATIES
+10|Accentkleur
+11|Prestaties
+12|Tabblad Prestaties
+13|Toevoegen
+14|Herinnering toevoegen
+15|Automatisch een bedrag toevoegen
+16|Voeg minstens één taak toe
+17|Doel toevoegen
+18|Gewoonte toevoegen
+19|Voeg de stappen toe die je er brengen; afvinken vult de balk.
+20|Voeg vanaf de doelkaart toe wat je erin stopt (of eruit haalt); de balk vult zich richting het doel.
+21|Voeg je eerste gewoonte toe om je dag te beginnen.
+22|Alarm
+23|Alarmen kunnen een paar minuten te laat zijn
+24|Alle doelen
+25|Exacte alarmen toestaan
+26|Accent amber
+27|Bedrag
+28|App-vergrendeling
+29|Archiveren
+30|LANGSTE REEKS
+31|Back-up mislukt
+32|Back-up teruggezet
+33|Back-up opgeslagen
+34|Langste reeks
+35|Accent blauw
+36|Agendasynchronisatie gestopt
+37|Annuleren
+38|Kaartindeling hersteld
+39|Carrière
+40|Zoeken naar updates
+41|Sluiten
+42|Kleur
+43|Voltooid
+44|Lijst van gisteren kopiëren
+45|Opslaan in je gegevensmap mislukt
+46|Herinnering instellen mislukt
+47|Aantal
+48|Tellen vanaf
+49|Aanpassen
+50|Dagelijks
+51|Dagelijkse herinnering
+52|Donker
+53|Daybook slaat nu op in die map
+54|Dagen op rij voor een bevriezing
+55|Verwijderen
+56|Taak verwijderen
+57|Demogegevens geladen
+58|Herhaalt niet
+59|Gedaan of niet
+60|Sleep de gestippelde greep van taken, gewoonten, doelen en kaarten, of focus hem en gebruik de pijltjestoetsen. Taken kunnen naar een andere dag.
+61|Slepen om te ordenen
+62|Verdien er een per
+63|Een gewoonte bewerken
+64|Gewoonte bewerken
+65|Energie
+66|Enter om toe te voegen, Esc om te annuleren
+67|Elke dag
+68|Elke keer dat je die gewoonte sindsdien deed telt.
+69|Elke week op zondag
+70|Elke werkdag (ma t/m vr)
+71|Alles gewist
+72|Alles wordt op dit apparaat bewaard. Exporteer een back-up via de instellingen of kies een gesynchroniseerde map op de computer.
+73|Exporteren als spreadsheet (.csv)
+74|Back-up exporteren
+75|Exporteren mislukt
+76|Taken naar agenda exporteren (.ics)
+77|Gezin
+78|Functies
+79|Ontgrendelen met vingerafdruk is niet beschikbaar
+80|Ontgrendelen met vingerafdruk uit
+81|Ontgrendelen met vingerafdruk aan
+82|De vingerafdrukken op deze telefoon zijn gewijzigd. Ontgrendel met je pincode en zet vingerafdruk opnieuw aan
+83|Klaar op
+84|Klaar op (optioneel)
+85|Focus
+86|Focussessie klaar
+87|Focussessie klaar. Neem een korte pauze.
+88|Focustimer
+89|Van → naar
+90|Plezier
+91|DOELEN
+92|Doel verwijderd
+93|Doel per dag (optioneel)
+94|Titel van het doel
+95|Doelen
+96|Doelen bereikt
+97|Google Agenda
+98|Begrepen
+99|Accent groen
+100|GEWOONTE
+101|RANGLIJST GEWOONTEN
+102|Gewoonte
+103|Gewoonte verwijderd
+104|Naam van de gewoonte
+105|Notities bij gewoonten
+106|Gewoonten
+107|Gezondheid
+108|Thuis
+109|Hoe meet je het?
+110|Hoe bijhouden
+111|Hoe was deze maand? Wat heb je geleerd?
+112|Ideeën
+113|Back-up importeren
+114|Bezig
+115|Inzichten
+116|Inzichten verschijnen zodra je dagelijkse gewoonten hebt.
+117|Bewaar er tot
+118|Minder
+119|Levensgebied
+120|Levensgebieden
+121|Licht
+122|Demogegevens laden
+123|De opslag uit die map is geladen
+124|Noteer de huidige waarde vanaf de doelkaart; het werkt omhoog (inkomen) of omlaag (gewicht, resterende schuld).
+125|MINDSET
+126|Gemiste taken markeren
+127|Taak als gedaan markeren
+128|Mindset
+129|Mindsettracker
+130|Verloop van je mindset deze week
+131|Maandelijks
+132|Maandreflectie
+133|Maandreflectie
+134|Meer
+135|Maximaal bewaarde bevriezingen
+136|Motivatie
+137|Kaart verplaatsen. Sleep of gebruik de pijltjestoetsen
+138|Doel verplaatsen. Sleep of gebruik de pijltjestoetsen
+139|Gewoonte verplaatsen. Sleep of gebruik de pijltjestoetsen
+140|Verplaats of verwijder eerst de doelen van dit gebied
+141|Taak verplaatsen. Sleep of gebruik de pijltjestoetsen
+142|Zet alles waar jij wilt
+143|VERDIENT AANDACHT
+144|Nieuwe pincode
+145|Nieuw doel
+146|Nieuwe gewoonte
+147|Nieuwe stap
+148|Nieuwe reeks
+149|Nieuwe taak
+150|Nieuwe taak voor vandaag
+151|Volgende maand
+152|Volgende week
+153|Hier zijn nog geen gewoonten.
+154|Niet voltooid
+155|Nog niets gepland.
+156|Niets te kopiëren van de vorige dag
+157|Meldingen zijn geblokkeerd. Sta ze toe in de Android-instellingen
+158|Meldingen zijn geblokkeerd. Sta ze toe in de systeeminstellingen
+159|ALGEMENE CONSISTENTIE
+160|Van de taken van deze week zijn gedaan
+161|Uit
+162|Aan
+163|Openen
+164|Openen →
+165|Algemeen
+166|Totale voortgang
+167|Pincode verwijderd
+168|Pincode verwijderd en gegevens op dit apparaat gewist
+169|Pincode ingesteld. Je gegevens zijn nu versleuteld
+170|Plak het geheime iCal-adres van de agenda (begint met https://)
+171|Percentage
+172|Kies een eigen accentkleur
+173|Kies een eigen kleur voor de gewoonte
+174|Kies een datum en tijd die niet in de toekomst liggen
+175|Kies een gewoonte
+176|Kies een levensgebied om te beginnen
+177|Kies wanneer je stopte en zie de reeks groeien.
+178|Accent roze
+179|Vorige maand
+180|Vorige week
+181|Voortgang
+182|Voortgang:
+183|Snel toevoegen
+184|Bereikt
+185|Relaties
+186|Herinnering
+187|Tijd van de herinnering
+188|Herhalen
+189|Een taak herhalen
+190|Herhaal de pincode
+191|Gaat af en trilt op dit tijdstip, met de knoppen Ja en Nee. Vervalt als de gewoonte al gedaan is.
+192|STATISTIEKEN
+193|Opslaan
+194|Pincode opslaan
+195|Slaat alleen op deze telefoon op
+196|Slaat alleen in de app-opslag op
+197|Zoeken
+198|Zoeken en instellingen
+199|Pincode instellen
+200|Pincode instellen…
+201|Stel een start en een ander doel in
+202|Stel het bedrag en de startdatum in om automatisch toe te voegen
+203|Namen tonen in herinneringen
+204|Tips tonen
+205|Start
+206|Opnieuw beginnen
+207|Reeks starten
+208|Datum van de stap (optioneel)
+209|Stappen
+210|Reeks verwijderd
+211|Reeksbevriezingen
+212|Reeks opnieuw gestart. Je kunt het.
+213|Reeksen op Vandaag
+214|TAKEN
+215|TAKEN DEZE WEEK
+216|DEZE WEEK
+217|BESTE REEKSEN
+218|Tik op een vakje om het af te vinken. Niet gedane taken van eerdere dagen tonen een rode X; tik erop als je het alleen vergat.
+219|Tik op de naam om naam, kleur, categorie en frequentie te wijzigen, of om een hoeveelheid zoals km, uren of pagina’s bij te houden.
+220|Doel
+221|Taken
+222|Taak toegevoegd voor vandaag
+223|Taak verwijderd
+224|Taak voor vandaag
+225|Tekst van de taak
+226|Taken
+227|Taken vandaag
+228|Taken, notities, doelen, gewoonten…
+229|Accent groenblauw
+230|Dat bestand is geen Daybook-back-up
+231|Het vergrootglas doorzoekt alles. Het tandwiel bevat thema’s, kleuren, functies, back-ups en de app-vergrendeling.
+232|De opslag in je gegevensmap gebruikt een andere pincode
+233|De twee pincodes komen niet overeen
+234|Thema
+235|Deze taken verschijnen op hun dag in Taken; ze daar afvinken vult dit doel.
+236|Waarmee je gestopt bent, en hoe lang al
+237|Deze maand
+238|Deze week
+239|Een gewoonte afvinken
+240|Afvinken en herstellen
+241|Keer
+242|Vandaag
+243|Houd bij waarmee je bent gestopt, zoals roken of suiker.
+244|Aanzetten
+245|Eenheid
+246|Eenheid, bijv. € of km
+247|Volgende keer ontgrendelen met je vingerafdruk?
+248|Ook ontgrendelen met je vingerafdruk?
+249|T.O.V. VORIGE WEEK
+250|Accent violet
+251|WEEK VANAF
+252|Wekelijks
+253|Weekoverzicht
+254|Welkom bij Daybook
+255|Waarmee je stopte
+256|Waarmee ben je gestopt? bijv. Roken
+257|Wat wil je bereiken?
+258|Gebruik bij het toevoegen van een taak het menu eronder om hem elke dag, werkdag, week of maand te herhalen.
+259|Wanneer ben je gestopt?
+260|Verkeerde pincode
+261|Verkeerde pincode, of geen Daybook-back-up
+262|Jaaroverzicht
+263|Ja of nee
+264|Je gegevens blijven hier
+265|Je eigen levensgebied
+266|Jouw week
+267|hexcode van de accentkleur
+268|dagelijks
+269|dagen
+270|gedaan
+271|hexcode van de gewoontekleur
+272|km, pagina’s, uren…
+273|maandelijks
+274|wekelijks
+275|Heb je het vandaag gedaan?
+276|Heb je het deze week gedaan?
+277|Heb je het deze maand gedaan?
+278|Heb je het gedaan?
+279|Ja, gedaan
+280|Nee
+281|Al gedaan. Goed bezig.
+282|Vandaag al gedaan. Goed bezig.
+283|Deze week al gedaan. Goed bezig.
+284|Deze maand al gedaan. Goed bezig.
+285|Taakherinnering
+286|Deze gewoonte bestaat niet meer.
+287|Daybook is vergrendeld
+288|Voer je pincode in
+289|Ontgrendelen
+290|Pincode vergeten?
+291|Tik nogmaals: pincode verwijderen en gegevens op dit apparaat wissen
+292|Vingerafdruk gebruiken
+293|Verkeerde pincode. Probeer het opnieuw.
+294|Te veel pogingen. Wacht 30 seconden.
+295|Daybook ontgrendelen
+296|Bevestig je vingerafdruk
+297|Ontgrendelen met vingerafdruk
+298|Voer je pincode één keer in om het aan te zetten.
+299|Doorgaan
+300|Ontgrendelen met vingerafdruk uitzetten
+301|Vingerafdruk gebruiken om te ontgrendelen…
+302|Pincode wijzigen…
+303|Pincode verwijderen
+304|Tik nogmaals om de pincode te verwijderen
+305|Gebruik 4 tot 8 cijfers
+306|Versleutelde back-up
+307|Voer de pincode in die gold toen deze back-up werd gemaakt. Terugzetten vervangt de gegevens op dit apparaat.
+308|Terugzetten
+309|Versleutelde back-up gedownload. Bij importeren wordt om je pincode gevraagd
+310|Back-up gedownload
+311|Gegevensmap
+312|Alleen deze telefoon
+313|Map kiezen…
+314|Deze map niet meer gebruiken
+315|App-opslag (alleen deze pc)
+316|Er staat hier al een Daybook-opslag
+317|Vervangen door de gegevens op deze telefoon, of de opslag uit de map laden? Laden overschrijft wat op deze telefoon staat.
+318|De opslag uit de map laden
+319|Tik nogmaals: de opslag uit de map laden
+320|Vervangen door mijn gegevens
+321|Die map kan niet gebruikt worden
+322|Nu back-up maken
+323|Back-upmap openen
+324|Elke week een automatische back-up
+325|Taal
+326|Doel bewerken
+327|Gebied bewerken
+328|Nieuw levensgebied
+329|bijv. Geloof, Huisdieren, Zijproject
+330|Naam van het gebied
+331|Gebied toevoegen
+332|Tik nogmaals om te verwijderen
+333|Gearchiveerd
+334|Andere doelen
+335|Vastgezet
+336|Niet begonnen
+337|Te laat
+338|Vandaag klaar
+339|Aan doel toevoegen
+340|Huidige waarde noteren
+341|Waarde noteren
+342|+ Toevoegen
+343|Datum
+344|Waarde
+345|Elke
+346|Maand
+347|Week
+348|Vanaf
+349|Voeg eerst een gewoonte toe en koppel die hier.
+350|Doel gearchiveerd
+351|Doel teruggezet
+352|De deadline van een doel komt eraan
+353|Een gewoonteherinnering wacht op je antwoord
+354|Een taakherinnering wacht op je antwoord
+355|Voeg een dagelijkse gewoonte toe in Daybook
+356|Aan een doel toevoegen
+357|Voeg een stap toe, bijv. 10 km hardlopen
+358|Stel een doel boven 0 in
+359|Ongedaan maken
+360|Teruggezet
+361|Ook de latere herhalingen verwijderen
+362|Geen latere herhalingen
+363|Tot het einde van de maand
+364|Gedurende 3 maanden
+365|Tot het einde van het jaar
+366|Tik op Toevoegen als je klaar bent
+367|Agenda koppelen…
+368|Synchroniseert uit je agenda
+369|Nu synchroniseren
+370|Agendasynchronisatie stoppen
+371|Geheim iCal-adres
+372|Koppelen
+373|Laatste 12 maanden
+374|Doel per week (optioneel)
+375|Doel per maand (optioneel)
+376|Dagen per week (7 = elke dag)
+377|bijv. 5 km gelopen, voelde geweldig
+378|Notitie
+379|Notitie opslaan
+380|Werken aan
+381|Geen taak, alleen focus
+382|Minuten
+383|Stoppen
+384|4 tot 8 cijfers. Als je hem vergeet, kom je alleen weer binnen door de gegevens op dit apparaat te wissen (een kopie in de gegevensmap blijft bewaard).
+385|Vergrendelt bij het openen van Daybook, na een minuut op de achtergrond of 5 minuten zonder gebruik. Verbergt je gegevens op het scherm en versleutelt wat op dit apparaat en in back-ups wordt bewaard.
+386|Kaartindeling herstellen
+387|Miniwidget openen
+388|Daybook openen
+389|Vandaag alles gedaan
+390|Niets gepland.
+391|Nog geen dagelijkse gewoonten.
+392|Fitheid
+393|Geld
+394|Leren
+395|Keer per dag, bijv. 8 glazen
+396|Keer per week, bijv. 8 glazen
+397|Keer per maand, bijv. 8 glazen
+398|Bezig in 1 levensgebied
+399|Gedane dagelijkse gewoonten in de laatste 12 maanden
+400|Bewerken
+401|Taken deze week
+402|Een gezond gewicht bereiken
+403|60 nachten 7 uur slapen
+404|Dit jaar 1000 km wandelen
+405|Een volledige check-up doen
+406|Dit jaar 500 km hardlopen
+407|100 kg bankdrukken
+408|10.000 push-ups doen
+409|Een halve marathon lopen
+410|30 sollicitaties versturen
+411|Mijn inkomen verhogen
+412|Een certificaat halen
+413|4 zijprojecten lanceren
+414|Een noodfonds opbouwen
+415|Een schuld aflossen
+416|Elke maand beleggen
+417|Sparen voor een vakantie
+418|12 boeken lezen
+419|100 uur oefenen
+420|Een taal tot B1 leren
+421|Een online cursus afronden
+422|12 dates plannen
+423|Elke week een vriend bellen
+424|5 nieuwe mensen ontmoeten
+425|Elke maand familie bezoeken
+426|Elke week samen eten met het gezin
+427|Een gezinsreis plannen
+428|5 nieuwe plekken bezoeken
+429|10 liedjes leren
+430|Mijn bucketlist afvinken
+431|Sparen voor de aanbetaling van een huis
+432|Elke kamer opruimen
+433|Een kamer opknappen
+434|100 keer mediteren
+435|30 dagen een dagboek bijhouden
+436|90 dagen lang 20 minuten per dag lezen
+437|Een getal bereiken
+438|Van de ene waarde naar de andere
+439|Een reeks stappen afronden
+440|Een gewoonte opbouwen
+P1|$1 / $2 gewoonten gedaan
+P2|$1 / $2 voltooid
+P3|$1 doelen · $2 bereikt
+P4|$1 reeksbevriezingen bewaard
+P5|$1 reeksbevriezingen
+P6|$1 perfecte dagen in de laatste 12 maanden
+P7|$1/$2 gewoonten vandaag gedaan
+P8|$1% t.o.v. vorige week
+P9|Gemiddelde voortgang $1%
+P10|Consistentie over de laatste $1 dagen
+P11|Laatste $1 dagen
+P12|Bezig in $1 van $2 levensgebieden
+P13|Elke maand op dag $1
+P14|Elke week: $1
+P15|Notitie toevoegen voor $1
+P16|Notitie van $1 bewerken
+P17|$1. Tik om te bewerken
+P18|$1 vastzetten
+P19|$1 losmaken
+P20|$1, gemist. Tik om als gedaan te markeren
+P21|Gebied $1 bewerken
+P22|Nog $1 dagen
+P23|Nog 1 dag
+P24|$1 dagen te laat
+P25|$1 van $2 stappen
+P26|$1 van $2 taken gedaan
+P27|$1 van $2 taken gedaan · volgende: $3
+P28|Volgende stap: $1
+P29|$1 van $2 keer · $3
+P30|$1 van $2
+P31|$1 nu · doel $2 (vanaf $3)
+P32|Voegt elke week $1 toe
+P33|Voegt elke maand $1 toe
+P34|Toegevoegd op $1 dagen
+P35|Daybook slaat nu op in $1
+P36|Doel bereikt: $1
+P37|$1 opgeslagen
+P38|Er is al een gebied met de naam $1
+P39|$1 toegevoegd aan $2
+P40|$1 gedaan
+P41|Teruggezet. Nog $1 ongedaan te maken
+P42|$1 taken verwijderd
+P43|$1 agenda-afspraken gesynchroniseerd
+P44|Synchroniseert uit je agenda, laatst $1
+P45|Elke week een automatische back-up, laatst $1
+P46|Kleur $1
+P47|$1/$2 deze week
+P48|Energie $1
+P49|Focus $1
+P50|Motivatie $1
+P51|Stel een doel in een van je $1 levensgebieden.
+P52|Typ minstens $1 letters.
+P53|Nog geen doelen in $1.
+P54|Gearchiveerd ($1)
+P55|Herinnering om $1. Wijzigen
+P56|$1 moet over een week klaar zijn
+P57|$1 moet vandaag klaar zijn
+P58|$1 verwijderen
+P59|$1 dagen
+441|Automatische back-up
+442|Elke week
+443|Elke maand
+444|Auto
+445|Nog geen back-up
+446|Getoonde maanden
+P60|Laatste $1 maanden
+P61|$1 perfecte dagen in de laatste $2 maanden
+P62|Automatische back-up, laatst $1
+P63|Gedane dagelijkse gewoonten in de laatste $1 maanden
+447|Een bestand met al je gegevens
+448|Een korte notitie op elke dag van een gewoonte
+449|Een overzicht van vorige week op zondag
+450|Een timer voor geconcentreerd werk aan een taak
+451|Over
+452|De taak toevoegen of het venster opslaan
+453|Weergave
+454|Pijltjestoetsen
+455|Terug
+456|Agenda
+457|Agendasynchronisatie werkt in de desktop- en Android-apps
+458|Controleert of meldingen bij je aankomen
+459|Een venster sluiten of de instellingen verlaten
+460|Dagelijkse herinnering uit
+461|Gevarenzone
+462|Gegevens en back-ups
+463|Daybook volgt de taal van dit apparaat, tenzij je er een kiest. Je eigen gewoonten en taken worden nooit vertaald.
+464|Wist alles op dit apparaat
+465|Voorbeeldgewoonten, -taken en -doelen
+466|Exporteren
+467|Exporteren en importeren
+468|Voor Excel, Numbers of Google Spreadsheets
+469|Herinneringen voor gewoonten en taken
+470|Gewoonten, taken en doelen op één rustige plek
+471|Zo werkt de vergrendeling
+472|Importeer het bestand in Google Agenda: Instellingen, Importeren en exporteren
+473|Sneltoetsen
+474|Indeling
+475|Licenties
+476|Vergrendelt Daybook en versleutelt je gegevens op dit apparaat en in back-ups
+477|Vergrendelt bij het openen van Daybook, na een minuut op de achtergrond of de tijd hierboven zonder gebruik. Verbergt je gegevens op het scherm en versleutelt wat op dit apparaat en in back-ups wordt bewaard.
+478|GNU AGPL-3.0-licentie
+479|Verplaats taken, gewoonten, doelen en kaarten door te slepen
+480|Verplaats de geselecteerde kaart, gewoonte, doel of taak
+481|Geen pincode
+482|Geen account, geen advertenties, geen tracking. Alles blijft op je apparaten en gaat alleen waar jij het heen stuurt: je back-ups, je gegevensmap, je agendalink.
+483|Geen instellingen gevonden.
+484|Niet gekoppeld
+485|Meldingen noemen de gewoonte of taak; uit toont alleen “Daybook”
+486|Eén melding per dag als er nog gewoonten openstaan
+487|Open een gewoonte (tik op de naam) of tik op de bel bij een taak
+488|Niet gedane taken uit het verleden krijgen een rode X
+489|Privacy
+490|Zet de kaarten van Vandaag en Inzichten terug in de oorspronkelijke volgorde
+491|Herinneringen
+492|Vervangt de gegevens op dit apparaat
+493|Herstellen
+494|SIL Open Font License
+495|Zoals dit apparaat
+496|Instellingen doorzoeken
+497|Beveiliging
+498|Testmelding sturen
+499|Een herinnering instellen
+500|Instellingen
+501|Onderdelen van de instellingen
+502|Zeven dagen op rij leveren een bevriezing op die een reeks redt op een gemiste dag
+503|Lettertype Space Grotesk
+504|De korte uitleg van de eerste start
+505|Het jaar in vakjes bij Inzichten
+506|Houd bij waarmee je gestopt bent, zoals roken
+507|De laatste verwijdering ongedaan maken
+508|Je gegevens blijven van jou
+509|Je stopreeksen op het scherm Vandaag
+510|Gekoppeld
+511|Afspraken synchroniseren elke 15 minuten
+512|Plak het geheime iCal-adres van je agenda; inloggen bij Google is niet nodig
+513|Haalt de agenda-afspraken uit je taken
+514|Back-up
+515|Bewaart de 8 nieuwste kopieën
+516|Map
+517|Wijzigen
+518|Kiezen…
+519|Versleuteld met je pincode
+520|Ontgrendel met je vingerafdruk in plaats van de pincode te typen
+521|Vergrendelen na
+522|Zonder gebruik; Daybook vergrendelt ook een minuut nadat je het verlaat
+523|Je gegevens worden ontsleuteld en weer leesbaar bewaard
+524|Miniwidget openen
+525|Een klein venster dat altijd bovenop staat met de gewoonten en taken van vandaag
+526|Computer
+527|Tijd
+528|Elke dag een melding, ook als Daybook gesloten is
+529|Alleen als Daybook open is of op de achtergrond draait
+530|Android 14 en later: alarmen gaan op tijd af in plaats van een paar minuten te laat
+531|Back-up elke dag
+532|Back-up elke week
+533|Back-up elke maand
+534|Automatische back-up uit
+535|Pincode aan
+536|Pincode aan · vingerafdruk aan
+537|Meldingen werken
+538|Testmelding verstuurd
+539|Groenblauw
+540|Blauw
+541|Violet
+542|Roze
+543|Amber
+544|Groen
+545|Eigen
+546|Rood (0 tot 255)
+547|Groen (0 tot 255)
+548|Blauw (0 tot 255)
+549|App-opslag (alleen deze pc). Kies een Google Drive-, OneDrive- of Dropbox-map om tussen computers te synchroniseren
+550|Alleen deze telefoon. Kies een map die een andere app synchroon houdt om gegevens tussen apparaten te delen
+551|Herinneringen worden hier nog niet ondersteund
+552|Hier niet beschikbaar
+P64|$1 · accent $2
+P65|$1 · laatst $2
+P66|Dagelijks om $1
+P67|$1 van $2 aan
+P68|Laatste back-up $1
+P69|Bewaart de 8 nieuwste kopieën in $1
+P70|Afspraken synchroniseren elke 15 minuten, laatst $1
+P71|$1 min

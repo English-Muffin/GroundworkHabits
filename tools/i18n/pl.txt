@@ -1,0 +1,623 @@
+1|+ Dodaj zadanie
+2|+ Nowy cel
+3|+ Nowy nawyk
+4|+ Nowy obszar
+5|+ Nowa seria
+6|Kilka przydatnych rzeczy:
+7|Ciche powiadomienie, które zostaje, aż odpowiesz Tak lub Nie. Pomijane, jeśli nawyk jest już zrobiony.
+8|Zadanie do tego celu
+9|OSIĄGNIĘCIA
+10|Kolor akcentu
+11|Osiągnięcia
+12|Karta Osiągnięcia
+13|Dodaj
+14|Dodaj przypomnienie
+15|Dodawaj kwotę automatycznie
+16|Dodaj co najmniej jedno zadanie
+17|Dodaj cel
+18|Dodaj nawyk
+19|Dodaj kroki, które cię tam doprowadzą; odhaczanie ich wypełnia pasek.
+20|Dodawaj na karcie celu to, co wpłacasz (lub wypłacasz); pasek wypełnia się do wartości docelowej.
+21|Dodaj swój pierwszy nawyk, aby zacząć dzień.
+22|Alarm
+23|Alarmy mogą spóźniać się o kilka minut
+24|Wszystkie cele
+25|Zezwól na dokładne alarmy
+26|Akcent bursztynowy
+27|Kwota
+28|Blokada aplikacji
+29|Archiwizuj
+30|NAJDŁUŻSZA SERIA
+31|Kopia zapasowa nie powiodła się
+32|Przywrócono kopię zapasową
+33|Zapisano kopię zapasową
+34|Najdłuższa seria
+35|Akcent niebieski
+36|Synchronizacja kalendarza zatrzymana
+37|Anuluj
+38|Układ kart przywrócony
+39|Kariera
+40|Sprawdź aktualizacje
+41|Zamknij
+42|Kolor
+43|Ukończone
+44|Skopiuj wczorajszą listę
+45|Nie udało się zapisać w folderze danych
+46|Nie udało się ustawić przypomnienia
+47|Liczba
+48|Liczone od
+49|Dostosuj
+50|Codzienne
+51|Codzienne przypomnienie
+52|Ciemny
+53|Daybook zapisuje teraz w tym folderze
+54|Dni z rzędu, by zdobyć zamrożenie
+55|Usuń
+56|Usuń zadanie
+57|Wczytano dane demonstracyjne
+58|Nie powtarza się
+59|Zrobione lub nie
+60|Przeciągnij kropkowany uchwyt zadań, nawyków, celów i kart albo zaznacz go i użyj strzałek. Zadania można przenieść na inny dzień.
+61|Przeciągnij, aby zmienić kolejność
+62|Zdobywaj jedno co
+63|Edytuj nawyk
+64|Edytuj nawyk
+65|Energia
+66|Enter, aby dodać, Esc, aby anulować
+67|Codziennie
+68|Liczy się każde wykonanie tego nawyku od tamtej pory.
+69|Co tydzień w niedzielę
+70|W każdy dzień roboczy (pon–pt)
+71|Wszystko usunięte
+72|Wszystko jest zapisywane na tym urządzeniu. Wyeksportuj kopię w ustawieniach albo wybierz zsynchronizowany folder na komputerze.
+73|Eksportuj jako arkusz (.csv)
+74|Eksportuj kopię zapasową
+75|Eksport nie powiódł się
+76|Eksportuj zadania do kalendarza (.ics)
+77|Rodzina
+78|Funkcje
+79|Odblokowanie odciskiem palca jest niedostępne
+80|Odblokowanie odciskiem palca wyłączone
+81|Odblokowanie odciskiem palca włączone
+82|Odciski palców na tym telefonie się zmieniły. Odblokuj kodem PIN i włącz odcisk ponownie
+83|Termin
+84|Termin (opcjonalnie)
+85|Skupienie
+86|Sesja skupienia zakończona
+87|Sesja skupienia zakończona. Zrób krótką przerwę.
+88|Minutnik skupienia
+89|Od → do
+90|Rozrywka
+91|CELE
+92|Cel usunięty
+93|Cel na dzień (opcjonalnie)
+94|Nazwa celu
+95|Cele
+96|Osiągnięte cele
+97|Kalendarz Google
+98|Rozumiem
+99|Akcent zielony
+100|NAWYK
+101|RANKING NAWYKÓW
+102|Nawyk
+103|Nawyk usunięty
+104|Nazwa nawyku
+105|Notatki do nawyków
+106|Nawyki
+107|Zdrowie
+108|Dom
+109|Jak to mierzysz?
+110|Jak go śledzić
+111|Jak minął ten miesiąc? Czego się nauczyłeś?
+112|Pomysły
+113|Importuj kopię zapasową
+114|W toku
+115|Statystyki
+116|Statystyki pojawią się, gdy będziesz mieć codzienne nawyki.
+117|Maksymalnie
+118|Mniej
+119|Obszar życia
+120|Obszary życia
+121|Jasny
+122|Wczytaj dane demonstracyjne
+123|Wczytano zapis z tego folderu
+124|Zapisuj bieżącą wartość na karcie celu; działa w górę (dochód) albo w dół (waga, pozostały dług).
+125|NASTAWIENIE
+126|Oznaczaj pominięte zadania
+127|Oznacz zadanie jako zrobione
+128|Nastawienie
+129|Dziennik nastawienia
+130|Zmiany nastawienia w tym tygodniu
+131|Miesięczne
+132|Podsumowanie miesiąca
+133|Podsumowanie miesiąca
+134|Więcej
+135|Najwięcej zebranych zamrożeń
+136|Motywacja
+137|Przenieś kartę. Przeciągnij lub użyj strzałek
+138|Przenieś cel. Przeciągnij lub użyj strzałek
+139|Przenieś nawyk. Przeciągnij lub użyj strzałek
+140|Najpierw przenieś lub usuń cele z tego obszaru
+141|Przenieś zadanie. Przeciągnij lub użyj strzałek
+142|Ułóż wszystko po swojemu
+143|WYMAGA UWAGI
+144|Nowy PIN
+145|Nowy cel
+146|Nowy nawyk
+147|Nowy krok
+148|Nowa seria
+149|Nowe zadanie
+150|Nowe zadanie na dziś
+151|Następny miesiąc
+152|Następny tydzień
+153|Nie ma tu jeszcze nawyków.
+154|Nieukończone
+155|Na razie nic nie zaplanowano.
+156|Nie ma czego kopiować z poprzedniego dnia
+157|Powiadomienia są zablokowane. Zezwól na nie w ustawieniach Androida
+158|Powiadomienia są zablokowane. Zezwól na nie w ustawieniach systemu
+159|OGÓLNA REGULARNOŚĆ
+160|Zadań z tego tygodnia jest zrobionych
+161|Wył.
+162|Wł.
+163|Otwórz
+164|Otwórz →
+165|Ogółem
+166|Postęp ogólny
+167|PIN usunięty
+168|PIN usunięty, a dane na tym urządzeniu wymazane
+169|PIN ustawiony. Twoje dane są teraz zaszyfrowane
+170|Wklej tajny adres iCal kalendarza (zaczyna się od https://)
+171|Procent
+172|Wybierz własny kolor akcentu
+173|Wybierz własny kolor nawyku
+174|Wybierz datę i godzinę, które nie są w przyszłości
+175|Wybierz nawyk
+176|Wybierz obszar życia, aby zacząć
+177|Wybierz, kiedy przestałeś, i patrz, jak rośnie seria.
+178|Akcent różowy
+179|Poprzedni miesiąc
+180|Poprzedni tydzień
+181|Postęp
+182|Postęp:
+183|Szybkie dodawanie
+184|Osiągnięty
+185|Relacje
+186|Przypomnienie
+187|Godzina przypomnienia
+188|Powtarzaj
+189|Powtarzaj zadanie
+190|Powtórz PIN
+191|Dzwoni i wibruje o tej godzinie, z przyciskami Tak i Nie. Pomijane, jeśli nawyk jest już zrobiony.
+192|STATYSTYKI
+193|Zapisz
+194|Zapisz PIN
+195|Zapis tylko na tym telefonie
+196|Zapis tylko w pamięci aplikacji
+197|Szukaj
+198|Wyszukiwanie i ustawienia
+199|Ustaw PIN
+200|Ustaw PIN…
+201|Ustaw start i inną wartość docelową
+202|Ustaw kwotę i datę początku, aby dodawać automatycznie
+203|Pokazuj nazwy w przypomnieniach
+204|Pokaż wskazówki
+205|Start
+206|Zacznij od nowa
+207|Rozpocznij serię
+208|Data kroku (opcjonalnie)
+209|Kroki
+210|Seria usunięta
+211|Zamrożenia serii
+212|Seria zaczęta od nowa. Dasz radę.
+213|Serie na ekranie Dziś
+214|ZADANIA
+215|ZADANIA W TYM TYGODNIU
+216|TEN TYDZIEŃ
+217|NAJLEPSZE SERIE
+218|Dotknij pola, aby je odhaczyć. Niewykonane zadania z minionych dni mają czerwony X; dotknij go, jeśli po prostu zapomniałeś.
+219|Dotknij nazwy, aby zmienić nazwę, kolor, kategorię, częstotliwość albo śledzić ilość, np. km, godziny czy strony.
+220|Cel
+221|Zadania
+222|Dodano zadanie na dziś
+223|Zadanie usunięte
+224|Zadanie na dziś
+225|Treść zadania
+226|Zadania
+227|Zadania na dziś
+228|Zadania, notatki, cele, nawyki…
+229|Akcent morski
+230|Ten plik nie jest kopią zapasową Daybook
+231|Lupa przeszukuje wszystko. Zębatka ma motywy, kolory, funkcje, kopie zapasowe i blokadę aplikacji.
+232|Zapis w folderze danych używa innego kodu PIN
+233|Oba kody PIN nie są takie same
+234|Motyw
+235|Te zadania pojawiają się w swoim dniu w Zadaniach; odhaczanie ich tam wypełnia ten cel.
+236|Z czego zrezygnowałeś i jak dawno
+237|Ten miesiąc
+238|Ten tydzień
+239|Odhacz nawyk
+240|Odhacz i popraw
+241|Razy
+242|Dziś
+243|Śledź coś, z czego zrezygnowałeś, np. palenie albo cukier.
+244|Włącz
+245|Jednostka
+246|Jednostka, np. € lub km
+247|Odblokowywać odciskiem palca następnym razem?
+248|Odblokowywać także odciskiem palca?
+249|VS ZESZŁY TYDZIEŃ
+250|Akcent fioletowy
+251|TYDZIEŃ OD
+252|Tygodniowe
+253|Podsumowanie tygodnia
+254|Witaj w Daybook
+255|Z czego zrezygnowałeś
+256|Z czego zrezygnowałeś? np. Palenie
+257|Co chcesz osiągnąć?
+258|Dodając zadanie, użyj menu pod nim, aby powtarzać je codziennie, w dni robocze, co tydzień lub co miesiąc.
+259|Kiedy przestałeś?
+260|Błędny PIN
+261|Błędny PIN albo to nie jest kopia Daybook
+262|Mapa roku
+263|Tak lub nie
+264|Twoje dane zostają tutaj
+265|Twój własny obszar życia
+266|Twój tydzień
+267|kod hex koloru akcentu
+268|codziennie
+269|dni
+270|zrobione
+271|kod hex koloru nawyku
+272|km, strony, godziny…
+273|co miesiąc
+274|co tydzień
+275|Zrobiłeś to dzisiaj?
+276|Zrobiłeś to w tym tygodniu?
+277|Zrobiłeś to w tym miesiącu?
+278|Zrobiłeś to?
+279|Tak, zrobione
+280|Nie
+281|Już zrobione. Dobra robota.
+282|Dziś już zrobione. Dobra robota.
+283|W tym tygodniu już zrobione. Dobra robota.
+284|W tym miesiącu już zrobione. Dobra robota.
+285|Przypomnienie o zadaniu
+286|Ten nawyk już nie istnieje.
+287|Daybook jest zablokowany
+288|Wpisz PIN
+289|Odblokuj
+290|Nie pamiętasz kodu PIN?
+291|Dotknij ponownie: usuń PIN i wymaż dane na tym urządzeniu
+292|Użyj odcisku palca
+293|Błędny PIN. Spróbuj ponownie.
+294|Za dużo prób. Poczekaj 30 sekund.
+295|Odblokuj Daybook
+296|Potwierdź odciskiem palca
+297|Odblokowanie odciskiem palca
+298|Wpisz PIN raz, aby to włączyć.
+299|Dalej
+300|Wyłącz odblokowanie odciskiem palca
+301|Odblokowuj odciskiem palca…
+302|Zmień PIN…
+303|Usuń PIN
+304|Dotknij ponownie, aby usunąć PIN
+305|Użyj od 4 do 8 cyfr
+306|Zaszyfrowana kopia
+307|Wpisz PIN ustawiony w chwili tworzenia tej kopii. Przywrócenie zastępuje dane na tym urządzeniu.
+308|Przywróć
+309|Pobrano zaszyfrowaną kopię. Import poprosi o PIN
+310|Pobrano kopię zapasową
+311|Folder danych
+312|Tylko ten telefon
+313|Wybierz folder…
+314|Przestań używać tego folderu
+315|Pamięć aplikacji (tylko ten komputer)
+316|Jest tu już zapis Daybook
+317|Zastąpić go danymi z tego telefonu czy wczytać zapis z folderu? Wczytanie nadpisze to, co jest na tym telefonie.
+318|Wczytaj zapis z folderu
+319|Dotknij ponownie: wczytaj zapis z folderu
+320|Zastąp moimi danymi
+321|Nie można użyć tego folderu
+322|Utwórz kopię teraz
+323|Otwórz folder kopii
+324|Automatyczna kopia co tydzień
+325|Język
+326|Edytuj cel
+327|Edytuj obszar
+328|Nowy obszar życia
+329|np. Wiara, Zwierzęta, Projekt poboczny
+330|Nazwa obszaru
+331|Dodaj obszar
+332|Dotknij ponownie, aby usunąć
+333|Zarchiwizowane
+334|Pozostałe cele
+335|Przypięte
+336|Nierozpoczęty
+337|Po terminie
+338|Termin dziś
+339|Dodaj do celu
+340|Zapisz bieżącą wartość
+341|Zapisz wartość
+342|+ Dodaj
+343|Data
+344|Wartość
+345|Co
+346|Miesiąc
+347|Tydzień
+348|Od
+349|Najpierw dodaj nawyk, a potem połącz go tutaj.
+350|Cel zarchiwizowany
+351|Cel przywrócony
+352|Zbliża się termin celu
+353|Przypomnienie o nawyku czeka na odpowiedź
+354|Przypomnienie o zadaniu czeka na odpowiedź
+355|Dodaj codzienny nawyk w Daybook
+356|Dodaj do celu
+357|Dodaj krok, np. Przebiec 10 km
+358|Ustaw wartość docelową powyżej 0
+359|Cofnij
+360|Przywrócono
+361|Usuń też późniejsze powtórzenia
+362|Brak późniejszych powtórzeń
+363|Do końca miesiąca
+364|Przez 3 miesiące
+365|Do końca roku
+366|Dotknij Dodaj, gdy skończysz
+367|Połącz kalendarz…
+368|Synchronizacja z twojego kalendarza
+369|Synchronizuj teraz
+370|Zatrzymaj synchronizację kalendarza
+371|Tajny adres iCal
+372|Połącz
+373|Ostatnie 12 miesięcy
+374|Cel na tydzień (opcjonalnie)
+375|Cel na miesiąc (opcjonalnie)
+376|Dni w tygodniu (7 = codziennie)
+377|np. Przebiegłem 5 km, świetne samopoczucie
+378|Notatka
+379|Zapisz notatkę
+380|Pracuj nad
+381|Bez zadania, samo skupienie
+382|Minuty
+383|Zatrzymaj
+384|Od 4 do 8 cyfr. Jeśli go zapomnisz, jedynym sposobem na powrót jest wymazanie danych na tym urządzeniu (kopia w folderze danych zostaje).
+385|Blokuje się przy otwarciu Daybook, po minucie w tle lub po 5 minutach bez użycia. Ukrywa dane na ekranie i szyfruje to, co jest zapisane na tym urządzeniu i w kopiach.
+386|Przywróć układ kart
+387|Otwórz mini widżet
+388|Otwórz Daybook
+389|Dziś wszystko zrobione
+390|Nic nie zaplanowano.
+391|Nie ma jeszcze codziennych nawyków.
+392|Kondycja
+393|Pieniądze
+394|Nauka
+395|Razy dziennie, np. 8 szklanek
+396|Razy w tygodniu, np. 8 szklanek
+397|Razy w miesiącu, np. 8 szklanek
+398|Działasz w 1 obszarze życia
+399|Wykonane codzienne nawyki w ostatnich 12 miesiącach
+400|Edytuj
+401|Zadania w tym tygodniu
+402|Osiągnąć zdrową wagę
+403|Spać 7 godzin przez 60 nocy
+404|Przejść 1000 km w tym roku
+405|Zrobić pełne badania
+406|Przebiec 500 km w tym roku
+407|Wycisnąć 100 kg na ławce
+408|Zrobić 10 000 pompek
+409|Przebiec półmaraton
+410|Wysłać 30 aplikacji o pracę
+411|Zwiększyć swoje dochody
+412|Zdobyć certyfikat
+413|Wypuścić 4 projekty poboczne
+414|Zbudować fundusz awaryjny
+415|Spłacić dług
+416|Inwestować co miesiąc
+417|Oszczędzać na wakacje
+418|Przeczytać 12 książek
+419|Ćwiczyć 100 godzin
+420|Nauczyć się języka do poziomu B1
+421|Ukończyć kurs online
+422|Zaplanować 12 randek
+423|Dzwonić do przyjaciela co tydzień
+424|Poznać 5 nowych osób
+425|Odwiedzać rodzinę co miesiąc
+426|Rodzinny obiad co tydzień
+427|Zaplanować rodzinny wyjazd
+428|Odwiedzić 5 nowych miejsc
+429|Nauczyć się 10 piosenek
+430|Zrealizować moją listę marzeń
+431|Oszczędzać na wkład własny do domu
+432|Uporządkować każdy pokój
+433|Wyremontować pokój
+434|Medytować 100 razy
+435|Pisać dziennik przez 30 dni
+436|Czytać 20 minut dziennie przez 90 dni
+437|Osiągnąć liczbę
+438|Przejść od jednej wartości do drugiej
+439|Ukończyć zestaw kroków
+440|Zbudować nawyk
+P1|$1 / $2 nawyków zrobionych
+P2|$1 / $2 ukończonych
+P3|Cele: $1 · osiągnięte: $2
+P4|Zebrane zamrożenia serii: $1
+P5|Zamrożenia serii: $1
+P6|Idealne dni w ostatnich 12 miesiącach: $1
+P7|$1/$2 nawyków zrobionych dziś
+P8|$1% vs zeszły tydzień
+P9|Średni postęp $1%
+P10|Regularność w ostatnich $1 dniach
+P11|Ostatnie $1 dni
+P12|Działasz w $1 z $2 obszarów życia
+P13|Co miesiąc, dnia $1
+P14|Co tydzień: $1
+P15|Dodaj notatkę: $1
+P16|Edytuj notatkę: $1
+P17|$1. Dotknij, aby edytować
+P18|Przypnij: $1
+P19|Odepnij: $1
+P20|$1, pominięte. Dotknij, aby oznaczyć jako zrobione
+P21|Edytuj obszar $1
+P22|Zostało dni: $1
+P23|Został 1 dzień
+P24|Po terminie (dni): $1
+P25|Kroki: $1 z $2
+P26|Zadania zrobione: $1 z $2
+P27|Zadania zrobione: $1 z $2 · następne: $3
+P28|Następny krok: $1
+P29|$1 z $2 razy · $3
+P30|$1 z $2
+P31|$1 teraz · cel $2 (od $3)
+P32|Dodaje $1 co tydzień
+P33|Dodaje $1 co miesiąc
+P34|Dodano w dniach: $1
+P35|Daybook zapisuje teraz w: $1
+P36|Cel osiągnięty: $1
+P37|Zapisano $1
+P38|Obszar o nazwie $1 już istnieje
+P39|Dodano $1 do: $2
+P40|$1 – zrobione
+P41|Przywrócono. Do cofnięcia zostało: $1
+P42|Usunięte zadania: $1
+P43|Zsynchronizowane wydarzenia: $1
+P44|Synchronizacja z twojego kalendarza, ostatnio $1
+P45|Automatyczna kopia co tydzień, ostatnio $1
+P46|Kolor $1
+P47|$1/$2 w tym tygodniu
+P48|Energia $1
+P49|Skupienie $1
+P50|Motywacja $1
+P51|Ustaw cel w dowolnym z $1 obszarów życia.
+P52|Wpisz co najmniej tyle liter: $1.
+P53|Brak celów w obszarze $1.
+P54|Zarchiwizowane ($1)
+P55|Przypomnienie o $1. Zmień
+P56|Termin celu $1 mija za tydzień
+P57|Termin celu $1 mija dziś
+P58|Usuń $1
+P59|Dni: $1
+441|Automatyczna kopia
+442|Co tydzień
+443|Co miesiąc
+444|Auto
+445|Brak kopii
+446|Widoczne miesiące
+P60|Ostatnie miesiące: $1
+P61|Idealne dni: $1 (ostatnie miesiące: $2)
+P62|Automatyczna kopia, ostatnio $1
+P63|Wykonane codzienne nawyki (ostatnie miesiące: $1)
+447|Plik ze wszystkimi twoimi danymi
+448|Krótka notatka w dowolnym dniu nawyku
+449|Podsumowanie poprzedniego tygodnia w niedzielę
+450|Minutnik do skupionej pracy nad zadaniem
+451|Informacje
+452|Dodaj zadanie lub zapisz okno
+453|Wygląd
+454|Strzałki
+455|Wstecz
+456|Kalendarz
+457|Synchronizacja kalendarza działa w aplikacjach na komputer i Androida
+458|Sprawdza, czy powiadomienia do ciebie docierają
+459|Zamknij okno lub wyjdź z ustawień
+460|Codzienne przypomnienie wyłączone
+461|Strefa zagrożenia
+462|Dane i kopie
+463|Daybook używa języka tego urządzenia, chyba że wybierzesz inny. Twoje nawyki i zadania nigdy nie są tłumaczone.
+464|Usuwa wszystko na tym urządzeniu
+465|Przykładowe nawyki, zadania i cele
+466|Eksport
+467|Eksport i import
+468|Do Excela, Numbers lub Arkuszy Google
+469|Przypomnienia o nawykach i zadaniach
+470|Nawyki, zadania i cele w jednym spokojnym miejscu
+471|Jak działa blokada
+472|Zaimportuj plik w Kalendarzu Google: Ustawienia, Importowanie i eksportowanie
+473|Skróty klawiszowe
+474|Układ
+475|Licencje
+476|Blokuje Daybook i szyfruje dane na tym urządzeniu i w kopiach
+477|Blokuje się przy otwarciu Daybook, po minucie w tle lub po czasie powyżej bez użycia. Ukrywa dane na ekranie i szyfruje to, co jest zapisane na tym urządzeniu i w kopiach.
+478|Licencja GNU AGPL-3.0
+479|Przenoś zadania, nawyki, cele i karty, przeciągając je
+480|Przenieś zaznaczoną kartę, nawyk, cel lub zadanie
+481|Brak kodu PIN
+482|Bez konta, bez reklam, bez śledzenia. Wszystko zostaje na twoich urządzeniach i trafia tylko tam, gdzie to wyślesz: do kopii, folderu danych, linku kalendarza.
+483|Żadne ustawienie nie pasuje.
+484|Niepołączony
+485|Powiadomienia podają nazwę nawyku lub zadania; wyłączone pokazują tylko „Daybook”
+486|Jedno powiadomienie dziennie, jeśli zostały nawyki
+487|Otwórz nawyk (dotknij nazwy) albo dotknij dzwonka przy zadaniu
+488|Niewykonane zadania z przeszłości mają czerwony X
+489|Prywatność
+490|Przywraca pierwotną kolejność kart na ekranach Dziś i Statystyki
+491|Przypomnienia
+492|Zastępuje dane na tym urządzeniu
+493|Resetuj
+494|SIL Open Font License
+495|Jak na tym urządzeniu
+496|Szukaj w ustawieniach
+497|Bezpieczeństwo
+498|Wyślij powiadomienie testowe
+499|Ustaw przypomnienie
+500|Ustawienia
+501|Sekcje ustawień
+502|Siedem dni z rzędu daje zamrożenie, które ratuje serię w pominięty dzień
+503|Czcionka Space Grotesk
+504|Krótkie wprowadzenie z pierwszego uruchomienia
+505|Rok w kwadratach w Statystykach
+506|Śledź to, z czego zrezygnowałeś, np. palenie
+507|Cofnij ostatnie usunięcie
+508|Twoje dane należą do ciebie
+509|Twoje serie bez nałogów na ekranie Dziś
+510|Połączony
+511|Wydarzenia synchronizują się co 15 minut
+512|Wklej tajny adres iCal swojego kalendarza; logowanie do Google nie jest potrzebne
+513|Usuwa wydarzenia z kalendarza z twoich zadań
+514|Kopia
+515|Zachowuje 8 najnowszych kopii
+516|Folder
+517|Zmień
+518|Wybierz…
+519|Zaszyfrowana twoim kodem PIN
+520|Odblokowuj odciskiem palca zamiast wpisywać PIN
+521|Blokuj po
+522|Bez użycia; Daybook blokuje się też minutę po wyjściu
+523|Twoje dane zostaną odszyfrowane i znów zapisane w czytelnej postaci
+524|Otwórz mini widżet
+525|Małe okno zawsze na wierzchu z dzisiejszymi nawykami i zadaniami
+526|Komputer
+527|Godzina
+528|Powiadomienie codziennie, nawet gdy Daybook jest zamknięty
+529|Tylko gdy Daybook jest otwarty lub działa w tle
+530|Android 14 i nowsze: alarmy dzwonią punktualnie zamiast kilka minut później
+531|Kopia codziennie
+532|Kopia co tydzień
+533|Kopia co miesiąc
+534|Automatyczna kopia wyłączona
+535|PIN włączony
+536|PIN włączony · odcisk palca włączony
+537|Powiadomienia działają
+538|Wysłano powiadomienie testowe
+539|Morski
+540|Niebieski
+541|Fioletowy
+542|Różowy
+543|Bursztynowy
+544|Zielony
+545|Własny
+546|Czerwony (0–255)
+547|Zielony (0–255)
+548|Niebieski (0–255)
+549|Pamięć aplikacji (tylko ten komputer). Wybierz folder Google Drive, OneDrive lub Dropbox, aby synchronizować między komputerami
+550|Tylko ten telefon. Wybierz folder synchronizowany przez inną aplikację, aby dzielić dane między urządzeniami
+551|Przypomnienia nie są tu jeszcze obsługiwane
+552|Niedostępne tutaj
+P64|$1 · akcent $2
+P65|$1 · ostatnio $2
+P66|Codziennie o $1
+P67|Włączone: $1 z $2
+P68|Ostatnia kopia $1
+P69|Zachowuje 8 najnowszych kopii w $1
+P70|Wydarzenia synchronizują się co 15 minut, ostatnio $1
+P71|$1 min
