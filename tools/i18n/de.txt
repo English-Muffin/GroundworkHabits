@@ -454,6 +454,191 @@
 566|Zum Beenden erneut zurück drücken
 567|SERIEN
 568|Tab Serien
+569|Löschen
+570|Übernehmen
+571|Stunde
+572|Minute
+573|Auswählen
+574|Ruhetage
+575|Ruhetag
+576|Geplante freie Tage: Sie unterbrechen die Serie nicht und verbrauchen keinen Freeze. Für tägliche Gewohnheiten (7 Tage die Woche).
+577|Lass mindestens einen Tag für die Gewohnheit
+578|Vorlagen
+579|Hinzufügen zu
+580|Alles, was eine Vorlage hinzufügt, kannst du umbenennen, ändern oder löschen.
+581|Gewohnheiten hinzugefügt
+582|Aufgaben hinzugefügt
+583|Ziele hinzugefügt
+584|Schon hinzugefügt
+585|Aus einer anderen App importieren
+586|Loop Habit Tracker, Habitica oder eine Tabelle (.csv). Kommt zu deinen Daten hinzu
+587|In dieser Datei gibt es nichts zu importieren
+588|Diese Datei kann nicht gelesen werden. Nimm einen Export aus Loop, Habitica oder eine .csv
+589|Importieren
+590|Nichts von deinen Daten wird gelöscht.
+591|Karten
+592|Zeitleiste
+593|Zielansicht
+594|Gib einem Ziel eine Frist oder seinen Schritten Daten, dann erscheinen sie hier der Reihe nach.
+595|Frist
+596|Als Bild teilen
+597|Bild gespeichert
+598|Häkchen
+599|perfekte Tage
+600|längste Serie
+601|erledigte Aufgaben
+602|erreichte Ziele
+603|längste Serie ohne
+604|Am häufigsten geschafft
+605|bisher, in Groundwork Habits
+606|Heute keine Aufgaben
+607|Automatisch nach Updates suchen
+608|Fragt einmal am Tag bei GitHub nach einer neuen Version. Standardmäßig aus: Es wird nichts gesendet, solange du es nicht einschaltest.
+609|Update wird heruntergeladen…
+610|Installieren
+611|Herunterladen
+612|Du hast die neueste Version
+613|Updates konnten nicht geprüft werden
+614|Update fehlgeschlagen
+615|Morgenroutine
+616|Bewusst in den Tag starten
+617|Zur gleichen Zeit aufstehen
+618|Ein Glas Wasser trinken
+619|Das Bett machen
+620|10 Minuten dehnen
+621|Den Tag planen
+622|Abendroutine
+623|Abschalten und besser schlafen
+624|Keine Bildschirme nach 22 Uhr
+625|Vor dem Schlafen lesen
+626|Kleidung für morgen bereitlegen
+627|Um 23 Uhr im Bett
+628|Jeden Tag ein bisschen bewegen
+629|Training
+630|Gehen
+631|Dehnen
+632|Wasser trinken
+633|Achtsamkeit
+634|Ruhe, Fokus und Dankbarkeit
+635|10 Minuten meditieren
+636|3 Dinge aufschreiben, für die ich dankbar bin
+637|2 Minuten tief atmen
+638|Draußen spazieren gehen
+639|Gesund essen
+640|Gut essen ohne Diät
+641|Obst und Gemüse
+642|Keine zuckerhaltigen Getränke
+643|Zu Hause kochen
+644|Mahlzeiten für die Woche planen
+645|Lernen
+646|Jeden Tag ein bisschen summiert sich
+647|Lernen
+648|Lesen
+649|Seiten
+650|10 neue Wörter lernen
+651|Meine Notizen wiederholen
+652|Produktivität
+653|Das Wichtige erledigen
+654|Heute Abend morgen planen
+655|Posteingang auf null
+656|Konzentriertes Arbeiten
+657|Haushalt und Papierkram
+658|Alles im Griff behalten
+659|10 Minuten aufräumen
+660|Abwaschen
+661|Die Pflanzen gießen
+662|Rechnungen bezahlen
+663|Großputz
+664|Digitale Balance
+665|Weniger scrollen, mehr leben
+666|Kein Handy in der ersten Stunde
+667|Bildschirmzeit unter 2 Stunden
+668|Keine sozialen Medien
+669|Mahlzeiten ohne Handy
+670|Wochen-Reset
+671|Planen, putzen und einkaufen für die Woche
+672|Letzte Woche durchgehen
+673|Die kommende Woche planen
+674|Die Küche putzen
+675|Wäsche waschen
+676|Lebensmittel einkaufen
+677|Essen für 3 Tage vorkochen
+678|Die ganze Wohnung auf einmal
+679|In jedem Zimmer Staub wischen
+680|Staubsaugen und wischen
+681|Das Bad putzen
+682|Den Kühlschrank ausräumen und putzen
+683|Bettwäsche wechseln
+684|Altpapier und Wertstoffe rausbringen
+685|Reise packen
+686|Losfahren, ohne etwas zu vergessen
+687|Pass und Tickets prüfen
+688|Kleidung packen
+689|Ladegeräte und Adapter einpacken
+690|Kulturbeutel packen
+691|Offline-Karten herunterladen
+692|Pflanzen gießen und Müll leeren
+693|Umzug
+694|Was alle vergessen
+695|Umzugsfirma buchen
+696|Adresse bei der Bank ändern
+697|Internet in der neuen Wohnung einrichten
+698|Ein Zimmer einpacken
+699|Zählerstände ablesen
+700|Die Schlüssel abgeben
+701|Jobsuche
+702|Ein Tag voller Bewerbungen
+703|Lebenslauf aktualisieren
+704|Online-Profil aktualisieren
+705|5 passende Stellen finden
+706|2 Bewerbungen abschicken
+707|Auf ein Vorstellungsgespräch vorbereiten
+708|Bei Bewerbungen nachfassen
+709|Monatlicher Finanzcheck
+710|Zehn Minuten, die Geld sparen
+711|Kontoauszüge prüfen
+712|Geld aufs Sparkonto überweisen
+713|Abos überprüfen
+714|Budget aktualisieren
+715|Fit werden
+716|Laufen, Kraft und Gewicht
+717|5 km ohne Pause laufen
+718|1 km ohne Pause laufen
+719|3 km laufen
+720|5 km laufen
+721|100 Mal trainieren
+722|Geld sparen
+723|Ein Polster und weniger Schulden
+724|Einen Notgroschen aufbauen
+725|Kreditkarte abbezahlen
+726|Etwas Neues lernen
+727|Sprachen, Bücher und Übung
+728|Einen Anfängerkurs abschließen
+729|Ein 5-minütiges Gespräch führen
+730|Einen B1-Übungstest bestehen
+731|Bücher
+732|Stunden
+733|Beruflich wachsen
+734|Fähigkeiten, Bewerbungen und ein Portfolio
+735|Zertifikat auswählen
+736|Prüfung buchen
+737|40 Stunden lernen
+738|Prüfung bestehen
+739|Bewerbungen
+740|Ein Portfolio aufbauen
+741|Meine 3 besten Projekte auswählen
+742|Für jedes eine kurze Fallstudie schreiben
+743|Online veröffentlichen
+744|Ein ruhigeres, aufgeräumteres Zuhause
+745|Schlafzimmer
+746|Küche
+747|Wohnzimmer
+748|Bad
+749|Abstellraum
+750|Geist und Wohlbefinden
+751|Kleine tägliche Übungen
+752|Tagebuch
+753|20 Minuten lesen
 P1|$1 / $2 Gewohnheiten erledigt
 P2|$1 / $2 erledigt
 P3|$1 Ziele · $2 erreicht
@@ -637,3 +822,11 @@ P68|Letzte Sicherung $1
 P69|Behält die 8 neuesten Kopien in $1
 P70|Termine werden alle 15 Minuten synchronisiert, zuletzt $1
 P71|$1 Min.
+P72|$1 BISHER
+P73|$1 Gewohnheiten mit $2 Häkchen
+P74|$1 Aufgaben
+P75|$1 der Gewohnheiten gibt es hier schon; sie bekommen die zusätzlichen Tage.
+P76|Aus $1 importieren
+P77|Importiert: $1 neue Gewohnheiten, $2 Häkchen, $3 Aufgaben
+P78|In $1 Tagen
+P79|Version $1 ist verfügbar

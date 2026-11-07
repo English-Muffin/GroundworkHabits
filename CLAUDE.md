@@ -26,7 +26,7 @@ It has its own name and branding (Groundwork Habits: layered "foundation" mark).
 ## Commands
 - Run locally: `python -m http.server 8765 --directory www`, then open http://localhost:8765
 - Test: `pip install playwright && playwright install chromium`, then `python tests/smoke.py`. It starts its own server
-- Windows: `npm install && npm run dist:win` builds the installer (`-Windows-setup.exe`, NSIS one-click, per user; opens in under a second) and the portable exe (unpacks to %TEMP% on every start, ~13 s; `assets/portable-splash.bmp` shows meanwhile). Output in `dist/`. macOS zip: `npm run dist:mac` on a Mac
+- Windows: `npm install && npm run dist:win` builds the installer (`-Windows-setup.exe`, NSIS one-click, per user; opens in under a second) and the portable exe (`tools/build_portable.js`: zips `dist/win-unpacked` into `tools/portable/Launcher.cs`, compiled with Windows' own csc; first start unpacks to `%TEMP%\GroundworkHabits-<version>` while the logo pulses, later starts reuse it; errors go to `%TEMP%\GroundworkHabits-launcher.log`). `node_modules` are excluded from the desktop app (Android plugins only). Output in `dist/`. macOS zip: `npm run dist:mac` on a Mac
 - README media: `python tools/readme_media.py` records `assets/readme/intro.gif` and the screenshots from the real app (fixed clock, demo data)
 - Release: bump `version` in package.json, `APPV` in app.js and the version badge in README.md; refresh README screenshots and feature list (show different accents and themes); run `tests/device_android.py`; push a `v*` tag; CI builds Windows, macOS, Android and attaches them to a GitHub Release
 - Android app: `npm install && npx cap add android && npx cap sync android && npx cap open android`
@@ -80,6 +80,15 @@ English is written in the code and is the key. `index.html` picks the language (
 
 ## Test-only features
 `const TESTING=true` in app.js shows "Load demo data" and exposes `window.DaybookTest` (all tests rely on them). Release builds turn them off: the CI step "Turn off testing features" runs `tools/release_strip.js` on `v*` tags only (it fails if the line is missing). Local `dist/` test builds keep them. Never commit `TESTING=false`.
+
+## Added in 1.8
+- In-app pickers: every `input[type=date|time|datetime-local]` and `select` opens `#pick` (`pkOpen`/`pkDraw`/`pkAct`) instead of the system dialog; opened at touchstart on touch screens (Android's web view starts its own dialog from the touch), click elsewhere; the field gets input/change events, so readers are unchanged.
+- Rest days `h.rest` (weekdays, every-day habits only, max 6): `isRest(h,d)`; skipped by freezes, streaks, monthly %, `doneToday`/`dayPct`, reminders and the widget.
+- Templates `TPL` (habits/tasks/goals packs, modal `tpl`, `tplAdd`); names go through `tx()` so they land in the user's language. Goal packs with `h` create and link the habit.
+- Import from other apps (`parseExternal`, `mergeExternal`, modal `impext`): Loop .zip/Checkmarks.csv (2 = done, numbers ×1000), Habitica .json (dailies history, open to-dos), wide or long CSV. Merges by habit name.
+- Goals: `goalView` cards/timeline (`goalTimeline`: deadlines + dated steps). Insights: `yearCard`/`yearImage` (canvas PNG via `shareFile(blob)`; Android `saveFile` takes `base64`).
+- Android: `TaskWidgetProvider` (prefs `widgetTasks`), `QsTile` "Next habit" (ticks the first open habit from prefs `widget`); `NB.widget({data,tasks})`.
+- Desktop updates (`P.updAuto`, off by default): `upd:check` reads GitHub's latest release, `upd:install` downloads the setup, checks its `.sha256` and runs it (installed app only). Needs the repository to be public.
 
 ## Feature switches
 `P.feat` (Settings > Features): streak freezes, show names in reminders (`remnames`), streaks on Today, weekly review, year heatmap, habit notes, missed X, Streaks tab, daily reminder (`P.remTime`, Notification API, only while the app runs). Read with `feat(key)`. Deletes push a restore function with `pushUndo()` (up to 20; each puts back only what was deleted) and show `toastUndo()`; Ctrl+Z undoes outside text fields.

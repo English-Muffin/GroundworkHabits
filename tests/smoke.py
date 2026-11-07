@@ -455,6 +455,66 @@ async def languages(b):
     check('language: German shows German labels and dates, switching back to English works', 'Heute' in nav and 'Gewohnheiten' in nav and 'Today' in nav2 and not errs, [nav, nav2, errs])
     await ctx.close()
 
+async def newFeatures(b):
+    import base64, io, zipfile, datetime as _d
+    ctx = await b.new_context(viewport={'width': 390, 'height': 844}, has_touch=True); pg = await ctx.new_page(); errs = []
+    pg.on('pageerror', lambda e: errs.append(str(e)))
+    await pg.goto(URL); await pg.evaluate("localStorage.setItem('daybook-tips','1')"); await pg.reload(); await pg.wait_for_timeout(200)
+    t = _d.date.today(); ymd = lambda d: d.strftime('%Y-%m-%d')
+    # in-app pickers: date, list, date+time; no system pop-up
+    await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(200); await pg.click('[data-act=newgoal]'); await pg.wait_for_timeout(150)
+    await pg.click('#gDue'); await pg.wait_for_timeout(150); sheet = await pg.locator('#pick .pkbox.pk-date').count()
+    await pg.click('#pick [data-act=pkday][data-v="20"]'); due = await pg.input_value('#gDue')
+    await pg.click('#gArea'); await pg.click('#pick .pkl button >> nth=3'); area = await pg.input_value('#gArea')
+    check('in-app date and list pickers set the field (no system pop-up)', sheet == 1 and due.endswith('-20') and area == 'Money' and await pg.locator('#pick:not([hidden])').count() == 0, [sheet, due, area])
+    await pg.keyboard.press('Escape'); await pg.evaluate("location.hash='achievements'"); await pg.wait_for_timeout(200)
+    await pg.click('[data-act=newquit]'); await pg.wait_for_timeout(150); await pg.click('#qSince'); await pg.wait_for_timeout(150)
+    await pg.click('#pick [data-act=pkday] >> nth=0'); await pg.click('#pick [data-act=pktime][data-k=hh][data-v="7"]'); await pg.click('#pick [data-act=pktime][data-k=mm][data-v="30"]'); await pg.click('#pick [data-act=pkok]')
+    since = await pg.input_value('#qSince')
+    check('in-app date and time picker fills a date-time field', since.endswith('T07:30'), since)
+    await pg.keyboard.press('Escape')
+    # rest days: a rest day neither breaks the streak nor counts in Today's total
+    wd = (t.weekday() + 1) % 7; y = t - _d.timedelta(days=1); y2 = t - _d.timedelta(days=2)
+    await pg.evaluate(f"""(()=>{{const s=DaybookTest.state();s.habits.push({{id:'hr',name:'Rested',type:'daily',color:'#22c55e',target:1,per:7,track:'check',rest:[{(wd + 6) % 7}]}});s.log.hr={{'{ymd(y2)}':1}};localStorage.setItem('daybook-v2',JSON.stringify(s))}})()""")
+    await pg.reload(); await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200)
+    row = await pg.locator('.trow', has_text='Rested').inner_text()
+    check('a rest day keeps the streak going (yesterday was a rest day)', '1' in row, row)
+    await pg.locator('.trow', has_text='Rested').locator('.nb, .nm').first.click() if False else None
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(150); await pg.locator('.gname .nb', has_text='Rested').click(); await pg.wait_for_timeout(150)
+    await pg.click(f'[data-act=mrest][data-v="{wd}"]'); await pg.click('[data-act=msave]'); await pg.wait_for_timeout(150)
+    rest = await pg.evaluate("DaybookTest.state().habits.find(h=>h.id==='hr').rest")
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200)
+    check('rest days are set in the habit dialog and today shows "Rest day"', wd in rest and 'Rest day' in await pg.locator('.trow', has_text='Rested').inner_text(), rest)
+    # templates
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(150); await pg.click('[data-act=tpl] >> nth=0'); await pg.click('[data-act=tpladd][data-v="0"]'); await pg.wait_for_timeout(150)
+    await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(150); await pg.click('.g2bt [data-act=tpl]'); await pg.click('[data-act=tpladd][data-v="5"]'); await pg.wait_for_timeout(150)
+    st = await pg.evaluate("(()=>{const s=DaybookTest.state();return [s.habits.map(h=>h.name),s.goals.filter(g=>g.habit).map(g=>!!s.habits.find(h=>h.id===g.habit))]})()")
+    check('templates add a habit pack, and goal packs create and link their habits', 'Make the bed' in st[0] and len(st[1]) == 3 and all(st[1]), st)
+    # goal timeline and year card
+    await pg.evaluate(f"(()=>{{const s=DaybookTest.state();s.goals.push({{id:'gt',title:'Timeline goal',area:'Health',pct:0,kind:'steps',due:'{ymd(t + _d.timedelta(days=40))}',steps:[{{id:'s1',text:'First step',done:false,due:'{ymd(t + _d.timedelta(days=5))}'}}]}});localStorage.setItem('daybook-v2',JSON.stringify(s))}})()")
+    await pg.reload(); await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(150); await pg.click('[data-act=gview][data-v=timeline]'); await pg.wait_for_timeout(150)
+    tl = await pg.locator('.gtl').inner_text()
+    check('goal timeline lists dated steps before the deadline', tl.index('First step') < tl.index('Timeline goal') and 'In 5 days' in tl, tl[:200])
+    await pg.evaluate("location.hash='insights'"); await pg.wait_for_timeout(200)
+    check('insights shows this year so far', await pg.locator('.yearc .ys').count() >= 5 and 'SO FAR' in await pg.locator('.yearc .lbl').inner_text())
+    # imports: Loop export (.zip), Habitica (.json), a long CSV
+    z = io.BytesIO(); zf = zipfile.ZipFile(z, 'w', zipfile.ZIP_DEFLATED)
+    zf.writestr('Habits.csv', 'Position,Name\n001,Meditate\n002,Run\n')
+    zf.writestr('Checkmarks.csv', f'Date,Meditate,Run\n{ymd(t)},2,-1\n{ymd(y)},2,5000\n{ymd(y2)},0,2\n'); zf.close()
+    b64 = base64.b64encode(z.getvalue()).decode()
+    r = await pg.evaluate("b=>DaybookTest.parseExternal(new File([Uint8Array.from(atob(b),c=>c.charCodeAt(0))],'Loop Habits CSV 2026.zip')).then(d=>[d.src,d.habits.map(h=>h.name+':'+Object.keys(h.log).length+':'+Object.keys(h.amt).length)])", b64)
+    check('imports a Loop Habit Tracker export (.zip): ticks and amounts', r[0] == 'Loop Habit Tracker' and 'Meditate:2:0' in r[1] and 'Run:1:1' in r[1], r)
+    hab = '{"tasks":{"dailys":[{"text":"Floss","history":[{"date":' + str(int(_d.datetime(t.year, t.month, t.day, 12).timestamp() * 1000)) + ',"completed":true}]}],"todos":[{"text":"Call mum","completed":false}]}}'
+    r2 = await pg.evaluate("j=>DaybookTest.parseExternal(new File([j],'user-data.json')).then(d=>{const m=DaybookTest.mergeExternal(d);return [d.src,m]})", hab)
+    csv = f'Date,Habit,Status\n{ymd(y)},Floss,done\n{ymd(y2)},Stretch,yes\n'
+    r3 = await pg.evaluate("c=>DaybookTest.parseExternal(new File([c],'export.csv')).then(d=>{const m=DaybookTest.mergeExternal(d);return [d.src,m]})", csv)
+    fl = await pg.evaluate("(()=>{const s=DaybookTest.state(),h=s.habits.find(x=>x.name==='Floss');return Object.keys(s.log[h.id]).length})()")
+    check('imports Habitica (habits and to-dos) and a CSV, merging same-named habits', r2[0] == 'Habitica' and r2[1]['nh'] == 1 and r2[1]['nt'] == 1 and r3[1]['nh'] == 1 and fl == 2, [r2, r3, fl])
+    await pg.evaluate("location.hash='settings/data'"); await pg.wait_for_timeout(150)
+    check('settings offers importing from another app', await pg.locator('[data-act=impext]').count() == 1)
+    check('no JS errors (new features)', not errs, errs)
+    await ctx.close()
+
 async def tasksAndSettings(b):
     # phones: in this week's Tasks today's card is on top, the days after it follow, then the earlier ones
     ctx = await b.new_context(viewport={'width': 390, 'height': 844}); pg = await ctx.new_page(); await pg.goto(URL)
@@ -683,7 +743,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await heatAndBackup(b); await languages(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")

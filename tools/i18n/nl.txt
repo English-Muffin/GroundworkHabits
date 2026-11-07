@@ -454,6 +454,191 @@
 566|Druk nogmaals op terug om af te sluiten
 567|REEKSEN
 568|Tabblad Reeksen
+569|Wissen
+570|Instellen
+571|Uur
+572|Minuut
+573|Kiezen
+574|Rustdagen
+575|Rustdag
+576|Geplande vrije dagen: ze breken de reeks niet en gebruiken geen bevriezing. Voor dagelijkse gewoontes (7 dagen per week).
+577|Houd minstens één dag over voor de gewoonte
+578|Sjablonen
+579|Toevoegen aan
+580|Alles wat een sjabloon toevoegt kun je hernoemen, wijzigen of verwijderen.
+581|Gewoontes toegevoegd
+582|Taken toegevoegd
+583|Doelen toegevoegd
+584|Al toegevoegd
+585|Importeren uit een andere app
+586|Loop Habit Tracker, Habitica of een spreadsheet (.csv). Komt bij je gegevens
+587|Niets om te importeren in dat bestand
+588|Dat bestand kan niet worden gelezen. Gebruik een export van Loop, Habitica of een .csv
+589|Importeren
+590|Niets van wat je hebt wordt verwijderd.
+591|Kaarten
+592|Tijdlijn
+593|Doelenweergave
+594|Geef een doel een deadline, of de stappen datums, en ze verschijnen hier op volgorde.
+595|Deadline
+596|Delen als afbeelding
+597|Afbeelding opgeslagen
+598|afvinkingen
+599|perfecte dagen
+600|langste reeks
+601|taken gedaan
+602|doelen bereikt
+603|langste reeks zonder
+604|Het vaakst gedaan
+605|tot nu toe, in Groundwork Habits
+606|Vandaag geen taken
+607|Automatisch naar updates zoeken
+608|Vraagt één keer per dag aan GitHub of er een nieuwe versie is. Standaard uit: er wordt niets verstuurd tenzij je het aanzet.
+609|Update wordt gedownload…
+610|Installeren
+611|Downloaden
+612|Je hebt de nieuwste versie
+613|Kon niet op updates controleren
+614|Update mislukt
+615|Ochtendroutine
+616|Begin de dag bewust
+617|Op hetzelfde tijdstip opstaan
+618|Een glas water drinken
+619|Het bed opmaken
+620|10 minuten rekken
+621|De dag plannen
+622|Avondrust
+623|Uitschakelen en beter slapen
+624|Geen schermen na 22.00 uur
+625|Lezen voor het slapen
+626|Kleren voor morgen klaarleggen
+627|Om 23.00 uur in bed
+628|Elke dag een beetje bewegen
+629|Training
+630|Wandelen
+631|Rekken
+632|Water drinken
+633|Mindfulness
+634|Rust, focus en dankbaarheid
+635|10 minuten mediteren
+636|3 dingen opschrijven waar ik dankbaar voor ben
+637|2 minuten diep ademhalen
+638|Buiten wandelen
+639|Gezond eten
+640|Goed eten zonder dieet
+641|Groente en fruit
+642|Geen suikerhoudende drankjes
+643|Thuis koken
+644|Maaltijden voor de week plannen
+645|Studeren en leren
+646|Elke dag een beetje telt op
+647|Studeren
+648|Lezen
+649|pagina’s
+650|10 nieuwe woorden leren
+651|Mijn aantekeningen herhalen
+652|Productiviteit
+653|Het belangrijke gedaan krijgen
+654|Vanavond morgen plannen
+655|Inbox naar nul
+656|Diep werk
+657|Huis en administratie
+658|Alles bijhouden
+659|10 minuten opruimen
+660|Afwassen
+661|De planten water geven
+662|De rekeningen betalen
+663|Grote schoonmaak
+664|Digitale balans
+665|Minder scrollen, meer leven
+666|Geen telefoon het eerste uur
+667|Schermtijd onder 2 uur
+668|Geen sociale media
+669|Maaltijden zonder telefoon
+670|Wekelijkse reset
+671|Plannen, schoonmaken en boodschappen voor de week
+672|Vorige week doornemen
+673|De komende week plannen
+674|De keuken schoonmaken
+675|De was doen
+676|Boodschappen doen
+677|Maaltijden voor 3 dagen voorbereiden
+678|Het hele huis in één keer
+679|Elke kamer afstoffen
+680|Stofzuigen en dweilen
+681|De badkamer schoonmaken
+682|De koelkast schoonmaken
+683|Het beddengoed verschonen
+684|Het oud papier en plastic wegbrengen
+685|Inpakken voor een reis
+686|Vertrekken zonder iets te vergeten
+687|Paspoort en tickets controleren
+688|Kleren inpakken
+689|Opladers en adapters inpakken
+690|Toilettas inpakken
+691|Offline kaarten downloaden
+692|Planten water geven en de vuilnisbak legen
+693|Verhuizen
+694|De klusjes die iedereen vergeet
+695|Verhuizers boeken
+696|Mijn adres bij de bank wijzigen
+697|Internet regelen op het nieuwe adres
+698|Eén kamer inpakken
+699|De meterstanden opnemen
+700|De sleutels inleveren
+701|Werk zoeken
+702|Een dag vol sollicitaties
+703|Mijn cv bijwerken
+704|Mijn online profiel bijwerken
+705|5 vacatures vinden
+706|2 sollicitaties versturen
+707|Een sollicitatiegesprek voorbereiden
+708|Sollicitaties opvolgen
+709|Maandelijkse geldcheck
+710|Tien minuten die geld besparen
+711|Mijn bankafschriften bekijken
+712|Geld naar de spaarrekening zetten
+713|Mijn abonnementen nalopen
+714|Mijn budget bijwerken
+715|Fit worden
+716|Hardlopen, kracht en gewicht
+717|5 km hardlopen zonder te stoppen
+718|1 km hardlopen zonder te stoppen
+719|3 km hardlopen
+720|5 km hardlopen
+721|100 keer trainen
+722|Geld sparen
+723|Een buffer en minder schulden
+724|Een noodfonds opbouwen
+725|De creditcard afbetalen
+726|Een vaardigheid leren
+727|Talen, boeken en oefenen
+728|Een beginnerscursus afronden
+729|Een gesprek van 5 minuten voeren
+730|Een B1-oefentoets halen
+731|boeken
+732|uur
+733|Groei in je loopbaan
+734|Vaardigheden, sollicitaties en een portfolio
+735|De certificering kiezen
+736|Het examen boeken
+737|40 uur studeren
+738|Het examen halen
+739|sollicitaties
+740|Een portfolio maken
+741|Mijn 3 beste projecten kiezen
+742|Voor elk een korte case study schrijven
+743|Online publiceren
+744|Een rustiger, opgeruimder thuis
+745|Slaapkamer
+746|Keuken
+747|Woonkamer
+748|Badkamer
+749|Berging
+750|Geest en welzijn
+751|Kleine dagelijkse gewoontes
+752|Dagboek
+753|20 minuten lezen
 P1|$1 / $2 gewoonten gedaan
 P2|$1 / $2 voltooid
 P3|$1 doelen · $2 bereikt
@@ -637,3 +822,11 @@ P68|Laatste back-up $1
 P69|Bewaart de 8 nieuwste kopieën in $1
 P70|Afspraken synchroniseren elke 15 minuten, laatst $1
 P71|$1 min
+P72|$1 TOT NU TOE
+P73|$1 gewoontes met $2 afvinkingen
+P74|$1 taken
+P75|$1 van de gewoontes bestaan hier al en krijgen de extra dagen.
+P76|Importeren uit $1
+P77|Geïmporteerd: $1 nieuwe gewoontes, $2 afvinkingen, $3 taken
+P78|Over $1 dagen
+P79|Versie $1 is beschikbaar

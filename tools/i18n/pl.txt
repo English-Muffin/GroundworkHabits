@@ -454,6 +454,191 @@
 566|Naciśnij wstecz ponownie, aby wyjść
 567|SERIE
 568|Karta Serie
+569|Wyczyść
+570|Ustaw
+571|Godzina
+572|Minuta
+573|Wybierz
+574|Dni odpoczynku
+575|Dzień odpoczynku
+576|Zaplanowane dni wolne: nie przerywają serii i nie zużywają zamrożenia. Dla nawyków codziennych (7 dni w tygodniu).
+577|Zostaw co najmniej jeden dzień na nawyk
+578|Szablony
+579|Dodaj do
+580|Wszystko, co doda szablon, możesz zmienić lub usunąć.
+581|Dodano nawyki
+582|Dodano zadania
+583|Dodano cele
+584|Już dodano
+585|Importuj z innej aplikacji
+586|Loop Habit Tracker, Habitica lub arkusz (.csv). Dodaje do Twoich danych
+587|W tym pliku nie ma nic do zaimportowania
+588|Nie można odczytać pliku. Użyj eksportu z Loop, Habitica lub pliku .csv
+589|Importuj
+590|Nic z Twoich danych nie zostanie usunięte.
+591|Karty
+592|Oś czasu
+593|Widok celów
+594|Nadaj celowi termin albo daty jego krokom, a pojawią się tu po kolei.
+595|Termin
+596|Udostępnij jako obraz
+597|Obraz zapisany
+598|odhaczeń
+599|idealnych dni
+600|najdłuższa seria
+601|wykonanych zadań
+602|osiągniętych celów
+603|najdłuższa seria bez
+604|Najczęściej wykonywany
+605|do tej pory, w Groundwork Habits
+606|Brak zadań na dziś
+607|Automatycznie sprawdzaj aktualizacje
+608|Raz dziennie pyta GitHub o nową wersję. Domyślnie wyłączone: nic nie jest wysyłane, dopóki tego nie włączysz.
+609|Pobieranie aktualizacji…
+610|Zainstaluj
+611|Pobierz
+612|Masz najnowszą wersję
+613|Nie udało się sprawdzić aktualizacji
+614|Aktualizacja nie powiodła się
+615|Poranna rutyna
+616|Zacznij dzień świadomie
+617|Wstawać o tej samej porze
+618|Wypić szklankę wody
+619|Pościelić łóżko
+620|Rozciąganie przez 10 minut
+621|Zaplanować dzień
+622|Wieczorne wyciszenie
+623|Wyłącz się i śpij lepiej
+624|Bez ekranów po 22:00
+625|Czytać przed snem
+626|Przygotować ubrania na jutro
+627|W łóżku do 23:00
+628|Ruszać się trochę każdego dnia
+629|Trening
+630|Spacer
+631|Rozciąganie
+632|Pić wodę
+633|Uważność
+634|Spokój, skupienie i wdzięczność
+635|Medytować 10 minut
+636|Zapisać 3 rzeczy, za które jestem wdzięczny
+637|Głęboko oddychać przez 2 minuty
+638|Spacer na zewnątrz
+639|Zdrowe jedzenie
+640|Dobrze jeść bez diety
+641|Owoce i warzywa
+642|Bez słodzonych napojów
+643|Gotować w domu
+644|Zaplanować posiłki na tydzień
+645|Nauka
+646|Trochę każdego dnia się sumuje
+647|Nauka
+648|Czytanie
+649|stron
+650|Nauczyć się 10 nowych słów
+651|Przejrzeć notatki
+652|Produktywność
+653|Zrobić to, co ważne
+654|Zaplanować jutro wieczorem
+655|Pusta skrzynka odbiorcza
+656|Głęboka praca
+657|Dom i sprawy urzędowe
+658|Trzymać wszystko w ryzach
+659|Sprzątać przez 10 minut
+660|Pozmywać naczynia
+661|Podlać rośliny
+662|Zapłacić rachunki
+663|Gruntowne sprzątanie
+664|Cyfrowa równowaga
+665|Mniej przewijania, więcej życia
+666|Bez telefonu przez pierwszą godzinę
+667|Czas przed ekranem poniżej 2 godzin
+668|Bez mediów społecznościowych
+669|Posiłki bez telefonu
+670|Cotygodniowy reset
+671|Zaplanuj, posprzątaj i zrób zakupy na tydzień
+672|Podsumować zeszły tydzień
+673|Zaplanować nadchodzący tydzień
+674|Posprzątać kuchnię
+675|Zrobić pranie
+676|Zrobić zakupy spożywcze
+677|Przygotować posiłki na 3 dni
+678|Cały dom za jednym razem
+679|Odkurzyć meble w każdym pokoju
+680|Odkurzyć i umyć podłogi
+681|Posprzątać łazienkę
+682|Wyczyścić lodówkę
+683|Zmienić pościel
+684|Wynieść śmieci do segregacji
+685|Pakowanie na wyjazd
+686|Wyjechać, niczego nie zapominając
+687|Sprawdzić paszport i bilety
+688|Spakować ubrania
+689|Spakować ładowarki i przejściówki
+690|Spakować kosmetyczkę
+691|Pobrać mapy offline
+692|Podlać rośliny i wynieść śmieci
+693|Przeprowadzka
+694|Sprawy, o których wszyscy zapominają
+695|Zamówić firmę przeprowadzkową
+696|Zmienić adres w banku
+697|Podłączyć internet w nowym mieszkaniu
+698|Spakować jeden pokój
+699|Spisać liczniki
+700|Oddać klucze
+701|Szukanie pracy
+702|Dzień skupiony na aplikacjach
+703|Zaktualizować CV
+704|Zaktualizować profil online
+705|Znaleźć 5 ofert
+706|Wysłać 2 aplikacje
+707|Przygotować się do rozmowy
+708|Dopytać o aplikacje
+709|Comiesięczny przegląd finansów
+710|Dziesięć minut, które oszczędzają pieniądze
+711|Sprawdzić wyciągi bankowe
+712|Przelać pieniądze na oszczędności
+713|Przejrzeć subskrypcje
+714|Zaktualizować budżet
+715|Poprawić formę
+716|Bieganie, siła i waga
+717|Przebiec 5 km bez zatrzymywania
+718|Przebiec 1 km bez zatrzymywania
+719|Przebiec 3 km
+720|Przebiec 5 km
+721|Ćwiczyć 100 razy
+722|Oszczędzać
+723|Poduszka finansowa i mniej długów
+724|Zbudować fundusz awaryjny
+725|Spłacić kartę kredytową
+726|Nauczyć się umiejętności
+727|Języki, książki i praktyka
+728|Ukończyć kurs dla początkujących
+729|Przeprowadzić 5-minutową rozmowę
+730|Zdać próbny test B1
+731|książek
+732|godzin
+733|Rozwój kariery
+734|Umiejętności, aplikacje i portfolio
+735|Wybrać certyfikat
+736|Zapisać się na egzamin
+737|Uczyć się 40 godzin
+738|Zdać egzamin
+739|aplikacji
+740|Stworzyć portfolio
+741|Wybrać 3 najlepsze projekty
+742|Napisać krótkie studium przypadku dla każdego
+743|Opublikować w sieci
+744|Spokojniejszy i bardziej uporządkowany dom
+745|Sypialnia
+746|Kuchnia
+747|Salon
+748|Łazienka
+749|Schowek
+750|Umysł i dobre samopoczucie
+751|Małe codzienne praktyki
+752|Dziennik
+753|Czytać 20 minut
 P1|$1 / $2 nawyków zrobionych
 P2|$1 / $2 ukończonych
 P3|Cele: $1 · osiągnięte: $2
@@ -637,3 +822,11 @@ P68|Ostatnia kopia $1
 P69|Zachowuje 8 najnowszych kopii w $1
 P70|Wydarzenia synchronizują się co 15 minut, ostatnio $1
 P71|$1 min
+P72|$1 DO TEJ PORY
+P73|$1 nawyków z $2 odhaczeniami
+P74|$1 zadań
+P75|$1 nawyków już tu jest i dostanie dodatkowe dni.
+P76|Importuj z $1
+P77|Zaimportowano: $1 nowych nawyków, $2 odhaczeń, $3 zadań
+P78|Za $1 dni
+P79|Dostępna jest wersja $1

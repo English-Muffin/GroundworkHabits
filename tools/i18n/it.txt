@@ -454,6 +454,191 @@
 566|Premi di nuovo indietro per uscire
 567|SERIE
 568|Scheda Serie
+569|Cancella
+570|Imposta
+571|Ora
+572|Minuto
+573|Scegli
+574|Giorni di riposo
+575|Giorno di riposo
+576|Giorni liberi previsti: non interrompono la serie e non usano un congelamento. Per le abitudini quotidiane (7 giorni su 7).
+577|Lascia almeno un giorno per l’abitudine
+578|Modelli
+579|Aggiungi a
+580|Tutto ciò che un modello aggiunge puoi rinominarlo, modificarlo o eliminarlo.
+581|Abitudini aggiunte
+582|Attività aggiunte
+583|Obiettivi aggiunti
+584|Già aggiunto
+585|Importa da un’altra app
+586|Loop Habit Tracker, Habitica o un foglio di calcolo (.csv). Si aggiunge ai tuoi dati
+587|Niente da importare in quel file
+588|Impossibile leggere il file. Usa un’esportazione di Loop, di Habitica o un .csv
+589|Importa
+590|Non viene eliminato nulla di ciò che hai.
+591|Schede
+592|Cronologia
+593|Vista obiettivi
+594|Dai una scadenza a un obiettivo, o date ai suoi passi, e compariranno qui in ordine.
+595|Scadenza
+596|Condividi come immagine
+597|Immagine salvata
+598|spunte
+599|giorni perfetti
+600|serie più lunga
+601|attività fatte
+602|obiettivi raggiunti
+603|serie senza più lunga
+604|Il più rispettato
+605|finora, in Groundwork Habits
+606|Nessuna attività oggi
+607|Cerca aggiornamenti automaticamente
+608|Una volta al giorno chiede a GitHub se c’è una nuova versione. Spento di default: non viene inviato nulla finché non lo attivi.
+609|Download dell’aggiornamento…
+610|Installa
+611|Scarica
+612|Hai l’ultima versione
+613|Impossibile cercare aggiornamenti
+614|Aggiornamento non riuscito
+615|Routine del mattino
+616|Inizia la giornata con intenzione
+617|Svegliarmi alla stessa ora
+618|Bere un bicchiere d’acqua
+619|Rifare il letto
+620|Stretching per 10 minuti
+621|Pianificare la giornata
+622|Rilassarsi la sera
+623|Staccare e dormire meglio
+624|Niente schermi dopo le 22
+625|Leggere prima di dormire
+626|Preparare i vestiti per domani
+627|A letto entro le 23
+628|Muoversi un po’ ogni giorno
+629|Allenamento
+630|Camminare
+631|Stretching
+632|Bere acqua
+633|Mindfulness
+634|Calma, concentrazione e gratitudine
+635|Meditare 10 minuti
+636|Scrivere 3 cose per cui sono grato
+637|Respirare profondamente 2 minuti
+638|Camminare all’aperto
+639|Alimentazione sana
+640|Mangiare bene senza dieta
+641|Frutta e verdura
+642|Niente bevande zuccherate
+643|Cucinare a casa
+644|Pianificare i pasti della settimana
+645|Studio e apprendimento
+646|Un po’ ogni giorno fa la differenza
+647|Studiare
+648|Leggere
+649|pagine
+650|Imparare 10 parole nuove
+651|Ripassare i miei appunti
+652|Produttività
+653|Fare le cose importanti
+654|Pianificare domani stasera
+655|Posta in arrivo a zero
+656|Lavoro concentrato
+657|Casa e pratiche
+658|Tenere tutto sotto controllo
+659|Riordinare per 10 minuti
+660|Lavare i piatti
+661|Annaffiare le piante
+662|Pagare le bollette
+663|Pulizie a fondo
+664|Equilibrio digitale
+665|Meno scroll, più vita
+666|Niente telefono nella prima ora
+667|Tempo davanti allo schermo sotto le 2 ore
+668|Niente social
+669|Pasti senza telefono
+670|Reset settimanale
+671|Pianificare, pulire e fare la spesa per la settimana
+672|Rivedere la settimana scorsa
+673|Pianificare la settimana
+674|Pulire la cucina
+675|Fare il bucato
+676|Fare la spesa
+677|Preparare i pasti per 3 giorni
+678|Tutta la casa in una volta
+679|Spolverare ogni stanza
+680|Passare l’aspirapolvere e lavare i pavimenti
+681|Pulire il bagno
+682|Pulire il frigorifero
+683|Cambiare le lenzuola
+684|Portare fuori la raccolta differenziata
+685|Preparare il viaggio
+686|Partire senza dimenticare nulla
+687|Controllare passaporto e biglietti
+688|Mettere in valigia i vestiti
+689|Mettere caricabatterie e adattatori
+690|Mettere i prodotti per l’igiene
+691|Scaricare le mappe offline
+692|Annaffiare le piante e svuotare il cestino
+693|Trasloco
+694|Le cose che tutti dimenticano
+695|Prenotare il trasloco
+696|Cambiare indirizzo in banca
+697|Attivare internet nella nuova casa
+698|Imballare una stanza
+699|Leggere i contatori
+700|Restituire le chiavi
+701|Ricerca di lavoro
+702|Una giornata dedicata alle candidature
+703|Aggiornare il CV
+704|Aggiornare il profilo online
+705|Trovare 5 offerte
+706|Inviare 2 candidature
+707|Prepararsi a un colloquio
+708|Sollecitare le candidature
+709|Controllo mensile delle finanze
+710|Dieci minuti che fanno risparmiare
+711|Controllare gli estratti conto
+712|Spostare soldi sui risparmi
+713|Rivedere gli abbonamenti
+714|Aggiornare il budget
+715|Rimettersi in forma
+716|Corsa, forza e peso
+717|Correre 5 km senza fermarsi
+718|Correre 1 km senza fermarsi
+719|Correre 3 km
+720|Correre 5 km
+721|Allenarsi 100 volte
+722|Risparmiare
+723|Un cuscinetto e meno debiti
+724|Creare un fondo di emergenza
+725|Saldare la carta di credito
+726|Imparare una competenza
+727|Lingue, libri e pratica
+728|Finire un corso base
+729|Sostenere una conversazione di 5 minuti
+730|Superare un test di prova B1
+731|libri
+732|ore
+733|Crescita professionale
+734|Competenze, candidature e un portfolio
+735|Scegliere la certificazione
+736|Prenotare l’esame
+737|Studiare 40 ore
+738|Superare l’esame
+739|candidature
+740|Creare un portfolio
+741|Scegliere i miei 3 progetti migliori
+742|Scrivere un breve caso di studio per ciascuno
+743|Pubblicarlo online
+744|Una casa più tranquilla e ordinata
+745|Camera da letto
+746|Cucina
+747|Soggiorno
+748|Bagno
+749|Ripostiglio
+750|Mente e benessere
+751|Piccole pratiche quotidiane
+752|Diario
+753|Leggere 20 minuti
 P1|$1 / $2 abitudini completate
 P2|$1 / $2 completati
 P3|$1 obiettivi · $2 raggiunti
@@ -637,3 +822,11 @@ P68|Ultimo backup $1
 P69|Tiene le 8 copie più recenti in $1
 P70|Gli eventi si sincronizzano ogni 15 minuti, ultima $1
 P71|$1 min
+P72|$1 FINORA
+P73|$1 abitudini con $2 spunte
+P74|$1 attività
+P75|$1 delle abitudini esistono già qui e ricevono i giorni in più.
+P76|Importa da $1
+P77|Importato: $1 nuove abitudini, $2 spunte, $3 attività
+P78|Tra $1 giorni
+P79|È disponibile la versione $1
