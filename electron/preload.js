@@ -12,5 +12,7 @@ contextBridge.exposeInMainWorld('daybookFS', {
   showMain: () => ipcRenderer.send('win:main'),
   ask: (h, k) => ipcRenderer.send('win:ask', h, k),           // habit reminder pop-up with Yes/No
   onFlush: cb => ipcRenderer.on('app:flush', async () => { try { await cb(); } catch (e) {} ipcRenderer.send('app:flushed'); }), // finish saving before close
-  fetchCal: url => ipcRenderer.invoke('cal:fetch', url)        // {ok, text} | {ok:false, error}
+  fetchCal: url => ipcRenderer.invoke('cal:fetch', url),       // {ok, text} | {ok:false, error}
+  updateCheck: () => ipcRenderer.invoke('upd:check'),          // {ok, update, version, page, auto, ...}
+  updateInstall: () => ipcRenderer.invoke('upd:install')       // installs the update found by updateCheck (main keeps its details)
 });

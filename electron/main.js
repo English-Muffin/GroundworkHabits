@@ -83,6 +83,62 @@ function getOnce(u, signal) {
     req.on('error', reject);
   });
 }
+/* ---- updates (only when the user switches it on): GitHub's latest release; the installed app downloads the setup,
+   checks it against the published .sha256 and runs it; the portable exe and macOS only get a link ---- */
+const REPO = 'English-Muffin/GroundworkHabits';
+const GH_HOSTS = ['api.github.com', 'github.com', 'objects.githubusercontent.com', 'release-assets.githubusercontent.com'];
+async function getUrl(url, max, accept) {
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 120000);
+  try {
+    let u = new URL(url);
+    for (let hop = 0; hop < 6; hop++) {
+      if (u.protocol !== 'https:' || !GH_HOSTS.includes(u.hostname)) throw new Error('GitHub https only');
+      const r = await new Promise((resolve, reject) => {
+        const req = https.get(u, { lookup: safeLookup, signal: ctl.signal, headers: { 'User-Agent': 'Groundwork Habits', Accept: accept || '*/*' } }, res => {
+          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) { res.resume(); return resolve({ redirect: String(res.headers.location) }); }
+          if (res.statusCode !== 200) { res.resume(); return resolve({ status: res.statusCode }); }
+          const parts = []; let size = 0;
+          res.on('data', c => { size += c.length; if (size > max) { res.destroy(); reject(new Error('too large')); } else parts.push(c); });
+          res.on('end', () => resolve({ body: Buffer.concat(parts) })); res.on('error', reject);
+        });
+        req.on('error', reject);
+      });
+      if (r.redirect) { u = new URL(r.redirect, u); continue; }
+      if (r.status) throw new Error('HTTP ' + r.status);
+      return r.body;
+    }
+    throw new Error('too many redirects');
+  } finally { clearTimeout(timer); }
+}
+const newer = (a, b) => { const x = a.split('.').map(Number), y = b.split('.').map(Number); for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); return false; };
+const installed = () => process.platform === 'win32' && !/GroundworkHabits-\d/i.test(process.execPath) && !process.env.PORTABLE_EXECUTABLE_FILE;
+let pending = null;
+ipcMain.handle('upd:check', async () => {
+  try {
+    const rel = JSON.parse((await getUrl('https://api.github.com/repos/' + REPO + '/releases/latest', 2e6, 'application/vnd.github+json')).toString('utf8'));
+    const v = String(rel.tag_name || '').replace(/^v/, '');
+    if (!/^\d+\.\d+\.\d+$/.test(v) || !newer(v, app.getVersion())) return { ok: true, update: false };
+    const setup = (rel.assets || []).find(a => /-Windows-setup\.exe$/.test(a.name)), sum = (rel.assets || []).find(a => setup && a.name === setup.name + '.sha256');
+    const ours = x => { try { const u = new URL(x); return u.protocol === 'https:' && u.hostname === 'github.com' && u.pathname.startsWith('/' + REPO + '/releases/download/'); } catch (e) { return false; } };
+    // the download addresses stay here in the main process; the page can only say "install"
+    pending = installed() && setup && sum && ours(setup.browser_download_url) && ours(sum.browser_download_url) ? { version: v, setup: setup.browser_download_url, sum: sum.browser_download_url } : null;
+    return { ok: true, update: true, version: v, page: 'https://github.com/' + REPO + '/releases/latest', auto: !!pending };
+  } catch (e) { return { ok: false }; }
+});
+ipcMain.handle('upd:install', async () => {
+  const info = pending;
+  if (!info) return { ok: false, error: 'No update to install' };
+  try {
+    const exp = (await getUrl(info.sum, 4096)).toString('utf8').trim().split(/\s+/)[0].toLowerCase();
+    const buf = await getUrl(info.setup, 400e6, 'application/octet-stream');
+    if (require('crypto').createHash('sha256').update(buf).digest('hex') !== exp) return { ok: false, error: 'The download did not match its checksum' };
+    const f = path.join(app.getPath('temp'), 'Groundwork-Habits-update-' + info.version + '.exe');
+    fs.writeFileSync(f, buf);
+    require('child_process').spawn(f, [], { detached: true, stdio: 'ignore' }).unref();
+    setTimeout(() => app.quit(), 500);
+    return { ok: true };
+  } catch (err) { return { ok: false, error: 'Download failed' }; }
+});
 ipcMain.handle('cal:fetch', async (e, url) => {
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 20000);
   try {
