@@ -2,7 +2,7 @@
 
 All notable changes to Daybook. Versions match the GitHub releases.
 
-## Unreleased
+## 1.6.0
 
 - Licence changed from MIT to GNU AGPL-3.0-or-later.
 - Settings is now a page: sections with a side list on desktop and a list on phones, search across every setting, a short description on each switch, a test notification, an auto-lock delay, and About with privacy, shortcuts and licences.
