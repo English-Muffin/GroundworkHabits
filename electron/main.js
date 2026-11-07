@@ -10,6 +10,17 @@ const dataFile = () => { const f = readCfg().folder; return f ? path.join(f, 'da
 const readData = () => { const f = dataFile(); try { return f ? fs.readFileSync(f, 'utf8') : null; } catch (e) { return null; } };
 ipcMain.on('fs:folder', e => { e.returnValue = readCfg().folder || ''; });
 ipcMain.on('fs:read', e => { e.returnValue = readData(); });
+// weekly backups: <data folder or app data>/backups, newest 8 kept
+const backupDir = () => { const f = readCfg().folder; return path.join(f || app.getPath('userData'), 'backups'); };
+ipcMain.handle('fs:backup', (e, name, text) => {
+  if (typeof name !== 'string' || !/^daybook-backup-[0-9A-Za-z-]{1,40}\.json$/.test(name) || typeof text !== 'string') return null;
+  try {
+    const d = backupDir(); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, name), text);
+    fs.readdirSync(d).filter(n => n.startsWith('daybook-backup-')).sort().reverse().slice(8).forEach(n => { try { fs.unlinkSync(path.join(d, n)); } catch (err) {} });
+    return d;
+  } catch (err) { return null; }
+});
+ipcMain.on('fs:openBackups', () => { const d = backupDir(); fs.mkdirSync(d, { recursive: true }); shell.openPath(d); });
 ipcMain.on('fs:reset', e => { const c = readCfg(); delete c.folder; writeCfg(c); e.returnValue = true; });
 ipcMain.on('fs:write', (e, text) => {
   const f = dataFile(); if (!f || typeof text !== 'string') { e.returnValue = false; return; }
