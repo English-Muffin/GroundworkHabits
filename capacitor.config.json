@@ -1,6 +1,6 @@
 {
   "appId": "com.daybook.app",
-  "appName": "Daybook",
+  "appName": "Groundwork Habits",
   "webDir": "www",
   "backgroundColor": "#080808",
   "server": { "androidScheme": "https" }

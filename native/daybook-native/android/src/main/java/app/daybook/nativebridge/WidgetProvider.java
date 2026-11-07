@@ -37,8 +37,8 @@ public class WidgetProvider extends AppWidgetProvider {
         JSONArray items = d.optJSONArray("items");
         int n = items == null ? 0 : Math.min(items.length(), ROWS.length), done = 0;
         for (int i = 0; i < n; i++) if (items.optJSONObject(i).optBoolean("done")) done++;
-        v.setTextViewText(R.id.w_title, d.optString("title", "Daybook") + (n > 0 ? "   " + done + "/" + n : ""));
-        String empty = d.optBoolean("locked") ? d.optString("lockedText", "Daybook is locked") : n == 0 ? d.optString("emptyText", "Open Daybook to add habits") : null;
+        v.setTextViewText(R.id.w_title, d.optString("title", "Groundwork Habits") + (n > 0 ? "   " + done + "/" + n : ""));
+        String empty = d.optBoolean("locked") ? d.optString("lockedText", "Groundwork Habits is locked") : n == 0 ? d.optString("emptyText", "Open Groundwork Habits to add habits") : null;
         v.setViewVisibility(R.id.w_empty, empty == null ? View.GONE : View.VISIBLE);
         if (empty != null) v.setTextViewText(R.id.w_empty, empty);
         for (int i = 0; i < ROWS.length; i++) {

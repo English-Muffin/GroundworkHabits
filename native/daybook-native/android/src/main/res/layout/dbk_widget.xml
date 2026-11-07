@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" android:padding="14dp" android:background="@drawable/dbk_widget_bg">
     <TextView android:id="@+id/w_title" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:textColor="#FFFFFF" android:textSize="15sp" android:textStyle="bold" android:paddingBottom="8dp" android:text="Daybook" />
+        android:textColor="#FFFFFF" android:textSize="15sp" android:textStyle="bold" android:paddingBottom="8dp" android:text="Groundwork Habits" />
     <TextView android:id="@+id/w_empty" android:layout_width="match_parent" android:layout_height="wrap_content"
         android:textColor="#9CA3AF" android:textSize="13sp" android:visibility="gone" />
     <LinearLayout android:id="@+id/w_r0" style="@style/DbkWidgetRow"><TextView android:id="@+id/w_c0" style="@style/DbkWidgetCheck" /><TextView android:id="@+id/w_n0" style="@style/DbkWidgetName" /></LinearLayout>

@@ -1,9 +1,13 @@
 <div align="center">
 
+<img src="assets/logo.svg" alt="" width="72">
+
+# Groundwork Habits
+
 <p>
 <picture>
   <source media="(prefers-color-scheme: light)" srcset="assets/readme/today-light.png">
-  <img src="assets/readme/today.png" alt="Daybook: habits, tasks and goals in one calm place" width="100%">
+  <img src="assets/readme/today.png" alt="Groundwork Habits: habits, tasks and goals in one calm place" width="100%">
 </picture>
 </p>
 
@@ -21,9 +25,9 @@
 
 </div>
 
-## Why Daybook
+## Why Groundwork Habits
 
-Most habit trackers want an account, a subscription and your data on their servers. Daybook is one
+Most habit trackers want an account, a subscription and your data on their servers. Groundwork Habits is one
 offline app that keeps everything on your devices: daily, weekly and monthly habits, a weekly task
 planner, measurable goals, quit streaks and the insights that tie them together.
 
@@ -75,7 +79,7 @@ folder and it follows you between your computers and your phone.
 
 - Dark, AMOLED and light themes and any accent colour: teal, blue, violet, pink, amber, green or your own.
 - **11 languages:** English, Portuguese, Spanish, French, German, Italian, Dutch, Polish, Russian,
-  Chinese and Japanese. Daybook follows your device, or pick one in Settings.
+  Chinese and Japanese. Groundwork Habits follows your device, or pick one in Settings.
 - Drag tasks, habits, goals and cards into any order. Quick add (+) from anywhere. Undo for the last
   20 deletes (Ctrl+Z on desktop). Search across everything.
 - A Settings page with search, a short description on every option and a link to each section.
@@ -110,26 +114,26 @@ folder and it follows you between your computers and your phone.
 
 | | How |
 |---|---|
-| **Windows** | Download `Daybook-X.Y.Z-Windows-portable.exe` from the [latest release](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest) and run it. Nothing to install |
-| **macOS** | Download `Daybook-X.Y.Z-mac-universal.zip`, unzip it and drag Daybook to Applications |
-| **Android** | Download `Daybook-X.Y.Z-Android.apk` on the phone and open it. Updates install over it and keep your data |
+| **Windows** | Download `Groundwork-Habits-X.Y.Z-Windows-portable.exe` from the [latest release](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest) and run it. Nothing to install |
+| **macOS** | Download `Groundwork-Habits-X.Y.Z-mac-universal.zip`, unzip it and drag Groundwork Habits to Applications |
+| **Android** | Download `Groundwork-Habits-X.Y.Z-Android.apk` on the phone and open it. Updates install over it and keep your data |
 | **Any browser** | Open `www/index.html`, or host the `www` folder on any HTTPS static host and install it as an app |
 
 > [!NOTE]
 > The Android APK is signed. The desktop builds are not code-signed yet. Windows SmartScreen may say "unknown publisher": choose
 > **More info**, then **Run anyway**. macOS will say the app "cannot be verified": right-click
-> Daybook and choose **Open** (on macOS 15+, try once, then **System Settings → Privacy & Security →
+> Groundwork Habits and choose **Open** (on macOS 15+, try once, then **System Settings → Privacy & Security →
 > Open Anyway**). On Android, allow "install unknown apps" for the app you open the APK with.
 
 ## Your data
 
-Daybook keeps one document on each device: habits, ticks, amounts, notes, tasks, goals, streaks and
+Groundwork Habits keeps one document on each device: habits, ticks, amounts, notes, tasks, goals, streaks and
 your monthly reflections. Nothing is sent anywhere unless you choose a folder, a backup or a calendar.
 
 | Where | What |
 |---|---|
 | App storage | The data itself. With a PIN it is encrypted with a key made from your PIN |
-| `daybook.json` in your data folder | Desktop and Android, when you choose a folder. Written on every change, read when you come back |
+| `daybook.json` in your data folder (the name from before the rename, so existing folders keep working) | Desktop and Android, when you choose a folder. Written on every change, read when you come back |
 | `backups/daybook-backup-<date>.json` | Automatic backups, the newest 8 kept (encrypted when a PIN is set) |
 | `daybook-replaced-<time>.json` | A copy of a save you chose to replace when picking a folder (desktop) |
 
@@ -165,9 +169,9 @@ python tests/stress.py out/      # heavy data, 320 to 1920 px, three themes, lay
 python tests/device_android.py   # a real Android build on a BlueStacks instance named "Daybook testing"
 ```
 
-## How Daybook is built
+## How Groundwork Habits is built
 
-Daybook is developed with [Claude Code](https://claude.com/claude-code), Anthropic's coding agent.
+Groundwork Habits is developed with [Claude Code](https://claude.com/claude-code), Anthropic's coding agent.
 Most of the code, tests and documentation are drafted in Claude Code sessions, and the repository
 carries a [`CLAUDE.md`](CLAUDE.md) with the project context those sessions start from. What goes in,
 what gets released, and testing on real devices are the maintainer's call. The app itself doesn't
@@ -181,7 +185,7 @@ follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
 ## License
 
-Daybook is free and open-source software under the [GNU Affero General Public License v3.0 or later](LICENSE)
+Groundwork Habits is free and open-source software under the [GNU Affero General Public License v3.0 or later](LICENSE)
 (AGPL-3.0-or-later). You may use, study, share and change it; if you distribute a changed version, or run one
 as a service for others, you must share its source under the same licence. The bundled Space Grotesk font is
 under the SIL Open Font License (`www/fonts/OFL.txt`).

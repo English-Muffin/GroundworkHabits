@@ -167,7 +167,7 @@ final class Reminders {
         if (!it.optBoolean("info")) b.addAction(0, it.optString("yes", "Yes, done"), answerIntent(c, id, h, k, "yes")).addAction(0, it.optString("no", "No"), answerIntent(c, id, h, k, "no"));
         if (tap != null) b.setContentIntent(tap);
         b.setVisibility(NotificationCompat.VISIBILITY_PRIVATE).setPublicVersion(new NotificationCompat.Builder(c, alarm ? ALARM : ASK)
-            .setSmallIcon(R.drawable.dbk_stat).setContentTitle("Daybook").setContentText("A reminder is waiting for your answer").build());
+            .setSmallIcon(R.drawable.dbk_stat).setContentTitle("Groundwork Habits").setContentText("A reminder is waiting for your answer").build());
         Notification n = b.build();
         if (alarm) n.flags |= Notification.FLAG_INSISTENT; // keeps ringing until answered or swiped away
         try { NotificationManagerCompat.from(c).notify(id, n); } catch (SecurityException e) {}

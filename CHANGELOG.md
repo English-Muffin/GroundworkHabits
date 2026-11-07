@@ -1,6 +1,11 @@
 # Changelog
 
-All notable changes to Daybook. Versions match the GitHub releases.
+All notable changes to Groundwork Habits (called Daybook up to 1.6.1). Versions match the GitHub releases.
+
+## Unreleased
+
+- Daybook is now **Groundwork Habits**, with a new layered logo and app icons. Your data, data
+  folder and backups carry over untouched.
 
 ## 1.6.1
 

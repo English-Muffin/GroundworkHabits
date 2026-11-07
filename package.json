@@ -23,7 +23,7 @@
   },
   "build": {
     "appId": "com.daybook.app",
-    "productName": "Daybook",
+    "productName": "Groundwork Habits",
     "files": [
       "electron/**",
       "www/**",
@@ -43,9 +43,9 @@
         }
       ]
     },
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "artifactName": "Groundwork-Habits-${version}-${os}-${arch}.${ext}",
     "portable": {
-      "artifactName": "${productName}-${version}-Windows-portable.exe"
+      "artifactName": "Groundwork-Habits-${version}-Windows-portable.exe"
     },
     "mac": {
       "icon": "assets/icon.png",

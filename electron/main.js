@@ -70,7 +70,7 @@ function getOnce(u, signal) {
   return new Promise((resolve, reject) => {
     const host = u.hostname.replace(/^\[|\]$/g, '');
     if (isIP(host) && !isPublic(host)) return reject(Object.assign(new Error('private address'), { code: 'EPRIVATE' }));
-    const req = https.get(u, { lookup: safeLookup, signal, headers: { 'User-Agent': 'Daybook calendar sync', Accept: 'text/calendar' } }, res => {
+    const req = https.get(u, { lookup: safeLookup, signal, headers: { 'User-Agent': 'Groundwork Habits calendar sync', Accept: 'text/calendar' } }, res => {
       if (res.socket.remoteAddress && !isPublic(res.socket.remoteAddress)) { res.destroy(); return reject(Object.assign(new Error('private address'), { code: 'EPRIVATE' })); }
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) { res.resume(); return resolve({ redirect: String(res.headers.location) }); } // parsed by the caller, inside its try
       if (res.statusCode !== 200) { res.resume(); return resolve({ status: res.statusCode }); }
@@ -107,7 +107,7 @@ const ask = async opts => testAnswers.length ? testAnswers.shift() : (await dial
 ipcMain.handle('fs:choose', async () => {
   let folder = process.env.DAYBOOK_TEST_PICK;
   if (!folder) {
-    const r = await dialog.showOpenDialog(win, { title: 'Choose where Daybook saves your data', properties: ['openDirectory', 'createDirectory'] });
+    const r = await dialog.showOpenDialog(win, { title: 'Choose where Groundwork Habits saves your data', properties: ['openDirectory', 'createDirectory'] });
     if (r.canceled || !r.filePaths[0]) return null;
     folder = r.filePaths[0];
   }
@@ -119,12 +119,12 @@ ipcMain.handle('fs:choose', async () => {
       info = `
 
 That save was last changed ${st.mtime.toLocaleString()} and has ${(d.habits || []).length} habits and ${(d.goals || []).length} goals.`; } catch (e) {}
-    const a = await ask({ type: 'question', title: 'Daybook', message: 'There’s already a Daybook save in this folder.',
+    const a = await ask({ type: 'question', title: 'Groundwork Habits', message: 'There’s already a Groundwork Habits save in this folder.',
       detail: 'Do you want to replace it with your current data, or load the save that’s in the folder?' + info,
       buttons: ['Replace with my current data', 'Load the save in this folder', 'Cancel'], defaultId: 0, cancelId: 2, noLink: true });
     if (a === 2) return null;
     if (a === 1) {
-      const b = await ask({ type: 'warning', title: 'Daybook', message: 'Load the save from this folder?',
+      const b = await ask({ type: 'warning', title: 'Groundwork Habits', message: 'Load the save from this folder?',
         detail: 'This will overwrite the data you have now with the save from the folder. Make sure it isn’t an old save before continuing. Your current data can’t be recovered afterwards unless you’ve exported a backup.',
         buttons: ['Load folder save', 'Cancel'], defaultId: 1, cancelId: 1, noLink: true });
       if (b !== 0) return null;
@@ -138,6 +138,8 @@ That save was last changed ${st.mtime.toLocaleString()} and has ${(d.habits || [
   return { folder, mode };
 });
 
+// keep the profile folder from before the rename, so saved data stays where it was
+app.setPath('userData', path.join(app.getPath('appData'), 'Daybook'));
 if (process.env.DAYBOOK_USER_DATA) app.setPath('userData', process.env.DAYBOOK_USER_DATA); // tests use a throwaway profile
 if (!app.requestSingleInstanceLock()) app.quit();
 
@@ -145,7 +147,7 @@ let win;
 function createWindow() {
   win = new BrowserWindow({
     width: 1320, height: 860, minWidth: 420, minHeight: 600,
-    backgroundColor: '#080808', title: 'Daybook',
+    backgroundColor: '#080808', title: 'Groundwork Habits',
     icon: path.join(__dirname, '..', 'assets', 'icon.png'),
     autoHideMenuBar: true,
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: path.join(__dirname, 'preload.js') }
@@ -177,7 +179,7 @@ let widget = null;
 ipcMain.on('win:widget', () => {
   if (widget && !widget.isDestroyed()) { widget.show(); widget.focus(); return; }
   widget = new BrowserWindow({
-    width: 340, height: 560, minWidth: 280, minHeight: 320, alwaysOnTop: true, title: 'Daybook widget',
+    width: 340, height: 560, minWidth: 280, minHeight: 320, alwaysOnTop: true, title: 'Groundwork Habits widget',
     backgroundColor: '#080808', icon: path.join(__dirname, '..', 'assets', 'icon.png'), autoHideMenuBar: true,
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: path.join(__dirname, 'preload.js') }
   });
@@ -192,7 +194,7 @@ ipcMain.on('win:ask', (e, h, k) => {
   const wa = screen.getPrimaryDisplay().workArea, n = asks.size;
   const w = new BrowserWindow({
     width: 340, height: 230, x: wa.x + wa.width - 356, y: Math.max(wa.y, wa.y + wa.height - 246 - n * 240),
-    frame: false, resizable: false, alwaysOnTop: true, show: false, title: 'Daybook reminder',
+    frame: false, resizable: false, alwaysOnTop: true, show: false, title: 'Groundwork Habits reminder',
     backgroundColor: '#080808', icon: path.join(__dirname, '..', 'assets', 'icon.png'),
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: path.join(__dirname, 'preload.js') }
   });
