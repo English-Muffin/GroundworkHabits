@@ -2,7 +2,7 @@
 
 All notable changes to Daybook. Versions match the GitHub releases.
 
-## Unreleased
+## 1.5.0
 
 - Big windows: the layout uses the full width, so columns and cards get larger instead of staying small in the middle.
 - Tasks can have a reminder too (tap the bell on a task): Yes or no, or an alarm, with the same Yes and No buttons as habits.
