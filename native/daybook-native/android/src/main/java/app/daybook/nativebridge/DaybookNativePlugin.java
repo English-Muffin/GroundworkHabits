@@ -3,6 +3,7 @@ package app.daybook.nativebridge;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -23,7 +24,15 @@ public class DaybookNativePlugin extends Plugin {
     public void load() {
         live = this;
         Reminders.channels(getContext());
+        // the system back button/gesture goes to the app: it closes dialogs, leaves Settings, steps back through screens,
+        // and only leaves the app after a second back on the home screen (see onBack in app.js)
+        getActivity().runOnUiThread(() -> getActivity().getOnBackPressedDispatcher().addCallback(getActivity(), new OnBackPressedCallback(true) {
+            @Override public void handleOnBackPressed() { notifyListeners("back", new JSObject()); }
+        }));
     }
+
+    @PluginMethod
+    public void exitApp(PluginCall call) { call.resolve(); getActivity().runOnUiThread(() -> getActivity().finish()); }
 
     @PluginMethod
     public void schedule(PluginCall call) {
