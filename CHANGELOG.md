@@ -4,6 +4,21 @@ All notable changes to Daybook. Versions match the GitHub releases.
 
 ## Unreleased
 
+- Licence changed from MIT to GNU AGPL-3.0-or-later.
+- Settings is now a page: sections with a side list on desktop and a list on phones, search across every setting, a short description on each switch, a test notification, an auto-lock delay, and About with privacy, shortcuts and licences.
+- Choose how often backups run (off, daily, weekly, monthly); the heatmap shows the months that fit, or a chosen 3, 6 or 12; quick add sits in the middle of the nav.
+- Daybook in 10 more languages: Portuguese, Spanish, French, German, Italian, Dutch, Polish, Russian, Chinese and Japanese (follows the device, or pick one in Settings).
+- Weekly automatic backups (desktop and Android), and with a PIN every export and backup is encrypted.
+- Android: choose a data folder (a synced folder gives sync between devices), a home-screen widget to tick today's habits, and fingerprint unlock.
+- Goals: a history line for amounts and values, repeating contributions (e.g. €500 a month), goals made of tasks, archiving, and a notice a week before and on a deadline.
+- Streak freezes can be set per habit (off, how often you earn one, how many you keep).
+- Quick add (+) for a task, a habit tick or a goal amount from anywhere.
+- The heatmap shows 12 months and fills wide screens; calendar times with a time zone are converted correctly.
+- Faster: the screen updates only what changed after a tap.
+- Goals can be measured in more ways: an amount towards a target (money saved, km run), from a start value to a target (weight, debt left), or the number of times a habit is done. Each area has ideas to start from.
+- Your own life areas next to the built-in ten (rename, recolour, delete).
+- Every Insights box can be dragged on its own.
+- Spreadsheet export and search show live goal progress.
 - New Today look: a percentage ring with the date, and habits as larger cards (two columns on wide screens) with done ones struck through.
 - New Goals screen: life areas you can tap to filter, pinned goals first, status badges, an optional deadline, and dated steps that fill the progress bar.
 - Streak freezes: every 7 days in a row earns a freeze (up to 3) that saves the streak on a missed day.

@@ -14,9 +14,11 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
-- `tests/smoke.py`  Playwright smoke tests (77 checks, plus 11 desktop checks in `tests/electron_folder.py`, desktop and phone)
+- `tests/smoke.py`  Playwright smoke tests (117 checks, plus 13 desktop checks in `tests/electron_folder.py`, desktop and phone)
 - `tests/visual.py`  screenshot comparison, light and dark (local only; fixed clock + demo data). `UPDATE=1` accepts a new look after checking the PNGs in `tests/visual/`
 - `tests/launch_check.js`  CI: starts the packaged desktop app and waits for it to render
+- `tests/device_android.py`  real-device check on the BlueStacks instance named "Daybook testing" (finds it in BlueStacks' config, starts it, connects only to its adb port): reminder in the background, Yes from the notification without opening the app, calendar, widget, Save to. Run before every release
+- `tools/i18n/`  translations: `<lang>.txt` (numbered lines matching `source.json`), `build.py` checks them and writes `www/i18n/<lang>.js`
 - `native/release.gradle`  applied to the generated `android/app/build.gradle`: version from package.json, release signing from `DAYBOOK_KEYSTORE*` env (CI secrets `ANDROID_KEYSTORE_BASE64/PASSWORD`, `ANDROID_KEY_ALIAS`; the key lives outside the repo)
 - `tests/stress.py`  stress test (heavy data, 320-1920px, all themes, random clicks, edge dates); writes report.txt
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
@@ -25,7 +27,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - Run locally: `python -m http.server 8765 --directory www`, then open http://localhost:8765
 - Test: `pip install playwright && playwright install chromium`, then `python tests/smoke.py`. It starts its own server
 - Windows portable exe: `npm install && npm run dist:win` (output in `dist/`). macOS zip: `npm run dist:mac` on a Mac
-- Release: bump `version` in package.json and `APPV` in app.js, push a `v*` tag; CI builds Windows, macOS, Android and attaches them to a GitHub Release
+- Release: bump `version` in package.json, `APPV` in app.js and the version badge in README.md; refresh README screenshots and feature list (show different accents and themes); run `tests/device_android.py`; push a `v*` tag; CI builds Windows, macOS, Android and attaches them to a GitHub Release
 - Android app: `npm install && npx cap add android && npx cap sync android && npx cap open android`
 - Local APK build: needs `ANDROID_HOME`; if Gradle fails with "Unable to establish loopback connection", set `JAVA_TOOL_OPTIONS=-Djdk.net.unixdomain.tmpdir=C:\tmp\jdk`
 
@@ -37,11 +39,12 @@ It has its own name and branding. Keep it that way: do not copy the original pro
   - `habits[].target` (1-99): taps needed per period. `count[habitId][key]` holds partial taps; `log` still marks done, so stats are unchanged. Use `tap(h,k)` to toggle
   - `habits[].per` (1-7): days per week for daily habits (Today shows `n/per this week`). A habit's type can change; ticks of the old type stay in `log` under their own key format
   - `habits[].track`: `check` | `count` (uses `target`) | `amount` (`unit`, optional `goal`; numbers in `amt[habitId][key]`, `log` marks done once the goal is met; `setAmt()`)
-  - task items may carry `rem` `{t,m}` (a one-off reminder on that day: bell button `.tkb`, modal `trem`; same engine as habits, ids 2000+ on Android, `findT()`), `rep` (series id of a repeating task, see `repeatDates()`), `cal`/`hidden`/`pin` (calendar events; `pin` = user moved it to another day)
+  - task items may carry `goal` (id of a goal measured by tasks), `rem` `{t,m}` (a one-off reminder on that day: bell button `.tkb`, modal `trem`; same engine as habits, ids 2000+ on Android, `findT()`), `rep` (series id of a repeating task, see `repeatDates()`), `cal`/`hidden`/`pin` (calendar events; `pin` = user moved it to another day)
   - `habits[].rem`: `{t:'HH:MM', m:'ask'|'alarm'}` or null, a per-habit reminder (see Habit reminders)
   - `notes[habitId][key]`: short note for that day/week/month
   - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Achievements tab
-  - `goals`: `{id, title, area, pct, due?, pin?, steps?: [{id,text,due?,done}]}`; with steps, progress = done steps (`gPct`). Goals screen: life areas filter (`goalArea`), pinned first, edit in the `goal` modal. `journal['YYYY-MM']`: monthly reflection text
+  - `goals`: `{id, title, area, pct, due?, pin?, kind?, steps?, unit?, target?, start?, log?: [{d,v}], habit?, since?}`. `kind` (`gKind`): pct (slider), steps, num (log amounts add up to target, e.g. €; `recur` {v,every:'w'|'m',from,last} adds entries marked `a:1` via `applyRecurring()`), range (start → target, latest logged value), habit (ticks of a habit since a date), tasks (tasks with `goal` = this id, `gTasks`). `arch` hides a goal under Archived. Deadlines (`due`) notify 7 days before and on the day at 09:00 (`goalDue`). `gPct()` is the source of truth (stored `pct` is a copy for exports); `gLine()` the one-line status; `IDEAS` holds starter goals per area.
+  - `areas`: custom life areas `[{name,color}]` next to the built-in `AREAS` (`allAreas()`, `areaCol()`); renaming moves goals, deleting needs the area to be empty. Goals screen: life areas filter (`goalArea`), pinned first, edit in the `goal` modal. `journal['YYYY-MM']`: monthly reflection text
 - `render()` rebuilds `#main` from string templates (`vToday`, `vHabits`, `vTasks`, `vGoals`, `vInsights`, `vAch`) and `#modal`.
   It preserves scroll positions, so keep that behaviour if you change it.
 - One delegated `click` listener handles every `data-act="..."` button. Add new actions to its `switch`.
@@ -53,10 +56,20 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - Hash routes: `#today #habits #tasks #goals #insights #achievements`.
 
 ## PIN encryption
+Exports and weekly backups are encrypted too when a PIN is set; importing an `enc1:` file asks for that PIN (`impin` modal). Android fingerprint unlock (`Bio.java`) keeps the PIN encrypted by a biometric-bound Keystore key; `bioTry()` runs on the lock screen.
 With a PIN, `S` is saved as `enc1:<salt>:<base64>` (AES-GCM, key from PBKDF2 of the PIN, in memory only). Until the PIN is entered `encWait` is true and nothing may save, sync reminders or pull the calendar. Old hash-only PINs upgrade on unlock. Desktop waits for pending encrypted saves before closing (`app:flush`). Each window unlocks itself.
 
 ## Streak freezes
-`freezeOf(h)` replays an every-day habit's history: 7 done in a row earn a freeze (max 3), a missed day uses one. `curStreak` and `dailyStats` honour them; nothing extra is stored. Switch: `feat('freeze')`.
+Per habit `h.fz` {off, every 3-30, max 1-5} (default every 7, max 3). `freezeOf(h)` replays an every-day habit's history: 7 done in a row earn a freeze (max 3), a missed day uses one. `curStreak` and `dailyStats` honour them; nothing extra is stored. Switch: `feat('freeze')`.
+
+## Translations
+English is written in the code and is the key. `index.html` picks the language (`P.lang`, else the device language) and loads `i18n/<lang>.js` before `app.js`; `trDom()` swaps text, placeholders and labels after each render (on the template before `morph`, and on menu/modal/nav/lock), `tx()` translates toasts and notification text. Day and month names come from `Intl`. User content (`NOTR` selector: names, notes, task text) is never translated. New UI text: add it to `tools/i18n/source.json` (or a pattern for text with numbers/names) and every `<lang>.txt`, then run `python tools/i18n/build.py`. Languages: en pt es fr de it nl pl ru zh ja (no right-to-left yet).
+
+## Settings page
+`#settings` (and `#settings/<section>`, sections in `SETSECS`) is a page, not a dropdown: `vSettings()` builds it from `setSection(k)` with row helpers `srow`/`sgo`/`sgrp`/`sw` (switches are `role=switch`). Desktop (`wideSet()`): side list + every section on one page, the list follows the scroll (`spySettings`). Phones: the section list with a status line each (`setStatus`), then one section with a back button. Search (`#setQ`, `filterSettings`) hides non-matching rows without re-rendering. The gear opens it, Esc / back returns to `setBack`. Destructive actions sit in the red "Danger zone" group and ask twice. Feature descriptions live in `FEATD`. `P.lockIdle` (minutes) sets the auto-lock.
+
+## Rendering
+`render()` builds HTML strings, translates them on a detached template and `morph()`s `#main` in place (only changed nodes update, focus and scroll survive). Elements that bind listeners use `onlyOn()` so re-renders replace them.
 
 ## Feature switches
 `P.feat` (Settings > Features): streak freezes, show names in reminders (`remnames`), streaks on Today, weekly review, year heatmap, habit notes, missed X, Achievements tab, daily reminder (`P.remTime`, Notification API, only while the app runs). Read with `feat(key)`. Deletes push a restore function with `pushUndo()` (up to 20; each puts back only what was deleted) and show `toastUndo()`; Ctrl+Z undoes outside text fields.
@@ -67,6 +80,10 @@ With a PIN, `S` is saved as `enc1:<salt>:<base64>` (AES-GCM, key from PBKDF2 of 
 - Electron build: `electronLanguages: ['en-US']` and maximum compression keep the exe near 65 MB (the app itself is ~330 KB; the rest is Electron).
 - Habit grid rows: sticky `.gname`/`.gstat` backgrounds must stay opaque (layer tints over `var(--card)`), and a dragged grid row's ghost is only its name cell.
 - Habit reminders (`h.rem`): Android uses the local plugin `native/daybook-native` (`DaybookNative`, a `file:` dependency so `cap sync` picks it up). `syncReminders()` sends the next 14 days (`NB.schedule({items:[{id,at,title,body,h,k,alarm}]})`); Java sets AlarmManager alarms (exact via `USE_EXACT_ALARM`, restored on reboot), posts the notification with Yes/No broadcast actions (channels `dbk-ask` quiet+ongoing, `dbk-alarm` alarm sound + insistent) and stores answers in SharedPreferences without opening the app; `takeAnswers()` applies them on start, resume and the `answer` event. Rescheduled 1.5 s after every `save()`, so a done period is skipped. LocalNotifications is only used for the permission prompt and the old daily reminder. Desktop: `checkHabitReminders()` calls `daybookFS.ask()`, an always-on-top pop-up at `#ask~<habit>~<key>` (`askHtml`). Web: a notification plus the in-app `ask` modal. Alarm mode beeps (`alarmStart`). Fired-today state is `P.remFired` (per device).
+- Backups: `autoBackup()` weekly (desktop `daybookFS.backup` to <data folder or app data>/backups; Android `DaybookNative.backup` to the chosen folder's backups or app storage), newest 8 kept, "Back up now" in the menu.
+- Android data folder: `DaybookNative.pickFolder` (Storage Access Framework, `Folder.java`); `andWrite()` after saves, `andRead()` on focus (folder wins). Picking a folder with a save asks replace or load (`afold`).
+- Android home-screen widget (`WidgetProvider.java`): `pushWidget()` sends today's daily habits after saves (none while a PIN is set); tapping a row records a Yes answer like the notification.
+- Quick add: `#quickBtn` (desktop, bottom-right) / `#quickTop` (phones, top bar) opens the `quick` modal: task for today, tick a habit, add to an amount goal.
 - Desktop mini widget: `#widget` route (`vWidget`, `html.widget`), opened via `daybookFS.widget()`; windows stay in sync through the `storage` event.
 - Android reminder: `@capacitor/local-notifications` (a real `dependencies` entry so `cap sync` picks it up) schedules a daily notification; web/desktop use the Notification API while running.
 - Touch dragging uses touch events (grip = immediate, press-and-hold 380 ms anywhere on an item); mouse/pen use pointer events on the grip.
@@ -77,7 +94,7 @@ With a PIN, `S` is saved as `enc1:<salt>:<base64>` (AES-GCM, key from PBKDF2 of 
 - Today's ring (`.thero`) and tasks (`.ttasks`) are separate dashboard cards; `#main.tdash` pairs them side by side on desktop with `grid-auto-flow:dense`.
 
 ## Drag to rearrange
-Any `[data-drop=LIST]` container whose children are `[data-drag=LIST][data-id]` with a `.grip` button can be reordered by pointer (mouse and touch, `touch-action:none` on the grip) or arrow keys on the grip. `commitDrag()` writes the order: tasks (between days via `.tlist[data-k]`), `habits-<type>`, goals, quits, and `cards` (top-level blocks of Today/Insights, order in `P.layout[view]`). Calendar tasks have no grip. Switch: `feat('drag')`.
+Insights is one 12-column grid (`#main.idash`, boxes `.q` quarter / `.h` half), so every box is its own card. Any `[data-drop=LIST]` container whose children are `[data-drag=LIST][data-id]` with a `.grip` button can be reordered by pointer (mouse and touch, `touch-action:none` on the grip) or arrow keys on the grip. `commitDrag()` writes the order: tasks (between days via `.tlist[data-k]`), `habits-<type>`, goals, quits, and `cards` (top-level blocks of Today/Insights, order in `P.layout[view]`). Calendar tasks have no grip. Switch: `feat('drag')`.
 
 ## Design tokens (CSS variables in `:root`)
 Spacing scale `--sp-1..5` = 4, 8, 12, 16, 24px: 12px between a header and its content, 8px between items, 16-24px around cards. The stress test flags anything closer than 10px to a progress ring.
@@ -100,8 +117,9 @@ Dark is the designed theme. Settings > Customize adds accent colours (sets `--te
 - Fonts are bundled (`www/fonts`), no network needed.
 
 ## Before you finish any change
+Commits: one per logical change with a specific subject (not one message for everything), so GitHub's file list says what changed where.
 After the tests pass, rebuild `dist/` so the user can test before a release: `npm run dist:win` (rename to `Daybook-X.Y.Z-test-Windows-portable.exe`) and the debug APK (`npx cap sync android`, `android/gradlew assembleDebug`, copy to `dist/Daybook-X.Y.Z-test-Android.apk`). Delete older test builds there.
-Run all four: `python tests/smoke.py` (starts with a JS syntax check), `python tests/visual.py`, `LAYOUT_ONLY=1 python tests/stress.py out/` (layout, overlap and covered-element checks at 6 sizes x 3 themes; must report 0 findings) and `python tests/electron_folder.py`. Editing big chunks with scripts has removed neighbouring code before: diff the list of `case '...'` actions and `modal.kind` branches against the previous version after large edits.
+Run all four (and `python tests/device_android.py` before a release): `python tests/smoke.py` (starts with a JS syntax check), `python tests/visual.py`, `LAYOUT_ONLY=1 python tests/stress.py out/` (layout, overlap and covered-element checks at 6 sizes x 3 themes; must report 0 findings) and `python tests/electron_folder.py`. Editing big chunks with scripts has removed neighbouring code before: diff the list of `case '...'` actions and `modal.kind` branches against the previous version after large edits.
 Run `python tests/smoke.py`. When you fix a bug, add a check for it. Test at 390px wide as well as desktop.
 
 ## Ideas not done yet

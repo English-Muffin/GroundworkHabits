@@ -7,11 +7,11 @@
 </picture>
 </p>
 
-<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest"><img src="https://img.shields.io/github/v/release/English-Muffin/Free-Habit-Tracker?label=release&style=flat-square&labelColor=0f0f0f&color=22d3be" alt="Release"></a>
-<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases"><img src="https://img.shields.io/github/downloads/English-Muffin/Free-Habit-Tracker/total?label=downloads&style=flat-square&labelColor=0f0f0f&color=22d3be" alt="Downloads"></a>
-<a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/English-Muffin/Free-Habit-Tracker/build.yml?branch=main&label=build&style=flat-square&labelColor=0f0f0f&color=22d3be" alt="Build"></a>
-<a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/English-Muffin/Free-Habit-Tracker/test.yml?branch=main&label=tests&style=flat-square&labelColor=0f0f0f&color=22d3be" alt="Tests"></a>
-<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22d3be?style=flat-square&labelColor=0f0f0f" alt="MIT licence"></a>
+<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest"><img src="https://img.shields.io/badge/version-1.5.0-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.5.0"></a>
+<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest"><img src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Android%20%C2%B7%20web-22d3be?style=flat-square&labelColor=0f0f0f" alt="Windows, macOS, Android and web"></a>
+<a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/build.yml"><img src="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/build.yml/badge.svg?branch=main" alt="Build"></a>
+<a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/test.yml"><img src="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/test.yml/badge.svg?branch=main" alt="Tests"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-22d3be?style=flat-square&labelColor=0f0f0f" alt="AGPL-3.0 licence"></a>
 
 **[Download for Windows](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest)** ·
 **[macOS](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest)** ·
@@ -162,5 +162,7 @@ follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
 ## License
 
-Daybook is released under the [MIT License](LICENSE). The Space Grotesk font is loaded from Google
-Fonts under the SIL Open Font License.
+Daybook is free and open-source software under the [GNU Affero General Public License v3.0 or later](LICENSE)
+(AGPL-3.0-or-later). You may use, study, share and change it; if you distribute a changed version, or run one
+as a service for others, you must share its source under the same licence. The bundled Space Grotesk font is
+under the SIL Open Font License (`www/fonts/OFL.txt`).
