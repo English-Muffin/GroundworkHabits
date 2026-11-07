@@ -20,7 +20,7 @@ async def main():
         proc, b, pg = await launch(p, exe, prof, {}); await pg.wait_for_selector('.gname .nb')
         check('loads data from the chosen folder', await pg.locator('.gname .nb', has_text='From folder').count() == 1)
         await pg.click('[data-act=gear]')
-        check('menu shows the data folder', str(folder) in await pg.locator('.mpath').first.inner_text())
+        check('settings show the data folder', str(folder) in await pg.locator('#set-data').inner_text())
         await pg.keyboard.press('Escape')
         await pg.click('[data-act=newhabit] >> nth=0'); await pg.fill('#mName', 'Saved to folder'); await pg.keyboard.press('Enter')
         await pg.wait_for_timeout(600)
@@ -41,6 +41,8 @@ async def main():
         await wpg.locator('.trow', has_text='Saved to folder').locator('.cell').click(); await asyncio.sleep(.4)
         await pg.evaluate("location.hash='today'"); await asyncio.sleep(.3)
         check('widget window ticks a habit and the main window updates', await pg.locator('.trow', has_text='Saved to folder').locator('.cell.on').count() == 1)
+        await pg.click('[data-act=gear]'); await pg.click('#main [data-act=baknow]'); await asyncio.sleep(1); await pg.evaluate("location.hash='today'"); await asyncio.sleep(.3)
+        check('Back up now writes a dated backup into the data folder', len(list((folder / 'backups').glob('daybook-backup-*.json'))) == 1)
         # habit reminder pop-up: Yes in the small window marks the habit done in the main window, then the pop-up closes
         await pg.locator('.trow', has_text='Saved to folder').locator('.cell').click(); await asyncio.sleep(.3)
         hid, k = await pg.evaluate("(()=>{const s=DaybookTest.state(),d=new Date();return [s.habits.find(h=>h.name==='Saved to folder').id,d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')]})()")
@@ -92,6 +94,7 @@ async def choose_flow(p, exe, tmp):
     await pg.click('[data-act=newhabit] >> nth=0'); await pg.fill('#mName', 'Current'); await pg.keyboard.press('Enter')
     async def pick():
         await pg.click('[data-act=gear]'); await pg.click('[data-act=pickdir]'); await pg.wait_for_timeout(500)
+        await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(300)
     await pick()
     check('cancel keeps current data and folder unused', await pg.locator('.gname .nb', has_text='Current').count() == 1 and names() == ['Old save'] and 'folder' not in json.loads((prof / 'config.json').read_text() if (prof / 'config.json').exists() else '{}'))
     await pick()

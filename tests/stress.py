@@ -123,7 +123,7 @@ async def run():
             if 'eve' in label:
                 await pg.clock.run_for(60_000); await pg.evaluate("window.dispatchEvent(new Event('focus'))"); await pg.wait_for_timeout(150)
                 await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(150)
-                errs += [] if '1 Jan' in await pg.locator('#main').inner_text() or 'January' in await pg.locator('#main').inner_text() else ['did not roll over to the new year after midnight']
+                t = (await pg.locator('#main').inner_text()).lower(); errs += [] if '1 jan' in t else ['did not roll over to the new year after midnight']
             await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(100)
             await pg.evaluate("for(let i=0;i<3;i++){const b=document.querySelector('[data-act=next]');b&&b.click()}")
             note(f'date {label}', errs); await ctx.close()

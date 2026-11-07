@@ -31,7 +31,7 @@ async def main():
             await pg.clock.set_fixed_time('2026-03-18T10:30:00')
             await pg.goto(f'http://127.0.0.1:{PORT}/index.html')
             await pg.evaluate("t=>localStorage.setItem('daybook-prefs',JSON.stringify({theme:t,feat:{reminder:false}}))", th)
-            await pg.reload(); await pg.click('[data-act=gear]'); await pg.click('#menu [data-act=demo]')
+            await pg.reload(); await pg.goto(f'http://127.0.0.1:{PORT}/index.html#settings/data'); await pg.wait_for_timeout(200); await pg.click('#main [data-act=demo]')
             await pg.goto(f'http://127.0.0.1:{PORT}/index.html#{v}'); await pg.evaluate('document.fonts.ready'); await pg.wait_for_timeout(400)
             await pg.evaluate("document.getElementById('toast').hidden=true")
             name = f'{v}-{th}-{w}.png'; cur = OUT / name
