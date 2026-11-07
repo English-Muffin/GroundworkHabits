@@ -5,21 +5,18 @@
 # Groundwork Habits
 
 <p>
-<picture>
-  <source media="(prefers-color-scheme: light)" srcset="assets/readme/today-light.png">
-  <img src="assets/readme/today.png" alt="Groundwork Habits: habits, tasks and goals in one calm place" width="100%">
-</picture>
+<img src="assets/readme/intro.gif" alt="A short tour of Groundwork Habits: ticking habits on Today, the month grid, the task week, goals, insights, and switching accent colours and themes" width="100%">
 </p>
 
-<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest"><img src="https://img.shields.io/badge/version-1.6.1-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.6.1"></a>
-<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest"><img src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Android%20%C2%B7%20web-22d3be?style=flat-square&labelColor=0f0f0f" alt="Windows, macOS, Android and web"></a>
-<a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/build.yml"><img src="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/build.yml/badge.svg?branch=main" alt="Build"></a>
-<a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/test.yml"><img src="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/test.yml/badge.svg?branch=main" alt="Tests"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/version-1.6.1-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.6.1"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Android%20%C2%B7%20web-22d3be?style=flat-square&labelColor=0f0f0f" alt="Windows, macOS, Android and web"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/build.yml"><img src="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/build.yml/badge.svg?branch=main" alt="Build"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/test.yml"><img src="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/test.yml/badge.svg?branch=main" alt="Tests"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-22d3be?style=flat-square&labelColor=0f0f0f" alt="AGPL-3.0 licence"></a>
 
-**[Download for Windows](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest)** ·
-**[macOS](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest)** ·
-**[Android](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest)**
+**[Download for Windows](https://github.com/English-Muffin/GroundworkHabits/releases/latest)** ·
+**[macOS](https://github.com/English-Muffin/GroundworkHabits/releases/latest)** ·
+**[Android](https://github.com/English-Muffin/GroundworkHabits/releases/latest)**
 
 [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -55,7 +52,7 @@ folder and it follows you between your computers and your phone.
 **Goals**
 
 <p align="center">
-  <img src="assets/readme/goals.png" alt="Goals: life areas, pinned goals, money saved towards a target" width="100%">
+  <img src="assets/readme/goals.png" alt="Goals with an amber accent: life areas and goal progress" width="100%">
 </p>
 
 - Measure a goal the way it works: an **amount** towards a target (€ saved, km run), **from → to**
@@ -68,7 +65,7 @@ folder and it follows you between your computers and your phone.
 
 - Consistency over 7, 14 or 30 days, a heatmap that fits your screen (or 3, 6 or 12 months), a weekly
   review, leaderboards, top streaks and a monthly reflection. Every card can be dragged into place.
-- Quit streaks for things you've stopped ("smoking: 249 days"), with milestones and your best run.
+- A Streaks tab for things you've stopped ("smoking: 249 days"), with milestones and your best run.
 
 **Make it yours**
 
@@ -77,7 +74,8 @@ folder and it follows you between your computers and your phone.
   <img src="assets/readme/today-light.png" alt="Today in the light theme with a pink accent" width="49%">
 </p>
 
-- Dark, AMOLED and light themes and any accent colour: teal, blue, violet, pink, amber, green or your own.
+- Dark, AMOLED and light themes and any accent colour: moss green by default, presets, or your own from the built-in
+  picker (hue, saturation, lightness or a hex code). Habits and life areas get the same picker.
 - **11 languages:** English, Portuguese, Spanish, French, German, Italian, Dutch, Polish, Russian,
   Chinese and Japanese. Groundwork Habits follows your device, or pick one in Settings.
 - Drag tasks, habits, goals and cards into any order. Quick add (+) from anywhere. Undo for the last
@@ -107,14 +105,14 @@ folder and it follows you between your computers and your phone.
 </p>
 <p align="center">
   <img src="assets/readme/insights.png" alt="Insights with a blue accent" width="49%">
-  <img src="assets/readme/settings.png" alt="Settings page in the light theme with a green accent" width="49%">
+  <img src="assets/readme/settings.png" alt="Settings in the light theme with a teal accent: theme, accent picker and tab names" width="49%">
 </p>
 
 ## Get it
 
 | | How |
 |---|---|
-| **Windows** | Download `Groundwork-Habits-X.Y.Z-Windows-portable.exe` from the [latest release](https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest) and run it. Nothing to install |
+| **Windows** | Download `Groundwork-Habits-X.Y.Z-Windows-setup.exe` from the [latest release](https://github.com/English-Muffin/GroundworkHabits/releases/latest) and run it. It installs for your user only (no admin rights) and opens in under a second. Prefer no install? `…-Windows-portable.exe` runs from anywhere but unpacks itself on every start, so it takes 10 seconds or more to open |
 | **macOS** | Download `Groundwork-Habits-X.Y.Z-mac-universal.zip`, unzip it and drag Groundwork Habits to Applications |
 | **Android** | Download `Groundwork-Habits-X.Y.Z-Android.apk` on the phone and open it. Updates install over it and keep your data |
 | **Any browser** | Open `www/index.html`, or host the `www` folder on any HTTPS static host and install it as an app |
@@ -146,8 +144,8 @@ The app is three files, [`www/index.html`](www/index.html), [`app.css`](www/app.
 [`app.js`](www/app.js), with no build step and no runtime dependencies. Electron wraps it for Windows and macOS, Capacitor for Android.
 
 ```bash
-git clone https://github.com/English-Muffin/Free-Habit-Tracker
-cd Free-Habit-Tracker
+git clone https://github.com/English-Muffin/GroundworkHabits
+cd GroundworkHabits
 python -m http.server 8765 --directory www   # then open http://localhost:8765
 ```
 
@@ -179,7 +177,7 @@ use any AI service.
 
 ## Contributing
 
-Bug reports and ideas are welcome in [Issues](https://github.com/English-Muffin/Free-Habit-Tracker/issues).
+Bug reports and ideas are welcome in [Issues](https://github.com/English-Muffin/GroundworkHabits/issues).
 Pull requests too: start with [CONTRIBUTING.md](CONTRIBUTING.md). Found a security problem? Please
 follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
 

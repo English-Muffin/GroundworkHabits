@@ -26,7 +26,8 @@ It has its own name and branding (Groundwork Habits: layered "foundation" mark).
 ## Commands
 - Run locally: `python -m http.server 8765 --directory www`, then open http://localhost:8765
 - Test: `pip install playwright && playwright install chromium`, then `python tests/smoke.py`. It starts its own server
-- Windows portable exe: `npm install && npm run dist:win` (output in `dist/`). macOS zip: `npm run dist:mac` on a Mac
+- Windows: `npm install && npm run dist:win` builds the installer (`-Windows-setup.exe`, NSIS one-click, per user; opens in under a second) and the portable exe (unpacks to %TEMP% on every start, ~13 s; `assets/portable-splash.bmp` shows meanwhile). Output in `dist/`. macOS zip: `npm run dist:mac` on a Mac
+- README media: `python tools/readme_media.py` records `assets/readme/intro.gif` and the screenshots from the real app (fixed clock, demo data)
 - Release: bump `version` in package.json, `APPV` in app.js and the version badge in README.md; refresh README screenshots and feature list (show different accents and themes); run `tests/device_android.py`; push a `v*` tag; CI builds Windows, macOS, Android and attaches them to a GitHub Release
 - Android app: `npm install && npx cap add android && npx cap sync android && npx cap open android`
 - Local APK build: needs `ANDROID_HOME`; if Gradle fails with "Unable to establish loopback connection", set `JAVA_TOOL_OPTIONS=-Djdk.net.unixdomain.tmpdir=C:\tmp\jdk`

@@ -6,6 +6,16 @@ All notable changes to Groundwork Habits (called Daybook up to 1.6.1). Versions 
 
 - Daybook is now **Groundwork Habits**, with a new layered logo and app icons. Your data, data
   folder and backups carry over untouched.
+- Windows: a new installer (`…-Windows-setup.exe`, per user, no admin) opens the app in under a second.
+  The portable exe unpacks itself on every start (10 s or more); it now shows a splash while it does.
+- A colour picker built into the app for the accent, habits and life areas (hue, saturation, lightness,
+  hex). Moss green, the logo's colour, is the default accent.
+- Goal cards: history drawn like the Insights chart and a glowing progress bar.
+- The Achievements tab is now **Streaks**, always shown. Tab names under the icons can be hidden.
+- Android: the back button closes dialogs and leaves Settings; elsewhere it asks before leaving.
+- Phones: an even bottom bar, Habits opens at today, and today's task card comes first.
+- Settings: the side list now follows the scroll on tall windows.
+- The app icon is just the logo, without a background tile.
 
 ## 1.6.1
 
