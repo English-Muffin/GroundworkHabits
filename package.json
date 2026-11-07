@@ -4,7 +4,7 @@
   "description": "Habits, tasks and goals in one calm place.",
   "main": "electron/main.js",
   "author": "English-Muffin",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "electron .",
     "dist:win": "electron-builder --win portable --publish never",

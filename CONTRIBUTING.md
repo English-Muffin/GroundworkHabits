@@ -29,4 +29,4 @@ Before you open a pull request:
   and nothing may depend on hover.
 - Bump `VERSION` in `www/sw.js` when shipped files change.
 
-By contributing you agree that your work is released under the [MIT License](LICENSE).
+By contributing you agree that your work is released under the [GNU AGPL-3.0-or-later](LICENSE).
