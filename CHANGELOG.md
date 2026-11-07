@@ -2,6 +2,18 @@
 
 All notable changes to Groundwork Habits (called Daybook up to 1.6.1). Versions match the GitHub releases.
 
+## 1.7.1
+
+- The app's own date, time and list pickers everywhere, instead of the system dialogs.
+- Windows portable: just the logo, pulsing, while it starts; it unpacks only once per version, so later starts take
+  under a second.
+- Rest days per habit: planned days off that don't break a streak or use a freeze.
+- Templates: starter packs of habits, task lists and goals (with steps), in every language.
+- Import from Loop Habit Tracker, Habitica or a spreadsheet, merged into your data.
+- Goals timeline: deadlines and dated steps in order. Insights: your year so far, shareable as an image.
+- Android: a tasks widget and a "Next habit" quick settings tile.
+- Desktop: optional automatic update check (off by default) that installs a verified update.
+
 ## 1.7.0
 
 - Daybook is now **Groundwork Habits**, with a new layered logo and app icons. Your data, data
