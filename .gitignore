@@ -3,3 +3,4 @@ dist/
 /android/
 __pycache__/
 native/*/android/build/
+out/

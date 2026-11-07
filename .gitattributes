@@ -1,0 +1,9 @@
+# one line-ending style in the repository; Windows checkouts may still use CRLF locally
+* text=auto eol=lf
+*.png binary
+*.ico binary
+*.bmp binary
+*.gif binary
+*.jpg binary
+*.woff2 binary
+*.jks binary

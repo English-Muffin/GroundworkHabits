@@ -7,7 +7,7 @@ the PIN lock.
 ## Reporting a vulnerability
 
 Please don't open a public issue. Use GitHub's
-[private vulnerability reporting](https://github.com/English-Muffin/Free-Habit-Tracker/security/advisories/new)
+[private vulnerability reporting](https://github.com/English-Muffin/GroundworkHabits/security/advisories/new)
 for this repository instead, with the version, the platform and the steps to reproduce it.
 
 ## Supported versions

@@ -4,7 +4,7 @@ Thanks for helping. Bug reports, ideas and pull requests are all welcome.
 
 ## Reporting a bug
 
-Open an [issue](https://github.com/English-Muffin/Free-Habit-Tracker/issues/new/choose) with the version,
+Open an [issue](https://github.com/English-Muffin/GroundworkHabits/issues/new/choose) with the version,
 the platform (Windows, macOS, Android or browser), the steps to reproduce it, and a screenshot if it's visual.
 
 ## Working on the code
