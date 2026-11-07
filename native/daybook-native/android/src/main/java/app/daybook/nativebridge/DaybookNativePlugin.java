@@ -85,7 +85,8 @@ public class DaybookNativePlugin extends Plugin {
         Uri uri = result.getData() == null ? null : result.getData().getData();
         if (result.getResultCode() != Activity.RESULT_OK || uri == null) { r.put("saved", false); call.resolve(r); return; }
         try (OutputStream out = getContext().getContentResolver().openOutputStream(uri, "wt")) {
-            out.write(call.getString("text", "").getBytes(StandardCharsets.UTF_8));
+            String b64 = call.getString("base64"); // images (the year review) come as base64, everything else as text
+            out.write(b64 != null ? android.util.Base64.decode(b64, android.util.Base64.DEFAULT) : call.getString("text", "").getBytes(StandardCharsets.UTF_8));
             r.put("saved", true);
             call.resolve(r);
         } catch (Exception e) {
@@ -153,7 +154,10 @@ public class DaybookNativePlugin extends Plugin {
     @PluginMethod
     public void widget(PluginCall call) {
         JSObject d = call.getObject("data", new JSObject());
-        Reminders.prefs(getContext()).edit().putString("widget", d.toString()).commit();
+        JSObject t = call.getObject("tasks");
+        android.content.SharedPreferences.Editor e = Reminders.prefs(getContext()).edit().putString("widget", d.toString());
+        if (t != null) e.putString("widgetTasks", t.toString());
+        e.commit();
         WidgetProvider.updateAll(getContext());
         call.resolve();
     }

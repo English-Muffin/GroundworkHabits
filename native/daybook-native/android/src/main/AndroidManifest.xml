@@ -11,6 +11,15 @@
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/dbk_widget_info" />
         </receiver>
+        <receiver android:name="app.daybook.nativebridge.TaskWidgetProvider" android:exported="false" android:label="Groundwork Habits tasks">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/dbk_tasks_info" />
+        </receiver>
+        <service android:name="app.daybook.nativebridge.QsTile" android:exported="true" android:label="@string/dbk_tile_label"
+            android:icon="@drawable/dbk_stat" android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter><action android:name="android.service.quicksettings.action.QS_TILE" /></intent-filter>
+            <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="false" />
+        </service>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>

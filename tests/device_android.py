@@ -99,6 +99,15 @@ async def run(D, sh):
         check('calendar refuses a local address', not (await pg.evaluate("Capacitor.Plugins.DaybookNative.fetchCal({url:'https://127.0.0.1/x.ics'})")).get('ok'))
         wd = await pg.evaluate("Capacitor.Plugins.DaybookNative.widget({data:{title:'Test',items:[{h:'hdev',k:'x',name:'Widget row',done:false}]}}).then(()=>'ok')")
         check('home-screen widget accepts data', wd == 'ok')
+        wt = await pg.evaluate("Capacitor.Plugins.DaybookNative.widget({data:{title:'Test',items:[{h:'hdev',k:'2020-01-01',name:'Widget row',done:false}]},tasks:{title:'Tasks today',items:[{h:'t1',k:'x',name:'Task row',done:false}]}}).then(()=>'ok')")
+        check('tasks widget accepts data', wt == 'ok')
+        # quick settings tile: a tap ticks the first open habit without opening the app
+        sh('cmd', 'statusbar', 'add-tile', 'com.daybook.app/app.daybook.nativebridge.QsTile'); time.sleep(7)  # the shade creates the tile a few seconds later
+        sh('cmd', 'statusbar', 'click-tile', 'com.daybook.app/app.daybook.nativebridge.QsTile'); time.sleep(3)
+        # the app applies the answer at once (the answer event), so look at the habit itself
+        ticked = await pg.evaluate("!!(DaybookTest.state().log.hdev||{})['2020-01-01']")
+        check('quick settings tile ticks the next open habit', ticked)
+        sh('cmd', 'statusbar', 'remove-tile', 'com.daybook.app/app.daybook.nativebridge.QsTile'); sh('cmd', 'statusbar', 'collapse')
         # the system back button: leaves Settings, steps back to Today, then needs two backs to leave the app
         await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(300); await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(300); await pg.evaluate("location.hash='settings/appearance'"); await pg.wait_for_timeout(500)
         sh('input', 'keyevent', '4'); await pg.wait_for_timeout(700); h1 = await pg.evaluate("location.hash")
