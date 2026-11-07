@@ -72,7 +72,7 @@ const medal=c=>'<svg class="medal" viewBox="0 0 24 24" style="stroke:'+c+'"><cir
 
 /* ---------- state ---------- */
 const $$=q=>[...document.querySelectorAll(q)];
-const KEY='daybook-v2',APPV='1.6.0',RELEASES='https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest'; // APPV: bump with package.json
+const KEY='daybook-v2',APPV='1.6.1',RELEASES='https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest'; // APPV: bump with package.json
 const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'];
 const AREAS=['Health','Fitness','Career','Money','Learning','Relationships','Family','Fun','Home','Mindset'];
 /* PIN encryption: with a PIN, data is saved as 'enc1:<salt>:<base64 iv+AES-GCM>' with a key made from the PIN (PBKDF2).

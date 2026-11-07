@@ -2,6 +2,10 @@
 
 All notable changes to Daybook. Versions match the GitHub releases.
 
+## 1.6.1
+
+- First published build of the 1.6.0 changes below: the 1.6.0 tag never built because the build workflow file could not be read. Fixed.
+
 ## 1.6.0
 
 - Licence changed from MIT to GNU AGPL-3.0-or-later.

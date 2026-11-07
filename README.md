@@ -7,7 +7,7 @@
 </picture>
 </p>
 
-<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest"><img src="https://img.shields.io/badge/version-1.6.0-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.6.0"></a>
+<a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest"><img src="https://img.shields.io/badge/version-1.6.1-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.6.1"></a>
 <a href="https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest"><img src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Android%20%C2%B7%20web-22d3be?style=flat-square&labelColor=0f0f0f" alt="Windows, macOS, Android and web"></a>
 <a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/build.yml"><img src="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/build.yml/badge.svg?branch=main" alt="Build"></a>
 <a href="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/test.yml"><img src="https://github.com/English-Muffin/Free-Habit-Tracker/actions/workflows/test.yml/badge.svg?branch=main" alt="Tests"></a>
@@ -152,7 +152,7 @@ python -m http.server 8765 --directory www   # then open http://localhost:8765
 | Windows portable `.exe` | `npm install && npm run dist:win` (output in `dist/`) |
 | macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac) |
 | Android `.apk` | `npm install && npx cap add android && npx cap sync android`, then build in Android Studio |
-| All three, in the cloud | Push a tag like `v1.6.0`: [GitHub Actions](.github/workflows/build.yml) builds them and attaches them to a release |
+| All three, in the cloud | Push a tag like `v1.6.1`: [GitHub Actions](.github/workflows/build.yml) builds them and attaches them to a release |
 
 ### Tests
 
