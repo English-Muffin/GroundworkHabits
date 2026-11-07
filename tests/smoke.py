@@ -35,6 +35,8 @@ async def desktop(b):
     check('rename habit via edit modal', await pg.locator('.gname .nb', has_text='Drink 2L water').count() == 1)
     await pg.click('.gname .nb'); await pg.click('#modal .cmore'); await pg.fill('[data-cf=habit][data-k=hex]', '#125cf6'); await pg.click('[data-act=msave]'); await pg.reload()
     check('custom habit colour from the in-app picker saves', await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).habits[0].color") == '#125cf6')
+    await pg.click('.gname .nb'); await pg.click('#modal .cmore'); await pg.keyboard.press('Escape'); await pg.click('.gname .nb'); await pg.wait_for_timeout(100)
+    check('the colour sliders start closed when a dialog opens again', await pg.locator('#modal .cpp').count() == 0); await pg.keyboard.press('Escape')
     await pg.locator('.cell:not([disabled])').first.click(); await pg.reload(); await pg.wait_for_timeout(200)
     check('check-in persists after reload', await pg.locator('.cell.on').count() == 1)
     check('saved data has version field', await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).v") == 1)

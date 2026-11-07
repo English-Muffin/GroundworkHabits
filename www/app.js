@@ -72,7 +72,7 @@ const medal=c=>'<svg class="medal" viewBox="0 0 24 24" style="stroke:'+c+'"><cir
 
 /* ---------- state ---------- */
 const $$=q=>[...document.querySelectorAll(q)];
-const KEY='daybook-v2',APPV='1.6.1',RELEASES='https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest'; // APPV: bump with package.json
+const KEY='daybook-v2',APPV='1.6.1',RELEASES='https://github.com/English-Muffin/GroundworkHabits/releases/latest'; // APPV: bump with package.json
 const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'],CNAMED=[['Violet','#8b5cf6'],['Blue','#3b82f6'],['Red','#f43f5e'],['Green','#22c55e'],['Amber','#f59e0b'],['Pink','#ec4899'],['Teal','#14b8a6'],['Slate','#94a3b8']];
 const AREAS=['Health','Fitness','Career','Money','Learning','Relationships','Family','Fun','Home','Mindset'];
 /* PIN encryption: with a PIN, data is saved as 'enc1:<salt>:<base64 iv+AES-GCM>' with a key made from the PIN (PBKDF2).
@@ -956,7 +956,8 @@ function vModal(){
 let focusSel=null;
 let lastView=null;
 function render(){
-  fzCache=new Map();
+  fzCache=new Map();if(!modal){cpOpen.habit=false;cpOpen.area=false} // dialog pickers start closed next time
+  if(view!=='settings')cpOpen.accent=false;
   const keep=['.gcard','.wscroll','.days','.dd'].map(q=>{const el=$(q);return el?[q,el.scrollLeft,el.scrollTop]:null}).filter(Boolean),sy=window.scrollY;
   const vi=VIEWS.find(v=>v[0]===view)||(view==='settings'?['settings','Settings','gear']:ASK?['ask','Reminder','home']:['widget','Widget','home']);
   $('#nav').innerHTML=views().map(v=>'<a href="#'+v[0]+'" aria-label="'+v[1]+'" title="'+v[1]+'" class="'+(v[0]===view?'on':'')+'"'+(v[0]===view?' aria-current="page"':'')+'>'+ic(v[2])+'<span>'+v[1]+'</span>'+'</a>').join('').replace('<a href="#goals"','<button class="navq" data-act="quick" aria-label="Quick add" title="Quick add">'+ic('plus')+'</button><a href="#goals"'); // quick add sits in the middle, between Tasks and Goals
@@ -1462,7 +1463,7 @@ let backAt=0;
 function onBack(){
   if(!locked){
     if(modal){if(modal.kind==='tips')try{localStorage.setItem('daybook-tips','1')}catch(_){}modal=null;render();return}
-    if(menuOpen||insMenu||addingTask||Object.values(cpOpen).some(Boolean)){menuOpen=false;insMenu=null;addingTask=null;cpOpen={};render();return}
+    if(menuOpen||insMenu||addingTask||(cpOpen.accent&&view==='settings')){menuOpen=false;insMenu=null;addingTask=null;cpOpen={};render();return}
     if(view==='settings'){location.hash=setSec&&!wideSet()?'settings':setBack;return}}
   if(Date.now()-backAt<2000){if(NB&&NB.exitApp)NB.exitApp();return}
   backAt=Date.now();toast('Press back again to leave');
