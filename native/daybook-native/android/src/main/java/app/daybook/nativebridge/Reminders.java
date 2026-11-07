@@ -158,12 +158,13 @@ final class Reminders {
             .setSmallIcon(R.drawable.dbk_stat)
             .setContentTitle(it.optString("title"))
             .setContentText(it.optString("body"))
-            .setOngoing(!alarm)
+            .setOngoing(!alarm && !it.optBoolean("info"))
             .setAutoCancel(true)
             .setCategory(alarm ? NotificationCompat.CATEGORY_ALARM : NotificationCompat.CATEGORY_REMINDER)
             .setPriority(alarm ? NotificationCompat.PRIORITY_HIGH : NotificationCompat.PRIORITY_LOW)
-            .addAction(0, "Yes, done", answerIntent(c, id, h, k, "yes"))
-            .addAction(0, "No", answerIntent(c, id, h, k, "no"));
+;
+        // info reminders (goal deadlines) have no Yes/No; action labels come from the app so they follow its language
+        if (!it.optBoolean("info")) b.addAction(0, it.optString("yes", "Yes, done"), answerIntent(c, id, h, k, "yes")).addAction(0, it.optString("no", "No"), answerIntent(c, id, h, k, "no"));
         if (tap != null) b.setContentIntent(tap);
         b.setVisibility(NotificationCompat.VISIBILITY_PRIVATE).setPublicVersion(new NotificationCompat.Builder(c, alarm ? ALARM : ASK)
             .setSmallIcon(R.drawable.dbk_stat).setContentTitle("Daybook").setContentText("A reminder is waiting for your answer").build());

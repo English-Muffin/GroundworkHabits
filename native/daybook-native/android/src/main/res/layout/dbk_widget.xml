@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="14dp" android:background="@drawable/dbk_widget_bg">
+    <TextView android:id="@+id/w_title" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:textColor="#FFFFFF" android:textSize="15sp" android:textStyle="bold" android:paddingBottom="8dp" android:text="Daybook" />
+    <TextView android:id="@+id/w_empty" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:textColor="#9CA3AF" android:textSize="13sp" android:visibility="gone" />
+    <LinearLayout android:id="@+id/w_r0" style="@style/DbkWidgetRow"><TextView android:id="@+id/w_c0" style="@style/DbkWidgetCheck" /><TextView android:id="@+id/w_n0" style="@style/DbkWidgetName" /></LinearLayout>
+    <LinearLayout android:id="@+id/w_r1" style="@style/DbkWidgetRow"><TextView android:id="@+id/w_c1" style="@style/DbkWidgetCheck" /><TextView android:id="@+id/w_n1" style="@style/DbkWidgetName" /></LinearLayout>
+    <LinearLayout android:id="@+id/w_r2" style="@style/DbkWidgetRow"><TextView android:id="@+id/w_c2" style="@style/DbkWidgetCheck" /><TextView android:id="@+id/w_n2" style="@style/DbkWidgetName" /></LinearLayout>
+    <LinearLayout android:id="@+id/w_r3" style="@style/DbkWidgetRow"><TextView android:id="@+id/w_c3" style="@style/DbkWidgetCheck" /><TextView android:id="@+id/w_n3" style="@style/DbkWidgetName" /></LinearLayout>
+    <LinearLayout android:id="@+id/w_r4" style="@style/DbkWidgetRow"><TextView android:id="@+id/w_c4" style="@style/DbkWidgetCheck" /><TextView android:id="@+id/w_n4" style="@style/DbkWidgetName" /></LinearLayout>
+    <LinearLayout android:id="@+id/w_r5" style="@style/DbkWidgetRow"><TextView android:id="@+id/w_c5" style="@style/DbkWidgetCheck" /><TextView android:id="@+id/w_n5" style="@style/DbkWidgetName" /></LinearLayout>
+</LinearLayout>
