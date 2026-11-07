@@ -49,7 +49,9 @@ jobs:
       - name: Generate Android icons (optional)
         run: npx @capacitor/assets generate --android || true
       - run: npx cap sync android
-      - run: echo "apply from: '../../native/release.gradle'" >> android/app/build.gradle
+      - name: Apply version and signing settings
+        run: |
+          echo "apply from: '../../native/release.gradle'" >> android/app/build.gradle
       # signed release APK when the ANDROID_KEYSTORE_* secrets exist, otherwise the debug-signed APK as before
       - name: Build APK
         working-directory: android
