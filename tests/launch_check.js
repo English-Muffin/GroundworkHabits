@@ -1,5 +1,5 @@
-// CI check that a packaged desktop build starts and renders: node tests/launch_check.js <path to Daybook executable>
-// The page sets its title ("Habits | Daybook") only after the app script has run, so seeing it proves the build works.
+// CI check that a packaged desktop build starts and renders: node tests/launch_check.js <path to the app executable>
+// The page sets its title ("Habits | Groundwork Habits") only after the app script has run, so seeing it proves the build works.
 const { spawn } = require('child_process'), http = require('http'), path = require('path'), os = require('os'), fs = require('fs');
 const exe = process.argv[2];
 if (!exe || !fs.existsSync(exe)) { console.error('Executable not found: ' + exe); process.exit(1); }
@@ -12,7 +12,7 @@ app.on('exit', c => { console.error('The app quit during start-up (code ' + c + 
   for (let i = 0; i < 60; i++) {
     await new Promise(r => setTimeout(r, 1000));
     const t = (await pages()).map(p => p.title);
-    if (t.some(x => / \| Daybook$/.test(x))) { console.log('Launched and rendered: ' + t.join(', ')); app.removeAllListeners('exit'); stop(0); }
+    if (t.some(x => / \| Groundwork Habits$/.test(x))) { console.log('Launched and rendered: ' + t.join(', ')); app.removeAllListeners('exit'); stop(0); }
   }
   console.error('The app did not render within 60 s'); app.removeAllListeners('exit'); stop(1);
 })();
