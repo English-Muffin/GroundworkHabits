@@ -1,6 +1,6 @@
 {
   "name": "groundwork-habits",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "Habits, tasks and goals in one calm place.",
   "main": "electron/main.js",
   "author": "English-Muffin",

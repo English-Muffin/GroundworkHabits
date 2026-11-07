@@ -8,7 +8,7 @@
 <img src="assets/readme/intro.gif" alt="A short tour of Groundwork Habits: ticking habits on Today, the month grid, the task week, goals, insights, and switching accent colours and themes" width="100%">
 </p>
 
-<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/version-1.6.1-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.6.1"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/version-1.7.0-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.7.0"></a>
 <a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Android%20%C2%B7%20web-22d3be?style=flat-square&labelColor=0f0f0f" alt="Windows, macOS, Android and web"></a>
 <a href="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/build.yml"><img src="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/build.yml/badge.svg?branch=main" alt="Build"></a>
 <a href="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/test.yml"><img src="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/test.yml/badge.svg?branch=main" alt="Tests"></a>
