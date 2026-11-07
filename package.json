@@ -1,5 +1,5 @@
 {
-  "name": "daybook",
+  "name": "groundwork-habits",
   "version": "1.6.1",
   "description": "Habits, tasks and goals in one calm place.",
   "main": "electron/main.js",
@@ -7,7 +7,7 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win portable --publish never",
+    "dist:win": "electron-builder --win nsis portable --publish never",
     "android:add": "cap add android",
     "android:sync": "cap sync android",
     "android:open": "cap open android",
@@ -36,6 +36,12 @@
       "icon": "assets/icon.ico",
       "target": [
         {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
           "target": "portable",
           "arch": [
             "x64"
@@ -45,7 +51,8 @@
     },
     "artifactName": "Groundwork-Habits-${version}-${os}-${arch}.${ext}",
     "portable": {
-      "artifactName": "Groundwork-Habits-${version}-Windows-portable.exe"
+      "artifactName": "Groundwork-Habits-${version}-Windows-portable.exe",
+      "splashImage": "assets/portable-splash.bmp"
     },
     "mac": {
       "icon": "assets/icon.png",
@@ -60,10 +67,17 @@
         }
       ]
     },
-    "compression": "maximum",
+    "compression": "normal",
     "electronLanguages": [
       "en-US"
-    ]
+    ],
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "artifactName": "Groundwork-Habits-${version}-Windows-setup.exe",
+      "deleteAppDataOnUninstall": false,
+      "shortcutName": "Groundwork Habits"
+    }
   },
   "dependencies": {
     "@capacitor/local-notifications": "^6.1.3",
@@ -71,7 +85,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/English-Muffin/Free-Habit-Tracker.git"
+    "url": "https://github.com/English-Muffin/GroundworkHabits.git"
   },
-  "homepage": "https://github.com/English-Muffin/Free-Habit-Tracker"
+  "homepage": "https://github.com/English-Muffin/GroundworkHabits"
 }
