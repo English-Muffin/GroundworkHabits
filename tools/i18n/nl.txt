@@ -50,7 +50,7 @@
 50|Dagelijks
 51|Dagelijkse herinnering
 52|Donker
-53|Daybook slaat nu op in die map
+53|Groundwork Habits slaat nu op in die map
 54|Dagen op rij voor een bevriezing
 55|Verwijderen
 56|Taak verwijderen
@@ -227,7 +227,7 @@
 227|Taken vandaag
 228|Taken, notities, doelen, gewoonten…
 229|Accent groenblauw
-230|Dat bestand is geen Daybook-back-up
+230|Dat bestand is geen Groundwork Habits-back-up
 231|Het vergrootglas doorzoekt alles. Het tandwiel bevat thema’s, kleuren, functies, back-ups en de app-vergrendeling.
 232|De opslag in je gegevensmap gebruikt een andere pincode
 233|De twee pincodes komen niet overeen
@@ -251,14 +251,14 @@
 251|WEEK VANAF
 252|Wekelijks
 253|Weekoverzicht
-254|Welkom bij Daybook
+254|Welkom bij Groundwork Habits
 255|Waarmee je stopte
 256|Waarmee ben je gestopt? bijv. Roken
 257|Wat wil je bereiken?
 258|Gebruik bij het toevoegen van een taak het menu eronder om hem elke dag, werkdag, week of maand te herhalen.
 259|Wanneer ben je gestopt?
 260|Verkeerde pincode
-261|Verkeerde pincode, of geen Daybook-back-up
+261|Verkeerde pincode, of geen Groundwork Habits-back-up
 262|Jaaroverzicht
 263|Ja of nee
 264|Je gegevens blijven hier
@@ -284,7 +284,7 @@
 284|Deze maand al gedaan. Goed bezig.
 285|Taakherinnering
 286|Deze gewoonte bestaat niet meer.
-287|Daybook is vergrendeld
+287|Groundwork Habits is vergrendeld
 288|Voer je pincode in
 289|Ontgrendelen
 290|Pincode vergeten?
@@ -292,7 +292,7 @@
 292|Vingerafdruk gebruiken
 293|Verkeerde pincode. Probeer het opnieuw.
 294|Te veel pogingen. Wacht 30 seconden.
-295|Daybook ontgrendelen
+295|Groundwork Habits ontgrendelen
 296|Bevestig je vingerafdruk
 297|Ontgrendelen met vingerafdruk
 298|Voer je pincode één keer in om het aan te zetten.
@@ -313,7 +313,7 @@
 313|Map kiezen…
 314|Deze map niet meer gebruiken
 315|App-opslag (alleen deze pc)
-316|Er staat hier al een Daybook-opslag
+316|Er staat hier al een Groundwork Habits-opslag
 317|Vervangen door de gegevens op deze telefoon, of de opslag uit de map laden? Laden overschrijft wat op deze telefoon staat.
 318|De opslag uit de map laden
 319|Tik nogmaals: de opslag uit de map laden
@@ -352,7 +352,7 @@
 352|De deadline van een doel komt eraan
 353|Een gewoonteherinnering wacht op je antwoord
 354|Een taakherinnering wacht op je antwoord
-355|Voeg een dagelijkse gewoonte toe in Daybook
+355|Voeg een dagelijkse gewoonte toe in Groundwork Habits
 356|Aan een doel toevoegen
 357|Voeg een stap toe, bijv. 10 km hardlopen
 358|Stel een doel boven 0 in
@@ -382,10 +382,10 @@
 382|Minuten
 383|Stoppen
 384|4 tot 8 cijfers. Als je hem vergeet, kom je alleen weer binnen door de gegevens op dit apparaat te wissen (een kopie in de gegevensmap blijft bewaard).
-385|Vergrendelt bij het openen van Daybook, na een minuut op de achtergrond of 5 minuten zonder gebruik. Verbergt je gegevens op het scherm en versleutelt wat op dit apparaat en in back-ups wordt bewaard.
+385|Vergrendelt bij het openen van Groundwork Habits, na een minuut op de achtergrond of 5 minuten zonder gebruik. Verbergt je gegevens op het scherm en versleutelt wat op dit apparaat en in back-ups wordt bewaard.
 386|Kaartindeling herstellen
 387|Miniwidget openen
-388|Daybook openen
+388|Groundwork Habits openen
 389|Vandaag alles gedaan
 390|Niets gepland.
 391|Nog geen dagelijkse gewoonten.
@@ -438,6 +438,22 @@
 438|Van de ene waarde naar de andere
 439|Een reeks stappen afronden
 440|Een gewoonte opbouwen
+553|Eigen kleur
+554|Hexcode
+555|Tint
+556|Verzadiging
+557|Helderheid
+558|Tabnamen
+559|Toon de naam onder elk tabpictogram
+560|Navigatie
+561|Mos
+562|Rood
+563|Leisteen
+564|Doel
+565|Reeksen
+566|Druk nogmaals op terug om af te sluiten
+567|REEKSEN
+568|Tabblad Reeksen
 P1|$1 / $2 gewoonten gedaan
 P2|$1 / $2 voltooid
 P3|$1 doelen · $2 bereikt
@@ -472,7 +488,7 @@ P31|$1 nu · doel $2 (vanaf $3)
 P32|Voegt elke week $1 toe
 P33|Voegt elke maand $1 toe
 P34|Toegevoegd op $1 dagen
-P35|Daybook slaat nu op in $1
+P35|Groundwork Habits slaat nu op in $1
 P36|Doel bereikt: $1
 P37|$1 opgeslagen
 P38|Er is al een gebied met de naam $1
@@ -523,7 +539,7 @@ P63|Gedane dagelijkse gewoonten in de laatste $1 maanden
 460|Dagelijkse herinnering uit
 461|Gevarenzone
 462|Gegevens en back-ups
-463|Daybook volgt de taal van dit apparaat, tenzij je er een kiest. Je eigen gewoonten en taken worden nooit vertaald.
+463|Groundwork Habits volgt de taal van dit apparaat, tenzij je er een kiest. Je eigen gewoonten en taken worden nooit vertaald.
 464|Wist alles op dit apparaat
 465|Voorbeeldgewoonten, -taken en -doelen
 466|Exporteren
@@ -536,8 +552,8 @@ P63|Gedane dagelijkse gewoonten in de laatste $1 maanden
 473|Sneltoetsen
 474|Indeling
 475|Licenties
-476|Vergrendelt Daybook en versleutelt je gegevens op dit apparaat en in back-ups
-477|Vergrendelt bij het openen van Daybook, na een minuut op de achtergrond of de tijd hierboven zonder gebruik. Verbergt je gegevens op het scherm en versleutelt wat op dit apparaat en in back-ups wordt bewaard.
+476|Vergrendelt Groundwork Habits en versleutelt je gegevens op dit apparaat en in back-ups
+477|Vergrendelt bij het openen van Groundwork Habits, na een minuut op de achtergrond of de tijd hierboven zonder gebruik. Verbergt je gegevens op het scherm en versleutelt wat op dit apparaat en in back-ups wordt bewaard.
 478|GNU AGPL-3.0-licentie
 479|Verplaats taken, gewoonten, doelen en kaarten door te slepen
 480|Verplaats de geselecteerde kaart, gewoonte, doel of taak
@@ -545,7 +561,7 @@ P63|Gedane dagelijkse gewoonten in de laatste $1 maanden
 482|Geen account, geen advertenties, geen tracking. Alles blijft op je apparaten en gaat alleen waar jij het heen stuurt: je back-ups, je gegevensmap, je agendalink.
 483|Geen instellingen gevonden.
 484|Niet gekoppeld
-485|Meldingen noemen de gewoonte of taak; uit toont alleen “Daybook”
+485|Meldingen noemen de gewoonte of taak; uit toont alleen “Groundwork Habits”
 486|Eén melding per dag als er nog gewoonten openstaan
 487|Open een gewoonte (tik op de naam) of tik op de bel bij een taak
 488|Niet gedane taken uit het verleden krijgen een rode X
@@ -582,14 +598,14 @@ P63|Gedane dagelijkse gewoonten in de laatste $1 maanden
 519|Versleuteld met je pincode
 520|Ontgrendel met je vingerafdruk in plaats van de pincode te typen
 521|Vergrendelen na
-522|Zonder gebruik; Daybook vergrendelt ook een minuut nadat je het verlaat
+522|Zonder gebruik; Groundwork Habits vergrendelt ook een minuut nadat je het verlaat
 523|Je gegevens worden ontsleuteld en weer leesbaar bewaard
 524|Miniwidget openen
 525|Een klein venster dat altijd bovenop staat met de gewoonten en taken van vandaag
 526|Computer
 527|Tijd
-528|Elke dag een melding, ook als Daybook gesloten is
-529|Alleen als Daybook open is of op de achtergrond draait
+528|Elke dag een melding, ook als Groundwork Habits gesloten is
+529|Alleen als Groundwork Habits open is of op de achtergrond draait
 530|Android 14 en later: alarmen gaan op tijd af in plaats van een paar minuten te laat
 531|Back-up elke dag
 532|Back-up elke week

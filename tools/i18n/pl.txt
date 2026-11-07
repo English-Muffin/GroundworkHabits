@@ -50,7 +50,7 @@
 50|Codzienne
 51|Codzienne przypomnienie
 52|Ciemny
-53|Daybook zapisuje teraz w tym folderze
+53|Groundwork Habits zapisuje teraz w tym folderze
 54|Dni z rzędu, by zdobyć zamrożenie
 55|Usuń
 56|Usuń zadanie
@@ -227,7 +227,7 @@
 227|Zadania na dziś
 228|Zadania, notatki, cele, nawyki…
 229|Akcent morski
-230|Ten plik nie jest kopią zapasową Daybook
+230|Ten plik nie jest kopią zapasową Groundwork Habits
 231|Lupa przeszukuje wszystko. Zębatka ma motywy, kolory, funkcje, kopie zapasowe i blokadę aplikacji.
 232|Zapis w folderze danych używa innego kodu PIN
 233|Oba kody PIN nie są takie same
@@ -251,14 +251,14 @@
 251|TYDZIEŃ OD
 252|Tygodniowe
 253|Podsumowanie tygodnia
-254|Witaj w Daybook
+254|Witaj w Groundwork Habits
 255|Z czego zrezygnowałeś
 256|Z czego zrezygnowałeś? np. Palenie
 257|Co chcesz osiągnąć?
 258|Dodając zadanie, użyj menu pod nim, aby powtarzać je codziennie, w dni robocze, co tydzień lub co miesiąc.
 259|Kiedy przestałeś?
 260|Błędny PIN
-261|Błędny PIN albo to nie jest kopia Daybook
+261|Błędny PIN albo to nie jest kopia Groundwork Habits
 262|Mapa roku
 263|Tak lub nie
 264|Twoje dane zostają tutaj
@@ -284,7 +284,7 @@
 284|W tym miesiącu już zrobione. Dobra robota.
 285|Przypomnienie o zadaniu
 286|Ten nawyk już nie istnieje.
-287|Daybook jest zablokowany
+287|Groundwork Habits jest zablokowany
 288|Wpisz PIN
 289|Odblokuj
 290|Nie pamiętasz kodu PIN?
@@ -292,7 +292,7 @@
 292|Użyj odcisku palca
 293|Błędny PIN. Spróbuj ponownie.
 294|Za dużo prób. Poczekaj 30 sekund.
-295|Odblokuj Daybook
+295|Odblokuj Groundwork Habits
 296|Potwierdź odciskiem palca
 297|Odblokowanie odciskiem palca
 298|Wpisz PIN raz, aby to włączyć.
@@ -313,7 +313,7 @@
 313|Wybierz folder…
 314|Przestań używać tego folderu
 315|Pamięć aplikacji (tylko ten komputer)
-316|Jest tu już zapis Daybook
+316|Jest tu już zapis Groundwork Habits
 317|Zastąpić go danymi z tego telefonu czy wczytać zapis z folderu? Wczytanie nadpisze to, co jest na tym telefonie.
 318|Wczytaj zapis z folderu
 319|Dotknij ponownie: wczytaj zapis z folderu
@@ -352,7 +352,7 @@
 352|Zbliża się termin celu
 353|Przypomnienie o nawyku czeka na odpowiedź
 354|Przypomnienie o zadaniu czeka na odpowiedź
-355|Dodaj codzienny nawyk w Daybook
+355|Dodaj codzienny nawyk w Groundwork Habits
 356|Dodaj do celu
 357|Dodaj krok, np. Przebiec 10 km
 358|Ustaw wartość docelową powyżej 0
@@ -382,10 +382,10 @@
 382|Minuty
 383|Zatrzymaj
 384|Od 4 do 8 cyfr. Jeśli go zapomnisz, jedynym sposobem na powrót jest wymazanie danych na tym urządzeniu (kopia w folderze danych zostaje).
-385|Blokuje się przy otwarciu Daybook, po minucie w tle lub po 5 minutach bez użycia. Ukrywa dane na ekranie i szyfruje to, co jest zapisane na tym urządzeniu i w kopiach.
+385|Blokuje się przy otwarciu Groundwork Habits, po minucie w tle lub po 5 minutach bez użycia. Ukrywa dane na ekranie i szyfruje to, co jest zapisane na tym urządzeniu i w kopiach.
 386|Przywróć układ kart
 387|Otwórz mini widżet
-388|Otwórz Daybook
+388|Otwórz Groundwork Habits
 389|Dziś wszystko zrobione
 390|Nic nie zaplanowano.
 391|Nie ma jeszcze codziennych nawyków.
@@ -438,6 +438,22 @@
 438|Przejść od jednej wartości do drugiej
 439|Ukończyć zestaw kroków
 440|Zbudować nawyk
+553|Własny kolor
+554|Kod hex
+555|Odcień
+556|Nasycenie
+557|Jasność
+558|Nazwy kart
+559|Pokaż nazwę pod każdą ikoną karty
+560|Nawigacja
+561|Mech
+562|Czerwony
+563|Łupek
+564|Cel
+565|Serie
+566|Naciśnij wstecz ponownie, aby wyjść
+567|SERIE
+568|Karta Serie
 P1|$1 / $2 nawyków zrobionych
 P2|$1 / $2 ukończonych
 P3|Cele: $1 · osiągnięte: $2
@@ -472,7 +488,7 @@ P31|$1 teraz · cel $2 (od $3)
 P32|Dodaje $1 co tydzień
 P33|Dodaje $1 co miesiąc
 P34|Dodano w dniach: $1
-P35|Daybook zapisuje teraz w: $1
+P35|Groundwork Habits zapisuje teraz w: $1
 P36|Cel osiągnięty: $1
 P37|Zapisano $1
 P38|Obszar o nazwie $1 już istnieje
@@ -523,7 +539,7 @@ P63|Wykonane codzienne nawyki (ostatnie miesiące: $1)
 460|Codzienne przypomnienie wyłączone
 461|Strefa zagrożenia
 462|Dane i kopie
-463|Daybook używa języka tego urządzenia, chyba że wybierzesz inny. Twoje nawyki i zadania nigdy nie są tłumaczone.
+463|Groundwork Habits używa języka tego urządzenia, chyba że wybierzesz inny. Twoje nawyki i zadania nigdy nie są tłumaczone.
 464|Usuwa wszystko na tym urządzeniu
 465|Przykładowe nawyki, zadania i cele
 466|Eksport
@@ -536,8 +552,8 @@ P63|Wykonane codzienne nawyki (ostatnie miesiące: $1)
 473|Skróty klawiszowe
 474|Układ
 475|Licencje
-476|Blokuje Daybook i szyfruje dane na tym urządzeniu i w kopiach
-477|Blokuje się przy otwarciu Daybook, po minucie w tle lub po czasie powyżej bez użycia. Ukrywa dane na ekranie i szyfruje to, co jest zapisane na tym urządzeniu i w kopiach.
+476|Blokuje Groundwork Habits i szyfruje dane na tym urządzeniu i w kopiach
+477|Blokuje się przy otwarciu Groundwork Habits, po minucie w tle lub po czasie powyżej bez użycia. Ukrywa dane na ekranie i szyfruje to, co jest zapisane na tym urządzeniu i w kopiach.
 478|Licencja GNU AGPL-3.0
 479|Przenoś zadania, nawyki, cele i karty, przeciągając je
 480|Przenieś zaznaczoną kartę, nawyk, cel lub zadanie
@@ -545,7 +561,7 @@ P63|Wykonane codzienne nawyki (ostatnie miesiące: $1)
 482|Bez konta, bez reklam, bez śledzenia. Wszystko zostaje na twoich urządzeniach i trafia tylko tam, gdzie to wyślesz: do kopii, folderu danych, linku kalendarza.
 483|Żadne ustawienie nie pasuje.
 484|Niepołączony
-485|Powiadomienia podają nazwę nawyku lub zadania; wyłączone pokazują tylko „Daybook”
+485|Powiadomienia podają nazwę nawyku lub zadania; wyłączone pokazują tylko „Groundwork Habits”
 486|Jedno powiadomienie dziennie, jeśli zostały nawyki
 487|Otwórz nawyk (dotknij nazwy) albo dotknij dzwonka przy zadaniu
 488|Niewykonane zadania z przeszłości mają czerwony X
@@ -582,14 +598,14 @@ P63|Wykonane codzienne nawyki (ostatnie miesiące: $1)
 519|Zaszyfrowana twoim kodem PIN
 520|Odblokowuj odciskiem palca zamiast wpisywać PIN
 521|Blokuj po
-522|Bez użycia; Daybook blokuje się też minutę po wyjściu
+522|Bez użycia; Groundwork Habits blokuje się też minutę po wyjściu
 523|Twoje dane zostaną odszyfrowane i znów zapisane w czytelnej postaci
 524|Otwórz mini widżet
 525|Małe okno zawsze na wierzchu z dzisiejszymi nawykami i zadaniami
 526|Komputer
 527|Godzina
-528|Powiadomienie codziennie, nawet gdy Daybook jest zamknięty
-529|Tylko gdy Daybook jest otwarty lub działa w tle
+528|Powiadomienie codziennie, nawet gdy Groundwork Habits jest zamknięty
+529|Tylko gdy Groundwork Habits jest otwarty lub działa w tle
 530|Android 14 i nowsze: alarmy dzwonią punktualnie zamiast kilka minut później
 531|Kopia codziennie
 532|Kopia co tydzień

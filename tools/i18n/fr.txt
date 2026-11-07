@@ -50,7 +50,7 @@
 50|Quotidiennes
 51|Rappel quotidien
 52|Sombre
-53|Daybook enregistre maintenant dans ce dossier
+53|Groundwork Habits enregistre maintenant dans ce dossier
 54|Jours d’affilée pour gagner un gel
 55|Supprimer
 56|Supprimer la tâche
@@ -227,7 +227,7 @@
 227|Tâches du jour
 228|Tâches, notes, objectifs, habitudes…
 229|Accent turquoise
-230|Ce fichier n’est pas une sauvegarde Daybook
+230|Ce fichier n’est pas une sauvegarde Groundwork Habits
 231|La loupe cherche partout. La roue dentée contient les thèmes, les couleurs, les fonctionnalités, les sauvegardes et le verrouillage.
 232|La sauvegarde de ton dossier de données utilise un autre code
 233|Les deux codes ne correspondent pas
@@ -251,14 +251,14 @@
 251|SEMAINE DU
 252|Hebdomadaires
 253|Bilan de la semaine
-254|Bienvenue dans Daybook
+254|Bienvenue dans Groundwork Habits
 255|Ce que tu as arrêté
 256|Qu’as-tu arrêté ? ex. Fumer
 257|Que veux-tu accomplir ?
 258|En ajoutant une tâche, utilise le menu en dessous pour la répéter chaque jour, jour de semaine, semaine ou mois.
 259|Quand as-tu arrêté ?
 260|Code incorrect
-261|Code incorrect, ou ce n’est pas une sauvegarde Daybook
+261|Code incorrect, ou ce n’est pas une sauvegarde Groundwork Habits
 262|Carte de l’année
 263|Oui ou non
 264|Tes données restent ici
@@ -284,7 +284,7 @@
 284|Déjà fait ce mois-ci. Bravo.
 285|Rappel de tâche
 286|Cette habitude n’existe plus.
-287|Daybook est verrouillé
+287|Groundwork Habits est verrouillé
 288|Saisis ton code
 289|Déverrouiller
 290|Code oublié ?
@@ -292,7 +292,7 @@
 292|Utiliser l’empreinte
 293|Code incorrect. Réessaie.
 294|Trop d’essais. Attends 30 secondes.
-295|Déverrouiller Daybook
+295|Déverrouiller Groundwork Habits
 296|Confirme ton empreinte
 297|Déverrouillage par empreinte
 298|Saisis ton code une fois pour l’activer.
@@ -313,7 +313,7 @@
 313|Choisir un dossier…
 314|Ne plus utiliser ce dossier
 315|Stockage de l’app (ce PC uniquement)
-316|Il y a déjà une sauvegarde Daybook ici
+316|Il y a déjà une sauvegarde Groundwork Habits ici
 317|La remplacer par les données de ce téléphone, ou charger la sauvegarde du dossier ? Charger écrase ce qui est sur ce téléphone.
 318|Charger la sauvegarde du dossier
 319|Touche encore : charger la sauvegarde du dossier
@@ -352,7 +352,7 @@
 352|L’échéance d’un objectif approche
 353|Un rappel d’habitude attend ta réponse
 354|Un rappel de tâche attend ta réponse
-355|Ajoute une habitude quotidienne dans Daybook
+355|Ajoute une habitude quotidienne dans Groundwork Habits
 356|Ajouter à un objectif
 357|Ajoute une étape, ex. Courir 10 km
 358|Indique une cible supérieure à 0
@@ -382,10 +382,10 @@
 382|Minutes
 383|Arrêter
 384|4 à 8 chiffres. Si tu l’oublies, la seule façon de revenir est d’effacer les données de cet appareil (une copie reste dans le dossier de données).
-385|Se verrouille à l’ouverture de Daybook, après une minute en arrière-plan ou 5 minutes sans utilisation. Masque tes données à l’écran et chiffre ce qui est enregistré sur cet appareil et dans les sauvegardes.
+385|Se verrouille à l’ouverture de Groundwork Habits, après une minute en arrière-plan ou 5 minutes sans utilisation. Masque tes données à l’écran et chiffre ce qui est enregistré sur cet appareil et dans les sauvegardes.
 386|Réinitialiser la disposition des cartes
 387|Ouvrir le mini widget
-388|Ouvrir Daybook
+388|Ouvrir Groundwork Habits
 389|Tout est fait aujourd’hui
 390|Rien de prévu.
 391|Pas encore d’habitude quotidienne.
@@ -438,6 +438,22 @@
 438|Passer d’une valeur à une autre
 439|Terminer une série d’étapes
 440|Créer une habitude
+553|Couleur personnalisée
+554|Code hex
+555|Teinte
+556|Saturation
+557|Luminosité
+558|Noms des onglets
+559|Afficher le nom sous chaque icône
+560|Navigation
+561|Mousse
+562|Rouge
+563|Ardoise
+564|Objectif
+565|Séries
+566|Appuyez encore sur retour pour quitter
+567|SÉRIES
+568|Onglet Séries
 P1|$1 / $2 habitudes faites
 P2|$1 / $2 terminées
 P3|$1 objectifs · $2 atteints
@@ -472,7 +488,7 @@ P31|$1 maintenant · cible $2 (départ $3)
 P32|Ajoute $1 chaque semaine
 P33|Ajoute $1 chaque mois
 P34|Ajoutée sur $1 jours
-P35|Daybook enregistre maintenant dans $1
+P35|Groundwork Habits enregistre maintenant dans $1
 P36|Objectif atteint : $1
 P37|$1 enregistré
 P38|Il existe déjà un domaine appelé $1
@@ -523,7 +539,7 @@ P63|Habitudes quotidiennes faites sur les $1 derniers mois
 460|Rappel quotidien désactivé
 461|Zone dangereuse
 462|Données et sauvegardes
-463|Daybook suit la langue de cet appareil sauf si tu en choisis une. Tes habitudes et tâches ne sont jamais traduites.
+463|Groundwork Habits suit la langue de cet appareil sauf si tu en choisis une. Tes habitudes et tâches ne sont jamais traduites.
 464|Efface tout sur cet appareil
 465|Habitudes, tâches et objectifs d’exemple
 466|Exporter
@@ -536,8 +552,8 @@ P63|Habitudes quotidiennes faites sur les $1 derniers mois
 473|Raccourcis clavier
 474|Disposition
 475|Licences
-476|Verrouille Daybook et chiffre tes données sur cet appareil et dans les sauvegardes
-477|Se verrouille à l’ouverture de Daybook, après une minute en arrière-plan ou le délai ci-dessus sans utilisation. Masque tes données à l’écran et chiffre ce qui est enregistré sur cet appareil et dans les sauvegardes.
+476|Verrouille Groundwork Habits et chiffre tes données sur cet appareil et dans les sauvegardes
+477|Se verrouille à l’ouverture de Groundwork Habits, après une minute en arrière-plan ou le délai ci-dessus sans utilisation. Masque tes données à l’écran et chiffre ce qui est enregistré sur cet appareil et dans les sauvegardes.
 478|Licence GNU AGPL-3.0
 479|Déplace tâches, habitudes, objectifs et cartes en les faisant glisser
 480|Déplace la carte, l’habitude, l’objectif ou la tâche sélectionné
@@ -545,7 +561,7 @@ P63|Habitudes quotidiennes faites sur les $1 derniers mois
 482|Pas de compte, pas de pub, pas de pistage. Tout reste sur tes appareils et ne va que là où tu l’envoies : tes sauvegardes, ton dossier de données, le lien de ton calendrier.
 483|Aucun réglage ne correspond.
 484|Non connecté
-485|Les notifications indiquent l’habitude ou la tâche ; désactivé, elles affichent seulement « Daybook »
+485|Les notifications indiquent l’habitude ou la tâche ; désactivé, elles affichent seulement « Groundwork Habits »
 486|Une notification par jour s’il reste des habitudes
 487|Ouvre une habitude (touche son nom) ou touche la cloche d’une tâche
 488|Les tâches passées non faites affichent un X rouge
@@ -582,14 +598,14 @@ P63|Habitudes quotidiennes faites sur les $1 derniers mois
 519|Chiffrée avec ton code
 520|Déverrouille avec ton empreinte au lieu de taper le code
 521|Verrouiller après
-522|Sans utilisation ; Daybook se verrouille aussi une minute après que tu l’as quitté
+522|Sans utilisation ; Groundwork Habits se verrouille aussi une minute après que tu l’as quitté
 523|Tes données sont déchiffrées et enregistrées lisibles à nouveau
 524|Ouvrir le mini widget
 525|Une petite fenêtre toujours au premier plan avec les habitudes et tâches du jour
 526|Ordinateur
 527|Heure
-528|Une notification chaque jour, même quand Daybook est fermé
-529|Seulement quand Daybook est ouvert ou en arrière-plan
+528|Une notification chaque jour, même quand Groundwork Habits est fermé
+529|Seulement quand Groundwork Habits est ouvert ou en arrière-plan
 530|Android 14 et plus : les alarmes sonnent à l’heure au lieu de quelques minutes plus tard
 531|Sauvegarde chaque jour
 532|Sauvegarde chaque semaine

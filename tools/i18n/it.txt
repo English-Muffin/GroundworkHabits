@@ -50,7 +50,7 @@
 50|Giornaliere
 51|Promemoria giornaliero
 52|Scuro
-53|Daybook ora salva in quella cartella
+53|Groundwork Habits ora salva in quella cartella
 54|Giorni di fila per guadagnare un congelamento
 55|Elimina
 56|Elimina attività
@@ -227,7 +227,7 @@
 227|Attività di oggi
 228|Attività, note, obiettivi, abitudini…
 229|Accento verde acqua
-230|Quel file non è un backup di Daybook
+230|Quel file non è un backup di Groundwork Habits
 231|La lente cerca ovunque. L’ingranaggio ha temi, colori, funzioni, backup e il blocco dell’app.
 232|Il salvataggio nella cartella dei dati usa un altro PIN
 233|I due PIN non coincidono
@@ -251,14 +251,14 @@
 251|SETTIMANA DAL
 252|Settimanali
 253|Riepilogo settimanale
-254|Benvenuto in Daybook
+254|Benvenuto in Groundwork Habits
 255|Cosa hai smesso
 256|Cosa hai smesso? es. Fumare
 257|Cosa vuoi ottenere?
 258|Quando aggiungi un’attività, usa il menu sotto per ripeterla ogni giorno, giorno feriale, settimana o mese.
 259|Quando hai smesso?
 260|PIN errato
-261|PIN errato, o non è un backup di Daybook
+261|PIN errato, o non è un backup di Groundwork Habits
 262|Mappa dell’anno
 263|Sì o no
 264|I tuoi dati restano qui
@@ -284,7 +284,7 @@
 284|Già fatto questo mese. Ottimo lavoro.
 285|Promemoria dell’attività
 286|Questa abitudine non esiste più.
-287|Daybook è bloccato
+287|Groundwork Habits è bloccato
 288|Inserisci il PIN
 289|Sblocca
 290|Hai dimenticato il PIN?
@@ -292,7 +292,7 @@
 292|Usa l’impronta
 293|PIN errato. Riprova.
 294|Troppi tentativi. Aspetta 30 secondi.
-295|Sblocca Daybook
+295|Sblocca Groundwork Habits
 296|Conferma la tua impronta
 297|Sblocco con impronta
 298|Inserisci il PIN una volta per attivarlo.
@@ -313,7 +313,7 @@
 313|Scegli cartella…
 314|Smetti di usare questa cartella
 315|Memoria dell’app (solo questo PC)
-316|Qui c’è già un salvataggio di Daybook
+316|Qui c’è già un salvataggio di Groundwork Habits
 317|Sostituirlo con i dati di questo telefono o caricare il salvataggio della cartella? Caricarlo sovrascrive ciò che c’è su questo telefono.
 318|Carica il salvataggio della cartella
 319|Tocca di nuovo: carica il salvataggio della cartella
@@ -352,7 +352,7 @@
 352|Si avvicina la scadenza di un obiettivo
 353|Un promemoria di abitudine aspetta la tua risposta
 354|Un promemoria di attività aspetta la tua risposta
-355|Aggiungi un’abitudine giornaliera in Daybook
+355|Aggiungi un’abitudine giornaliera in Groundwork Habits
 356|Aggiungi a un obiettivo
 357|Aggiungi un passo, es. Corri 10 km
 358|Imposta un traguardo sopra 0
@@ -382,10 +382,10 @@
 382|Minuti
 383|Ferma
 384|Da 4 a 8 cifre. Se lo dimentichi, l’unico modo per rientrare è cancellare i dati di questo dispositivo (resta una copia nella cartella dei dati).
-385|Si blocca all’apertura di Daybook, dopo un minuto in background o 5 minuti di inattività. Nasconde i tuoi dati sullo schermo e cifra ciò che è salvato su questo dispositivo e nei backup.
+385|Si blocca all’apertura di Groundwork Habits, dopo un minuto in background o 5 minuti di inattività. Nasconde i tuoi dati sullo schermo e cifra ciò che è salvato su questo dispositivo e nei backup.
 386|Ripristina la disposizione delle schede
 387|Apri il mini widget
-388|Apri Daybook
+388|Apri Groundwork Habits
 389|Tutto fatto oggi
 390|Niente in programma.
 391|Ancora nessuna abitudine giornaliera.
@@ -438,6 +438,22 @@
 438|Passare da un valore a un altro
 439|Completare una serie di passi
 440|Creare un’abitudine
+553|Colore personalizzato
+554|Codice hex
+555|Tonalità
+556|Saturazione
+557|Luminosità
+558|Nomi delle schede
+559|Mostra il nome sotto ogni icona
+560|Navigazione
+561|Muschio
+562|Rosso
+563|Ardesia
+564|Obiettivo
+565|Serie
+566|Premi di nuovo indietro per uscire
+567|SERIE
+568|Scheda Serie
 P1|$1 / $2 abitudini completate
 P2|$1 / $2 completati
 P3|$1 obiettivi · $2 raggiunti
@@ -472,7 +488,7 @@ P31|$1 ora · traguardo $2 (da $3)
 P32|Aggiunge $1 ogni settimana
 P33|Aggiunge $1 ogni mese
 P34|Aggiunta in $1 giorni
-P35|Daybook ora salva in $1
+P35|Groundwork Habits ora salva in $1
 P36|Obiettivo raggiunto: $1
 P37|Salvato $1
 P38|Esiste già un’area chiamata $1
@@ -523,7 +539,7 @@ P63|Abitudini giornaliere completate negli ultimi $1 mesi
 460|Promemoria giornaliero disattivato
 461|Zona pericolosa
 462|Dati e backup
-463|Daybook usa la lingua di questo dispositivo, a meno che tu non ne scelga una. Le tue abitudini e attività non vengono mai tradotte.
+463|Groundwork Habits usa la lingua di questo dispositivo, a meno che tu non ne scelga una. Le tue abitudini e attività non vengono mai tradotte.
 464|Cancella tutto su questo dispositivo
 465|Abitudini, attività e obiettivi di esempio
 466|Esporta
@@ -536,8 +552,8 @@ P63|Abitudini giornaliere completate negli ultimi $1 mesi
 473|Scorciatoie da tastiera
 474|Disposizione
 475|Licenze
-476|Blocca Daybook e cifra i tuoi dati su questo dispositivo e nei backup
-477|Si blocca all’apertura di Daybook, dopo un minuto in background o il tempo qui sopra senza uso. Nasconde i tuoi dati sullo schermo e cifra ciò che è salvato su questo dispositivo e nei backup.
+476|Blocca Groundwork Habits e cifra i tuoi dati su questo dispositivo e nei backup
+477|Si blocca all’apertura di Groundwork Habits, dopo un minuto in background o il tempo qui sopra senza uso. Nasconde i tuoi dati sullo schermo e cifra ciò che è salvato su questo dispositivo e nei backup.
 478|Licenza GNU AGPL-3.0
 479|Sposta attività, abitudini, obiettivi e schede trascinandoli
 480|Sposta la scheda, abitudine, obiettivo o attività selezionata
@@ -545,7 +561,7 @@ P63|Abitudini giornaliere completate negli ultimi $1 mesi
 482|Nessun account, nessuna pubblicità, nessun tracciamento. Tutto resta sui tuoi dispositivi e va solo dove lo mandi tu: i tuoi backup, la tua cartella dei dati, il link del tuo calendario.
 483|Nessuna impostazione corrisponde.
 484|Non collegato
-485|Le notifiche dicono quale abitudine o attività; disattivato mostra solo “Daybook”
+485|Le notifiche dicono quale abitudine o attività; disattivato mostra solo “Groundwork Habits”
 486|Una notifica al giorno se restano abitudini
 487|Apri un’abitudine (tocca il nome) o tocca la campanella di un’attività
 488|Le attività passate non fatte mostrano una X rossa
@@ -582,14 +598,14 @@ P63|Abitudini giornaliere completate negli ultimi $1 mesi
 519|Cifrato con il tuo PIN
 520|Sblocca con l’impronta invece di digitare il PIN
 521|Blocca dopo
-522|Senza uso; Daybook si blocca anche un minuto dopo che lo lasci
+522|Senza uso; Groundwork Habits si blocca anche un minuto dopo che lo lasci
 523|I tuoi dati vengono decifrati e salvati di nuovo leggibili
 524|Apri il mini widget
 525|Una piccola finestra sempre in primo piano con abitudini e attività di oggi
 526|Computer
 527|Ora
-528|Una notifica ogni giorno, anche con Daybook chiuso
-529|Solo con Daybook aperto o in background
+528|Una notifica ogni giorno, anche con Groundwork Habits chiuso
+529|Solo con Groundwork Habits aperto o in background
 530|Android 14 e successivi: le sveglie suonano in orario invece che con qualche minuto di ritardo
 531|Backup ogni giorno
 532|Backup ogni settimana

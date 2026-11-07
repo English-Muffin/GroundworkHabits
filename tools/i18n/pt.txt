@@ -50,7 +50,7 @@
 50|Diários
 51|Lembrete diário
 52|Escuro
-53|O Daybook guarda agora nessa pasta
+53|O Groundwork Habits guarda agora nessa pasta
 54|Dias seguidos para ganhar um congelamento
 55|Eliminar
 56|Eliminar tarefa
@@ -227,7 +227,7 @@
 227|Tarefas de hoje
 228|Tarefas, notas, objetivos, hábitos…
 229|Destaque verde-azulado
-230|Esse ficheiro não é uma cópia de segurança do Daybook
+230|Esse ficheiro não é uma cópia de segurança do Groundwork Habits
 231|A lupa pesquisa tudo. A roda dentada tem temas, cores, funcionalidades, cópias de segurança e o bloqueio da app.
 232|A cópia na pasta de dados usa outro PIN
 233|Os dois PINs não coincidem
@@ -251,14 +251,14 @@
 251|SEMANA A COMEÇAR
 252|Semanais
 253|Resumo semanal
-254|Bem-vindo ao Daybook
+254|Bem-vindo ao Groundwork Habits
 255|O que deixaste
 256|O que deixaste? p. ex. Fumar
 257|O que queres alcançar?
 258|Ao adicionar uma tarefa, usa o menu por baixo para a repetir todos os dias, dias úteis, semanas ou meses.
 259|Quando paraste?
 260|PIN errado
-261|PIN errado, ou não é uma cópia do Daybook
+261|PIN errado, ou não é uma cópia do Groundwork Habits
 262|Mapa do ano
 263|Sim ou não
 264|Os teus dados ficam aqui
@@ -284,7 +284,7 @@
 284|Já está feito este mês. Muito bem.
 285|Lembrete de tarefa
 286|Este hábito já não existe.
-287|O Daybook está bloqueado
+287|O Groundwork Habits está bloqueado
 288|Introduz o teu PIN
 289|Desbloquear
 290|Esqueceste o PIN?
@@ -292,7 +292,7 @@
 292|Usar impressão digital
 293|PIN errado. Tenta outra vez.
 294|Demasiadas tentativas. Espera 30 segundos.
-295|Desbloquear o Daybook
+295|Desbloquear o Groundwork Habits
 296|Confirma a tua impressão digital
 297|Desbloqueio por impressão digital
 298|Introduz o PIN uma vez para o ligar.
@@ -313,7 +313,7 @@
 313|Escolher pasta…
 314|Deixar de usar esta pasta
 315|Armazenamento da app (só neste PC)
-316|Já existe uma cópia do Daybook aqui
+316|Já existe uma cópia do Groundwork Habits aqui
 317|Substituí-la pelos dados deste telemóvel, ou carregar a cópia da pasta? Carregar substitui o que está neste telemóvel.
 318|Carregar a cópia da pasta
 319|Toca outra vez: carregar a cópia da pasta
@@ -352,7 +352,7 @@
 352|Um prazo de objetivo está a aproximar-se
 353|Um lembrete de hábito espera a tua resposta
 354|Um lembrete de tarefa espera a tua resposta
-355|Adiciona um hábito diário no Daybook
+355|Adiciona um hábito diário no Groundwork Habits
 356|Adicionar a um objetivo
 357|Adiciona um passo, p. ex. Correr 10 km
 358|Define uma meta acima de 0
@@ -382,10 +382,10 @@
 382|Minutos
 383|Parar
 384|4 a 8 dígitos. Se o esqueceres, a única forma de voltar a entrar é apagar os dados deste dispositivo (fica uma cópia na pasta de dados).
-385|Bloqueia quando o Daybook abre, após um minuto em segundo plano ou 5 minutos sem uso. Esconde os teus dados no ecrã e encripta o que é guardado neste dispositivo e nas cópias.
+385|Bloqueia quando o Groundwork Habits abre, após um minuto em segundo plano ou 5 minutos sem uso. Esconde os teus dados no ecrã e encripta o que é guardado neste dispositivo e nas cópias.
 386|Repor a disposição dos cartões
 387|Abrir o mini widget
-388|Abrir o Daybook
+388|Abrir o Groundwork Habits
 389|Tudo feito hoje
 390|Nada planeado.
 391|Ainda não há hábitos diários.
@@ -438,6 +438,22 @@
 438|Passar de um valor para outro
 439|Concluir um conjunto de passos
 440|Criar um hábito
+553|Cor personalizada
+554|Código hex
+555|Matiz
+556|Saturação
+557|Luminosidade
+558|Nomes dos separadores
+559|Mostrar o nome por baixo de cada ícone
+560|Navegação
+561|Musgo
+562|Vermelho
+563|Ardósia
+564|Meta
+565|Sequências
+566|Prima voltar outra vez para sair
+567|SEQUÊNCIAS
+568|Separador Sequências
 P1|$1 / $2 hábitos concluídos
 P2|$1 / $2 concluídos
 P3|$1 objetivos · $2 alcançados
@@ -472,7 +488,7 @@ P31|$1 agora · meta $2 (de $3)
 P32|Adiciona $1 todas as semanas
 P33|Adiciona $1 todos os meses
 P34|Adicionada em $1 dias
-P35|O Daybook guarda agora em $1
+P35|O Groundwork Habits guarda agora em $1
 P36|Objetivo alcançado: $1
 P37|Guardado $1
 P38|Já existe uma área chamada $1
@@ -523,7 +539,7 @@ P63|Hábitos diários concluídos nos últimos $1 meses
 460|Lembrete diário desligado
 461|Zona de perigo
 462|Dados e cópias
-463|O Daybook segue o idioma deste dispositivo, a não ser que escolhas outro. Os teus hábitos e tarefas nunca são traduzidos.
+463|O Groundwork Habits segue o idioma deste dispositivo, a não ser que escolhas outro. Os teus hábitos e tarefas nunca são traduzidos.
 464|Apaga tudo neste dispositivo
 465|Hábitos, tarefas e objetivos de exemplo
 466|Exportar
@@ -536,8 +552,8 @@ P63|Hábitos diários concluídos nos últimos $1 meses
 473|Atalhos de teclado
 474|Disposição
 475|Licenças
-476|Bloqueia o Daybook e encripta os teus dados neste dispositivo e nas cópias
-477|Bloqueia quando o Daybook abre, após um minuto em segundo plano ou o tempo acima sem uso. Esconde os teus dados no ecrã e encripta o que é guardado neste dispositivo e nas cópias.
+476|Bloqueia o Groundwork Habits e encripta os teus dados neste dispositivo e nas cópias
+477|Bloqueia quando o Groundwork Habits abre, após um minuto em segundo plano ou o tempo acima sem uso. Esconde os teus dados no ecrã e encripta o que é guardado neste dispositivo e nas cópias.
 478|Licença GNU AGPL-3.0
 479|Move tarefas, hábitos, objetivos e cartões arrastando
 480|Move o cartão, hábito, objetivo ou tarefa selecionado
@@ -545,7 +561,7 @@ P63|Hábitos diários concluídos nos últimos $1 meses
 482|Sem conta, sem anúncios, sem rastreio. Tudo fica nos teus dispositivos e só vai para onde o envias: as tuas cópias, a tua pasta de dados, o link do teu calendário.
 483|Nenhuma definição corresponde.
 484|Não ligado
-485|As notificações dizem qual o hábito ou tarefa; desligado mostra só “Daybook”
+485|As notificações dizem qual o hábito ou tarefa; desligado mostra só “Groundwork Habits”
 486|Uma notificação por dia se houver hábitos por fazer
 487|Abre um hábito (toca no nome) ou toca no sino de uma tarefa
 488|Tarefas passadas por fazer mostram um X vermelho
@@ -582,14 +598,14 @@ P63|Hábitos diários concluídos nos últimos $1 meses
 519|Encriptada com o teu PIN
 520|Desbloqueia com a impressão digital em vez de escrever o PIN
 521|Bloquear após
-522|Sem uso; o Daybook também bloqueia um minuto depois de saíres
+522|Sem uso; o Groundwork Habits também bloqueia um minuto depois de saíres
 523|Os teus dados são desencriptados e guardados legíveis outra vez
 524|Abrir o mini widget
 525|Uma pequena janela sempre visível com os hábitos e tarefas de hoje
 526|Computador
 527|Hora
-528|Uma notificação todos os dias, mesmo com o Daybook fechado
-529|Só com o Daybook aberto ou em segundo plano
+528|Uma notificação todos os dias, mesmo com o Groundwork Habits fechado
+529|Só com o Groundwork Habits aberto ou em segundo plano
 530|Android 14 ou posterior: os alarmes tocam à hora certa em vez de alguns minutos depois
 531|Cópia todos os dias
 532|Cópia todas as semanas

@@ -33,8 +33,8 @@ async def desktop(b):
     check('add habit', await pg.locator('.gname .nb', has_text='Drink water').count() == 1)
     await pg.click('.gname .nb'); await pg.fill('#mName', 'Drink 2L water'); await pg.click('[data-act=msave]')
     check('rename habit via edit modal', await pg.locator('.gname .nb', has_text='Drink 2L water').count() == 1)
-    await pg.click('.gname .nb'); await pg.fill('[data-cf=habit][data-k="0"]', '18'); await pg.click('[data-act=msave]'); await pg.reload()
-    check('custom habit colour via RGB saves', await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).habits[0].color") == '#125cf6')
+    await pg.click('.gname .nb'); await pg.click('#modal .cmore'); await pg.fill('[data-cf=habit][data-k=hex]', '#125cf6'); await pg.click('[data-act=msave]'); await pg.reload()
+    check('custom habit colour from the in-app picker saves', await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).habits[0].color") == '#125cf6')
     await pg.locator('.cell:not([disabled])').first.click(); await pg.reload(); await pg.wait_for_timeout(200)
     check('check-in persists after reload', await pg.locator('.cell.on').count() == 1)
     check('saved data has version field', await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).v") == 1)
@@ -82,13 +82,22 @@ async def desktop(b):
     box = await pg.locator('#ichart').bounding_box()
     await pg.mouse.move(box['x'] + box['width'] * .7, box['y'] + 100); await pg.wait_for_timeout(100)
     check('insights chart hover tooltip', '%' in await pg.locator('#tip').inner_text())
-    await pg.click('[data-act=gear]'); await pg.click('[data-act=paccent][data-v="#f472b6"]'); await pg.click('[data-act=ptheme][data-v=light]')
+    await pg.click('[data-act=gear]'); await pg.click('[data-act=cset][data-f=accent][data-v="#f472b6"]'); await pg.click('[data-act=ptheme][data-v=light]')
     await pg.reload(); await pg.wait_for_timeout(200)
     check('customize accent and theme persist', await pg.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()") == '#f472b6' and await pg.evaluate("document.documentElement.classList.contains('light')"))
-    await pg.click('[data-act=gear]'); await pg.fill('[data-cf=accent][data-k=hex]', '#ff8800')
-    rgb = [await pg.input_value(f'[data-cf=accent][data-k="{i}"]') for i in range(3)]
-    await pg.fill('[data-cf=accent][data-k="2"]', '255')
-    check('accent hex and RGB inputs sync', rgb == ['255', '136', '0'] and await pg.input_value('[data-cf=accent][data-k=hex]') == '#ff88ff' and await pg.evaluate("JSON.parse(localStorage.getItem('daybook-prefs')).accent") == '#ff88ff')
+    await pg.click('[data-act=gear]'); await pg.click('#main .cmore'); await pg.fill('[data-cf=accent][data-k=hex]', '#ff8800')
+    hsl = [await pg.input_value(f'[data-cf=accent][data-k={k}]') for k in 'hsl']
+    await pg.fill('[data-cf=accent][data-k=l]', '25')
+    check('accent hex and hue/saturation/lightness sliders sync', hsl == ['32', '100', '50'] and await pg.input_value('[data-cf=accent][data-k=hex]') == '#804400' and await pg.evaluate("JSON.parse(localStorage.getItem('daybook-prefs')).accent") == '#804400', hsl)
+    await pg.fill('[data-cf=accent][data-k=h]', '210'); await pg.fill('[data-cf=accent][data-k=s]', '80'); await pg.fill('[data-cf=accent][data-k=l]', '0'); await pg.fill('[data-cf=accent][data-k=l]', '100')
+    hs = [await pg.input_value(f'[data-cf=accent][data-k={k}]') for k in 'hs']; await pg.fill('[data-cf=accent][data-k=l]', '50')
+    check('lightness at black or white keeps hue and saturation where they were', hs == ['210', '80'] and await pg.input_value('[data-cf=accent][data-k=hex]') == '#1980e6', [hs, await pg.input_value('[data-cf=accent][data-k=hex]')])
+    await pg.click('[data-act=tabnames]'); await pg.wait_for_timeout(100)
+    check('tab names can be hidden (icons only) and the choice is saved', await pg.evaluate("document.documentElement.classList.contains('notabnames')") and await pg.evaluate("JSON.parse(localStorage.getItem('daybook-prefs')).tabNames") is False)
+    await pg.click('[data-act=tabnames]'); await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(200)
+    await pg.click('[data-act=areanew]'); await pg.fill('#arName', 'Faith'); await pg.click('#modal .cmore'); await pg.fill('[data-cf=area][data-k=hex]', '#0ea5e9'); await pg.click('[data-act=areasave]'); await pg.wait_for_timeout(100)
+    check('a new life area can take a custom colour from the picker (name kept while picking)', {'name': 'Faith', 'color': '#0ea5e9'} in (await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).areas") or []))
+    await pg.evaluate("location.hash='settings/appearance'"); await pg.wait_for_timeout(200)
     await pg.click('[data-act=ptheme][data-v=amoled]'); await pg.reload(); await pg.wait_for_timeout(150)
     check('AMOLED theme is pure black and persists', await pg.evaluate("document.documentElement.classList.contains('amoled')&&getComputedStyle(document.body).backgroundColor==='rgb(0, 0, 0)'&&getComputedStyle(document.querySelector('.card,.gcard,.sum,.sgrp')).backgroundColor==='rgb(0, 0, 0)'"))
     await pg.evaluate("localStorage.removeItem('daybook-prefs')"); await pg.reload()
@@ -164,10 +173,10 @@ async def desktop(b):
     await pg.evaluate("location.hash='insights'"); await pg.wait_for_timeout(150)
     check('insights shows weekly review and heatmap', await pg.locator('.review').count() == 1 and await pg.locator('.hgrid .hcol').count() == 53)
     await pg.click('[data-act=gear]'); sw = await pg.locator('#main [data-act=feat][data-v=heatmap]').get_attribute('role')
-    await pg.click('[data-act=feat][data-v=heatmap]'); await pg.click('[data-act=feat][data-v=ach]')
+    noach = await pg.locator('[data-act=feat][data-v=ach]').count(); await pg.click('[data-act=feat][data-v=heatmap]')
     await pg.evaluate("location.hash='insights'"); await pg.wait_for_timeout(200)
     check('feature switches are real switches (role=switch)', sw == 'switch')
-    check('feature toggles hide the heatmap and the Achievements tab', await pg.locator('.heat').count() == 0 and await pg.locator('#nav a[href="#achievements"]').count() == 0)
+    check('the heatmap can be switched off; the Streaks tab has no switch and always shows', noach == 0 and await pg.locator('.heat').count() == 0 and await pg.locator('#nav a[href="#achievements"]').count() == 1)
     await pg.evaluate("localStorage.removeItem('daybook-prefs')")
     # --- drag to rearrange: tasks between days, Today cards, goals; switch off hides grips ---
     await pg.evaluate("""(()=>{const p=n=>String(n).padStart(2,'0'),k=d=>d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()),s=new Date();s.setDate(s.getDate()-s.getDay());const m=new Date(s);m.setDate(s.getDate()+1);
@@ -393,7 +402,7 @@ async def goalsAndFreezes(b):
     await pg.fill('#gRecF', start.isoformat()); await pg.click('[data-act=gsave]'); await pg.wait_for_timeout(200)
     hol = await pg.evaluate("DaybookTest.state().goals.find(g=>g.title==='Holiday fund')")
     hc = pg.locator('.goal2', has_text='Holiday fund')
-    check('repeating contribution adds €100 on the 1st of each month since the start (3 so far) and draws a history line', len(hol['log']) == 3 and all(x.get('a') for x in hol['log']) and '€300 of €1,000' in await hc.inner_text() and await hc.locator('svg.g2sp').count() == 1, hol)
+    check('repeating contribution adds €100 on the 1st of each month since the start (3 so far) and draws a history line', len(hol['log']) == 3 and all(x.get('a') for x in hol['log']) and '€300 of €1,000' in await hc.inner_text() and await hc.locator('.g2sp svg').count() == 1, hol)
     await pg.reload(); await pg.wait_for_timeout(300)
     check('repeating contribution is not added twice after a reload', len(await pg.evaluate("DaybookTest.state().goals.find(g=>g.title==='Holiday fund').log")) == 3)
     await pg.click('.g2sum [data-act=newgoal]'); await pg.fill('#gTitle', 'Launch the website'); await pg.click('[data-act=gkind][data-v=tasks]')
@@ -430,7 +439,7 @@ async def goalsAndFreezes(b):
     row = await pg.locator('.trow', has_text='Stretch').inner_text()
     check('freezes can be switched off per habit (the streak then counts only the last run)', await pg.evaluate("DaybookTest.state().habits.find(h=>h.name==='Stretch').fz.off") and '10' not in row, row)
     await pg.click('[data-act=gear]'); href = await pg.locator('#set-about a[href$="/releases/latest"]').get_attribute('href')
-    check('settings About has Check for updates (releases page) and the version', href.endswith('/releases/latest') and 'Daybook 1.' in await pg.locator('#set-about').inner_text())
+    check('settings About has Check for updates (releases page) and the version', href.endswith('/releases/latest') and 'Groundwork Habits 1.' in await pg.locator('#set-about').inner_text())
     check('no JS errors (goals, freezes)', not errs, errs)
     await ctx.close()
 
@@ -443,6 +452,29 @@ async def languages(b):
     nav2 = await pg.locator('#nav').inner_text()
     check('language: German shows German labels and dates, switching back to English works', 'Heute' in nav and 'Gewohnheiten' in nav and 'Today' in nav2 and not errs, [nav, nav2, errs])
     await ctx.close()
+
+async def tasksAndSettings(b):
+    # phones: in this week's Tasks today's card is on top, the days after it follow, then the earlier ones
+    ctx = await b.new_context(viewport={'width': 390, 'height': 844}); pg = await ctx.new_page(); await pg.goto(URL)
+    await pg.evaluate("localStorage.setItem('daybook-tips','1')"); await pg.goto(URL + '#tasks'); await pg.wait_for_timeout(300)
+    tops = await pg.evaluate("[...document.querySelectorAll('.days .day')].map(d=>[d.querySelector('.dt').textContent,d.getBoundingClientRect().top]).sort((a,b)=>a[1]-b[1]).map(x=>x[0])")
+    import datetime as _d
+    t = _d.date.today(); want = [(t + _d.timedelta(days=i)) for i in range(7)]; wk0 = t - _d.timedelta(days=(t.weekday() + 1) % 7)
+    want = [d if d < wk0 + _d.timedelta(days=7) else d - _d.timedelta(days=7) for d in want]
+    check('phone Tasks: today first, then the following days, then the earlier ones', tops == [d.strftime('%d/%m/%Y') for d in want], tops)
+    await ctx.close()
+    # tall desktop window: scrolling Settings marks every section in turn, the short last ones included
+    for w, h in ((2000, 1135), (2560, 1400)):
+        ctx = await b.new_context(viewport={'width': w, 'height': h}); pg = await ctx.new_page(); await pg.goto(URL)
+        await pg.evaluate("localStorage.setItem('daybook-tips','1')"); await pg.goto(URL + '#settings'); await pg.wait_for_timeout(300)
+        seen = []
+        for _ in range(80):
+            on = await pg.evaluate("(document.querySelector('.snav a.on')||{}).dataset.sec")
+            if not seen or seen[-1] != on: seen.append(on)
+            await pg.mouse.wheel(0, 60); await pg.wait_for_timeout(30)
+        secs = await pg.evaluate("[...document.querySelectorAll('.spane .ssec')].map(x=>x.dataset.sec)")
+        check(f'settings side list marks every section in order while scrolling ({w}px)', seen == secs, [seen, secs])
+        await ctx.close()
 
 async def heatAndBackup(b):
     ctx = await b.new_context(viewport={'width': 390, 'height': 844}, has_touch=True); pg = await ctx.new_page()
@@ -536,7 +568,7 @@ async def reminders(b):
     ctx = await b.new_context(viewport={'width': 390, 'height': 800})
     await ctx.add_init_script("""localStorage.setItem('daybook-tips','1');window.__nb={items:[],answers:[],cb:null,url:''};
       window.Capacitor={Plugins:{LocalNotifications:{checkPermissions:async()=>({display:'granted'}),requestPermissions:async()=>({display:'granted'}),cancel:async()=>{},schedule:async()=>{}},
-        DaybookNative:{schedule:async o=>{__nb.items=o.items;return {exact:true}},takeAnswers:async()=>{const a=__nb.answers;__nb.answers=[];return {answers:a}},addListener:(n,f)=>{__nb.cb=f},
+        DaybookNative:{schedule:async o=>{__nb.items=o.items;return {exact:true}},takeAnswers:async()=>{const a=__nb.answers;__nb.answers=[];return {answers:a}},addListener:(n,f)=>{if(n==='back')__nb.back=f;else __nb.cb=f},exitApp:async()=>{__nb.exited=true},
           saveFile:async o=>{__nb.saved=o;return {saved:true}},pickFolder:async()=>({picked:true,name:'Drive'}),widget:async o=>{__nb.widget=o.data},bioAvailable:async()=>({ok:true,on:!!localStorage.getItem('__bio')}),bioEnable:async o=>{localStorage.setItem('__bio',o.pin);return {ok:true}},bioUnlock:async()=>({ok:!!localStorage.getItem('__bio'),pin:localStorage.getItem('__bio')}),bioDisable:async()=>{localStorage.removeItem('__bio')},readFolder:async()=>(__nb.ftext?{text:__nb.ftext}:{}),writeFolder:async o=>{__nb.ftext=o.text},clearFolder:async()=>{},backup:async o=>{__nb.bak=o;return {where:'Drive/backups'}},fetchCal:async o=>{__nb.url=o.url;return {ok:true,text:['BEGIN:VCALENDAR','BEGIN:VEVENT','UID:e1','DTSTART;VALUE=DATE:'+(d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'))(new Date()),'SUMMARY:Phone event','END:VEVENT','END:VCALENDAR'].join(String.fromCharCode(13,10))}}}}};""")
     pg = await ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)))
@@ -552,6 +584,13 @@ async def reminders(b):
     check('Android schedules task reminders in the next 14 days only', tk == [['tt', 'Dentist call', True]])
     await pg.evaluate("__nb.answers=[{h:'tt',k:Object.keys(DaybookTest.state().tasks).find(k=>DaybookTest.state().tasks[k].items.some(i=>i.id==='tt')),a:'yes'}];__nb.cb()"); await pg.wait_for_timeout(300)
     check('Android Yes on a task reminder ticks the task', await pg.evaluate("Object.values(DaybookTest.state().tasks).some(d=>d.items.some(i=>i.id==='tt'&&i.done))"))
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(100); await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(100); await pg.evaluate("location.hash='settings/appearance'"); await pg.wait_for_timeout(150)
+    await pg.evaluate("__nb.back()"); await pg.wait_for_timeout(150); h1 = await pg.evaluate("location.hash")
+    if h1 == '#settings': await pg.evaluate("__nb.back()"); await pg.wait_for_timeout(150); h1 = await pg.evaluate("location.hash")
+    h2 = h1
+    await pg.evaluate("__nb.back()"); await pg.wait_for_timeout(100); hint = await pg.locator('#toast').inner_text(); early = await pg.evaluate("!!__nb.exited")
+    await pg.evaluate("__nb.back()"); await pg.wait_for_timeout(100)
+    check('Android back leaves Settings to the screen it came from; elsewhere the first back asks and the second leaves', h1 == '#goals' and await pg.evaluate("location.hash") == '#goals' and 'again' in hint and not early and await pg.evaluate("!!__nb.exited"), [h1, h2, hint])
     check('Android schedules 14 days of reminders natively and skips a day already done',
           len(a) in (13, 14) and (late or (len(a) == 14 and len(bb) == 13)) and a[0][1] is False and bb[0][1] is True and a[0][3] == 'number')
     await pg.evaluate(f"__nb.answers=[{{h:'ha',k:{TK},a:'yes'}},{{h:'hb',k:'2020-01-01',a:'no'}}];__nb.cb()"); await pg.wait_for_timeout(300)
@@ -571,7 +610,7 @@ async def reminders(b):
     check('a done calendar event raises the progress ring', int(''.join(c for c in ring2.split('%')[0] if c.isdigit()) or 0) > 0, ring2)
     await pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('daybook-prefs'));p.feat=Object.assign({},p.feat,{remnames:false});localStorage.setItem('daybook-prefs',JSON.stringify(p))})()")
     await pg.reload(); await pg.wait_for_timeout(300); await pg.evaluate("DaybookTest.remSync()"); await pg.wait_for_timeout(200)
-    check('hidden names: reminders say Daybook instead of the habit or task', await pg.evaluate("__nb.items.length>0&&__nb.items.every(n=>n.title==='Daybook'&&!/Walk|Read|Dentist/.test(n.body))"))
+    check('hidden names: reminders say Groundwork Habits instead of the habit or task', await pg.evaluate("__nb.items.length>0&&__nb.items.every(n=>n.title==='Groundwork Habits'&&!/Walk|Read|Dentist/.test(n.body))"))
     await pg.evaluate("location.hash='settings/data'"); await pg.wait_for_timeout(200); await pg.click('#main [data-act=export]'); await pg.wait_for_timeout(300)
     check('Android export opens the save-to picker with the backup', await pg.evaluate("!!(__nb.saved&&__nb.saved.name.startsWith('daybook-backup-')&&JSON.parse(__nb.saved.text).habits)"))
     await pg.evaluate("location.hash='settings/data'"); await pg.wait_for_timeout(200); await pg.click('#main [data-act=apick]'); await pg.wait_for_timeout(1500)
@@ -642,7 +681,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await heatAndBackup(b); await languages(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await heatAndBackup(b); await languages(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")

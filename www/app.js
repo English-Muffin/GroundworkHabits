@@ -73,7 +73,7 @@ const medal=c=>'<svg class="medal" viewBox="0 0 24 24" style="stroke:'+c+'"><cir
 /* ---------- state ---------- */
 const $$=q=>[...document.querySelectorAll(q)];
 const KEY='daybook-v2',APPV='1.6.1',RELEASES='https://github.com/English-Muffin/Free-Habit-Tracker/releases/latest'; // APPV: bump with package.json
-const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'];
+const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'],CNAMED=[['Violet','#8b5cf6'],['Blue','#3b82f6'],['Red','#f43f5e'],['Green','#22c55e'],['Amber','#f59e0b'],['Pink','#ec4899'],['Teal','#14b8a6'],['Slate','#94a3b8']];
 const AREAS=['Health','Fitness','Career','Money','Learning','Relationships','Family','Fun','Home','Mindset'];
 /* PIN encryption: with a PIN, data is saved as 'enc1:<salt>:<base64 iv+AES-GCM>' with a key made from the PIN (PBKDF2).
    Until the PIN is entered the real data is not in memory (encWait), so nothing may be saved, synced or scheduled. */
@@ -98,7 +98,7 @@ async function andApply(t,announce){try{const j=isEnc(t)?(encKey?await decText(t
 async function andRead(){if(!NB||!P.andDir||encWait)return;try{const t=(await NB.readFolder()).text;if(t&&t!==andText)andApply(t)}catch(e){}}
 // Android home-screen widget: today's daily habits (names only while there's no PIN)
 function pushWidget(){if(!NB||!NB.widget||WIDGET||encWait)return;clearTimeout(pushWidget.t);pushWidget.t=setTimeout(()=>{const k=dk(TODAY);
-  NB.widget({data:{locked:!!P.lock,lockedText:tx('Daybook is locked'),emptyText:tx('Add a daily habit in Daybook'),title:tx(DAYS[TODAY.getDay()]),
+  NB.widget({data:{locked:!!P.lock,lockedText:tx('Groundwork Habits is locked'),emptyText:tx('Add a daily habit in Groundwork Habits'),title:tx(DAYS[TODAY.getDay()]),
     items:P.lock?[]:byType('daily').slice(0,6).map(h=>({h:h.id,k,name:h.name,done:!!L(h)[k]}))}}).catch(()=>{})},600)}
 function save(){if(encWait)return;andWrite();pushWidget();saveRaw(JSON.stringify(S),t=>{try{localStorage.setItem(KEY,t)}catch(e){}});clearTimeout(save.r);save.r=setTimeout(()=>syncReminders(),1500);if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
 /* desktop only: mirror data to <folder>/daybook.json (a Drive/OneDrive/Dropbox folder gives cloud sync) */
@@ -113,24 +113,40 @@ function readFile(){const t=DFS.read();if(!t||t===fileText)return false;
 window.addEventListener('beforeunload',()=>{if(save.t)writeFile()});
 if(DFS&&DFS.onFlush)DFS.onFlush(async()=>{if(save.t)writeFile();await save.p}); // desktop: finish encrypted saves before the window closes
 const DATA_V=1; // bump and migrate in load-time block below when the saved shape changes
-const PKEY='daybook-prefs',ACCENTS=[['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
+const TESTING=true; // release builds: false (tools/release_strip.js), which hides demo data and the test hook
+const PKEY='daybook-prefs',ACCENTS=[['Moss','#9cc96b'],['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
 let P={theme:'dark',accent:ACCENTS[0][1],feat:{},remTime:'21:00'};try{Object.assign(P,JSON.parse(localStorage.getItem(PKEY))||{})}catch(e){}
 const hexRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const rgbHex=a=>'#'+a.map(v=>v.toString(16).padStart(2,'0')).join('');
-// colour fields (picker + hex + R,G,B) for id `f`; edits sync siblings without a re-render (that would steal focus)
-const colorFields=(f,hex,lbl)=>'<div class="cfx"><input type="color" class="cpick" data-cf="'+f+'" data-k="pick" value="'+hex+'" aria-label="Pick a custom '+lbl+'"><input class="ain" data-cf="'+f+'" data-k="hex" value="'+hex+'" maxlength="7" spellcheck="false" aria-label="'+lbl+' hex code"></div>'
-  +'<div class="cfx">'+hexRgb(hex).map((v,i)=>'<label class="ainl">'+'RGB'[i]+'<input class="ain" type="number" min="0" max="255" data-cf="'+f+'" data-k="'+i+'" value="'+v+'" aria-label="'+['Red','Green','Blue'][i]+' (0 to 255)"></label>').join('')+'</div>';
-const COLOR_SET={accent:h=>{P.accent=h;applyPrefs()},habit:h=>{if(modal)modal.color=h}};
+const hexHsl=x=>{const [r,g,b]=hexRgb(x).map(v=>v/255),mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,sa=0;
+  if(d){sa=d/(1-Math.abs(2*l-1));h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;if(h<0)h+=360}return [Math.round(h),Math.round(sa*100),Math.round(l*100)]};
+const hslHex=(h,sa,l)=>{sa/=100;l/=100;const a=sa*Math.min(l,1-l),f=n=>{const k=(n+h/30)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1))};return rgbHex([0,8,4].map(n=>Math.round(f(n)*255)))};
+// the app's own colour picker: preset swatches, then a custom swatch that opens hue / saturation / lightness sliders and a hex field (no system dialog)
+let cpOpen={},cpHsl={};
+// hue/saturation/lightness for picker f: the remembered values when they still give this colour, else read from the hex (keeping the old hue/saturation for greys, black and white)
+function pickHsl(f,hex){const m=cpHsl[f];if(m&&hslHex(...m)===hex)return m;const v=hexHsl(hex);if(m&&(v[1]===0||v[2]===0||v[2]===100)){v[0]=m[0];if(v[2]===0||v[2]===100)v[1]=m[1]}return cpHsl[f]=v}
+function colorPicker(f,hex,presets,lbl){const [h,sa,l]=pickHsl(f,hex),custom=!presets.some(p=>p[1]===hex);
+  return '<div class="cpk" data-cpk="'+f+'" style="--h:'+h+';--s:'+sa+'%;--l:'+l+'%;--c:'+hex+'"><div class="cpsw" role="group" aria-label="'+lbl+'">'
+   +presets.map(p=>'<button class="csw'+(p[1]===hex?' on':'')+'" style="--c:'+p[1]+'" data-act="cset" data-f="'+f+'" data-sw="'+f+'" data-v="'+p[1]+'" aria-pressed="'+(p[1]===hex)+'" aria-label="'+p[0]+'" title="'+p[0]+'"></button>').join('')
+   +'<button class="csw cmore'+(custom?' on':'')+'" data-act="cpopen" data-f="'+f+'" aria-expanded="'+!!cpOpen[f]+'" aria-label="Custom colour" title="Custom colour"></button></div>'
+   +(cpOpen[f]?'<div class="cpp"><div class="cpv"><span class="cprev" aria-hidden="true"></span><input class="ain chex" data-cf="'+f+'" data-k="hex" value="'+hex+'" maxlength="7" spellcheck="false" aria-label="Hex code"></div>'
+   +[['h','Hue',360,h],['s','Saturation',100,sa],['l','Lightness',100,l]].map(x=>'<label class="cpr"><span>'+x[1]+'</span><input type="range" class="crng cr-'+x[0]+'" min="0" max="'+x[2]+'" value="'+x[3]+'" data-cf="'+f+'" data-k="'+x[0]+'" aria-label="'+x[1]+'"></label>').join('')+'</div>':'')+'</div>'}
+const COLOR_SET={accent:h=>{P.accent=h;applyPrefs()},habit:h=>{if(modal)modal.color=h},area:h=>{if(modal)modal.color=h}};
 function setColor(f,hex,from){COLOR_SET[f](hex);
-  document.querySelectorAll('[data-cf="'+f+'"]').forEach(e=>{if(e===from)return;const k=e.dataset.k;e.value=k==='pick'||k==='hex'?hex:hexRgb(hex)[+k]});
-  document.querySelectorAll('[data-sw="'+f+'"]').forEach(b=>{const on=b.dataset.v===hex;b.setAttribute('aria-pressed',on);b.classList.toggle('on',on)})}
-function applyPrefs(){const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');
+  const slid=from&&'hsl'.includes(from.dataset.k||'x');
+  if(slid)cpHsl[f]=['h','s','l'].map(k=>+$('[data-cf="'+f+'"][data-k="'+k+'"]').value);
+  const hsl=slid?cpHsl[f]:pickHsl(f,hex);
+  // moving one slider never moves the others; only typing a hex or picking a swatch updates all three
+  document.querySelectorAll('[data-cf="'+f+'"]').forEach(e=>{if(e===from)return;const k=e.dataset.k;if(k==='hex')e.value=hex;else if(!slid)e.value=hsl['hsl'.indexOf(k)]});
+  let pre=false;document.querySelectorAll('[data-sw="'+f+'"]').forEach(b=>{const on=b.dataset.v===hex;if(on)pre=true;b.setAttribute('aria-pressed',on);b.classList.toggle('on',on)});
+  document.querySelectorAll('[data-cpk="'+f+'"]').forEach(w=>{w.style.setProperty('--h',hsl[0]);w.style.setProperty('--s',hsl[1]+'%');w.style.setProperty('--l',hsl[2]+'%');w.style.setProperty('--c',hex);const m=w.querySelector('.cmore');if(m)m.classList.toggle('on',!pre)})}
+function applyPrefs(){const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');d.classList.toggle('notabnames',P.tabNames===false);
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=P.theme==='light'?'#f7f7f7':P.theme==='amoled'?'#000000':'#080808';try{localStorage.setItem(PKEY,JSON.stringify(P))}catch(e){}}
 applyPrefs();
 // optional features, switched in Settings > Features (all on except the reminder)
-const FEAT=[['freeze','Streak freezes'],['streaks','Streaks on Today'],['review','Weekly review'],['heatmap','Year heatmap'],['notes','Habit notes'],['missed','Mark missed tasks'],['ach','Achievements tab'],['drag','Drag to rearrange'],['focus','Focus timer'],['reminder','Daily reminder'],['remnames','Show names in reminders']];
-const FEATD={freeze:'Seven days in a row earn a freeze that saves a streak on a missed day',streaks:'Your stopped-habit streaks on the Today screen',review:'A summary of last week on Sundays',heatmap:'The year of squares on Insights',notes:'A short note on any day of a habit',missed:'Past tasks you didn’t do show a red X',ach:'Track things you’ve stopped, like smoking',drag:'Move tasks, habits, goals and cards by dragging',focus:'A timer for focused work on a task',reminder:'One notification a day if habits are still open',remnames:'Notifications say which habit or task; off shows just “Daybook”'};
-const feat=k=>P.feat&&k in P.feat?!!P.feat[k]:k!=='reminder';
+const FEAT=[['freeze','Streak freezes'],['streaks','Streaks on Today'],['review','Weekly review'],['heatmap','Year heatmap'],['notes','Habit notes'],['missed','Mark missed tasks'],['drag','Drag to rearrange'],['focus','Focus timer'],['reminder','Daily reminder'],['remnames','Show names in reminders']];
+const FEATD={freeze:'Seven days in a row earn a freeze that saves a streak on a missed day',streaks:'Your stopped-habit streaks on the Today screen',review:'A summary of last week on Sundays',heatmap:'The year of squares on Insights',notes:'A short note on any day of a habit',missed:'Past tasks you didn’t do show a red X',ach:'Track things you’ve stopped, like smoking',drag:'Move tasks, habits, goals and cards by dragging',focus:'A timer for focused work on a task',reminder:'One notification a day if habits are still open',remnames:'Notifications say which habit or task; off shows just “Groundwork Habits”'};
+const feat=k=>k==='ach'?true:P.feat&&k in P.feat?!!P.feat[k]:k!=='reminder';
 const empty=()=>({v:DATA_V,habits:[],log:{},tasks:{},goals:[],journal:{},quits:[],count:{},notes:{},amt:{},areas:[]});
 
 // true when there is anything the user would lose (not just habits)
@@ -220,7 +236,7 @@ if(!S.v)S.v=1; // pre-versioned saves are v1; add 'if(S.v<2){...;S.v=2}' steps h
 let view=(location.hash||'#habits').slice(1);
 const AM=/^ask~([A-Za-z0-9_-]{1,40})~(\d{4}-\d{2}(?:-\d{2}|-W\d)?)$/.exec(view),ASK=AM?{h:AM[1],k:AM[2]}:null;if(ASK)view='ask';
 const WIDGET=view==='widget'||!!ASK; // the desktop mini window (#widget) and reminder pop-up (#ask~h~k)
-const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tasks','tasks'],['goals','Goals','goals'],['insights','Insights','insights'],['achievements','Achievements','trophy']];
+const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tasks','tasks'],['goals','Goals','goals'],['insights','Insights','insights'],['achievements','Streaks','trophy']];
 const views=()=>VIEWS.filter(v=>v[0]!=='achievements'||feat('ach'));
 // settings is a page of its own: #settings (all sections; on phones the section list) and #settings/<section>
 let setSec='',setQ='',setBack='today';
@@ -303,7 +319,7 @@ function ring(p,size,sw,inner,cls){
 const statCell=st=>'<span>'+st.pct+'%</span><span class="s f">'+FLAME+st.cur+'</span><span class="s t">'+STAR+st.best+'</span>';
 const GRIP=(what,cls)=>feat('drag')?'<button class="grip'+(cls?' '+cls:'')+'" type="button" aria-label="Move '+what+'. Drag, or use the arrow keys">'+ic('grip')+'</button>':'';
 const nameCell=h=>'<div class="gname" style="--c:'+h.color+'">'+GRIP('habit')+'<span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="'+esc(h.name)+'. Tap to edit">'+esc(h.name)+'</button></div>';
-const emptyHabits=()=>'<div class="empty">No habits here yet.<br><button class="btn" data-act="newhabit">+ New Habit</button> <button class="btn ghost" data-act="demo">Load demo data</button></div>';
+const emptyHabits=()=>'<div class="empty">No habits here yet.<br><button class="btn" data-act="newhabit">+ New Habit</button>'+(TESTING?' <button class="btn ghost" data-act="demo">Load demo data</button>':'')+'</div>';
 
 /* ---------- Habits view ---------- */
 function summary(){
@@ -389,7 +405,7 @@ function vToday(){
     return '<div class="trow'+(on?' on':'')+'" data-drag="habits-weekly" data-id="'+h.id+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="wcell" data-h="'+h.id+'" data-w="'+wn+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,wkey(y,m,wn))+'">'+cellIn(h,wkey(y,m,wn),on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This week</span></div>'}).join(''));
   o+=sec('Monthly',byType('monthly').map(h=>{const on=!!L(h)[mkey(y,m)];
     return '<div class="trow'+(on?' on':'')+'" data-drag="habits-monthly" data-id="'+h.id+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,mkey(y,m))+'">'+cellIn(h,mkey(y,m),on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This month</span></div>'}).join(''));
-  if(!S.habits.length)o+='<div class="empty">Add your first habit to start your day.<br><button class="btn" data-act="newhabit">+ New Habit</button> <button class="btn ghost" data-act="demo">Load demo data</button></div>';
+  if(!S.habits.length)o+='<div class="empty">Add your first habit to start your day.<br><button class="btn" data-act="newhabit">+ New Habit</button>'+(TESTING?' <button class="btn ghost" data-act="demo">Load demo data</button>':'')+'</div>';
   return o;
 }
 
@@ -469,7 +485,7 @@ function vTasks(){
   // day columns
   o+='<div class="days">'+data.map(x=>{
     const p=x.todo.length?Math.round(x.done/x.todo.length*100):0,open=!!openMind[x.k],m=x.mind||{};
-    return '<section class="day '+(x.k===dk(TODAY)?'now':'')+'"><h3>'+DAYS[x.d.getDay()]+'</h3><div class="dt">'+dmy(x.d)+'</div>'
+    return '<section class="day '+(x.k===dk(TODAY)?'now':'')+'" style="--o:'+(isNow?(x.d.getDay()-TODAY.getDay()+7)%7:x.d.getDay())+'"><h3>'+DAYS[x.d.getDay()]+'</h3><div class="dt">'+dmy(x.d)+'</div>'
      +ring(p,70,7,'<span style="font-size:15px">'+p+'%</span>')+'<div class="tl">TASKS</div>'
      +'<div class="tlist" data-drop="tasks" data-k="'+x.k+'">'+x.items.map(it=>taskChip(x.k,it)).join('')+'</div>'+taskAdder(x.k,true)
      +'<button class="mh '+(open?'open':'')+'" data-act="mind" data-k="'+x.k+'" aria-expanded="'+open+'"><span class="lbl">MINDSET</span><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>'
@@ -518,7 +534,7 @@ function heatCard(){
 }
 function vInsights(){
   const dh=byType('daily');
-  if(!dh.length)return '<div class="empty">Insights show up once you have daily habits.<br><button class="btn" data-act="newhabit">+ New Habit</button> <button class="btn ghost" data-act="demo">Load demo data</button></div>';
+  if(!dh.length)return '<div class="empty">Insights show up once you have daily habits.<br><button class="btn" data-act="newhabit">+ New Habit</button>'+(TESTING?' <button class="btn ghost" data-act="demo">Load demo data</button>':'')+'</div>';
   if(insHabit!=='all'&&!S.habits.some(h=>h.id===insHabit))insHabit='all';
   insSeries=series(insRange,0,insHabit);
   const big=avgOf(insSeries),hn=insHabit==='all'?'Overall':S.habits.find(h=>h.id===insHabit).name;
@@ -634,7 +650,11 @@ function applyRecurring(){if(encWait)return false;let ch=false;const today=dk(TO
 function gSpark(g){const k=gKind(g);if(k!=='num'&&k!=='range')return '';const l=(g.log||[]).slice().sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);if(l.length<2)return '';
   let run=0;const pts=l.map(x=>k==='num'?(run+=x.v):x.v);if(k==='range')pts.unshift(g.start);
   const all=pts.concat([g.target]),lo=Math.min(...all),hi=Math.max(...all),y=v=>hi===lo?20:36-(v-lo)/(hi-lo)*32,n=pts.length-1;
-  return '<svg class="g2sp" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="100" y1="'+y(g.target)+'" y2="'+y(g.target)+'" class="tg"/><polyline points="'+pts.map((v,i)=>(i/n*100).toFixed(1)+','+y(v).toFixed(1)).join(' ')+'"/></svg>'}
+  // same look as the Insights chart: smooth curve, soft gradient fill, a dot on each entry, the target as a dashed line
+  const P2=pts.map((v,i)=>[+(i/n*100).toFixed(2),+y(v).toFixed(2)]),d=smooth(P2),gid='gsp-'+g.id;
+  return '<div class="g2sp"><svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--teal)" stop-opacity=".28"/><stop offset="1" style="stop-color:var(--teal)" stop-opacity="0"/></linearGradient></defs>'
+   +'<line x1="0" x2="100" y1="'+y(g.target)+'" y2="'+y(g.target)+'" class="tg"/><path d="'+d+' L100,40 L0,40 Z" fill="url(#'+gid+')"/><path d="'+d+'" class="ln"/></svg>'
+   +P2.map(([x,yy])=>'<i style="left:'+x+'%;top:'+(yy/40*100).toFixed(1)+'%"></i>').join('')+'<span class="tgl" style="top:'+(y(g.target)/40*100).toFixed(1)+'%">Goal</span></div>'}
 const CUR=/^[€$£¥₹]$/,fmtU=(v,u)=>{const n=(Math.round((+v||0)*100)/100).toLocaleString('en-GB');return u?CUR.test(u)?(v<0?'-':'')+u+n.replace('-',''):n+' '+u:n};
 // one line saying where a goal stands, e.g. "€6,500 of €10,000"
 function gLine(g){const k=gKind(g),u=g.unit||'';
@@ -700,17 +720,18 @@ function setStatus(k){
   if(k==='calendar')return P.cal?'Connected':'Not connected';
   if(k==='data'){const e=P.bakEvery===undefined?7:P.bakEvery;return (e?({1:'Backs up every day',7:'Backs up every week',30:'Backs up every month'})[e]:'Automatic backup off')+(P.bakAt?' · last '+new Date(P.bakAt).toLocaleDateString():'')}
   if(k==='security')return P.lock?'PIN on'+(P.bio?' · fingerprint on':''):'No PIN'
-  return 'Daybook '+APPV}
+  return 'Groundwork Habits '+APPV}
 function setSection(k){
   let b='';
   if(k==='appearance')b=sgrp('Theme','<div class="sseg">'+[['dark','Dark'],['amoled','AMOLED'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+((P.theme||'dark')===t[0])+'" class="'+((P.theme||'dark')===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</div>')
-    +sgrp('Accent colour','<div class="sacc">'+ACCENTS.map(a=>'<button class="sw" data-act="paccent" data-sw="accent" data-v="'+a[1]+'" style="background:'+a[1]+'" aria-label="'+a[0]+' accent" aria-pressed="'+(P.accent===a[1])+'"></button>').join('')+'</div><div class="sacc2">'+colorFields('accent',P.accent,'accent colour')+'</div>')
+    +sgrp('Accent colour',colorPicker('accent',P.accent,ACCENTS,'Accent colour'))
+    +sgrp('Navigation',srow('Tab names','Show the name under each tab icon',sw('tabnames',undefined,P.tabNames!==false,'Tab names')))
     +sgrp('Layout',srow('Reset card layout','Puts the Today and Insights cards back in their original order',sbtn('resetlayout','Reset')));
-  if(k==='language')b=sgrp('',srow('Language','Daybook follows this device’s language unless you pick one. Your own habits and tasks are never translated.','<select class="field ssel" id="langSel" aria-label="Language"><option value="">Same as this device</option>'+LANGS.map(l=>'<option value="'+l[0]+'"'+(l[0]===P.lang?' selected':'')+'>'+l[1]+'</option>').join('')+'</select>','translate'));
+  if(k==='language')b=sgrp('',srow('Language','Groundwork Habits follows this device’s language unless you pick one. Your own habits and tasks are never translated.','<select class="field ssel" id="langSel" aria-label="Language"><option value="">Same as this device</option>'+LANGS.map(l=>'<option value="'+l[0]+'"'+(l[0]===P.lang?' selected':'')+'>'+l[1]+'</option>').join('')+'</select>','translate'));
   if(k==='features')b=sgrp('',FEAT.filter(f=>f[0]!=='remnames'&&f[0]!=='reminder').map(f=>srow(f[1],FEATD[f[0]],sw('feat',f[0],feat(f[0]),f[1]))).join(''))
     +(DFS&&DFS.widget&&!WIDGET?sgrp('Desktop',sgo('widget','Open the mini widget','A small always-on-top window with today’s habits and tasks')):'');
   if(k==='reminders')b=sgrp('Daily reminder',srow('Daily reminder',FEATD.reminder,sw('feat','reminder',feat('reminder'),'Daily reminder'))
-      +(feat('reminder')?(LN||'Notification' in window?srow('Time',LN?'A notification every day, even when Daybook is closed':'Only while Daybook is open or in the background','<input type="time" class="field stime" id="remTime" value="'+esc(P.remTime||'21:00')+'" aria-label="Reminder time">'):srow('Reminders aren’t supported here yet','')):''))
+      +(feat('reminder')?(LN||'Notification' in window?srow('Time',LN?'A notification every day, even when Groundwork Habits is closed':'Only while Groundwork Habits is open or in the background','<input type="time" class="field stime" id="remTime" value="'+esc(P.remTime||'21:00')+'" aria-label="Reminder time">'):srow('Reminders aren’t supported here yet','')):''))
     +sgrp('Habit and task reminders',srow('Show names in reminders',FEATD.remnames,sw('feat','remnames',feat('remnames'),'Show names in reminders'))
       +srow('Set a reminder','Open a habit (tap its name) or tap the bell on a task','')
       +(NB&&NB.openExactSettings?sgo('exactok','Allow exact alarms','Android 14 and later: lets alarms ring on time instead of a few minutes late'):'')
@@ -724,17 +745,17 @@ function setSection(k){
       +(DFS?sgrp('Data folder',srow('Folder',dataDir?esc(dataDir):'App storage (this PC only). Pick a Google Drive, OneDrive or Dropbox folder to sync between computers',sbtn('pickdir',dataDir?'Change':'Choose…'))+(dataDir?sgo('resetdir','Stop using this folder',''):'')):'')
       +(NB&&NB.pickFolder&&!DFS?sgrp('Data folder',srow('Folder',P.andDir?esc(P.andDir):'This phone only. Pick a folder another app keeps in sync to share data between devices',sbtn('apick',P.andDir?'Change':'Choose…'))+(P.andDir?sgo('aclear','Stop using this folder',''):'')):'')
       +sgrp('Export and import',sgo('export','Export backup',P.lock?'Encrypted with your PIN':'A file with all your data')+sgo('csv','Export as spreadsheet (.csv)','For Excel, Numbers or Google Sheets')+sgo('import','Import backup','Replaces the data on this device'))
-      +sgrp('Danger zone',sgo('demo',confirmDemo?'Tap again: replace my data with demo':'Load demo data','Example habits, tasks and goals')+sgo('fresh',confirmReset?'Tap again to erase everything':'Start fresh','Erases everything on this device','red'),'danger')}
+      +sgrp('Danger zone',(TESTING?sgo('demo',confirmDemo?'Tap again: replace my data with demo':'Load demo data','Example habits, tasks and goals'):'')+sgo('fresh',confirmReset?'Tap again to erase everything':'Start fresh','Erases everything on this device','red'),'danger')}
   if(k==='security')b=sgrp('App lock',!canLock?srow('Not available here',''):P.lock?
       sgo('pinset','Change PIN…','')+(bioOk?srow('Fingerprint unlock','Unlock with your fingerprint instead of typing the PIN',sw(P.bio?'biooff':'bioask',undefined,P.bio,'Fingerprint unlock')):'')
-      +srow('Lock after','Without use; Daybook also locks a minute after you leave it','<select class="field ssel" id="lockSel" aria-label="Lock after">'+[1,5,15,30].map(m=>'<option value="'+m+'"'+((P.lockIdle||5)===m?' selected':'')+'>'+m+' min</option>').join('')+'</select>')
+      +srow('Lock after','Without use; Groundwork Habits also locks a minute after you leave it','<select class="field ssel" id="lockSel" aria-label="Lock after">'+[1,5,15,30].map(m=>'<option value="'+m+'"'+((P.lockIdle||5)===m?' selected':'')+'>'+m+' min</option>').join('')+'</select>')
       +sgo('pinoff',confirmPinOff?'Tap again to remove the PIN':'Remove PIN','Your data is decrypted and saved readable again','red')
-    :sgo('pinset','Set a PIN…','Locks Daybook and encrypts your data on this device and in backups'))
-    +sgrp('',srow('How the lock works','Locks when Daybook opens, after a minute in the background or the time above without use. It hides your data on screen and encrypts what’s saved on this device and in backups.',''));
-  if(k==='about')b=sgrp('',srow('Daybook '+APPV,'Habits, tasks and goals in one calm place','<a class="btn ghost sbtn" href="'+RELEASES+'" target="_blank" rel="noopener">Check for updates</a>')+sgo('tipsshow','Show tips','The short introduction from the first start'))
+    :sgo('pinset','Set a PIN…','Locks Groundwork Habits and encrypts your data on this device and in backups'))
+    +sgrp('',srow('How the lock works','Locks when Groundwork Habits opens, after a minute in the background or the time above without use. It hides your data on screen and encrypts what’s saved on this device and in backups.',''));
+  if(k==='about')b=sgrp('',srow('Groundwork Habits '+APPV,'Habits, tasks and goals in one calm place','<a class="btn ghost sbtn" href="'+RELEASES+'" target="_blank" rel="noopener">Check for updates</a>')+sgo('tipsshow','Show tips','The short introduction from the first start'))
     +sgrp('Privacy',srow('Your data stays with you','No account, no ads, no tracking. Everything is saved on your devices, and only goes where you send it: your backups, your data folder, your calendar link.',''))
     +(wideSet()?sgrp('Keyboard shortcuts',[['Ctrl+Z','Undo the latest delete'],['Esc','Close a dialog or leave settings'],['Enter','Add the task or save the dialog'],['Arrow keys','Move the focused card, habit, goal or task']].map(x=>srow(x[1],'','<kbd>'+x[0]+'</kbd>','shortcut')).join('')):'')
-    +sgrp('Licences',srow('Daybook','GNU AGPL-3.0 licence','','license open source')+srow('Space Grotesk font','SIL Open Font License',''));
+    +sgrp('Licences',srow('Groundwork Habits','GNU AGPL-3.0 licence','','license open source')+srow('Space Grotesk font','SIL Open Font License',''));
   return b}
 function vSettings(){
   const one=setSec&&!wideSet(),secs=one?[setSec]:SETSECS;
@@ -750,15 +771,20 @@ function vSettings(){
 const fold=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 function filterSettings(){const q=fold(setQ).trim(),m=$('#main');if(!m)return;m.classList.toggle('sq',!!q);let any=false;
   m.querySelectorAll('.spane .ssec').forEach(sec=>{let n=0;sec.querySelectorAll('.sgrp').forEach(g=>{let gn=0;g.querySelectorAll('.srow').forEach(r=>{const hit=!q||fold(r.textContent+' '+(r.dataset.s||'')+' '+(g.querySelector('.sgh')||{}).textContent+' '+sec.dataset.sec).includes(q);r.hidden=!hit;if(hit)gn++});
-      const extra=g.querySelector('.sseg,.sacc');if(extra&&q){const hit=fold(g.textContent+' '+sec.dataset.sec).includes(q);g.querySelectorAll('.sseg,.sacc,.sacc2').forEach(x=>x.hidden=!hit);if(hit)gn++}else{g.querySelectorAll('.sseg,.sacc,.sacc2').forEach(x=>x.hidden=false);if(extra)gn++}
+      const extra=g.querySelector('.sseg,.sacc,.cpk');if(extra&&q){const hit=fold(g.textContent+' '+sec.dataset.sec).includes(q);g.querySelectorAll('.sseg,.sacc,.sacc2,.cpk').forEach(x=>x.hidden=!hit);if(hit)gn++}else{g.querySelectorAll('.sseg,.sacc,.sacc2,.cpk').forEach(x=>x.hidden=false);if(extra)gn++}
       g.hidden=!gn;n+=gn});sec.hidden=!n;if(n)any=true});
   const none=m.querySelector('.snone');if(none)none.hidden=!q||any}
 // desktop: the side list follows the section in view
 let setObs=null;
-function spySettings(){if(setObs)setObs.disconnect();if(!wideSet()||!window.IntersectionObserver)return;
-  setObs=new IntersectionObserver(es=>{const v=es.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top)[0];if(!v)return;
-    $$('.snav a').forEach(a=>a.classList.toggle('on',a.dataset.sec===v.target.dataset.sec))},{rootMargin:'-80px 0px -60% 0px'});
-  $$('.spane .ssec').forEach(x=>setObs.observe(x))}
+// the side list follows the scroll: the section nearest the top is marked; at the very bottom the last one is (short last sections never
+// reach the top on a tall window); right after a click the clicked section stays marked while the page scrolls to it
+let spyHold=0;const markSec=k=>$$('.snav a').forEach(a=>a.classList.toggle('on',a.dataset.sec===k));
+function spyNow(){if(view!=='settings'||!wideSet()||Date.now()<spyHold)return;const secs=$$('.spane .ssec');if(!secs.length)return;
+  const max=document.documentElement.scrollHeight-innerHeight,rem=Math.max(0,max-scrollY),span=Math.min(innerHeight*.7,max),
+    line=rem<span?120+(innerHeight-160)*(1-rem/span):120;
+  let cur=secs[0];for(const x of secs)if(x.getBoundingClientRect().top<=line)cur=x;markSec(cur.dataset.sec)}
+function spySettings(){if(setObs)setObs.disconnect();setObs=null;spyNow()}
+window.addEventListener('scroll',()=>{if(view==='settings')spyNow()},{passive:true});
 /* ---------- modal ---------- */
 /* achievements: quit streaks ("stopped smoking"), counted from a date and time */
 const qDate=q=>new Date(q.since),qDays=q=>Math.max(0,Math.floor((Date.now()-qDate(q))/864e5));
@@ -768,13 +794,13 @@ const dur=d=>d>=365?(Math.floor(d/365)+(d>=730?' years':' year')):d>=30?(Math.fl
 /* desktop widget: today's ring, daily habits and tasks in a small always-on-top window */
 function vWidget(){
   const t=doneToday(),pct=t.total?Math.round(t.done/t.total*100):0,k=dk(TODAY),day=S.tasks[k]||{items:[]};
-  return '<div class="wtop">'+ring(pct,86,9,'<b style="font-size:18px">'+t.done+'/'+t.total+'</b>')+'<div><div class="lbl" style="font-size:9px">'+DAYS[TODAY.getDay()]+' '+TODAY.getDate()+' '+MON3[TODAY.getMonth()]+'</div><b style="font-size:16px">'+(t.total&&t.done===t.total?'All done today':pct+'% of habits')+'</b><br><button class="link" data-act="wmain">Open Daybook</button></div></div>'
+  return '<div class="wtop">'+ring(pct,86,9,'<b style="font-size:18px">'+t.done+'/'+t.total+'</b>')+'<div><div class="lbl" style="font-size:9px">'+DAYS[TODAY.getDay()]+' '+TODAY.getDate()+' '+MON3[TODAY.getMonth()]+'</div><b style="font-size:16px">'+(t.total&&t.done===t.total?'All done today':pct+'% of habits')+'</b><br><button class="link" data-act="wmain">Open Groundwork Habits</button></div></div>'
    +'<div class="lbl" style="font-size:9px;margin:14px 0 6px">Habits</div>'
    +(byType('daily').map(h=>{const on=!!L(h)[k];return '<div class="trow"><button class="cell '+(on?'on':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,k)+'">'+cellIn(h,k,on)+'</button><span class="nm">'+esc(h.name)+'</span></div>'}).join('')||'<p class="sub">No daily habits yet.</p>')
    +'<div class="lbl" style="font-size:9px;margin:14px 0 6px">Tasks today</div>'+'<div class="tlist" data-drop="tasks" data-k="'+k+'">'+vis(day.items).map(it=>taskChip(k,it)).join('')+'</div>'+(vis(day.items).length?'':'<p class="sub">Nothing planned.</p>')+taskAdder(k,false);
 }
 function vAch(){
-  let o='<div class="sum"><div><div class="lbl">ACHIEVEMENTS</div><b>Things you’ve stopped, and how long it’s been</b></div><button class="btn" data-act="newquit">+ New streak</button></div>';
+  let o='<div class="sum"><div><div class="lbl">STREAKS</div><b>Things you’ve stopped, and how long it’s been</b></div><button class="btn" data-act="newquit">+ New streak</button></div>';
   if(!S.quits.length)return o+'<div class="empty">Track something you’ve stopped, like smoking or sugar.<br>Pick when you stopped and watch the streak grow.<br><button class="btn" data-act="newquit">+ New streak</button></div>';
   return o+'<div class="gg" data-drop="quits" data-axis="x">'+S.quits.map(q=>{
     const ms=Math.max(0,Date.now()-qDate(q)),d=Math.floor(ms/864e5),h=Math.floor(ms/36e5)%24,m=Math.floor(ms/6e4)%60;
@@ -813,7 +839,7 @@ function tipsHtml(){
     ['Repeat a task','When adding a task, use the dropdown under it to repeat it every day, weekday, week or month.'],
     ['Search and settings','The magnifier searches everything. The gear has themes, colours, features, backups and the app lock.'],
     ['Your data stays here','Everything is saved on this device. Export a backup from settings, or choose a synced folder on desktop.']];
-  return '<div class="ov" data-act="ovclose"><div class="mod tips" role="dialog" aria-modal="true" aria-label="Welcome to Daybook"><h2>Welcome to Daybook</h2><p class="sub" style="margin:0">A few things worth knowing:</p><ol class="tipl">'
+  return '<div class="ov" data-act="ovclose"><div class="mod tips" role="dialog" aria-modal="true" aria-label="Welcome to Groundwork Habits"><h2>Welcome to Groundwork Habits</h2><p class="sub" style="margin:0">A few things worth knowing:</p><ol class="tipl">'
    +tips.map(t=>'<li><b>'+t[0]+'</b><span>'+t[1]+'</span></li>').join('')+'</ol><div class="row"><button class="btn" data-act="tipsok">Got it</button></div></div></div>';
 }
 function openAmt(h,k){modal={kind:'amt',h:h.id,k};focusSel='#aVal'}
@@ -825,7 +851,7 @@ function vModal(){
      +'<input class="field" id="mName" maxlength="60" placeholder="Habit name" value="'+esc(modal.name||'')+'" aria-label="Habit name">'
      +'<div class="seg">'+['daily','weekly','monthly'].map(t=>'<button class="'+(modal.type===t?'on':'')+'" data-act="mtype" data-v="'+t+'" aria-pressed="'+(modal.type===t)+'">'+t+'</button>').join('')+'</div>'
      +(modal.id&&modal.type!==modal.origType?'<p class="sub" style="margin:0">Ticks you made as '+modal.origType+' stay saved and come back if you switch back. The '+modal.type+' history starts empty.</p>':'')
-     +'<div class="colors" role="group" aria-label="Colour">'+COLORS.map((c,i)=>'<button style="--c:'+c+'" class="'+(modal.color===c?'on':'')+'" data-act="mcolor" data-sw="habit" data-v="'+c+'" aria-pressed="'+(modal.color===c)+'" aria-label="Colour '+(i+1)+'"></button>').join('')+'</div>'+colorFields('habit',modal.color,'habit colour')
+     +colorPicker('habit',modal.color,CNAMED,'Colour')
      +(modal.type==='daily'?'<label class="sub" style="margin:0" for="mPer">Days per week (7 = every day)</label><input class="field" type="number" inputmode="numeric" min="1" max="7" id="mPer" value="'+(modal.per||7)+'">':'')
      +'<div class="lbl" style="font-size:9px">How to track it</div><div class="seg trk">'+[['check','Done or not'],['count','Count'],['amount','Amount']].map(x=>'<button class="'+(modal.track===x[0]?'on':'')+'" data-act="mtrack" data-v="'+x[0]+'" aria-pressed="'+(modal.track===x[0])+'">'+x[1]+'</button>').join('')+'</div>'
      +(modal.track==='count'?'<label class="sub" style="margin:0" for="mTarget">Times per '+{daily:'day',weekly:'week',monthly:'month'}[modal.type]+', e.g. 8 glasses</label><input class="field" type="number" inputmode="numeric" min="2" max="99" id="mTarget" value="'+Math.max(2,modal.target||8)+'">':'')
@@ -844,12 +870,12 @@ function vModal(){
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button><button class="btn" data-act="gvalsave">'+(num?'Add':'Save')+'</button></div></div></div>'}
   if(modal.kind==='area')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="'+(modal.old?'Edit area':'New area')+'"><h2>'+(modal.old?'Edit area':'New life area')+'</h2>'
      +'<input class="field" id="arName" maxlength="24" placeholder="e.g. Faith, Pets, Side business" value="'+esc(modal.name||'')+'" aria-label="Area name">'
-     +'<div class="colors" role="group" aria-label="Colour">'+COLORS.map((c,i)=>'<button style="--c:'+c+'" class="'+(modal.color===c?'on':'')+'" data-act="arcolor" data-v="'+c+'" aria-pressed="'+(modal.color===c)+'" aria-label="Colour '+(i+1)+'"></button>').join('')+'</div>'
+     +colorPicker('area',modal.color,CNAMED,'Colour')
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button>'+(modal.old?'<button class="btn danger" data-act="areadel">'+(modal.confirm?'Tap again to delete':'Delete')+'</button>':'')+'<button class="btn" data-act="areasave">'+(modal.old?'Save':'Add area')+'</button></div></div></div>';
   if(modal.kind==='impin')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Encrypted backup"><h2>Encrypted backup</h2><p class="sub" style="margin:0">Enter the PIN that was set when this backup was made. Restoring replaces the data on this device.</p>'
      +'<input class="field" id="impPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" aria-label="PIN">'
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button><button class="btn" data-act="impok">Restore</button></div></div></div>';
-  if(modal.kind==='afold')return '<div class="ov"><div class="mod" role="dialog" aria-modal="true" aria-label="Data folder"><h2>There’s already a Daybook save here</h2><p class="sub" style="margin:0">Replace it with the data on this phone, or load the save from the folder? Loading overwrites what’s on this phone.</p>'
+  if(modal.kind==='afold')return '<div class="ov"><div class="mod" role="dialog" aria-modal="true" aria-label="Data folder"><h2>There’s already a Groundwork Habits save here</h2><p class="sub" style="margin:0">Replace it with the data on this phone, or load the save from the folder? Loading overwrites what’s on this phone.</p>'
      +'<div class="row" style="flex-wrap:wrap"><button class="btn ghost" data-act="afoldno">Cancel</button><button class="btn ghost" data-act="afoldload">'+(modal.confirm?'Tap again: load the folder save':'Load the folder save')+'</button><button class="btn" data-act="afoldkeep">Replace with my data</button></div></div></div>';
   if(modal.kind==='biopin')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Fingerprint unlock"><h2>Fingerprint unlock</h2><p class="sub" style="margin:0">Enter your PIN once to turn it on.</p>'
      +'<input class="field" id="bioPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" aria-label="PIN">'
@@ -886,7 +912,7 @@ function vModal(){
      +'<div class="amtrow"><button class="btn ghost" data-act="amtstep" data-v="-1" aria-label="Less">−</button><input class="field" id="aVal" type="number" inputmode="decimal" min="0" step="any" value="'+(v||'')+'" placeholder="0" aria-label="Amount in '+esc(u||'units')+'"><span class="amtu">'+esc(u)+'</span><button class="btn ghost" data-act="amtstep" data-v="1" aria-label="More">+</button></div>'
      +'<div class="row">'+(v?'<button class="btn ghost" data-act="amtclear">Clear</button>':'')+'<button class="btn ghost" data-act="modalclose">Cancel</button><button class="btn" data-act="amtsave">Save</button></div></div></div>'}
   if(modal.kind==='cal')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Connect Google Calendar"><h2>Connect Google Calendar</h2>'
-     +'<p class="sub" style="margin:0;font-size:12px;line-height:1.5">In Google Calendar on a computer: Settings, pick your calendar under “Settings for my calendars”, then copy <b>Secret address in iCal format</b> and paste it here. Daybook adds events from the last 30 days and next 90 days to your tasks and refreshes every 15 minutes. Keep this address private.</p>'
+     +'<p class="sub" style="margin:0;font-size:12px;line-height:1.5">In Google Calendar on a computer: Settings, pick your calendar under “Settings for my calendars”, then copy <b>Secret address in iCal format</b> and paste it here. Groundwork Habits adds events from the last 30 days and next 90 days to your tasks and refreshes every 15 minutes. Keep this address private.</p>'
      +'<input class="field" id="calUrl" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" aria-label="Secret iCal address" spellcheck="false">'
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button><button class="btn" data-act="calsave">Connect</button></div></div></div>';
   if(modal.kind==='quit'){const t=modal.id?'Edit streak':'New streak';
@@ -933,10 +959,10 @@ function render(){
   fzCache=new Map();
   const keep=['.gcard','.wscroll','.days','.dd'].map(q=>{const el=$(q);return el?[q,el.scrollLeft,el.scrollTop]:null}).filter(Boolean),sy=window.scrollY;
   const vi=VIEWS.find(v=>v[0]===view)||(view==='settings'?['settings','Settings','gear']:ASK?['ask','Reminder','home']:['widget','Widget','home']);
-  $('#nav').innerHTML=views().map(v=>'<a href="#'+v[0]+'" aria-label="'+v[1]+'" title="'+v[1]+'" class="'+(v[0]===view?'on':'')+'"'+(v[0]===view?' aria-current="page"':'')+'>'+ic(v[2])+'<span>'+v[1]+'</span></a>').join('').replace('<a href="#goals"','<button class="navq" data-act="quick" aria-label="Quick add" title="Quick add">'+ic('plus')+'</button><a href="#goals"'); // quick add sits in the middle, between Tasks and Goals
+  $('#nav').innerHTML=views().map(v=>'<a href="#'+v[0]+'" aria-label="'+v[1]+'" title="'+v[1]+'" class="'+(v[0]===view?'on':'')+'"'+(v[0]===view?' aria-current="page"':'')+'>'+ic(v[2])+'<span>'+v[1]+'</span>'+'</a>').join('').replace('<a href="#goals"','<button class="navq" data-act="quick" aria-label="Quick add" title="Quick add">'+ic('plus')+'</button><a href="#goals"'); // quick add sits in the middle, between Tasks and Goals
   $('#ttl').textContent=view==='tasks'?'Task Tracker':vi[1];
   $('#gearBtn').innerHTML=ic('gear');$('#gearBtn').classList.toggle('on',view==='settings');$('#gearBtn').setAttribute('aria-current',view==='settings'?'page':'false');$('#searchBtn').innerHTML=ic('search');
-  document.title=vi[1]+' | Daybook';
+  document.title=vi[1]+' | Groundwork Habits';
   const lk=$('#lock');lk.hidden=!locked;document.body.classList.toggle('locked',locked);
   if(locked){$('#main').innerHTML='';$('#menu').hidden=true;$('#modal').innerHTML='';if(!lk.firstChild){lk.innerHTML=lockHtml();trDom(lk)}else lk.querySelector('[data-act=pinforgot]').textContent=lockForgot?'Tap again: remove the PIN and erase the data on this device':'Forgot your PIN?';
     if(!lk.contains(document.activeElement))setTimeout(()=>{const i=$('#pinIn');if(i)i.focus()},0);return}
@@ -951,9 +977,13 @@ function render(){
   trDom(tpl);if(lastView!==view)$('#main').innerHTML='';morphKids($('#main'),tpl);
   const mn=$('#menu');mn.hidden=!menuOpen;
   mn.innerHTML='';
-  $('#modal').innerHTML=vModal();['#modal','#menu','#nav','#ttl'].forEach(q=>trDom($(q)));document.title=tx(vi[1])+' | Daybook';
+  $('#modal').innerHTML=vModal();['#modal','#menu','#nav','#ttl'].forEach(q=>trDom($(q)));document.title=tx(vi[1])+' | Groundwork Habits';
   keep.forEach(k=>{const el=$(k[0]);if(el){el.scrollLeft=k[1];el.scrollTop=k[2]}});
   if(lastView===view&&sy>0)window.scrollTo(0,sy);
+  // opening Habits on a narrow screen: scroll the month so today sits next to the pinned stats column
+  // Tasks on a narrow window (days in a sideways row that doesn't fit): start scrolled to today
+  if(view==='tasks'&&lastView!==view){const g=$('.days'),n=$('.days .day.now');if(g&&n&&g.scrollWidth>g.clientWidth)g.scrollLeft=Math.max(0,n.offsetLeft-g.offsetLeft-8)}
+  if(view==='habits'&&lastView!==view){const g=$('.gcard'),n=$('.hdr .dn.now'),st=$('.gcard .gstat');if(g&&n&&st&&g.scrollWidth>g.clientWidth)g.scrollLeft=Math.max(0,n.offsetLeft+n.offsetWidth-(g.clientWidth-st.offsetWidth)+4)}
   lastView=view;
   const box=$('#main');delete box.dataset.drop;box.classList.toggle('tdash',view==='today');box.classList.toggle('idash',view==='insights');if(view==='insights')box.dataset.axis='x';else delete box.dataset.axis;
   if((view==='today'||view==='insights')&&feat('drag'))box.dataset.drop='cards';
@@ -1078,7 +1108,7 @@ setInterval(focusTick,1000);
 const canLock=!!(window.crypto&&crypto.subtle);
 let locked=!!(P.lock&&(P.lock.hash||P.lock.enc))||encWait,lockTries=0,lockUntil=0,lockForgot=false,hiddenAt=0;
 async function pinHash(pin,salt){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pin));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
-function lockHtml(){return '<div class="lockbox" role="dialog" aria-modal="true" aria-label="Daybook is locked"><div class="lic">'+ic('lock')+'</div><h2>Daybook is locked</h2>'
+function lockHtml(){return '<div class="lockbox" role="dialog" aria-modal="true" aria-label="Groundwork Habits is locked"><div class="lic">'+ic('lock')+'</div><h2>Groundwork Habits is locked</h2>'
   +'<input id="pinIn" class="field" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="Enter your PIN" aria-label="PIN">'
   +'<button class="btn" data-act="unlock">Unlock</button>'+(P.bio&&NB&&NB.bioUnlock?'<button class="btn ghost" data-act="bio">'+ic('finger')+' Use fingerprint</button>':'')+'<p class="sub" id="pinMsg" role="alert" style="margin:0;min-height:16px"></p>'
   +'<button class="link" data-act="pinforgot">'+(lockForgot?'Tap again: remove the PIN and erase the data on this device':'Forgot your PIN?')+'</button></div>'}
@@ -1096,7 +1126,7 @@ function unlocked(pin){locked=false;lockTries=0;lockForgot=false;if(dataDir)read
   if(bioOk&&!P.bio&&!P.bioNo&&pin){bioPin=pin;toastAct('Unlock with your fingerprint next time?','Turn on','bioon')}}
 // fingerprint / face unlock (Android): the PIN is kept encrypted by a key only the fingerprint can open
 let bioOk=false,bioPin='';if(NB&&NB.bioAvailable&&!WIDGET)NB.bioAvailable().then(r=>{bioOk=!!r.ok;if(P.bio&&!r.on){P.bio=false;applyPrefs()}if(locked&&P.bio&&bioOk)bioTry()}).catch(()=>{});
-async function bioTry(){const r=await NB.bioUnlock({title:tx('Unlock Daybook')});if(r&&r.ok&&await openWithPin(r.pin)){unlocked('');return}
+async function bioTry(){const r=await NB.bioUnlock({title:tx('Unlock Groundwork Habits')});if(r&&r.ok&&await openWithPin(r.pin)){unlocked('');return}
   if(r&&r.why==='changed'){P.bio=false;applyPrefs();toast('Fingerprints changed on this phone. Unlock with your PIN, then turn fingerprint on again');render()}}
 async function tryUnlock(){
   const el=$('#pinIn'),msg=$('#pinMsg');if(!el)return;
@@ -1146,20 +1176,20 @@ document.addEventListener('click',e=>{
     case 'setback':persist=false;location.hash=setSec&&!wideSet()?'settings':setBack;return;
     case 'ptheme':P.theme=t.dataset.v;applyPrefs();persist=false;break;
     case 'paccent':setColor('accent',t.dataset.v);persist=false;break;
-    case 'demo':
+    case 'demo':if(!TESTING)break;
       if(hasData()&&!confirmDemo){confirmDemo=true;persist=false;break}
       S=seed();confirmDemo=false;menuOpen=false;toast('Demo data loaded');if(view==='settings'){save();location.hash=setBack;return}break;
     case 'pickdir':persist=false;menuOpen=false;DFS.choose().then(res=>{if(!res)return;dataDir=res.folder;fileText=null;
-      if(res.mode==='load'&&readFile()){render();toast('Loaded the save from that folder')}else{writeFile();render();toast('Daybook now saves to that folder')}});break;
+      if(res.mode==='load'&&readFile()){render();toast('Loaded the save from that folder')}else{writeFile();render();toast('Groundwork Habits now saves to that folder')}});break;
     case 'resetdir':DFS.reset();dataDir='';fileText=null;persist=false;toast('Saving to app storage only');break;
-    case 'calexport':menuOpen=false;persist=false;shareFile(tasksToIcs(),'daybook-tasks-'+dk(TODAY)+'.ics','text/calendar','Daybook tasks','Calendar file downloaded. Import it in Google Calendar: Settings, Import & export');break;
+    case 'calexport':menuOpen=false;persist=false;shareFile(tasksToIcs(),'daybook-tasks-'+dk(TODAY)+'.ics','text/calendar','Groundwork Habits tasks','Calendar file downloaded. Import it in Google Calendar: Settings, Import & export');break;
     case 'calset':menuOpen=false;persist=false;modal={kind:'cal',url:''};focusSel='#calUrl';break;
     case 'calsave':{const u=($('#calUrl').value||'').trim().replace(/^webcal:/i,'https:');
       if(!/^https:\/\/\S+$/i.test(u)){$('#calUrl').focus();toast('Paste the calendar’s secret iCal address (starts with https://)');return}
       P.cal=u;applyPrefs();modal=null;persist=false;pullCalendar(true);break}
     case 'calsync':menuOpen=false;persist=false;pullCalendar(true);break;
     case 'caloff':{P.cal='';P.calAt=0;applyPrefs();Object.keys(S.tasks).forEach(k=>{S.tasks[k].items=S.tasks[k].items.filter(it=>!it.cal)});toast('Calendar sync stopped');break}
-    case 'csv':menuOpen=false;persist=false;shareFile(toCsv(),'daybook-'+dk(TODAY)+'.csv','text/csv','Daybook spreadsheet','Spreadsheet downloaded');break;
+    case 'csv':menuOpen=false;persist=false;shareFile(toCsv(),'daybook-'+dk(TODAY)+'.csv','text/csv','Groundwork Habits spreadsheet','Spreadsheet downloaded');break;
     case 'export':menuOpen=false;persist=false;exportData();break;
     case 'import':menuOpen=false;persist=false;$('#impFile').click();break;
     case 'fresh':
@@ -1210,21 +1240,21 @@ document.addEventListener('click',e=>{
     case 'gstepadd':{goalForm();const tx=($('#gStep').value||'').trim(),du=$('#gStepDue').value;if(!tx){$('#gStep').focus();persist=false;return}
       modal.steps.push(Object.assign({id:uid(),text:tx.slice(0,200),done:false},/^\d{4}-\d{2}-\d{2}$/.test(du)?{due:du}:{}));focusSel='#gStep';persist=false;break}
     case 'mtype':modal.type=t.dataset.v;persist=false;break;
-    case 'testnote':persist=false;if(LN){LN.requestPermissions().then(()=>LN.schedule({notifications:[{id:9,title:'Daybook',body:tx('Notifications work'),schedule:{at:new Date(Date.now()+1500)}}]})).then(()=>toast('Test notification sent')).catch(()=>toast('Notifications are blocked. Allow them in Android settings'))}
-      else if('Notification' in window)Notification.requestPermission().then(x=>{if(x==='granted'){new Notification('Daybook',{body:tx('Notifications work')});toast('Test notification sent')}else toast('Notifications are blocked. Allow them in your system settings')});else toast('Reminders aren’t supported here yet');break;
+    case 'testnote':persist=false;if(LN){LN.requestPermissions().then(()=>LN.schedule({notifications:[{id:9,title:'Groundwork Habits',body:tx('Notifications work'),schedule:{at:new Date(Date.now()+1500)}}]})).then(()=>toast('Test notification sent')).catch(()=>toast('Notifications are blocked. Allow them in Android settings'))}
+      else if('Notification' in window)Notification.requestPermission().then(x=>{if(x==='granted'){new Notification('Groundwork Habits',{body:tx('Notifications work')});toast('Test notification sent')}else toast('Notifications are blocked. Allow them in your system settings')});else toast('Reminders aren’t supported here yet');break;
     case 'quick':modal={kind:'quick'};focusSel='#qTask';persist=false;break;
     case 'qtask':{const v=($('#qTask').value||'').trim();if(!v){$('#qTask').focus();persist=false;return}const k=dk(TODAY);(S.tasks[k]=S.tasks[k]||{items:[],mind:null}).items.push({id:uid(),text:v.slice(0,100),done:false});
       $('#qTask').value='';focusSel='#qTask';toast('Task added for today');break}
     case 'qhabit':{const h=findH(t.dataset.h);if(h){L(h)[dk(TODAY)]=1;if(S.count[h.id])delete S.count[h.id][dk(TODAY)];toast(h.name+' done')}break}
     case 'qgoal':{const g=S.goals.find(x=>x.id===$('#qGoal').value),v=parseFloat(($('#qAmt').value||'').replace(',','.'));if(!g||!Number.isFinite(v)){$('#qAmt').focus();persist=false;return}
       (g.log=g.log||[]).push({d:dk(TODAY),v});g.pct=gPct(g);toast('Added '+fmtU(v,g.unit)+' to '+g.title);$('#qAmt').value='';break}
-    case 'impok':{persist=false;const pin=$('#impPin').value,txt=modal.text;deriveKey(pin,encSalt(txt)).then(k=>decText(txt,k)).then(j=>{modal=null;applyImport(JSON.parse(j))}).catch(()=>{toast('Wrong PIN, or not a Daybook backup');const e=$('#impPin');if(e){e.value='';e.focus()}});return}
+    case 'impok':{persist=false;const pin=$('#impPin').value,txt=modal.text;deriveKey(pin,encSalt(txt)).then(k=>decText(txt,k)).then(j=>{modal=null;applyImport(JSON.parse(j))}).catch(()=>{toast('Wrong PIN, or not a Groundwork Habits backup');const e=$('#impPin');if(e){e.value='';e.focus()}});return}
     case 'baknow':persist=false;menuOpen=false;autoBackup(true);break;
     case 'bakopen':persist=false;if(DFS&&DFS.openBackups)DFS.openBackups();break;
     case 'apick':persist=false;menuOpen=false;NB.pickFolder().then(async r=>{if(!r||!r.picked)return;P.andDir=r.name;applyPrefs();
       let ex=null;try{ex=(await NB.readFolder()).text}catch(e){}
-      if(ex&&ex!==fileText){modal={kind:'afold',text:ex};render()}else{andText=null;andWrite();render();toast('Daybook now saves to '+r.name)}}).catch(e=>toast(e&&e.message||'That folder can’t be used'));break;
-    case 'afoldkeep':modal=null;andText=null;andWrite();toast('Daybook now saves to '+P.andDir);break;
+      if(ex&&ex!==fileText){modal={kind:'afold',text:ex};render()}else{andText=null;andWrite();render();toast('Groundwork Habits now saves to '+r.name)}}).catch(e=>toast(e&&e.message||'That folder can’t be used'));break;
+    case 'afoldkeep':modal=null;andText=null;andWrite();toast('Groundwork Habits now saves to '+P.andDir);break;
     case 'afoldload':if(!modal.confirm){modal.confirm=true;persist=false;break}{const t=modal.text;modal=null;persist=false;andApply(t,true)}break;
     case 'afoldno':modal=null;persist=false;NB.clearFolder();P.andDir='';applyPrefs();break;
     case 'aclear':persist=false;NB.clearFolder();P.andDir='';applyPrefs();toast('Saving on this phone only');break;
@@ -1234,6 +1264,9 @@ document.addEventListener('click',e=>{
     case 'mtrack':{const g=x=>{const e=$(x);return e?e.value:null};if(g('#mUnit')!==null)modal.unit=g('#mUnit');if(g('#mGoal')!==null)modal.goal=g('#mGoal');if(g('#mTarget')!==null)modal.target=g('#mTarget');modal.track=t.dataset.v;persist=false;break}
     case 'mrem':modal.rem=t.dataset.v;persist=false;break;
     case 'mcolor':setColor('habit',t.dataset.v);persist=false;break;
+    case 'cset':setColor(t.dataset.f,t.dataset.v);persist=t.dataset.f==='accent'?false:false;break;
+    case 'tabnames':P.tabNames=P.tabNames===false;applyPrefs();persist=false;break;
+    case 'cpopen':cpOpen[t.dataset.f]=!cpOpen[t.dataset.f];persist=false;break;
     case 'trem':{const it=findT(t.dataset.i,t.dataset.k);if(!it)break;modal={kind:'trem',k:t.dataset.k,i:it.id,rem:it.rem?it.rem.m:'',remT:it.rem?it.rem.t:'09:00'};addingTask=null;persist=false;break}
     case 'tremsave':{const it=findT(modal.i,modal.k);if(!it){modal=null;break}const rt=($('#mRemT')||{}).value||modal.remT;
       it.rem=modal.rem&&/^([01]\d|2[0-3]):[0-5]\d$/.test(rt)?{t:rt,m:modal.rem}:undefined;if(!it.rem)delete it.rem;else{remAsk();remSkip(it.id,modal.k,it.rem)}modal=null;break}
@@ -1377,6 +1410,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('input',e=>{
   const t=e.target;
   if(t.id==='mName'&&modal)modal.name=t.value;
+  if(t.id==='arName'&&modal)modal.name=t.value;
   if(t.id==='mTarget'&&modal)modal.target=t.value;
   if(t.id==='mPer'&&modal)modal.per=t.value;
   if(t.id==='mUnit'&&modal)modal.unit=t.value;
@@ -1396,9 +1430,8 @@ document.addEventListener('input',e=>{
   }
   // inline edits: write to S without re-render; empty text is not saved and is restored on blur
   if(t.dataset&&t.dataset.cf){const f=t.dataset.cf,k=t.dataset.k;let v;
-    if(k==='pick')v=t.value.toLowerCase();
+    if(k==='h'||k==='s'||k==='l')v=hslHex(...['h','s','l'].map(x=>+$('[data-cf="'+f+'"][data-k="'+x+'"]').value));
     else if(k==='hex'){v=t.value.trim().toLowerCase().replace(/^#?/,'#');if(/^#[0-9a-f]{3}$/.test(v))v='#'+[...v.slice(1)].map(c=>c+c).join('');if(!/^#[0-9a-f]{6}$/.test(v))v=null}
-    else v=rgbHex([0,1,2].map(i=>{const e=$('[data-cf="'+f+'"][data-k="'+i+'"]');return Math.max(0,Math.min(255,Math.round(+e.value)||0))}));
     if(v)setColor(f,v,t)}
   if(t.dataset&&(t.dataset.et||t.dataset.eg)){
     const v=t.textContent.replace(/\s+/g,' ').trim(),o=t.dataset.et?((S.tasks[t.dataset.et]||{items:[]}).items.find(x=>x.id===t.dataset.i)):S.goals.find(x=>x.id===t.dataset.eg);
@@ -1413,7 +1446,7 @@ document.addEventListener('change',e=>{
     r.onload=()=>{try{
       if(isEnc(r.result)){modal={kind:'impin',text:r.result};focusSel='#impPin';render();return}
       applyImport(JSON.parse(r.result));
-    }catch(err){toast('That file is not a Daybook backup')}};
+    }catch(err){toast('That file is not a Groundwork Habits backup')}};
     r.readAsText(f);return;
   }
   if(e.target.dataset&&e.target.dataset.mind){render()}
@@ -1424,10 +1457,21 @@ document.addEventListener('change',e=>{
   if(e.target.id==='gArea'&&modal&&modal.kind==='goal'){goalForm();if(!modal.id)render()}
   if(e.target.id==='remTime'&&/^\d{2}:\d{2}$/.test(e.target.value)){P.remTime=e.target.value;P.remDay='';applyPrefs();syncNativeReminder()}
 });
+// Android back: close what's open (dialog, menu, task input, colour sliders), leave Settings or step out of a settings section; anywhere else a second back within 2 s leaves the app
+let backAt=0;
+function onBack(){
+  if(!locked){
+    if(modal){if(modal.kind==='tips')try{localStorage.setItem('daybook-tips','1')}catch(_){}modal=null;render();return}
+    if(menuOpen||insMenu||addingTask||Object.values(cpOpen).some(Boolean)){menuOpen=false;insMenu=null;addingTask=null;cpOpen={};render();return}
+    if(view==='settings'){location.hash=setSec&&!wideSet()?'settings':setBack;return}}
+  if(Date.now()-backAt<2000){if(NB&&NB.exitApp)NB.exitApp();return}
+  backAt=Date.now();toast('Press back again to leave');
+}
+if(NB&&!WIDGET)NB.addListener('back',onBack);
 window.addEventListener('hashchange',()=>{
   const v=(location.hash||'#habits').slice(1),was=view,ws=setSec;
   if(!WIDGET&&routeTo(v)){menuOpen=false;insMenu=null;addingTask=null;modal=null;if(view==='settings'&&was!=='settings'){setBack=was;setQ=''}render();
-    if(view==='settings'&&was==='settings'&&setSec&&wideSet()){const e=$('#set-'+setSec);if(e)e.scrollIntoView({block:'start',behavior:'smooth'})}else window.scrollTo(0,0)}
+    if(view==='settings'&&was==='settings'&&setSec&&wideSet()){const e=$('#set-'+setSec);if(e){markSec(setSec);spyHold=Date.now()+1200;e.scrollIntoView({block:'start',behavior:'smooth'})}}else window.scrollTo(0,0)}
 });
 async function shareFile(text,name,type,title,done){
   if(NB&&NB.saveFile){try{const r=await NB.saveFile({name,type,text});if(r&&r.saved)toast('Saved '+name)}catch(e){toast('Export failed')}return} // Android: pick where to save
@@ -1455,7 +1499,7 @@ function toCsv(){
 }
 // the backup file: encrypted with the PIN's key when a PIN is set (import asks for that PIN)
 async function backupText(){const j=JSON.stringify(S,null,1);return encOn()&&encKey?encText(j,encKey,P.lock.salt):j}
-async function exportData(){const t=await backupText();shareFile(t,'daybook-backup-'+dk(TODAY)+(isEnc(t)?'-encrypted':'')+'.json','application/json','Daybook backup',isEnc(t)?'Encrypted backup downloaded. Importing it asks for your PIN':'Backup downloaded')}
+async function exportData(){const t=await backupText();shareFile(t,'daybook-backup-'+dk(TODAY)+(isEnc(t)?'-encrypted':'')+'.json','application/json','Groundwork Habits backup',isEnc(t)?'Encrypted backup downloaded. Importing it asks for your PIN':'Backup downloaded')}
 // weekly automatic backup: desktop to <data folder or app data>/backups, Android to the chosen folder's backups or app storage; newest 8 kept
 async function autoBackup(force){
   if(encWait||locked&&!encKey||WIDGET||!hasData())return;const can=DFS&&DFS.backup||NB&&NB.backup;if(!can)return;
@@ -1470,7 +1514,7 @@ function applyImport(d){if(!d||!Array.isArray(d.habits))throw new Error('bad');S
 const icsEsc=t=>String(t).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
 const icsUnesc=t=>t.replace(/\\n/gi,' ').replace(/\\([,;\\])/g,'$1');
 function tasksToIcs(){
-  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Daybook//Tasks//EN','CALSCALE:GREGORIAN','X-WR-CALNAME:Daybook tasks'],stamp=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Groundwork Habits//Tasks//EN','CALSCALE:GREGORIAN','X-WR-CALNAME:Groundwork Habits tasks'],stamp=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
   Object.keys(S.tasks).sort().forEach(k=>S.tasks[k].items.forEach(it=>{if(it.cal||!it.text.trim())return; // calendar events stay in the calendar
     const d=k.replace(/-/g,''),n=dk(addDays(new Date(k+'T00:00'),1)).replace(/-/g,'');
     L.push('BEGIN:VEVENT','UID:'+it.id+'@daybook','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+d,'DTEND;VALUE=DATE:'+n,'SUMMARY:'+icsEsc((it.done?'[done] ':'')+it.text),'TRANSP:TRANSPARENT','END:VEVENT')}));
@@ -1580,11 +1624,11 @@ window.addEventListener('storage',e=>{
   if(e.key===KEY&&e.newValue&&!encWait){if(isEnc(e.newValue)){if(encKey)decText(e.newValue,encKey).then(j=>{if(j!==JSON.stringify(S)){S=clean(JSON.parse(j));if(!modal&&!drag)render()}}).catch(()=>{})}
     else if(e.newValue!==JSON.stringify(S)){try{S=clean(JSON.parse(e.newValue));if(!modal&&!drag)render()}catch(_){}}}
   if(e.key==='daybook-locked'){lockNow(false);return}
-  if(e.key===PKEY&&e.newValue){try{const was=P.lock&&P.lock.salt;Object.assign(P,JSON.parse(e.newValue));if(P.lock&&P.lock.salt!==was){locked=true;encKey=null}if(!P.lock){P.lock=null;encKey=null}const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');if(!modal&&!drag)render()}catch(_){}}
+  if(e.key===PKEY&&e.newValue){try{const was=P.lock&&P.lock.salt;Object.assign(P,JSON.parse(e.newValue));if(P.lock&&P.lock.salt!==was){locked=true;encKey=null}if(!P.lock){P.lock=null;encKey=null}const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');d.classList.toggle('notabnames',P.tabNames===false);if(!modal&&!drag)render()}catch(_){}}
 });
-window.DaybookTest={parseIcs,applyCalendar,tasksToIcs,state:()=>S,remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
+if(TESTING)window.DaybookTest={parseIcs,applyCalendar,tasksToIcs,state:()=>S,remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
 pullCalendar();let calTick=0;
-// daily reminder: a notification at the chosen time if daily habits are still open (only while Daybook is running)
+// daily reminder: a notification at the chosen time if daily habits are still open (only while Groundwork Habits is running)
 // Android app: a real daily notification scheduled with Capacitor Local Notifications (works when the app is closed)
 const LN=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;
 async function syncNativeReminder(){
@@ -1594,7 +1638,7 @@ async function syncNativeReminder(){
     if(!feat('reminder'))return;
     const pr=await LN.requestPermissions();if(pr.display!=='granted'){toast('Notifications are blocked. Allow them in Android settings');return}
     const [hour,minute]=(P.remTime||'21:00').split(':').map(Number);
-    await LN.schedule({notifications:[{id:1,title:'Daybook',body:'Time to check in on today’s habits.',schedule:{on:{hour,minute},allowWhileIdle:true}}]});
+    await LN.schedule({notifications:[{id:1,title:'Groundwork Habits',body:'Time to check in on today’s habits.',schedule:{on:{hour,minute},allowWhileIdle:true}}]});
   }catch(e){toast('Could not set the reminder')}
 }
 function checkReminder(){
@@ -1603,13 +1647,13 @@ function checkReminder(){
   const n=new Date(),[hh,mm]=(P.remTime||'21:00').split(':').map(Number),k=dk(TODAY);
   if(P.remDay===k||n.getHours()*60+n.getMinutes()<hh*60+mm)return;
   P.remDay=k;applyPrefs();const t=doneToday();
-  if(t.total&&t.done<t.total)try{new Notification('Daybook',{body:(t.total-t.done)+' of '+t.total+' habits still to do today. You’ve got this.',tag:'daybook-reminder'})}catch(e){}
+  if(t.total&&t.done<t.total)try{new Notification('Groundwork Habits',{body:(t.total-t.done)+' of '+t.total+' habits still to do today. You’ve got this.',tag:'daybook-reminder'})}catch(e){}
 }
 /* per-habit reminders: h.rem={t:'HH:MM', m:'ask'|'alarm'}. Android schedules real notifications with Yes/No buttons;
    desktop opens a small always-on-top pop-up, the web app shows a notification and an in-app question (only while running) */
 const pKey=(h,d)=>h.type==='daily'?dk(d):h.type==='weekly'?wkey(d.getFullYear(),d.getMonth(),Math.ceil(d.getDate()/7)):mkey(d.getFullYear(),d.getMonth());
 // notifications can hide what they are about (Settings > Features); the lock screen on Android always gets a plain version
-const remTitle=(name,what)=>feat('remnames')?name:'Daybook',remBody=(q,what)=>tx(feat('remnames')?q:'A '+what+' reminder is waiting for your answer');
+const remTitle=(name,what)=>feat('remnames')?name:'Groundwork Habits',remBody=(q,what)=>tx(feat('remnames')?q:'A '+what+' reminder is waiting for your answer');
 const perWord=h=>({daily:'today',weekly:'this week',monthly:'this month'})[h.type];
 function remYes(id,k){const t=findT(id,k);if(t){t.done=true;save();render();return}const h=findH(id);if(!h||!/^\d{4}-\d{2}(-\d{2}|-W\d)?$/.test(k))return;L(h)[k]=1;if(S.count[h.id])delete S.count[h.id][k];save();render()}
 // a reminder set after its time today starts tomorrow
@@ -1637,7 +1681,7 @@ function checkHabitReminders(){
     try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(h.name),{body:remBody('Have you done it '+perWord(h)+'?','habit'),tag:'daybook-h-'+h.id,requireInteraction:true,silent:h.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
     if(!modal&&!locked){modal={kind:'ask',h:h.id,k};render()}if(h.rem.m==='alarm')alarmStart()});
   goalDue().forEach(([g,key,at,txt])=>{if(dk(at)!==d||n<at||(P.remFired||{})[key]===d)return;P.remFired=Object.assign({},P.remFired,{[key]:d});applyPrefs();
-    try{if('Notification' in window&&Notification.permission==='granted')new Notification('Daybook',{body:feat('remnames')?txt:'A goal deadline is coming up',tag:'daybook-'+key})}catch(e){}toast(txt)});
+    try{if('Notification' in window&&Notification.permission==='granted')new Notification('Groundwork Habits',{body:feat('remnames')?txt:'A goal deadline is coming up',tag:'daybook-'+key})}catch(e){}toast(txt)});
   ((S.tasks[d]||{}).items||[]).forEach(it=>{if(!it.rem||it.done||it.hidden||it.cal)return;const [hh,mm]=it.rem.t.split(':').map(Number);
     if((P.remFired||{})[it.id]===d||now<hh*60+mm)return;P.remFired=Object.assign({},P.remFired,{[it.id]:d});applyPrefs();
     if(DFS&&DFS.ask){DFS.ask(it.id,d);return}
@@ -1660,7 +1704,7 @@ async function syncReminders(){
       for(let d=0;d<14;d++){const at=new Date(now.getFullYear(),now.getMonth(),now.getDate()+d,hh,mm),k=pKey(h,at);if(at<=now||L(h)[k])continue;
         items.push({id:1000+i*20+d,at:at.getTime(),title:remTitle(h.name),body:remBody('Have you done it '+perWord(h)+'?','habit'),h:h.id,k,alarm:h.rem.m==='alarm',rep:h.type,yes:tx('Yes, done'),no:tx('No')})}});
     ts.slice(0,200).forEach(([k,it],n)=>{const [hh,mm]=it.rem.t.split(':').map(Number),at=new Date(k+'T00:00');at.setHours(hh,mm);if(at>now)items.push({id:2000+n,at:at.getTime(),title:remTitle(it.text),body:remBody('Have you done it?','task'),h:it.id,k,alarm:it.rem.m==='alarm',yes:tx('Yes, done'),no:tx('No')})});
-    goalDue().forEach(([g,key,at,txt],n)=>{if(at>now&&at-now<60*864e5)items.push({id:4000+n,at:at.getTime(),title:'Daybook',body:tx(feat('remnames')?txt:'A goal deadline is coming up'),h:g.id,k:key,info:true})});
+    goalDue().forEach(([g,key,at,txt],n)=>{if(at>now&&at-now<60*864e5)items.push({id:4000+n,at:at.getTime(),title:'Groundwork Habits',body:tx(feat('remnames')?txt:'A goal deadline is coming up'),h:g.id,k:key,info:true})});
     const res=await NB.schedule({items});
     // Android 14+: alarms ring on time only with the user's OK, otherwise they can be a few minutes late
     if(res&&res.exact===false&&items.some(x=>x.alarm)&&!syncReminders.asked){syncReminders.asked=true;toastAct('Alarms may be a few minutes late','Allow exact alarms','exactok')}

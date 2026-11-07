@@ -1,10 +1,10 @@
-# Daybook
+# Groundwork Habits (formerly Daybook)
 
 Habit tracker, weekly task tracker, goal planner and insights in one offline-first app.
 Ships as a single static page (`www/index.html`) wrapped for the web (PWA), Windows (Electron) and Android (Capacitor).
 
 The look is modelled on a reference demo video: near-black UI, teal accent, circular check grid.
-It has its own name and branding. Keep it that way: do not copy the original product's name, logo or copy.
+It has its own name and branding (Groundwork Habits: layered "foundation" mark). Do not copy the original product's name, logo or copy. Internal identifiers keep the old name on purpose (localStorage keys, `daybook.json`, `daybookFS`, `DaybookNative`, appId `com.daybook.app`, Electron userData folder `Daybook`) so existing data and installs carry over.
 
 ## Layout
 - `www/index.html` (HTML shell), `www/app.css`, `www/app.js` (the whole app, no build step, no dependencies), `www/fonts/` (Space Grotesk woff2, SIL OFL)
@@ -42,7 +42,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
   - task items may carry `goal` (id of a goal measured by tasks), `rem` `{t,m}` (a one-off reminder on that day: bell button `.tkb`, modal `trem`; same engine as habits, ids 2000+ on Android, `findT()`), `rep` (series id of a repeating task, see `repeatDates()`), `cal`/`hidden`/`pin` (calendar events; `pin` = user moved it to another day)
   - `habits[].rem`: `{t:'HH:MM', m:'ask'|'alarm'}` or null, a per-habit reminder (see Habit reminders)
   - `notes[habitId][key]`: short note for that day/week/month
-  - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Achievements tab
+  - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Streaks tab (route `#achievements`)
   - `goals`: `{id, title, area, pct, due?, pin?, kind?, steps?, unit?, target?, start?, log?: [{d,v}], habit?, since?}`. `kind` (`gKind`): pct (slider), steps, num (log amounts add up to target, e.g. €; `recur` {v,every:'w'|'m',from,last} adds entries marked `a:1` via `applyRecurring()`), range (start → target, latest logged value), habit (ticks of a habit since a date), tasks (tasks with `goal` = this id, `gTasks`). `arch` hides a goal under Archived. Deadlines (`due`) notify 7 days before and on the day at 09:00 (`goalDue`). `gPct()` is the source of truth (stored `pct` is a copy for exports); `gLine()` the one-line status; `IDEAS` holds starter goals per area.
   - `areas`: custom life areas `[{name,color}]` next to the built-in `AREAS` (`allAreas()`, `areaCol()`); renaming moves goals, deleting needs the area to be empty. Goals screen: life areas filter (`goalArea`), pinned first, edit in the `goal` modal. `journal['YYYY-MM']`: monthly reflection text
 - `render()` rebuilds `#main` from string templates (`vToday`, `vHabits`, `vTasks`, `vGoals`, `vInsights`, `vAch`) and `#modal`.
@@ -71,8 +71,17 @@ English is written in the code and is the key. `index.html` picks the language (
 ## Rendering
 `render()` builds HTML strings, translates them on a detached template and `morph()`s `#main` in place (only changed nodes update, focus and scroll survive). Elements that bind listeners use `onlyOn()` so re-renders replace them.
 
+## Colour picker
+`colorPicker(f,hex,presets,label)` is the only colour control (accent, habit, life area): preset swatches plus a custom swatch (`cpopen`, state in `cpOpen`) that opens hue / saturation / lightness sliders and a hex field inside the card, no system dialog. `setColor(f,hex)` keeps every field in sync without re-rendering; add a target to `COLOR_SET`. Tab names under the nav icons can be hidden (`P.tabNames===false` sets `html.notabnames`); on phones the bar is 7 equal columns.
+
+## Android back button
+`DaybookNativePlugin.load()` registers an `OnBackPressedCallback` and sends a `back` event; `onBack()` in app.js closes a dialog or open menu, leaves Settings (like `setback`), steps back through the screens visited (`navHist`, filled on `hashchange`) and then to Today; on Today the first back shows a toast and a second one within 2 s calls `NB.exitApp()`.
+
+## Test-only features
+`const TESTING=true` in app.js shows "Load demo data" and exposes `window.DaybookTest` (all tests rely on them). Release builds turn them off: the CI step "Turn off testing features" runs `tools/release_strip.js` on `v*` tags only (it fails if the line is missing). Local `dist/` test builds keep them. Never commit `TESTING=false`.
+
 ## Feature switches
-`P.feat` (Settings > Features): streak freezes, show names in reminders (`remnames`), streaks on Today, weekly review, year heatmap, habit notes, missed X, Achievements tab, daily reminder (`P.remTime`, Notification API, only while the app runs). Read with `feat(key)`. Deletes push a restore function with `pushUndo()` (up to 20; each puts back only what was deleted) and show `toastUndo()`; Ctrl+Z undoes outside text fields.
+`P.feat` (Settings > Features): streak freezes, show names in reminders (`remnames`), streaks on Today, weekly review, year heatmap, habit notes, missed X, Streaks tab, daily reminder (`P.remTime`, Notification API, only while the app runs). Read with `feat(key)`. Deletes push a restore function with `pushUndo()` (up to 20; each puts back only what was deleted) and show `toastUndo()`; Ctrl+Z undoes outside text fields.
 
 ## More features
 - Search (header): `searchHits()` over tasks, notes, reflections, goals, habits, streaks, templates.
@@ -98,7 +107,7 @@ Insights is one 12-column grid (`#main.idash`, boxes `.q` quarter / `.h` half), 
 
 ## Design tokens (CSS variables in `:root`)
 Spacing scale `--sp-1..5` = 4, 8, 12, 16, 24px: 12px between a header and its content, 8px between items, 16-24px around cards. The stress test flags anything closer than 10px to a progress ring.
-`--bg #080808`, `--card #0f0f0f`, `--teal #22d3be`, `--red`, `--purple`, `--flame`, `--star`. Font: Space Grotesk (Google Fonts, system fallback).
+`--bg #080808`, `--card #0f0f0f`, `--teal` (= `--accent`, default Moss `#9cc96b` to match the logo; `--on` is derived from the accent), `--red`, `--purple`, `--flame`, `--star`. Font: Space Grotesk (bundled, system fallback).
 Dark is the designed theme. Settings > Customize adds accent colours (sets `--teal`) an AMOLED theme (`html.amoled`, darkest greys set to #000) and a light theme (`html.light` overrides the `--gXX` grey tokens, one per original dark grey, and darkens the accent), stored in localStorage `daybook-prefs`, separate from data. Use `var(--teal)` (style, not SVG attributes) for accent colour and `var(--gXX)` tokens, never raw greys, so both themes work. Breakpoints: 900px (stack columns) and 760px (bottom nav, narrower sticky name column). From 1500px wide `.app` has no max width (3vw side padding), so columns and cards get larger on big screens; text stays the same size (Windows display scaling handles 4K).
 
 ## Conventions

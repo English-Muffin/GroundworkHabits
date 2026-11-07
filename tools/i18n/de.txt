@@ -50,7 +50,7 @@
 50|Täglich
 51|Tägliche Erinnerung
 52|Dunkel
-53|Daybook speichert jetzt in diesem Ordner
+53|Groundwork Habits speichert jetzt in diesem Ordner
 54|Tage am Stück für einen Freeze
 55|Löschen
 56|Aufgabe löschen
@@ -227,7 +227,7 @@
 227|Aufgaben heute
 228|Aufgaben, Notizen, Ziele, Gewohnheiten…
 229|Akzent Türkis
-230|Diese Datei ist keine Daybook-Sicherung
+230|Diese Datei ist keine Groundwork Habits-Sicherung
 231|Die Lupe durchsucht alles. Das Zahnrad enthält Designs, Farben, Funktionen, Sicherungen und die App-Sperre.
 232|Die Sicherung in deinem Datenordner nutzt eine andere PIN
 233|Die beiden PINs stimmen nicht überein
@@ -251,14 +251,14 @@
 251|WOCHE AB
 252|Wöchentlich
 253|Wochenrückblick
-254|Willkommen bei Daybook
+254|Willkommen bei Groundwork Habits
 255|Was du aufgegeben hast
 256|Was hast du aufgegeben? z. B. Rauchen
 257|Was willst du erreichen?
 258|Beim Hinzufügen einer Aufgabe kannst du sie mit dem Menü darunter täglich, werktags, wöchentlich oder monatlich wiederholen.
 259|Wann hast du aufgehört?
 260|Falsche PIN
-261|Falsche PIN oder keine Daybook-Sicherung
+261|Falsche PIN oder keine Groundwork Habits-Sicherung
 262|Jahresübersicht
 263|Ja oder nein
 264|Deine Daten bleiben hier
@@ -284,7 +284,7 @@
 284|Diesen Monat schon erledigt. Gut gemacht.
 285|Aufgaben-Erinnerung
 286|Diese Gewohnheit gibt es nicht mehr.
-287|Daybook ist gesperrt
+287|Groundwork Habits ist gesperrt
 288|Gib deine PIN ein
 289|Entsperren
 290|PIN vergessen?
@@ -292,7 +292,7 @@
 292|Fingerabdruck nutzen
 293|Falsche PIN. Versuch es nochmal.
 294|Zu viele Versuche. Warte 30 Sekunden.
-295|Daybook entsperren
+295|Groundwork Habits entsperren
 296|Bestätige deinen Fingerabdruck
 297|Entsperren per Fingerabdruck
 298|Gib deine PIN einmal ein, um es einzuschalten.
@@ -313,7 +313,7 @@
 313|Ordner wählen…
 314|Diesen Ordner nicht mehr nutzen
 315|App-Speicher (nur dieser PC)
-316|Hier gibt es schon eine Daybook-Sicherung
+316|Hier gibt es schon eine Groundwork Habits-Sicherung
 317|Durch die Daten dieses Handys ersetzen oder die Sicherung aus dem Ordner laden? Laden überschreibt, was auf diesem Handy ist.
 318|Sicherung aus dem Ordner laden
 319|Nochmal tippen: Sicherung aus dem Ordner laden
@@ -352,7 +352,7 @@
 352|Eine Zielfrist rückt näher
 353|Eine Gewohnheits-Erinnerung wartet auf deine Antwort
 354|Eine Aufgaben-Erinnerung wartet auf deine Antwort
-355|Füge in Daybook eine tägliche Gewohnheit hinzu
+355|Füge in Groundwork Habits eine tägliche Gewohnheit hinzu
 356|Zu einem Ziel hinzufügen
 357|Füge einen Schritt hinzu, z. B. 10 km laufen
 358|Lege einen Zielwert über 0 fest
@@ -382,10 +382,10 @@
 382|Minuten
 383|Stopp
 384|4 bis 8 Ziffern. Wenn du sie vergisst, kommst du nur wieder rein, indem du die Daten auf diesem Gerät löschst (eine Kopie im Datenordner bleibt).
-385|Sperrt beim Öffnen von Daybook, nach einer Minute im Hintergrund oder 5 Minuten ohne Nutzung. Verbirgt deine Daten auf dem Bildschirm und verschlüsselt, was auf diesem Gerät und in Sicherungen gespeichert wird.
+385|Sperrt beim Öffnen von Groundwork Habits, nach einer Minute im Hintergrund oder 5 Minuten ohne Nutzung. Verbirgt deine Daten auf dem Bildschirm und verschlüsselt, was auf diesem Gerät und in Sicherungen gespeichert wird.
 386|Kartenanordnung zurücksetzen
 387|Mini-Widget öffnen
-388|Daybook öffnen
+388|Groundwork Habits öffnen
 389|Heute alles erledigt
 390|Nichts geplant.
 391|Noch keine täglichen Gewohnheiten.
@@ -438,6 +438,22 @@
 438|Von einem Wert zu einem anderen
 439|Eine Reihe von Schritten abschließen
 440|Eine Gewohnheit aufbauen
+553|Eigene Farbe
+554|Hex-Code
+555|Farbton
+556|Sättigung
+557|Helligkeit
+558|Tab-Namen
+559|Den Namen unter jedem Tab-Symbol anzeigen
+560|Navigation
+561|Moos
+562|Rot
+563|Schiefer
+564|Ziel
+565|Serien
+566|Zum Beenden erneut zurück drücken
+567|SERIEN
+568|Tab Serien
 P1|$1 / $2 Gewohnheiten erledigt
 P2|$1 / $2 erledigt
 P3|$1 Ziele · $2 erreicht
@@ -472,7 +488,7 @@ P31|$1 jetzt · Ziel $2 (von $3)
 P32|Fügt jede Woche $1 hinzu
 P33|Fügt jeden Monat $1 hinzu
 P34|An $1 Tagen hinzugefügt
-P35|Daybook speichert jetzt in $1
+P35|Groundwork Habits speichert jetzt in $1
 P36|Ziel erreicht: $1
 P37|$1 gespeichert
 P38|Es gibt schon einen Bereich namens $1
@@ -523,7 +539,7 @@ P63|Erledigte tägliche Gewohnheiten der letzten $1 Monate
 460|Tägliche Erinnerung aus
 461|Gefahrenbereich
 462|Daten und Sicherungen
-463|Daybook nutzt die Sprache dieses Geräts, außer du wählst eine. Deine eigenen Gewohnheiten und Aufgaben werden nie übersetzt.
+463|Groundwork Habits nutzt die Sprache dieses Geräts, außer du wählst eine. Deine eigenen Gewohnheiten und Aufgaben werden nie übersetzt.
 464|Löscht alles auf diesem Gerät
 465|Beispiel-Gewohnheiten, -Aufgaben und -Ziele
 466|Exportieren
@@ -536,8 +552,8 @@ P63|Erledigte tägliche Gewohnheiten der letzten $1 Monate
 473|Tastenkürzel
 474|Anordnung
 475|Lizenzen
-476|Sperrt Daybook und verschlüsselt deine Daten auf diesem Gerät und in Sicherungen
-477|Sperrt beim Öffnen von Daybook, nach einer Minute im Hintergrund oder der oben gewählten Zeit ohne Nutzung. Verbirgt deine Daten auf dem Bildschirm und verschlüsselt, was auf diesem Gerät und in Sicherungen gespeichert wird.
+476|Sperrt Groundwork Habits und verschlüsselt deine Daten auf diesem Gerät und in Sicherungen
+477|Sperrt beim Öffnen von Groundwork Habits, nach einer Minute im Hintergrund oder der oben gewählten Zeit ohne Nutzung. Verbirgt deine Daten auf dem Bildschirm und verschlüsselt, was auf diesem Gerät und in Sicherungen gespeichert wird.
 478|GNU-AGPL-3.0-Lizenz
 479|Aufgaben, Gewohnheiten, Ziele und Karten per Ziehen verschieben
 480|Die markierte Karte, Gewohnheit, Aufgabe oder das Ziel verschieben
@@ -545,7 +561,7 @@ P63|Erledigte tägliche Gewohnheiten der letzten $1 Monate
 482|Kein Konto, keine Werbung, kein Tracking. Alles bleibt auf deinen Geräten und geht nur dorthin, wohin du es schickst: deine Sicherungen, dein Datenordner, dein Kalenderlink.
 483|Keine passende Einstellung.
 484|Nicht verbunden
-485|Benachrichtigungen nennen die Gewohnheit oder Aufgabe; aus zeigt nur „Daybook“
+485|Benachrichtigungen nennen die Gewohnheit oder Aufgabe; aus zeigt nur „Groundwork Habits“
 486|Eine Benachrichtigung am Tag, wenn noch Gewohnheiten offen sind
 487|Öffne eine Gewohnheit (tippe auf ihren Namen) oder tippe auf die Glocke einer Aufgabe
 488|Nicht erledigte vergangene Aufgaben zeigen ein rotes X
@@ -582,14 +598,14 @@ P63|Erledigte tägliche Gewohnheiten der letzten $1 Monate
 519|Mit deiner PIN verschlüsselt
 520|Mit Fingerabdruck entsperren, statt die PIN einzutippen
 521|Sperren nach
-522|Ohne Nutzung; Daybook sperrt auch eine Minute, nachdem du es verlassen hast
+522|Ohne Nutzung; Groundwork Habits sperrt auch eine Minute, nachdem du es verlassen hast
 523|Deine Daten werden entschlüsselt und wieder lesbar gespeichert
 524|Mini-Widget öffnen
 525|Ein kleines Fenster immer im Vordergrund mit den Gewohnheiten und Aufgaben von heute
 526|Desktop
 527|Uhrzeit
-528|Jeden Tag eine Benachrichtigung, auch wenn Daybook geschlossen ist
-529|Nur wenn Daybook offen oder im Hintergrund ist
+528|Jeden Tag eine Benachrichtigung, auch wenn Groundwork Habits geschlossen ist
+529|Nur wenn Groundwork Habits offen oder im Hintergrund ist
 530|Android 14 und neuer: Wecker klingeln pünktlich statt ein paar Minuten zu spät
 531|Sichert jeden Tag
 532|Sichert jede Woche
