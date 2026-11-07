@@ -7,7 +7,7 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win nsis portable --publish never",
+    "dist:win": "electron-builder --win nsis --publish never && node tools/build_portable.js",
     "android:add": "cap add android",
     "android:sync": "cap sync android",
     "android:open": "cap open android",
@@ -27,7 +27,8 @@
     "files": [
       "electron/**",
       "www/**",
-      "assets/icon.png"
+      "assets/icon.png",
+      "!node_modules/**"
     ],
     "directories": {
       "output": "dist"
@@ -40,20 +41,10 @@
           "arch": [
             "x64"
           ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
         }
       ]
     },
     "artifactName": "Groundwork-Habits-${version}-${os}-${arch}.${ext}",
-    "portable": {
-      "artifactName": "Groundwork-Habits-${version}-Windows-portable.exe",
-      "splashImage": "assets/portable-splash.bmp"
-    },
     "mac": {
       "icon": "assets/icon.png",
       "category": "public.app-category.productivity",
