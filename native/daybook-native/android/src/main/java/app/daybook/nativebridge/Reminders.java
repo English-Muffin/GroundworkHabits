@@ -13,6 +13,8 @@ import android.media.RingtoneManager;
 import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import java.util.Calendar;
+import java.util.Locale;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -77,6 +79,44 @@ final class Reminders {
         }
     }
 
+    // habit reminders carry "rep" (daily/weekly/monthly). When a series runs out (Daybook not opened for a while),
+    // add the next day's reminder so they keep coming. Old entries are pruned so the list stays small.
+    static synchronized void extend(Context c) {
+        JSONArray a = items(c), keep = new JSONArray();
+        long now = System.currentTimeMillis();
+        java.util.Map<String, JSONObject> last = new java.util.HashMap<>();
+        int maxId = 5000;
+        for (int n = 0; n < a.length(); n++) {
+            JSONObject it = a.optJSONObject(n);
+            maxId = Math.max(maxId, it.optInt("id"));
+            if (it.optLong("at") > now - 2 * 86400000L) keep.put(it);
+            if (it.has("rep")) { JSONObject l = last.get(it.optString("h")); if (l == null || l.optLong("at") < it.optLong("at")) last.put(it.optString("h"), it); }
+        }
+        boolean added = false;
+        for (JSONObject l : last.values()) {
+            if (l.optLong("at") > now) continue;
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(l.optLong("at"));
+            while (cal.getTimeInMillis() <= now) cal.add(Calendar.DAY_OF_MONTH, 1);
+            try {
+                JSONObject nx = new JSONObject(l.toString());
+                nx.put("id", maxId >= 9000 ? 5001 : ++maxId);
+                nx.put("at", cal.getTimeInMillis());
+                nx.put("k", periodKey(cal, l.optString("rep")));
+                keep.put(nx);
+                added = true;
+            } catch (Exception e) {}
+        }
+        if (added || keep.length() != a.length()) prefs(c).edit().putString("items", keep.toString()).commit();
+    }
+
+    static String periodKey(Calendar c, String rep) {
+        int y = c.get(Calendar.YEAR), m = c.get(Calendar.MONTH) + 1, d = c.get(Calendar.DAY_OF_MONTH);
+        if ("weekly".equals(rep)) return String.format(Locale.ROOT, "%04d-%02d-W%d", y, m, (d + 6) / 7);
+        if ("monthly".equals(rep)) return String.format(Locale.ROOT, "%04d-%02d", y, m);
+        return String.format(Locale.ROOT, "%04d-%02d-%02d", y, m, d);
+    }
+
     static JSONObject find(Context c, int id) {
         JSONArray a = items(c);
         for (int n = 0; n < a.length(); n++) if (a.optJSONObject(n).optInt("id") == id) return a.optJSONObject(n);
@@ -125,6 +165,8 @@ final class Reminders {
             .addAction(0, "Yes, done", answerIntent(c, id, h, k, "yes"))
             .addAction(0, "No", answerIntent(c, id, h, k, "no"));
         if (tap != null) b.setContentIntent(tap);
+        b.setVisibility(NotificationCompat.VISIBILITY_PRIVATE).setPublicVersion(new NotificationCompat.Builder(c, alarm ? ALARM : ASK)
+            .setSmallIcon(R.drawable.dbk_stat).setContentTitle("Daybook").setContentText("A reminder is waiting for your answer").build());
         Notification n = b.build();
         if (alarm) n.flags |= Notification.FLAG_INSISTENT; // keeps ringing until answered or swiped away
         try { NotificationManagerCompat.from(c).notify(id, n); } catch (SecurityException e) {}

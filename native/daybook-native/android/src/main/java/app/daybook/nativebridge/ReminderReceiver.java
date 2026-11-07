@@ -16,6 +16,8 @@ public class ReminderReceiver extends BroadcastReceiver {
         if (FIRE.equals(i.getAction())) {
             JSONObject it = Reminders.find(c, id);
             if (it != null && !Reminders.answeredYes(c, it.optString("h"), it.optString("k"))) Reminders.post(c, it);
+            Reminders.extend(c);
+            Reminders.armAll(c);
         } else if (ANSWER.equals(i.getAction())) {
             String h = i.getStringExtra("h"), k = i.getStringExtra("k"), a = i.getStringExtra("a");
             if (h != null && k != null && a != null) Reminders.addAnswer(c, h, k, a);

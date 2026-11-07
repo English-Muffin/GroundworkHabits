@@ -17,6 +17,8 @@ jobs:
         with: { node-version: 20 }
       - run: npm install
       - run: npm run dist:win
+      - name: Check the built app starts
+        run: node tests/launch_check.js dist/win-unpacked/Daybook.exe
       - uses: actions/upload-artifact@v4
         with: { name: Daybook-Windows, path: dist/*.exe }
 
@@ -29,6 +31,8 @@ jobs:
       - run: npm install
       - run: npm run dist:mac
         env: { CSC_IDENTITY_AUTO_DISCOVERY: 'false' }
+      - name: Check the built app starts
+        run: node tests/launch_check.js "$(ls -d dist/mac-universal/Daybook.app)/Contents/MacOS/Daybook"
       - uses: actions/upload-artifact@v4
         with: { name: Daybook-macOS, path: dist/*.zip }
 
@@ -45,10 +49,24 @@ jobs:
       - name: Generate Android icons (optional)
         run: npx @capacitor/assets generate --android || true
       - run: npx cap sync android
+      - run: echo "apply from: '../../native/release.gradle'" >> android/app/build.gradle
+      # signed release APK when the ANDROID_KEYSTORE_* secrets exist, otherwise the debug-signed APK as before
       - name: Build APK
-        run: ./gradlew assembleDebug
         working-directory: android
-      - run: mkdir out && cp android/app/build/outputs/apk/debug/app-debug.apk "out/Daybook-$(node -p "require('./package.json').version")-Android.apk"
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          DAYBOOK_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          DAYBOOK_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            DAYBOOK_KEYSTORE="$RUNNER_TEMP/release.jks" ./gradlew assembleRelease
+            cp app/build/outputs/apk/release/app-release.apk ../app.apk
+          else
+            ./gradlew assembleDebug
+            cp app/build/outputs/apk/debug/app-debug.apk ../app.apk
+          fi
+      - run: mkdir out && cp app.apk "out/Daybook-$(node -p "require('./package.json').version")-Android.apk"
       - uses: actions/upload-artifact@v4
         with: { name: Daybook-Android, path: out/*.apk }
 

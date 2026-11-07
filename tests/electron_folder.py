@@ -60,6 +60,8 @@ async def main():
         await wpg.fill('#pinIn', '1357'); await wpg.keyboard.press('Enter'); await asyncio.sleep(.3)
         await pg.evaluate("localStorage.setItem('daybook-locked', String(Date.now()))"); await asyncio.sleep(.4)
         check('PIN lock applies to the widget window too', widget_locked and await wpg.locator('#lock').is_visible())
+        await asyncio.sleep(1.5); ftxt = (folder / 'daybook.json').read_text()
+        check('with a PIN the data folder file is encrypted', ftxt.startswith('enc1:') and 'Saved to folder' not in ftxt)
         await b.close(); kill(proc)
         await choose_flow(p, exe, tmp)
     print('\nAll checks passed' if not fails else f'\n{fails} failed'); raise SystemExit(1 if fails else 0)

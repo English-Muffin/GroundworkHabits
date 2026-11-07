@@ -2,6 +2,23 @@
 
 All notable changes to Daybook. Versions match the GitHub releases.
 
+## Unreleased
+
+- New Today look: a percentage ring with the date, and habits as larger cards (two columns on wide screens) with done ones struck through.
+- New Goals screen: life areas you can tap to filter, pinned goals first, status badges, an optional deadline, and dated steps that fill the progress bar.
+- Streak freezes: every 7 days in a row earns a freeze (up to 3) that saves the streak on a missed day.
+- The PIN now encrypts your data on the device and in the data folder.
+- Undo works for the last 20 deletes (also Ctrl+Z), without losing later changes.
+- Repeating Google Calendar events show on every date.
+- Reminders: an option to hide habit and task names, reminders keep coming even if Daybook isn't opened for weeks, and alarms ask for exact timing on Android 14+.
+- The whole habit row lights up on hover; the star streak shows on phones.
+- Fonts are built in (works the same offline), a Check for updates link and the version number in the menu.
+- Builds: signed Android APKs once the signing secrets are added, and CI checks that the desktop apps start.
+- Dragging or selecting a habit no longer shows other days through the name column; the dragged copy is just the habit name.
+- Google Calendar events count towards each day’s progress.
+- Android: export (backup, spreadsheet, calendar file) asks where to save the file.
+- Smaller Windows and macOS downloads (English-only runtime, maximum compression).
+
 ## 1.5.0
 
 - Big windows: the layout uses the full width, so columns and cards get larger instead of staying small in the middle.

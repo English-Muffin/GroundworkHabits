@@ -7,7 +7,7 @@ The look is modelled on a reference demo video: near-black UI, teal accent, circ
 It has its own name and branding. Keep it that way: do not copy the original product's name, logo or copy.
 
 ## Layout
-- `www/index.html`  the whole app (CSS + HTML shell + JS in one file, no build step, no dependencies)
+- `www/index.html` (HTML shell), `www/app.css`, `www/app.js` (the whole app, no build step, no dependencies), `www/fonts/` (Space Grotesk woff2, SIL OFL)
 - `www/sw.js`  offline cache. Bump `VERSION` whenever shipped files change
 - `www/manifest.webmanifest`, `www/icons/`  PWA metadata and icons
 - `electron/main.js` + `preload.js`  desktop wrapper. The preload exposes `window.daybookFS` so the user can pick a data folder (Settings > Data folder); data is mirrored to `<folder>/daybook.json` (sync, tmp+rename), re-read on focus. Picking a folder that already has a save asks: replace (old file kept as `daybook-replaced-*.json`) or load (second warning). Picking a Google Drive/OneDrive/Dropbox synced folder is the cloud sync story. `package.json` holds the electron-builder config
@@ -15,6 +15,9 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows portable exe, macOS universal zip and the APK in CI
 - `tests/smoke.py`  Playwright smoke tests (77 checks, plus 11 desktop checks in `tests/electron_folder.py`, desktop and phone)
+- `tests/visual.py`  screenshot comparison, light and dark (local only; fixed clock + demo data). `UPDATE=1` accepts a new look after checking the PNGs in `tests/visual/`
+- `tests/launch_check.js`  CI: starts the packaged desktop app and waits for it to render
+- `native/release.gradle`  applied to the generated `android/app/build.gradle`: version from package.json, release signing from `DAYBOOK_KEYSTORE*` env (CI secrets `ANDROID_KEYSTORE_BASE64/PASSWORD`, `ANDROID_KEY_ALIAS`; the key lives outside the repo)
 - `tests/stress.py`  stress test (heavy data, 320-1920px, all themes, random clicks, edge dates); writes report.txt
 - `tests/electron_folder.py`  desktop data-folder checks (needs `npm install`; if `node_modules/electron/dist` is empty, unzip Electron from `%LOCALAPPDATA%/electron/Cache` into it)
 
@@ -22,11 +25,11 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - Run locally: `python -m http.server 8765 --directory www`, then open http://localhost:8765
 - Test: `pip install playwright && playwright install chromium`, then `python tests/smoke.py`. It starts its own server
 - Windows portable exe: `npm install && npm run dist:win` (output in `dist/`). macOS zip: `npm run dist:mac` on a Mac
-- Release: push a `v*` tag; CI builds Windows, macOS, Android and attaches them to a GitHub Release
+- Release: bump `version` in package.json and `APPV` in app.js, push a `v*` tag; CI builds Windows, macOS, Android and attaches them to a GitHub Release
 - Android app: `npm install && npx cap add android && npx cap sync android && npx cap open android`
 - Local APK build: needs `ANDROID_HOME`; if Gradle fails with "Unable to establish loopback connection", set `JAVA_TOOL_OPTIONS=-Djdk.net.unixdomain.tmpdir=C:\tmp\jdk`
 
-## How `www/index.html` works
+## How `www/app.js` works
 - State is one object `S`: `{v, habits, log, tasks, goals, journal, quits, count, notes, amt}` (`v` = data version, migrations go after `let S=load()`), saved to `localStorage` key `daybook-v2` by `save()`.
   - `habits`: `{id, name, type: 'daily'|'weekly'|'monthly', color}`
   - `log[habitId]`: set of keys. Daily `YYYY-MM-DD`, weekly `YYYY-MM-Wn` (W1 = days 1-7 of the month), monthly `YYYY-MM`
@@ -38,7 +41,7 @@ It has its own name and branding. Keep it that way: do not copy the original pro
   - `habits[].rem`: `{t:'HH:MM', m:'ask'|'alarm'}` or null, a per-habit reminder (see Habit reminders)
   - `notes[habitId][key]`: short note for that day/week/month
   - `quits`: `{id, name, since: 'YYYY-MM-DDTHH:MM' local, best: days}` quit streaks shown on the Achievements tab
-  - `goals`: `{id, title, area, pct}`. `journal['YYYY-MM']`: monthly reflection text
+  - `goals`: `{id, title, area, pct, due?, pin?, steps?: [{id,text,due?,done}]}`; with steps, progress = done steps (`gPct`). Goals screen: life areas filter (`goalArea`), pinned first, edit in the `goal` modal. `journal['YYYY-MM']`: monthly reflection text
 - `render()` rebuilds `#main` from string templates (`vToday`, `vHabits`, `vTasks`, `vGoals`, `vInsights`, `vAch`) and `#modal`.
   It preserves scroll positions, so keep that behaviour if you change it.
 - One delegated `click` listener handles every `data-act="..."` button. Add new actions to its `switch`.
@@ -49,12 +52,20 @@ It has its own name and branding. Keep it that way: do not copy the original pro
 - Dates are local time. Task weeks start on Sunday. Always escape user text with `esc()`.
 - Hash routes: `#today #habits #tasks #goals #insights #achievements`.
 
+## PIN encryption
+With a PIN, `S` is saved as `enc1:<salt>:<base64>` (AES-GCM, key from PBKDF2 of the PIN, in memory only). Until the PIN is entered `encWait` is true and nothing may save, sync reminders or pull the calendar. Old hash-only PINs upgrade on unlock. Desktop waits for pending encrypted saves before closing (`app:flush`). Each window unlocks itself.
+
+## Streak freezes
+`freezeOf(h)` replays an every-day habit's history: 7 done in a row earn a freeze (max 3), a missed day uses one. `curStreak` and `dailyStats` honour them; nothing extra is stored. Switch: `feat('freeze')`.
+
 ## Feature switches
-`P.feat` (Settings > Features): streaks on Today, weekly review, year heatmap, habit notes, missed X, Achievements tab, daily reminder (`P.remTime`, Notification API, only while the app runs). Read with `feat(key)`. Deletes snapshot `S` (`snap()`) and show `toastUndo()`.
+`P.feat` (Settings > Features): streak freezes, show names in reminders (`remnames`), streaks on Today, weekly review, year heatmap, habit notes, missed X, Achievements tab, daily reminder (`P.remTime`, Notification API, only while the app runs). Read with `feat(key)`. Deletes push a restore function with `pushUndo()` (up to 20; each puts back only what was deleted) and show `toastUndo()`; Ctrl+Z undoes outside text fields.
 
 ## More features
 - Search (header): `searchHits()` over tasks, notes, reflections, goals, habits, streaks, templates.
 - Focus timer (`focusRun`, bar `#focusbar`), CSV export (`toCsv()`, formula-safe), PIN lock (`P.lock` salted SHA-256; privacy screen only, not encryption; `#lock`).
+- Electron build: `electronLanguages: ['en-US']` and maximum compression keep the exe near 65 MB (the app itself is ~330 KB; the rest is Electron).
+- Habit grid rows: sticky `.gname`/`.gstat` backgrounds must stay opaque (layer tints over `var(--card)`), and a dragged grid row's ghost is only its name cell.
 - Habit reminders (`h.rem`): Android uses the local plugin `native/daybook-native` (`DaybookNative`, a `file:` dependency so `cap sync` picks it up). `syncReminders()` sends the next 14 days (`NB.schedule({items:[{id,at,title,body,h,k,alarm}]})`); Java sets AlarmManager alarms (exact via `USE_EXACT_ALARM`, restored on reboot), posts the notification with Yes/No broadcast actions (channels `dbk-ask` quiet+ongoing, `dbk-alarm` alarm sound + insistent) and stores answers in SharedPreferences without opening the app; `takeAnswers()` applies them on start, resume and the `answer` event. Rescheduled 1.5 s after every `save()`, so a done period is skipped. LocalNotifications is only used for the permission prompt and the old daily reminder. Desktop: `checkHabitReminders()` calls `daybookFS.ask()`, an always-on-top pop-up at `#ask~<habit>~<key>` (`askHtml`). Web: a notification plus the in-app `ask` modal. Alarm mode beeps (`alarmStart`). Fired-today state is `P.remFired` (per device).
 - Desktop mini widget: `#widget` route (`vWidget`, `html.widget`), opened via `daybookFS.widget()`; windows stay in sync through the `storage` event.
 - Android reminder: `@capacitor/local-notifications` (a real `dependencies` entry so `cap sync` picks it up) schedules a daily notification; web/desktop use the Notification API while running.
@@ -85,19 +96,19 @@ Dark is the designed theme. Settings > Customize adds accent colours (sets `--te
 - The Insights dropdown went under the chart on phones until `.sel` got `position:relative; z-index:20`.
 - Hover-only controls (delete buttons) are unusable on touch. Editing and deleting habits now live in the modal (tap the habit name).
 - The service worker is skipped inside Electron and Capacitor (see the registration guard at the end of the script).
-- Android WebView cannot download blob links. Export uses the Web Share API on mobile and falls back to a download.
-  Capacitor Filesystem + Share would be more robust.
-- Fonts load from Google Fonts online and fall back to a system font offline.
+- Android WebView cannot download blob links. On Android every export goes through `DaybookNative.saveFile` (system "Save to" picker); elsewhere Web Share on mobile, else a download.
+- Fonts are bundled (`www/fonts`), no network needed.
 
 ## Before you finish any change
-Run all three: `python tests/smoke.py` (starts with a JS syntax check), `LAYOUT_ONLY=1 python tests/stress.py out/` (layout, overlap and covered-element checks at 6 sizes x 3 themes; must report 0 findings) and `python tests/electron_folder.py`. Editing big chunks with scripts has removed neighbouring code before: diff the list of `case '...'` actions and `modal.kind` branches against the previous version after large edits.
+After the tests pass, rebuild `dist/` so the user can test before a release: `npm run dist:win` (rename to `Daybook-X.Y.Z-test-Windows-portable.exe`) and the debug APK (`npx cap sync android`, `android/gradlew assembleDebug`, copy to `dist/Daybook-X.Y.Z-test-Android.apk`). Delete older test builds there.
+Run all four: `python tests/smoke.py` (starts with a JS syntax check), `python tests/visual.py`, `LAYOUT_ONLY=1 python tests/stress.py out/` (layout, overlap and covered-element checks at 6 sizes x 3 themes; must report 0 findings) and `python tests/electron_folder.py`. Editing big chunks with scripts has removed neighbouring code before: diff the list of `case '...'` actions and `modal.kind` branches against the previous version after large edits.
 Run `python tests/smoke.py`. When you fix a bug, add a check for it. Test at 390px wide as well as desktop.
 
 ## Ideas not done yet
 - Today and Goals screens were designed without a reference. They deserve a polish pass
 - Local notifications / daily reminder (Capacitor Local Notifications; Notification API on the web)
 - Undo also covers only the latest delete (any other saved change clears it)
-- Google Calendar: no OAuth (user chose no Google Cloud project). Desktop pulls the calendar's secret iCal URL via `cal:fetch` in main, Android via `DaybookNative.fetchCal` (`CalFetch.java`, same rules); the app uses `calFetch` (`P.cal`, every 15 min) and mirrors events into tasks with `cal` = event UID (deleting one sets `hidden`; events never count towards completion or get copied); export writes an .ics of non-calendar tasks. Fetch uses Node https with a DNS lookup that only returns public addresses (checked at connect time, so no rebinding window). Real two-way sync / Google Tasks would need an OAuth client ID. Recurring events only show their first date (RRULE not expanded).
+- Google Calendar: no OAuth (user chose no Google Cloud project). Desktop pulls the calendar's secret iCal URL via `cal:fetch` in main, Android via `DaybookNative.fetchCal` (`CalFetch.java`, same rules); the app uses `calFetch` (`P.cal`, every 15 min) and mirrors events into tasks with `cal` = event UID (deleting one sets `hidden`; events count towards progress like other tasks but are never copied); export writes an .ics of non-calendar tasks. Fetch uses Node https with a DNS lookup that only returns public addresses (checked at connect time, so no rebinding window). Real two-way sync / Google Tasks would need an OAuth client ID. Recurring events only show their first date (RRULE not expanded).
 - The script runs inside an IIFE; tests reach internals through `window.DaybookTest`.
 - Cloud sync on web/Android (desktop has it via a synced data folder); a real Google Drive API login would need an OAuth client ID
 - Bundle the font files

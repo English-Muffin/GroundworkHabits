@@ -142,6 +142,16 @@ function createWindow() {
   Menu.setApplicationMenu(null);
   win.loadFile(path.join(__dirname, '..', 'www', 'index.html'));
   harden(win);
+  // encrypted saves are async: let the page finish them before the window closes (at most 2 s)
+  let flushed = false;
+  win.on('close', e => {
+    if (flushed || win.webContents.isCrashed()) return;
+    e.preventDefault();
+    const w = win, done = () => { clearTimeout(t); ipcMain.removeListener('app:flushed', ok); flushed = true; if (!w.isDestroyed()) w.close(); };
+    const ok = ev => { if (ev.sender === w.webContents) done(); }, t = setTimeout(done, 2000);
+    ipcMain.on('app:flushed', ok);
+    w.webContents.send('app:flush');
+  });
 }
 // only web links leave the app; a window never navigates away from the bundled page
 function harden(w) {

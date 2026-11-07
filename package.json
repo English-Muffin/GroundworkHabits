@@ -59,7 +59,11 @@
           ]
         }
       ]
-    }
+    },
+    "compression": "maximum",
+    "electronLanguages": [
+      "en-US"
+    ]
   },
   "dependencies": {
     "@capacitor/local-notifications": "^6.1.3",
