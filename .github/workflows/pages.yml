@@ -1,0 +1,35 @@
+name: Web app and demo (GitHub Pages)
+# Publishes the app to https://english-muffin.github.io/GroundworkHabits/ (installable, data stays in the browser)
+# and the in-browser demo with example data to .../demo/ (its own storage, never mixed with real data).
+on:
+  push:
+    branches: [main]
+    paths: ['www/**', '.github/workflows/pages.yml', 'tools/release_strip.js']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency: { group: pages, cancel-in-progress: true }
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: '${{ steps.deploy.outputs.page_url }}' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Turn off testing features
+        run: node tools/release_strip.js
+      - name: The app at the root, the demo in /demo/
+        run: |
+          mkdir _site && cp -r www/. _site/ && mkdir _site/demo && cp -r www/. _site/demo/
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+      - id: deploy
+        uses: actions/deploy-pages@v4
