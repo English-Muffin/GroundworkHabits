@@ -11,7 +11,9 @@
     "android:add": "cap add android",
     "android:sync": "cap sync android",
     "android:open": "cap open android",
-    "dist:mac": "electron-builder --mac zip --universal --publish never"
+    "dist:mac": "electron-builder --mac zip --universal --publish never",
+    "lint": "eslint www/js",
+    "test:unit": "node tests/unit.js"
   },
   "devDependencies": {
     "@capacitor/android": "^6.1.2",
@@ -19,7 +21,9 @@
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
     "electron": "^33.0.0",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "eslint": "^9.39.5",
+    "globals": "^15.15.0"
   },
   "build": {
     "appId": "com.groundwork.habits",

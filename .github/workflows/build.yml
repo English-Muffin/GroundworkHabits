@@ -22,6 +22,27 @@ jobs:
       - run: npm run dist:win
       - name: Check the built app starts
         run: node tests/launch_check.js "dist/win-unpacked/Groundwork Habits.exe"
+      # Code signing (SignPath, free for open source). Stays off until the SIGNPATH_* secrets exist: apply at
+      # signpath.org with this repository, then add SIGNPATH_API_TOKEN and SIGNPATH_ORGANIZATION_ID.
+      - name: Is signing set up?
+        id: sign
+        env: { TOKEN: '${{ secrets.SIGNPATH_API_TOKEN }}' }
+        shell: bash
+        run: echo "enabled=$([ -n "$TOKEN" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        id: unsigned
+        if: steps.sign.outputs.enabled == 'true'
+        with: { name: Groundwork-Habits-Windows-unsigned, path: dist/*.exe }
+      - uses: signpath/github-action-submit-signing-request@ced31329c0317e779dad2eec2a7c3bb46ea1343e # v1, pinned
+        if: steps.sign.outputs.enabled == 'true'
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '${{ secrets.SIGNPATH_ORGANIZATION_ID }}'
+          project-slug: GroundworkHabits
+          signing-policy-slug: release-signing
+          github-artifact-id: '${{ steps.unsigned.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: dist
       - uses: actions/upload-artifact@v4
         with: { name: Groundwork-Habits-Windows, path: dist/*.exe }
 
@@ -101,3 +122,11 @@ jobs:
         run: cd files && for f in *; do sha256sum "$f" > "$f.sha256"; done
       - uses: softprops/action-gh-release@v2
         with: { files: files/*, body_path: notes.md, name: 'Groundwork Habits ${{ github.ref_name }}' }
+      # the desktop auto-update needs the setup and its .sha256 on the release; fail loudly if either is missing
+      - name: Check the update files are on the release
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          names=$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
+          echo "$names"
+          setup=$(echo "$names" | grep -E -- '-Windows-setup\.exe$') || { echo "::error::no Windows setup on the release"; exit 1; }
+          echo "$names" | grep -qx "$setup.sha256" || { echo "::error::$setup.sha256 missing: auto-update would refuse it"; exit 1; }
