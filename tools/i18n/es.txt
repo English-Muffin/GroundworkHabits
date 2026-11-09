@@ -830,3 +830,58 @@ P76|Importar desde $1
 P77|Importado: $1 hábitos nuevos, $2 registros, $3 tareas
 P78|En $1 días
 P79|La versión $1 está disponible
+754|Deshecho
+755|Rehecho
+756|Nada que deshacer
+757|Nada que rehacer
+758|Nunca falles dos veces
+759|Tras un día fallado, Hoy marca el hábito para que un fallo no se convierta en dos
+760|Fallaste ayer. No falles dos veces
+761|Compartir
+762|día seguido
+763|días seguidos
+764|Fecha límite
+765|Reto
+766|Sin reto
+767|7 días
+768|21 días
+769|30 días
+770|66 días
+771|100 días
+772|Retos
+773|Pon la primera capa
+774|Los pequeños hábitos diarios son la base. Empieza con uno que puedas hacer en dos minutos.
+775|Añade tu primer hábito para empezar el día. Elige uno que puedas hacer en dos minutos.
+776|Tus gráficos están creciendo
+777|Las estadísticas aparecen cuando tienes hábitos diarios. Márcalos unos días y aquí verás tu constancia, el mapa de calor y tus mejores días.
+778|Aún no hay nada en la línea de tiempo
+779|¿Hacia dónde vas?
+780|Fija un objetivo en cualquiera de tus 10 áreas de vida. Elige algo medible: un número, pasos o un hábito que mantener.
+781|Añade uno o elige otra área de vida arriba.
+782|Empieza una racha sin
+783|Sigue algo que has dejado, como fumar o el azúcar. Elige cuándo lo dejaste y mira crecer la racha.
+784|Instálala: toca Compartir y luego Añadir a pantalla de inicio
+785|OK
+786|Esta copia es de una versión más nueva de Groundwork Habits. Actualiza la app y luego impórtala
+787|Esa copia está dañada, así que no se ha cambiado nada
+788|Ese archivo es demasiado grande para ser una copia de Groundwork Habits
+789|Copiar diagnóstico
+790|Versión, dispositivo y errores recientes para un informe de error. Sin hábitos, tareas ni otros datos
+791|Diagnóstico copiado. Pégalo en tu informe de error
+792|Diagnóstico guardado
+793|El almacenamiento del navegador está lleno, así que tus datos se guardan en la base de datos del navegador
+794|primer
+795|segundo
+796|tercer
+797|cuarto
+798|quinto
+799|último
+P80|A este ritmo: $1 · después de tu fecha límite
+P81|A este ritmo: $1 · antes de tu fecha límite
+P82|A este ritmo: $1
+P83|Cada 2 semanas el $1
+P84|Cada mes el $1 $2
+P85|Reto: día $1 de $2 · $3 hechos
+P86|Reto completado: $1 de $2 días
+P87|Reto terminado: $1 de $2 días
+P88|Aún no hay objetivos en $1

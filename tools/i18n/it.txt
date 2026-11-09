@@ -830,3 +830,58 @@ P76|Importa da $1
 P77|Importato: $1 nuove abitudini, $2 spunte, $3 attività
 P78|Tra $1 giorni
 P79|È disponibile la versione $1
+754|Annullato
+755|Ripristinato
+756|Niente da annullare
+757|Niente da ripristinare
+758|Mai saltare due volte
+759|Dopo un giorno saltato, Oggi segnala l’abitudine perché un’assenza non diventi due
+760|Saltato ieri. Non saltare due volte
+761|Condividi
+762|giorno di fila
+763|giorni di fila
+764|Scadenza
+765|Sfida
+766|Nessuna sfida
+767|7 giorni
+768|21 giorni
+769|30 giorni
+770|66 giorni
+771|100 giorni
+772|Sfide
+773|Posa il primo strato
+774|Le piccole abitudini quotidiane sono le fondamenta. Inizia con una che puoi fare in due minuti.
+775|Aggiungi la tua prima abitudine per iniziare la giornata. Scegline una da due minuti.
+776|I tuoi grafici stanno crescendo
+777|Le statistiche compaiono quando hai abitudini quotidiane. Spuntale per qualche giorno e qui vedrai costanza, mappa di calore e giorni migliori.
+778|Ancora niente nella cronologia
+779|Dove stai andando?
+780|Fissa un obiettivo in una delle tue 10 aree di vita. Scegli qualcosa di misurabile: un numero, dei passi o un’abitudine da mantenere.
+781|Aggiungine uno o scegli un’altra area qui sopra.
+782|Inizia una serie senza
+783|Tieni traccia di qualcosa che hai smesso, come fumo o zucchero. Scegli quando hai smesso e guarda crescere la serie.
+784|Installala: tocca Condividi, poi Aggiungi alla schermata Home
+785|OK
+786|Questo backup è di una versione più recente di Groundwork Habits. Aggiorna l’app, poi importalo
+787|Quel backup è danneggiato, quindi non è cambiato nulla
+788|Quel file è troppo grande per essere un backup di Groundwork Habits
+789|Copia diagnostica
+790|Versione, dispositivo ed errori recenti per una segnalazione. Nessuna abitudine, attività o altro dato
+791|Diagnostica copiata. Incollala nella segnalazione
+792|Diagnostica salvata
+793|Lo spazio del browser è pieno, quindi i tuoi dati vengono salvati nel database del browser
+794|primo
+795|secondo
+796|terzo
+797|quarto
+798|quinto
+799|ultimo
+P80|A questo ritmo: $1 · dopo la scadenza
+P81|A questo ritmo: $1 · prima della scadenza
+P82|A questo ritmo: $1
+P83|Ogni 2 settimane di $1
+P84|Ogni mese il $1 $2
+P85|Sfida: giorno $1 di $2 · $3 fatti
+P86|Sfida completata: $1 giorni su $2
+P87|Sfida terminata: $1 giorni su $2
+P88|Ancora nessun obiettivo in $1

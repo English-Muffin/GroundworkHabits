@@ -830,3 +830,58 @@ P76|Importuj z $1
 P77|Zaimportowano: $1 nowych nawyków, $2 odhaczeń, $3 zadań
 P78|Za $1 dni
 P79|Dostępna jest wersja $1
+754|Cofnięto
+755|Przywrócono
+756|Nie ma czego cofnąć
+757|Nie ma czego przywrócić
+758|Nigdy nie opuszczaj dwa razy
+759|Po opuszczonym dniu Dziś oznacza nawyk, żeby jedno opuszczenie nie zmieniło się w dwa
+760|Wczoraj opuszczone. Nie opuszczaj dwa razy
+761|Udostępnij
+762|dzień z rzędu
+763|dni z rzędu
+764|Termin
+765|Wyzwanie
+766|Bez wyzwania
+767|7 dni
+768|21 dni
+769|30 dni
+770|66 dni
+771|100 dni
+772|Wyzwania
+773|Połóż pierwszą warstwę
+774|Małe codzienne nawyki to fundament. Zacznij od jednego, który zajmie dwie minuty.
+775|Dodaj pierwszy nawyk, aby zacząć dzień. Wybierz taki, który zajmie dwie minuty.
+776|Twoje wykresy rosną
+777|Statystyki pojawią się, gdy będziesz mieć codzienne nawyki. Odhaczaj je przez kilka dni, a zobaczysz tu regularność, mapę cieplną i najlepsze dni.
+778|Na osi czasu jeszcze nic nie ma
+779|Dokąd zmierzasz?
+780|Wyznacz cel w dowolnym z 10 obszarów życia. Wybierz coś mierzalnego: liczbę, kroki albo nawyk do utrzymania.
+781|Dodaj cel albo wybierz inny obszar powyżej.
+782|Zacznij serię bez
+783|Śledź coś, z czego zrezygnowałeś, np. palenie lub cukier. Wybierz, kiedy przestałeś, i patrz, jak rośnie seria.
+784|Zainstaluj: stuknij Udostępnij, potem Do ekranu początkowego
+785|OK
+786|Ta kopia pochodzi z nowszej wersji Groundwork Habits. Zaktualizuj aplikację, a potem ją zaimportuj
+787|Ta kopia jest uszkodzona, więc nic nie zmieniono
+788|Ten plik jest za duży, by być kopią Groundwork Habits
+789|Kopiuj diagnostykę
+790|Wersja, urządzenie i ostatnie błędy do zgłoszenia. Bez nawyków, zadań i innych danych
+791|Skopiowano diagnostykę. Wklej ją do zgłoszenia
+792|Zapisano diagnostykę
+793|Pamięć przeglądarki jest pełna, więc dane zapisujemy w bazie danych przeglądarki
+794|pierwszy
+795|drugi
+796|trzeci
+797|czwarty
+798|piąty
+799|ostatni
+P80|W tym tempie: $1 · po terminie
+P81|W tym tempie: $1 · przed terminem
+P82|W tym tempie: $1
+P83|Co 2 tygodnie w $1
+P84|Co miesiąc w $1 $2
+P85|Wyzwanie: dzień $1 z $2 · zrobione $3
+P86|Wyzwanie ukończone: $1 z $2 dni
+P87|Wyzwanie zakończone: $1 z $2 dni
+P88|Brak celów w obszarze $1

@@ -830,3 +830,58 @@ P76|Aus $1 importieren
 P77|Importiert: $1 neue Gewohnheiten, $2 Häkchen, $3 Aufgaben
 P78|In $1 Tagen
 P79|Version $1 ist verfügbar
+754|Rückgängig gemacht
+755|Wiederhergestellt
+756|Nichts rückgängig zu machen
+757|Nichts wiederherzustellen
+758|Nie zweimal auslassen
+759|Nach einem verpassten Tag markiert Heute die Gewohnheit, damit aus einem Aussetzer keine zwei werden
+760|Gestern verpasst. Nicht zweimal auslassen
+761|Teilen
+762|Tag in Folge
+763|Tage in Folge
+764|Fällig
+765|Challenge
+766|Keine Challenge
+767|7 Tage
+768|21 Tage
+769|30 Tage
+770|66 Tage
+771|100 Tage
+772|Challenges
+773|Leg die erste Schicht
+774|Kleine tägliche Gewohnheiten sind das Fundament. Fang mit einer an, die zwei Minuten dauert.
+775|Füge deine erste Gewohnheit hinzu, um den Tag zu beginnen. Wähle eine, die zwei Minuten dauert.
+776|Deine Diagramme wachsen
+777|Statistiken erscheinen, sobald du tägliche Gewohnheiten hast. Hake sie ein paar Tage ab, dann siehst du hier Beständigkeit, Heatmap und beste Tage.
+778|Noch nichts auf der Zeitleiste
+779|Wohin willst du?
+780|Setze ein Ziel in einem deiner 10 Lebensbereiche. Wähle etwas Messbares: eine Zahl, Schritte oder eine Gewohnheit.
+781|Füge eins hinzu oder wähle oben einen anderen Lebensbereich.
+782|Starte eine Ohne-Serie
+783|Verfolge etwas, das du aufgegeben hast, wie Rauchen oder Zucker. Wähle, wann du aufgehört hast, und sieh die Serie wachsen.
+784|Installieren: Teilen antippen, dann Zum Home-Bildschirm
+785|OK
+786|Diese Sicherung stammt aus einer neueren Version von Groundwork Habits. Aktualisiere die App und importiere sie dann
+787|Diese Sicherung ist beschädigt, daher wurde nichts geändert
+788|Diese Datei ist zu groß für eine Groundwork-Habits-Sicherung
+789|Diagnose kopieren
+790|Version, Gerät und letzte Fehler für einen Fehlerbericht. Keine Gewohnheiten, Aufgaben oder andere Daten
+791|Diagnose kopiert. Füge sie in deinen Fehlerbericht ein
+792|Diagnose gespeichert
+793|Der Browserspeicher ist voll, deine Daten werden stattdessen in der Browser-Datenbank gespeichert
+794|ersten
+795|zweiten
+796|dritten
+797|vierten
+798|fünften
+799|letzten
+P80|In diesem Tempo: $1 · nach deiner Frist
+P81|In diesem Tempo: $1 · vor deiner Frist
+P82|In diesem Tempo: $1
+P83|Alle 2 Wochen am $1
+P84|Jeden Monat am $1 $2
+P85|Challenge: Tag $1 von $2 · $3 erledigt
+P86|Challenge geschafft: $1 von $2 Tagen
+P87|Challenge beendet: $1 von $2 Tagen
+P88|Noch keine Ziele in $1

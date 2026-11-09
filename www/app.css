@@ -361,6 +361,9 @@ html.widget .top{display:none}html.widget body{padding:12px}html.widget .app{pad
 @media (max-width:760px){.focusbar{left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));justify-content:space-between}}
 @media (pointer:coarse){.grip{width:24px;height:30px}.tk .grip{width:20px;height:26px;left:1px;top:5px}.tk{padding-left:24px!important}.gname .grip{left:0}}
 .hnote{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.g2fc{color:var(--teal);font-size:12px}.g2fc.late{color:var(--flame)}
+.hnote.chal{color:var(--teal)}
+.hnote.twice{color:var(--flame);font-weight:600;display:flex;align-items:center;gap:4px}.hnote.twice .ic{width:12px;height:12px}
 .nbtn{background:none;border:0;color:var(--g55);width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none}
 .nbtn .ic{width:15px;height:15px}.nbtn:hover{color:var(--text)}
 .cell .cn{font-size:10px;font-weight:700;color:var(--teal);line-height:1}
@@ -691,3 +694,18 @@ html.notabnames .pnav a span{display:none}
 .gtx b{display:block;font-weight:600;overflow-wrap:anywhere}.gtx small{color:var(--muted);font-size:12px}
 .gts{font-size:12px;color:var(--muted);white-space:nowrap}.gts svg{width:16px;height:16px;fill:none;stroke:var(--teal);stroke-width:3}
 .gti.done{opacity:.6}.gti.late .gts{color:var(--red)}
+
+/* habit challenges on the Streaks tab */
+.chl{display:flex;flex-direction:column;gap:var(--sp-2);margin-top:var(--sp-4)}.chr{display:flex;align-items:center;gap:10px;min-height:40px}.chr .nm{flex:1;font-weight:600}.chr .meta{color:var(--muted);font-size:12px}.chr.ok .meta{color:var(--teal)}.chr .medal{width:22px;height:22px;fill:none;stroke-width:1.8}
+
+/* empty screens (emptyBox): logo-layer drawing, title, one line, next step */
+.empty.eart{display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;padding:var(--sp-5) var(--sp-4)}
+.eart svg{width:132px;height:110px;margin-bottom:var(--sp-4)}
+.eart .ef{fill:var(--teal)}.eart .eo{fill:none;stroke:var(--g2a,#2a2a2a);stroke-width:2;stroke-dasharray:5 5}
+.eart .ep{stroke:var(--text);stroke-width:2}.eart .et{fill:var(--text)}.eart .ep2{stroke:var(--g2a,#2a2a2a);stroke-width:2}
+.eart b{font-size:17px;margin-bottom:6px;color:var(--text)}.eart p{color:var(--muted);margin:0 0 var(--sp-4);max-width:340px}
+.eart .erow{display:flex;flex-wrap:wrap;gap:var(--sp-2);justify-content:center}
+
+/* accessibility: no motion when asked for, and visible controls in Windows high-contrast (forced colours) */
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+@media (forced-colors:active){.cell,.cb,.btn,.gear,.seg button,.opt,.sw{border:1px solid ButtonText!important}.cell.on,.cb.on,.sw[aria-checked=true]{background:Highlight!important;color:HighlightText!important}:focus-visible{outline:2px solid Highlight!important}}

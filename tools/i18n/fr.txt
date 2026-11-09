@@ -830,3 +830,58 @@ P76|Importer depuis $1
 P77|Importé : $1 nouvelles habitudes, $2 pointages, $3 tâches
 P78|Dans $1 jours
 P79|La version $1 est disponible
+754|Annulé
+755|Rétabli
+756|Rien à annuler
+757|Rien à rétablir
+758|Ne jamais rater deux fois
+759|Après un jour manqué, Aujourd’hui signale l’habitude pour qu’un oubli n’en devienne pas deux
+760|Manqué hier. Ne ratez pas deux fois
+761|Partager
+762|jour d’affilée
+763|jours d’affilée
+764|Échéance
+765|Défi
+766|Pas de défi
+767|7 jours
+768|21 jours
+769|30 jours
+770|66 jours
+771|100 jours
+772|Défis
+773|Posez la première couche
+774|Les petites habitudes quotidiennes sont les fondations. Commencez par une que vous pouvez faire en deux minutes.
+775|Ajoutez votre première habitude pour commencer la journée. Choisissez-en une qui prend deux minutes.
+776|Vos graphiques grandissent
+777|Les statistiques apparaissent dès que vous avez des habitudes quotidiennes. Cochez-les quelques jours et votre régularité, la carte de chaleur et vos meilleurs jours s’affichent ici.
+778|Rien sur la chronologie pour l’instant
+779|Où allez-vous ?
+780|Fixez un objectif dans l’un de vos 10 domaines de vie. Choisissez quelque chose de mesurable : un nombre, des étapes ou une habitude à tenir.
+781|Ajoutez-en un ou choisissez un autre domaine ci-dessus.
+782|Commencez une série sans
+783|Suivez quelque chose que vous avez arrêté, comme le tabac ou le sucre. Indiquez quand vous avez arrêté et regardez la série grandir.
+784|Installez-la : touchez Partager, puis Sur l’écran d’accueil
+785|OK
+786|Cette sauvegarde vient d’une version plus récente de Groundwork Habits. Mettez l’app à jour, puis importez-la
+787|Cette sauvegarde est endommagée, rien n’a été modifié
+788|Ce fichier est trop gros pour être une sauvegarde Groundwork Habits
+789|Copier le diagnostic
+790|Version, appareil et erreurs récentes pour un rapport de bug. Aucune habitude, tâche ou autre donnée
+791|Diagnostic copié. Collez-le dans votre rapport de bug
+792|Diagnostic enregistré
+793|Le stockage du navigateur est plein, vos données sont donc enregistrées dans sa base de données
+794|premier
+795|deuxième
+796|troisième
+797|quatrième
+798|cinquième
+799|dernier
+P80|À ce rythme : $1 · après votre échéance
+P81|À ce rythme : $1 · avant votre échéance
+P82|À ce rythme : $1
+P83|Toutes les 2 semaines le $1
+P84|Chaque mois le $1 $2
+P85|Défi : jour $1 sur $2 · $3 faits
+P86|Défi réussi : $1 jours sur $2
+P87|Défi terminé : $1 jours sur $2
+P88|Aucun objectif en $1 pour l’instant

@@ -830,3 +830,58 @@ P76|Importar de $1
 P77|Importado: $1 hábitos novos, $2 registos, $3 tarefas
 P78|Daqui a $1 dias
 P79|A versão $1 está disponível
+754|Desfeito
+755|Refeito
+756|Nada para desfazer
+757|Nada para refazer
+758|Nunca falhe duas vezes
+759|Depois de um dia falhado, Hoje marca o hábito para que uma falha não vire duas
+760|Falhou ontem. Não falhe duas vezes
+761|Partilhar
+762|dia seguido
+763|dias seguidos
+764|Prazo
+765|Desafio
+766|Sem desafio
+767|7 dias
+768|21 dias
+769|30 dias
+770|66 dias
+771|100 dias
+772|Desafios
+773|Assente a primeira camada
+774|Pequenos hábitos diários são a base. Comece com um que consiga fazer em dois minutos.
+775|Adicione o seu primeiro hábito para começar o dia. Escolha um que consiga fazer em dois minutos.
+776|Os seus gráficos estão a crescer
+777|As estatísticas aparecem quando tiver hábitos diários. Marque-os durante alguns dias e a sua consistência, mapa de calor e melhores dias aparecem aqui.
+778|Ainda nada na linha do tempo
+779|Para onde vai?
+780|Defina um objetivo em qualquer das 10 áreas da vida. Escolha algo mensurável: um número, passos ou um hábito a manter.
+781|Adicione um ou escolha outra área da vida acima.
+782|Comece uma sequência sem
+783|Acompanhe algo que deixou, como fumar ou açúcar. Escolha quando parou e veja a sequência crescer.
+784|Instale: toque em Partilhar e depois em Adicionar ao ecrã principal
+785|OK
+786|Esta cópia é de uma versão mais recente do Groundwork Habits. Atualize a app e depois importe-a
+787|Essa cópia está danificada, por isso nada foi alterado
+788|Esse ficheiro é demasiado grande para ser uma cópia do Groundwork Habits
+789|Copiar diagnóstico
+790|Versão, dispositivo e erros recentes para um relatório de erro. Sem hábitos, tarefas ou outros dados
+791|Diagnóstico copiado. Cole-o no seu relatório de erro
+792|Diagnóstico guardado
+793|O armazenamento do navegador está cheio, por isso os seus dados são guardados na base de dados do navegador
+794|primeiro
+795|segundo
+796|terceiro
+797|quarto
+798|quinto
+799|último
+P80|A este ritmo: $1 · depois do prazo
+P81|A este ritmo: $1 · antes do prazo
+P82|A este ritmo: $1
+P83|A cada 2 semanas à $1
+P84|Todos os meses no $1 $2
+P85|Desafio: dia $1 de $2 · $3 feitos
+P86|Desafio concluído: $1 de $2 dias
+P87|Desafio terminado: $1 de $2 dias
+P88|Ainda sem objetivos em $1

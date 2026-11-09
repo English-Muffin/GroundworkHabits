@@ -830,3 +830,58 @@ P76|Importeren uit $1
 P77|Geïmporteerd: $1 nieuwe gewoontes, $2 afvinkingen, $3 taken
 P78|Over $1 dagen
 P79|Versie $1 is beschikbaar
+754|Ongedaan gemaakt
+755|Opnieuw gedaan
+756|Niets om ongedaan te maken
+757|Niets om opnieuw te doen
+758|Nooit twee keer missen
+759|Na een gemiste dag markeert Vandaag de gewoonte, zodat één keer missen geen twee wordt
+760|Gisteren gemist. Mis het geen twee keer
+761|Delen
+762|dag op rij
+763|dagen op rij
+764|Deadline
+765|Uitdaging
+766|Geen uitdaging
+767|7 dagen
+768|21 dagen
+769|30 dagen
+770|66 dagen
+771|100 dagen
+772|Uitdagingen
+773|Leg de eerste laag
+774|Kleine dagelijkse gewoonten zijn de basis. Begin met één die je in twee minuten kunt doen.
+775|Voeg je eerste gewoonte toe om je dag te beginnen. Kies er één die twee minuten kost.
+776|Je grafieken groeien
+777|Inzichten verschijnen zodra je dagelijkse gewoonten hebt. Vink ze een paar dagen af en je consistentie, heatmap en beste dagen verschijnen hier.
+778|Nog niets op de tijdlijn
+779|Waar ga je naartoe?
+780|Stel een doel in een van je 10 levensgebieden. Kies iets meetbaars: een getal, stappen of een gewoonte om vol te houden.
+781|Voeg er een toe of kies hierboven een ander levensgebied.
+782|Start een stopreeks
+783|Volg iets waarmee je bent gestopt, zoals roken of suiker. Kies wanneer je stopte en zie de reeks groeien.
+784|Installeer: tik op Deel en dan Zet op beginscherm
+785|OK
+786|Deze back-up komt uit een nieuwere versie van Groundwork Habits. Werk de app bij en importeer hem dan
+787|Die back-up is beschadigd, dus er is niets gewijzigd
+788|Dat bestand is te groot voor een Groundwork Habits-back-up
+789|Diagnose kopiëren
+790|Versie, apparaat en recente fouten voor een foutmelding. Geen gewoonten, taken of andere gegevens
+791|Diagnose gekopieerd. Plak hem in je foutmelding
+792|Diagnose opgeslagen
+793|De browseropslag is vol, dus je gegevens worden in de browserdatabase opgeslagen
+794|eerste
+795|tweede
+796|derde
+797|vierde
+798|vijfde
+799|laatste
+P80|In dit tempo: $1 · na je deadline
+P81|In dit tempo: $1 · voor je deadline
+P82|In dit tempo: $1
+P83|Om de 2 weken op $1
+P84|Elke maand op de $1 $2
+P85|Uitdaging: dag $1 van $2 · $3 gedaan
+P86|Uitdaging voltooid: $1 van $2 dagen
+P87|Uitdaging afgelopen: $1 van $2 dagen
+P88|Nog geen doelen in $1
