@@ -134,8 +134,10 @@ ipcMain.handle('upd:install', async () => {
     if (require('crypto').createHash('sha256').update(buf).digest('hex') !== exp) return { ok: false, error: 'The download did not match its checksum' };
     const f = path.join(app.getPath('temp'), 'Groundwork-Habits-update-' + info.version + '.exe');
     fs.writeFileSync(f, buf);
-    require('child_process').spawn(f, [], { detached: true, stdio: 'ignore' }).unref();
-    setTimeout(() => app.quit(), 500);
+    // start the installer only once this app has exited, so it never finds the app still open
+    const ps = `Wait-Process -Id ${process.pid} -Timeout 30 -ErrorAction SilentlyContinue; Start-Process -FilePath '${f.replace(/'/g, "''")}' -ArgumentList '/update'`; // the installer shows only its progress, then reopens the app
+    require('child_process').spawn('powershell.exe', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command', ps], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
+    setTimeout(() => app.quit(), 300);
     return { ok: true };
   } catch (err) { return { ok: false, error: 'Download failed' }; }
 });
@@ -196,6 +198,7 @@ That save was last changed ${st.mtime.toLocaleString()} and has ${(d.habits || [
 
 // keep the profile folder from before the rename, so saved data stays where it was
 app.setPath('userData', path.join(app.getPath('appData'), 'Daybook'));
+app.setAppUserModelId('com.daybook.app'); // matches the installer's Start menu shortcut, so Windows shows the app's notifications
 if (process.env.DAYBOOK_USER_DATA) app.setPath('userData', process.env.DAYBOOK_USER_DATA); // tests use a throwaway profile
 if (!app.requestSingleInstanceLock()) app.quit();
 
