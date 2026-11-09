@@ -1,13 +1,13 @@
 {
   "name": "groundwork-habits",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "Habits, tasks and goals in one calm place.",
   "main": "electron/main.js",
   "author": "English-Muffin",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win nsis --publish never && node tools/build_portable.js",
+    "dist:win": "electron-builder --win dir --publish never && node tools/build_portable.js && node tools/build_setup.js",
     "android:add": "cap add android",
     "android:sync": "cap sync android",
     "android:open": "cap open android",
@@ -37,7 +37,7 @@
       "icon": "assets/icon.ico",
       "target": [
         {
-          "target": "nsis",
+          "target": "dir",
           "arch": [
             "x64"
           ]
@@ -61,14 +61,7 @@
     "compression": "normal",
     "electronLanguages": [
       "en-US"
-    ],
-    "nsis": {
-      "oneClick": true,
-      "perMachine": false,
-      "artifactName": "Groundwork-Habits-${version}-Windows-setup.exe",
-      "deleteAppDataOnUninstall": false,
-      "shortcutName": "Groundwork Habits"
-    }
+    ]
   },
   "dependencies": {
     "@capacitor/local-notifications": "^6.1.3",
