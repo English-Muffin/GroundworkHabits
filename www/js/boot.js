@@ -118,7 +118,8 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/.test(navigator.userAgent)){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
-if(!WIDGET&&!locked){try{if(!localStorage.getItem('groundwork-tips'))modal={kind:'tips'}}catch(e){}} // first open: show the tips once
+if(DEMO){document.body.insertAdjacentHTML('afterbegin','<div class="demobar" role="note"><span>'+tx('Demo with example data. Changes stay in this browser.')+'</span><button class="link" data-act="demoreset">'+tx('Reset')+'</button><a class="link" href="'+RELEASES+'" target="_blank" rel="noopener">'+tx('Get the app')+'</a></div>');document.documentElement.classList.add('isdemo')}
+else if(!WIDGET&&!locked){try{if(!localStorage.getItem('groundwork-tips'))modal={kind:'tips'}}catch(e){}} // first open: show the tips once
 // iPhone/iPad Safari: apps install from the Share sheet, which people rarely find; say so once
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 if(IOS&&!navigator.standalone&&!WIDGET&&!window.Capacitor)try{if(!localStorage.getItem('groundwork-ioshint'))setTimeout(()=>{localStorage.setItem('groundwork-ioshint','1');toastAct('Install it: tap Share, then Add to Home Screen','OK','toastclose')},4000)}catch(e){}

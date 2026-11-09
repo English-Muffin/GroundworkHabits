@@ -79,9 +79,9 @@ const nameCell=h=>'<div class="gname" style="--c:'+h.color+'">'+GRIP('habit')+'<
 /* empty screens: a small drawing made from the logo's layers (follows the accent), a title, a line and the next step */
 const EART={'habits':'<rect x="38" y="14" width="56" height="20" rx="10" class="eo"/><rect x="24" y="44" width="84" height="20" rx="10" class="eo"/><rect x="10" y="74" width="112" height="20" rx="10" class="ef"/>', 'goals':'<rect x="10" y="78" width="44" height="18" rx="9" class="ef" opacity=".35"/><rect x="44" y="56" width="44" height="18" rx="9" class="ef" opacity=".65"/><rect x="78" y="34" width="44" height="18" rx="9" class="ef"/><path d="M100 30V8" class="ep"/><path d="M100 8h16l-4 5 4 5h-16z" class="et"/>', 'insights':'<path d="M8 98h116" class="ep2"/><rect x="18" y="80" width="18" height="14" rx="6" class="ef" opacity=".45"/><rect x="44" y="70" width="18" height="24" rx="6" class="ef" opacity=".65"/><rect x="70" y="56" width="18" height="38" rx="6" class="ef" opacity=".85"/><rect x="96" y="20" width="18" height="74" rx="6" class="eo"/>', 'streaks':'<rect x="24" y="72" width="84" height="22" rx="11" class="ef"/><path d="M66 14c10 12 18 20 18 32a18 18 0 0 1-36 0c0-8 5-13 9-18 1 6 3 9 6 10-2-8 0-16 3-24z" fill="var(--flame)"/><path d="M66 40c4 5 7 8 7 12a7 7 0 0 1-14 0c0-4 3-7 7-12z" fill="var(--star)"/>', 'timeline':'<rect x="10" y="20" width="60" height="16" rx="8" class="ef" opacity=".5"/><rect x="40" y="46" width="72" height="16" rx="8" class="ef" opacity=".8"/><rect x="24" y="72" width="56" height="16" rx="8" class="eo"/><path d="M10 100h112" class="ep2"/>'};
 const emptyBox=(art,title,text,btns)=>'<div class="empty eart"><svg viewBox="0 0 132 110" aria-hidden="true">'+EART[art]+'</svg><b>'+title+'</b><p>'+text+'</p>'+(btns?'<div class="erow">'+btns+'</div>':'')+'</div>';
-const DEMO=()=>TESTING?' <button class="btn ghost" data-act="demo">Load demo data</button>':'';
+const demoBtn=()=>TESTING?' <button class="btn ghost" data-act="demo">Load demo data</button>':'';
 const NEWH='<button class="btn" data-act="newhabit">+ New Habit</button> <button class="btn ghost" data-act="tpl" data-v="habits">Templates</button>';
-const emptyHabits=()=>emptyBox('habits','Lay the first layer','Small daily habits are the groundwork. Start with one you can do in two minutes.',NEWH+DEMO());
+const emptyHabits=()=>emptyBox('habits','Lay the first layer','Small daily habits are the groundwork. Start with one you can do in two minutes.',NEWH+demoBtn());
 
 /* ---------- Habits view ---------- */
 function summary(){
@@ -175,7 +175,7 @@ function vToday(){
     return '<div class="trow'+(on?' on':'')+'" data-drag="habits-weekly" data-id="'+h.id+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="wcell" data-h="'+h.id+'" data-w="'+wn+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,wkey(y,m,wn))+'">'+cellIn(h,wkey(y,m,wn),on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This week</span></div>'}).join(''));
   o+=sec('Monthly',byType('monthly').map(h=>{const on=!!L(h)[mkey(y,m)];
     return '<div class="trow'+(on?' on':'')+'" data-drag="habits-monthly" data-id="'+h.id+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+tgt(h,mkey(y,m))+'">'+cellIn(h,mkey(y,m),on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This month</span></div>'}).join(''));
-  if(!S.habits.length)o+=emptyBox('habits','Lay the first layer','Add your first habit to start your day. Pick one you can do in two minutes.',NEWH+DEMO());
+  if(!S.habits.length)o+=emptyBox('habits','Lay the first layer','Add your first habit to start your day. Pick one you can do in two minutes.',NEWH+demoBtn());
   return o;
 }
 

@@ -130,7 +130,7 @@ function heatCard(){
 }
 function vInsights(){
   const dh=byType('daily');
-  if(!dh.length)return emptyBox('insights','Your charts are growing','Insights show up once you have daily habits. Tick them for a few days and your consistency, heatmap and best days appear here.',NEWH+DEMO());
+  if(!dh.length)return emptyBox('insights','Your charts are growing','Insights show up once you have daily habits. Tick them for a few days and your consistency, heatmap and best days appear here.',NEWH+demoBtn());
   if(insHabit!=='all'&&!S.habits.some(h=>h.id===insHabit))insHabit='all';
   insSeries=series(insRange,0,insHabit);
   const big=avgOf(insSeries),hn=insHabit==='all'?'Overall':S.habits.find(h=>h.id===insHabit).name;

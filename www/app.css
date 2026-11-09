@@ -709,3 +709,7 @@ html.notabnames .pnav a span{display:none}
 /* accessibility: no motion when asked for, and visible controls in Windows high-contrast (forced colours) */
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
 @media (forced-colors:active){.cell,.cb,.btn,.gear,.seg button,.opt,.sw{border:1px solid ButtonText!important}.cell.on,.cb.on,.sw[aria-checked=true]{background:Highlight!important;color:HighlightText!important}:focus-visible{outline:2px solid Highlight!important}}
+
+/* in-browser demo: a slim bar on top */
+.demobar{position:sticky;top:0;z-index:60;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;padding:7px 12px;font-size:12.5px;background:color-mix(in srgb,var(--teal) 16%,var(--bg));color:var(--text);border-bottom:1px solid color-mix(in srgb,var(--teal) 35%,transparent)}
+.demobar .link{font-size:12.5px;font-weight:600}

@@ -885,3 +885,6 @@ P85|Challenge: Tag $1 von $2 · $3 erledigt
 P86|Challenge geschafft: $1 von $2 Tagen
 P87|Challenge beendet: $1 von $2 Tagen
 P88|Noch keine Ziele in $1
+800|Demo mit Beispieldaten. Änderungen bleiben in diesem Browser.
+801|App holen
+802|Beispieldaten wiederhergestellt

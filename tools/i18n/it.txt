@@ -885,3 +885,6 @@ P85|Sfida: giorno $1 di $2 · $3 fatti
 P86|Sfida completata: $1 giorni su $2
 P87|Sfida terminata: $1 giorni su $2
 P88|Ancora nessun obiettivo in $1
+800|Demo con dati di esempio. Le modifiche restano in questo browser.
+801|Scarica l’app
+802|Dati di esempio ripristinati

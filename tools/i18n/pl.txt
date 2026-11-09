@@ -885,3 +885,6 @@ P85|Wyzwanie: dzień $1 z $2 · zrobione $3
 P86|Wyzwanie ukończone: $1 z $2 dni
 P87|Wyzwanie zakończone: $1 z $2 dni
 P88|Brak celów w obszarze $1
+800|Demo z przykładowymi danymi. Zmiany zostają w tej przeglądarce.
+801|Pobierz aplikację
+802|Przywrócono przykładowe dane

@@ -78,7 +78,9 @@ const medal=c=>'<svg class="medal" viewBox="0 0 24 24" style="stroke:'+c+'"><cir
 
 /* ---------- state ---------- */
 const $$=q=>[...document.querySelectorAll(q)];
-const KEY='groundwork-v2',APPV='1.7.2',RELEASES='https://github.com/English-Muffin/GroundworkHabits/releases/latest'; // APPV: bump with package.json
+// the in-browser demo (GitHub Pages /demo/, or ?demo): example data under its own keys, never mixed with real data
+const DEMO=/\/demo\/(index\.html)?$/.test(location.pathname)||/[?&]demo(=|&|$)/.test(location.search);
+const KEY=DEMO?'groundwork-demo-v2':'groundwork-v2',APPV='1.7.2',RELEASES='https://github.com/English-Muffin/GroundworkHabits/releases/latest'; // APPV: bump with package.json
 const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'],CNAMED=[['Violet','#8b5cf6'],['Blue','#3b82f6'],['Red','#f43f5e'],['Green','#22c55e'],['Amber','#f59e0b'],['Pink','#ec4899'],['Teal','#14b8a6'],['Slate','#94a3b8']];
 const AREAS=['Health','Fitness','Career','Money','Learning','Relationships','Family','Fun','Home','Mindset'];
 /* PIN encryption: with a PIN, data is saved as 'enc1:<salt>:<base64 iv+AES-GCM>' with a key made from the PIN (PBKDF2).
@@ -134,7 +136,7 @@ window.addEventListener('beforeunload',()=>{if(save.t)writeFile()});
 if(DFS&&DFS.onFlush)DFS.onFlush(async()=>{if(save.t)writeFile();await save.p}); // desktop: finish encrypted saves before the window closes
 const DATA_V=1; // bump and migrate in load-time block below when the saved shape changes
 const TESTING=true; // release builds: false (tools/release_strip.js), which hides demo data and the test hook
-const PKEY='groundwork-prefs',ACCENTS=[['Moss','#9cc96b'],['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
+const PKEY=DEMO?'groundwork-demo-prefs':'groundwork-prefs',ACCENTS=[['Moss','#9cc96b'],['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
 let P={theme:'dark',accent:ACCENTS[0][1],feat:{},remTime:'21:00'};try{Object.assign(P,JSON.parse(localStorage.getItem(PKEY))||{})}catch(e){}
 const hexRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const rgbHex=a=>'#'+a.map(v=>v.toString(16).padStart(2,'0')).join('');
@@ -249,6 +251,7 @@ function clean(d){
   return o;
 }
 let S=clean(load());
+if(DEMO&&!encWait&&!S.habits.length)S=seed(); // first visit to the demo: example data
 if(dataDir&&!readFile())writeFile(); // folder file wins; a new folder gets current data
 ['habits','log','tasks','goals','journal'].forEach(k=>{if(!S[k])S[k]=(k==='habits'||k==='goals')?[]:{}});
 if(!S.v)S.v=1; // pre-versioned saves are v1; add 'if(S.v<2){...;S.v=2}' steps here

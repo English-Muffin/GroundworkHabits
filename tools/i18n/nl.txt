@@ -885,3 +885,6 @@ P85|Uitdaging: dag $1 van $2 · $3 gedaan
 P86|Uitdaging voltooid: $1 van $2 dagen
 P87|Uitdaging afgelopen: $1 van $2 dagen
 P88|Nog geen doelen in $1
+800|Demo met voorbeeldgegevens. Wijzigingen blijven in deze browser.
+801|Download de app
+802|Voorbeeldgegevens hersteld

@@ -120,6 +120,7 @@ document.addEventListener('click',e=>{
       const go=tplTab==='habits'?'habits':tplTab==='tasks'?'tasks':'goals';if(tplTab==='habits')tab='daily';if(view!==go&&view!=='today')location.hash=go;break}
     case 'histundo':persist=false;$('#toast').hidden=true;if(histStep(true)){render();toast('Undone')}break;
     case 'diag':persist=false;(navigator.clipboard?navigator.clipboard.writeText(diagText()):Promise.reject()).then(()=>toast('Diagnostics copied. Paste them into your bug report'),()=>shareFile(diagText(),'groundwork-diagnostics.txt','text/plain','Diagnostics','Diagnostics saved'));break;
+    case 'demoreset':if(!DEMO)break;S=seed();hist=[];redos=[];histJ=null;toast('Example data restored');break;
     case 'toastclose':persist=false;$('#toast').hidden=true;break;
     case 'yearimg':persist=false;yearImage();break;
     case 'sharecard':persist=false;progressImage(t.dataset.v,t.dataset.i);break;

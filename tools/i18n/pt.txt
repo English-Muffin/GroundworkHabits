@@ -885,3 +885,6 @@ P85|Desafio: dia $1 de $2 · $3 feitos
 P86|Desafio concluído: $1 de $2 dias
 P87|Desafio terminado: $1 de $2 dias
 P88|Ainda sem objetivos em $1
+800|Demonstração com dados de exemplo. As alterações ficam neste navegador.
+801|Obter a app
+802|Dados de exemplo repostos

@@ -315,6 +315,13 @@ async def desktop(b):
     await npg.goto(URL + '#settings/about'); await npg.wait_for_timeout(150)
     check('Settings > About offers Copy diagnostics', await npg.locator('#main [data-act=diag]').count() >= 1)
     await nc.close()
+    # the in-browser demo (?demo, GitHub Pages /demo/): example data under its own keys, a banner, real data untouched
+    dc = await b.new_context(viewport={'width': 1280, 'height': 800}); dp = await dc.new_page()
+    await dp.goto(URL + '?demo#habits'); await dp.wait_for_timeout(300)
+    check('demo: example data, a banner, and nothing written to the real data', await dp.evaluate("window.GroundworkTest.state().habits.length>3&&!!document.querySelector('.demobar')&&localStorage.getItem('groundwork-v2')===null"))
+    await dp.click('.demobar [data-act=demoreset]'); await dp.wait_for_timeout(100)
+    check('demo: Reset brings the example data back', await dp.evaluate("window.GroundworkTest.state().habits.length>3"))
+    await dc.close()
     # data saved before the rename (old key names) is carried over on first start
     mig = await b.new_context(); mp = await mig.new_page()
     await mp.add_init_script("if(!sessionStorage.getItem('m')){sessionStorage.setItem('m','1');localStorage.setItem('daybook-v2',JSON.stringify({v:1,habits:[{id:'old1',name:'Old habit',type:'daily',color:'#9cc96b'}],log:{},tasks:{},goals:[]}));localStorage.setItem('daybook-tips','1')}")

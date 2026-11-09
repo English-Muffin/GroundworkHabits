@@ -885,3 +885,6 @@ P85|Défi : jour $1 sur $2 · $3 faits
 P86|Défi réussi : $1 jours sur $2
 P87|Défi terminé : $1 jours sur $2
 P88|Aucun objectif en $1 pour l’instant
+800|Démo avec des données d’exemple. Les modifications restent dans ce navigateur.
+801|Télécharger l’app
+802|Données d’exemple rétablies
