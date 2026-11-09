@@ -1,4 +1,4 @@
-package app.daybook.nativebridge;
+package app.groundwork.nativebridge;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package app.daybook.nativebridge;
+package app.groundwork.nativebridge;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -20,7 +20,7 @@ public class WidgetProvider extends AppWidgetProvider {
     static final int[] NAMES = { R.id.w_n0, R.id.w_n1, R.id.w_n2, R.id.w_n3, R.id.w_n4, R.id.w_n5 };
 
     String key() { return "widget"; }
-    String tick() { return "app.daybook.WIDGET_TICK"; }
+    String tick() { return "app.groundwork.WIDGET_TICK"; }
     int codeBase() { return 300; }
 
     static JSONObject data(Context c, String key) {
@@ -71,7 +71,7 @@ public class WidgetProvider extends AppWidgetProvider {
             it.put("done", true);
             Reminders.prefs(c).edit().putString(key, d.toString()).commit();
             Reminders.addAnswer(c, it.getString("h"), it.getString("k"), "yes");
-            DaybookNativePlugin.answered();
+            GroundworkNativePlugin.answered();
             return true;
         } catch (Exception e) { return false; }
     }

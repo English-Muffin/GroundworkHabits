@@ -1,4 +1,4 @@
-package app.daybook.nativebridge;
+package app.groundwork.nativebridge;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,9 +16,9 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 // Bridge for the web app: schedule habit reminders, collect Yes/No answers given in notifications, fetch the iCal feed.
-@CapacitorPlugin(name = "DaybookNative")
-public class DaybookNativePlugin extends Plugin {
-    static DaybookNativePlugin live;
+@CapacitorPlugin(name = "GroundworkNative")
+public class GroundworkNativePlugin extends Plugin {
+    static GroundworkNativePlugin live;
 
     @Override
     public void load() {
@@ -74,7 +74,7 @@ public class DaybookNativePlugin extends Plugin {
     public void saveFile(PluginCall call) {
         Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
             .setType(call.getString("type", "application/octet-stream"))
-            .putExtra(Intent.EXTRA_TITLE, call.getString("name", "daybook.txt"));
+            .putExtra(Intent.EXTRA_TITLE, call.getString("name", "groundwork.txt"));
         startActivityForResult(call, i, "saved");
     }
 
@@ -94,7 +94,7 @@ public class DaybookNativePlugin extends Plugin {
         }
     }
 
-    // data folder: the user picks a folder once (kept across restarts); daybook.json is read and written there
+    // data folder: the user picks a folder once (kept across restarts); groundwork.json is read and written there
     @PluginMethod
     public void pickFolder(PluginCall call) {
         Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
@@ -146,7 +146,7 @@ public class DaybookNativePlugin extends Plugin {
     @PluginMethod
     public void backup(PluginCall call) {
         String name = call.getString("name", ""), text = call.getString("text", null);
-        if (text == null || !name.matches("daybook-backup-[0-9A-Za-z-]{1,40}[.]json")) { call.reject("Bad backup"); return; }
+        if (text == null || !name.matches("groundwork-backup-[0-9A-Za-z-]{1,40}[.]json")) { call.reject("Bad backup"); return; }
         new Thread(() -> { try { JSObject r = new JSObject(); r.put("where", Folder.backup(getContext(), name, text)); call.resolve(r); } catch (Exception e) { call.reject("Backup failed"); } }).start();
     }
 
@@ -182,13 +182,13 @@ public class DaybookNativePlugin extends Plugin {
     public void bioEnable(PluginCall call) { Bio.enable(getActivity(), call.getString("pin", ""), call.getString("title", "Confirm your fingerprint"), reply(call)); }
 
     @PluginMethod
-    public void bioUnlock(PluginCall call) { Bio.unlock(getActivity(), call.getString("title", "Unlock Daybook"), reply(call)); }
+    public void bioUnlock(PluginCall call) { Bio.unlock(getActivity(), call.getString("title", "Unlock Groundwork Habits"), reply(call)); }
 
     @PluginMethod
     public void bioDisable(PluginCall call) { Bio.clear(getContext()); call.resolve(); }
 
     static void answered() {
-        DaybookNativePlugin p = live;
+        GroundworkNativePlugin p = live;
         if (p != null) p.notifyListeners("answer", new JSObject());
     }
 }

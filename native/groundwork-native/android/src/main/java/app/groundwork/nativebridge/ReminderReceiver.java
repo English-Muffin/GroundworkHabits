@@ -1,4 +1,4 @@
-package app.daybook.nativebridge;
+package app.groundwork.nativebridge;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 // FIRE: show a habit reminder (unless it was already answered Yes). ANSWER: record Yes/No without opening the app.
 public class ReminderReceiver extends BroadcastReceiver {
-    static final String FIRE = "app.daybook.REMINDER_FIRE", ANSWER = "app.daybook.REMINDER_ANSWER";
+    static final String FIRE = "app.groundwork.REMINDER_FIRE", ANSWER = "app.groundwork.REMINDER_ANSWER";
 
     @Override
     public void onReceive(Context c, Intent i) {
@@ -22,7 +22,7 @@ public class ReminderReceiver extends BroadcastReceiver {
             String h = i.getStringExtra("h"), k = i.getStringExtra("k"), a = i.getStringExtra("a");
             if (h != null && k != null && a != null) Reminders.addAnswer(c, h, k, a);
             NotificationManagerCompat.from(c).cancel(id);
-            DaybookNativePlugin.answered();
+            GroundworkNativePlugin.answered();
         }
     }
 }

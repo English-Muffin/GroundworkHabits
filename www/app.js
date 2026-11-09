@@ -15,10 +15,10 @@ const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','D
 const MONR=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 /* translations: the English text in the code is the key. i18n/<lang>.js (loaded by index.html before this file) sets
-   window.DAYBOOK_I18N={t:{English:translation}, p:[[regex source, replacement]]}. After each render the visible text,
+   window.GROUNDWORK_I18N={t:{English:translation}, p:[[regex source, replacement]]}. After each render the visible text,
    placeholders and labels are swapped; user content (names, notes, task text) is never touched. */
 const LANGS=[['en','English'],['pt','Português'],['es','Español'],['fr','Français'],['de','Deutsch'],['it','Italiano'],['nl','Nederlands'],['pl','Polski'],['ru','Русский'],['zh','中文'],['ja','日本語']];
-const I18=window.DAYBOOK_I18N||{t:{},p:[]},LANG=window.DAYBOOK_LANG&&I18.lang===window.DAYBOOK_LANG?window.DAYBOOK_LANG:'en';
+const I18=window.GROUNDWORK_I18N||{t:{},p:[]},LANG=window.GROUNDWORK_LANG&&I18.lang===window.GROUNDWORK_LANG?window.GROUNDWORK_LANG:'en';
 const I18P=(I18.p||[]).map(x=>[new RegExp(x[0]),x[1]]);
 if(LANG!=='en'){const loc=LANG==='zh'?'zh-CN':LANG,f=(o,i)=>new Intl.DateTimeFormat(loc,o).format(i),cap=x=>x.charAt(0).toUpperCase()+x.slice(1);
   for(let i=0;i<7;i++)DAYS[i]=cap(f({weekday:'long'},new Date(2023,0,1+i)));
@@ -72,7 +72,7 @@ const medal=c=>'<svg class="medal" viewBox="0 0 24 24" style="stroke:'+c+'"><cir
 
 /* ---------- state ---------- */
 const $$=q=>[...document.querySelectorAll(q)];
-const KEY='daybook-v2',APPV='1.7.2',RELEASES='https://github.com/English-Muffin/GroundworkHabits/releases/latest'; // APPV: bump with package.json
+const KEY='groundwork-v2',APPV='1.7.2',RELEASES='https://github.com/English-Muffin/GroundworkHabits/releases/latest'; // APPV: bump with package.json
 const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'],CNAMED=[['Violet','#8b5cf6'],['Blue','#3b82f6'],['Red','#f43f5e'],['Green','#22c55e'],['Amber','#f59e0b'],['Pink','#ec4899'],['Teal','#14b8a6'],['Slate','#94a3b8']];
 const AREAS=['Health','Fitness','Career','Money','Learning','Relationships','Family','Fun','Home','Mindset'];
 /* PIN encryption: with a PIN, data is saved as 'enc1:<salt>:<base64 iv+AES-GCM>' with a key made from the PIN (PBKDF2).
@@ -90,7 +90,7 @@ const encOn=()=>!!(P.lock&&P.lock.enc);
 function load(){try{const r=localStorage.getItem(KEY);if(isEnc(r)){encWait=true;return null}return r?JSON.parse(r):null}catch(e){return null}}
 // encrypting is async: saves are chained so they land in order (desktop waits for them before closing)
 function saveRaw(j,put){if(!encOn()){put(j);return}if(!encKey)return;const key=encKey,salt=P.lock.salt;save.p=(save.p||Promise.resolve()).then(()=>encText(j,key,salt)).then(put).catch(()=>{})}
-/* Android data folder (a synced folder gives cloud sync): daybook.json is written a moment after each save and read when the app comes back */
+/* Android data folder (a synced folder gives cloud sync): groundwork.json is written a moment after each save and read when the app comes back */
 let andText=null;
 function andWrite(){if(!NB||!P.andDir||encWait)return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{if(t===andText)return;NB.writeFolder({text:t}).then(()=>{andText=t}).catch(()=>toast('Could not save to your data folder'))}),800)}
 async function andApply(t,announce){try{const j=isEnc(t)?(encKey?await decText(t,encKey):null):t;if(j===null)return;const d=JSON.parse(j);if(!d||!Array.isArray(d.habits))return;
@@ -103,8 +103,8 @@ function pushWidget(){if(!NB||!NB.widget||WIDGET||encWait)return;clearTimeout(pu
     tasks:{locked:!!P.lock,lockedText:tx('Groundwork Habits is locked'),emptyText:tx('No tasks today'),title:tx('Tasks today'),
     items:P.lock?[]:vis(((S.tasks[k]||{}).items)||[]).slice(0,6).map(t=>({h:t.id,k,name:t.text,done:!!t.done}))}}).catch(()=>{})},600)}
 function save(){if(encWait)return;andWrite();pushWidget();saveRaw(JSON.stringify(S),t=>{try{localStorage.setItem(KEY,t)}catch(e){}});clearTimeout(save.r);save.r=setTimeout(()=>syncReminders(),1500);if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
-/* desktop only: mirror data to <folder>/daybook.json (a Drive/OneDrive/Dropbox folder gives cloud sync) */
-const DFS=window.daybookFS||null,NB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.DaybookNative||null,calFetch=DFS&&DFS.fetchCal?DFS.fetchCal:NB?(u=>NB.fetchCal({url:u})):null;let dataDir=DFS?DFS.folder():'',fileText=null,fileJson=null;
+/* desktop only: mirror data to <folder>/groundwork.json (a Drive/OneDrive/Dropbox folder gives cloud sync) */
+const DFS=window.groundworkFS||null,NB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.GroundworkNative||null,calFetch=DFS&&DFS.fetchCal?DFS.fetchCal:NB?(u=>NB.fetchCal({url:u})):null;let dataDir=DFS?DFS.folder():'',fileText=null,fileJson=null;
 function writeFile(){clearTimeout(save.t);save.t=0;if(!dataDir||encWait)return;const j=JSON.stringify(S);if(j===fileJson)return;
   saveRaw(j,t=>{if(DFS.write(t)){fileJson=j;fileText=t}else toast('Could not save to your data folder')})}
 // the folder file wins over this device; an encrypted file is opened with the key once the PIN is in (async, renders itself)
@@ -116,7 +116,7 @@ window.addEventListener('beforeunload',()=>{if(save.t)writeFile()});
 if(DFS&&DFS.onFlush)DFS.onFlush(async()=>{if(save.t)writeFile();await save.p}); // desktop: finish encrypted saves before the window closes
 const DATA_V=1; // bump and migrate in load-time block below when the saved shape changes
 const TESTING=true; // release builds: false (tools/release_strip.js), which hides demo data and the test hook
-const PKEY='daybook-prefs',ACCENTS=[['Moss','#9cc96b'],['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
+const PKEY='groundwork-prefs',ACCENTS=[['Moss','#9cc96b'],['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
 let P={theme:'dark',accent:ACCENTS[0][1],feat:{},remTime:'21:00'};try{Object.assign(P,JSON.parse(localStorage.getItem(PKEY))||{})}catch(e){}
 const hexRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const rgbHex=a=>'#'+a.map(v=>v.toString(16).padStart(2,'0')).join('');
@@ -1188,7 +1188,7 @@ function undoLast(){const f=undos.pop();if(!f)return false;f();return true}
 const putBack=(arr,i,x)=>{if(!arr.some(y=>y.id===x.id))arr.splice(Math.min(i,arr.length),0,x)};
 let toastAction=null;
 function toastAct(msg,label,act){const t=$('#toast');t.innerHTML=esc(tx(msg))+'<button class="tundo" data-act="'+act+'">'+esc(tx(label))+'</button>';t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true;toastAction=null},10000)}
-function notify(title,body){try{if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body,tag:'daybook-'+title})}catch(e){}}
+function notify(title,body){try{if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body,tag:'groundwork-'+title})}catch(e){}}
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.35].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;g.gain.setValueAtTime(.0001,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.2,a.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+t+.25);o.connect(g).connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+.3)})}catch(e){}}
 function toastUndo(msg,more){const t=$('#toast');t.innerHTML=esc(tx(msg))+(more?'<button class="tundo" data-act="'+more[1]+'">'+esc(tx(more[0]))+'</button>':'')+'<button class="tundo" data-act="undo">'+tx('Undo')+'</button>';t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true},6000)}
 /* focus timer: one running session, shown as a bar; keeps counting when you switch tabs */
@@ -1215,12 +1215,12 @@ function lockHtml(){return '<div class="lockbox" role="dialog" aria-modal="true"
 async function openWithPin(pin){
   const raw=localStorage.getItem(KEY);
   if(P.lock&&P.lock.hash&&!P.lock.enc){if(await pinHash(pin,P.lock.salt)!==P.lock.hash)return false;
-    encKey=await deriveKey(pin,P.lock.salt);P.lock={salt:P.lock.salt,enc:1,check:await encText('daybook',encKey,P.lock.salt)};applyPrefs();save();if(dataDir){fileJson=null;writeFile()}return true}
+    encKey=await deriveKey(pin,P.lock.salt);P.lock={salt:P.lock.salt,enc:1,check:await encText('groundwork',encKey,P.lock.salt)};applyPrefs();save();if(dataDir){fileJson=null;writeFile()}return true}
   const salt=P.lock&&P.lock.salt||encSalt(raw);if(!salt)return false;
   try{const key=await deriveKey(pin,salt);
     if(P.lock&&P.lock.check)await decText(P.lock.check,key);
     if(isEnc(raw)){const j=await decText(raw,key);if(encWait){S=clean(JSON.parse(j));encWait=false}}
-    encWait=false;encKey=key;if(!P.lock||!P.lock.enc){P.lock={salt,enc:1,check:await encText('daybook',key,salt)};applyPrefs()}return true}catch(e){return false}}
+    encWait=false;encKey=key;if(!P.lock||!P.lock.enc){P.lock={salt,enc:1,check:await encText('groundwork',key,salt)};applyPrefs()}return true}catch(e){return false}}
 function unlocked(pin){locked=false;lockTries=0;lockForgot=false;if(dataDir)readFile();andRead();autoBackup();takeAnswers().then(syncReminders);pushWidget();render();
   if(bioOk&&!P.bio&&!P.bioNo&&pin){bioPin=pin;toastAct('Unlock with your fingerprint next time?','Turn on','bioon')}}
 // fingerprint / face unlock (Android): the PIN is kept encrypted by a key only the fingerprint can open
@@ -1236,7 +1236,7 @@ async function tryUnlock(){
 }
 // lock: after a minute hidden, or 5 minutes without input (the widget is never hidden); locking one window locks every window
 let lastInput=Date.now();
-function lockNow(share){if(!P.lock||locked)return;locked=true;modal=null;menuOpen=false;render();if(share)try{localStorage.setItem('daybook-locked',String(Date.now()))}catch(e){}}
+function lockNow(share){if(!P.lock||locked)return;locked=true;modal=null;menuOpen=false;render();if(share)try{localStorage.setItem('groundwork-locked',String(Date.now()))}catch(e){}}
 ['pointerdown','keydown','wheel','touchstart'].forEach(t=>document.addEventListener(t,()=>{lastInput=Date.now()},{passive:true,capture:true}));
 setInterval(()=>{if(P.lock&&!locked&&Date.now()-lastInput>(P.lockIdle||5)*60000)lockNow(true)},15000);
 document.addEventListener('visibilitychange',()=>{if(!P.lock)return;if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>60000)lockNow(true)});
@@ -1281,14 +1281,14 @@ document.addEventListener('click',e=>{
     case 'pickdir':persist=false;menuOpen=false;DFS.choose().then(res=>{if(!res)return;dataDir=res.folder;fileText=null;
       if(res.mode==='load'&&readFile()){render();toast('Loaded the save from that folder')}else{writeFile();render();toast('Groundwork Habits now saves to that folder')}});break;
     case 'resetdir':DFS.reset();dataDir='';fileText=null;persist=false;toast('Saving to app storage only');break;
-    case 'calexport':menuOpen=false;persist=false;shareFile(tasksToIcs(),'daybook-tasks-'+dk(TODAY)+'.ics','text/calendar','Groundwork Habits tasks','Calendar file downloaded. Import it in Google Calendar: Settings, Import & export');break;
+    case 'calexport':menuOpen=false;persist=false;shareFile(tasksToIcs(),'groundwork-tasks-'+dk(TODAY)+'.ics','text/calendar','Groundwork Habits tasks','Calendar file downloaded. Import it in Google Calendar: Settings, Import & export');break;
     case 'calset':menuOpen=false;persist=false;modal={kind:'cal',url:''};focusSel='#calUrl';break;
     case 'calsave':{const u=($('#calUrl').value||'').trim().replace(/^webcal:/i,'https:');
       if(!/^https:\/\/\S+$/i.test(u)){$('#calUrl').focus();toast('Paste the calendar’s secret iCal address (starts with https://)');return}
       P.cal=u;applyPrefs();modal=null;persist=false;pullCalendar(true);break}
     case 'calsync':menuOpen=false;persist=false;pullCalendar(true);break;
     case 'caloff':{P.cal='';P.calAt=0;applyPrefs();Object.keys(S.tasks).forEach(k=>{S.tasks[k].items=S.tasks[k].items.filter(it=>!it.cal)});toast('Calendar sync stopped');break}
-    case 'csv':menuOpen=false;persist=false;shareFile(toCsv(),'daybook-'+dk(TODAY)+'.csv','text/csv','Groundwork Habits spreadsheet','Spreadsheet downloaded');break;
+    case 'csv':menuOpen=false;persist=false;shareFile(toCsv(),'groundwork-'+dk(TODAY)+'.csv','text/csv','Groundwork Habits spreadsheet','Spreadsheet downloaded');break;
     case 'export':menuOpen=false;persist=false;exportData();break;
     case 'import':menuOpen=false;persist=false;$('#impFile').click();break;
     case 'impext':{persist=false;const f=document.createElement('input');f.type='file';f.accept='.zip,.csv,.json,text/csv,application/json,application/zip';
@@ -1382,7 +1382,7 @@ document.addEventListener('click',e=>{
     case 'trem':{const it=findT(t.dataset.i,t.dataset.k);if(!it)break;modal={kind:'trem',k:t.dataset.k,i:it.id,rem:it.rem?it.rem.m:'',remT:it.rem?it.rem.t:'09:00'};addingTask=null;persist=false;break}
     case 'tremsave':{const it=findT(modal.i,modal.k);if(!it){modal=null;break}const rt=($('#mRemT')||{}).value||modal.remT;
       it.rem=modal.rem&&/^([01]\d|2[0-3]):[0-5]\d$/.test(rt)?{t:rt,m:modal.rem}:undefined;if(!it.rem)delete it.rem;else{remAsk();remSkip(it.id,modal.k,it.rem)}modal=null;break}
-    case 'modalclose':case 'ovclose':if(modal&&modal.kind==='tips')try{localStorage.setItem('daybook-tips','1')}catch(e){}modal=null;persist=false;break;
+    case 'modalclose':case 'ovclose':if(modal&&modal.kind==='tips')try{localStorage.setItem('groundwork-tips','1')}catch(e){}modal=null;persist=false;break;
     case 'msave':{
       const nm=($('#mName').value||'').trim();if(!nm){$('#mName').focus();return}
       const tg=modal.track==='count'&&$('#mTarget')?clamp(Math.round(+$('#mTarget').value)||2,2,99):1,tr=modal.track,un=tr==='amount'?(($('#mUnit')||{}).value||'').replace(/[<>"'&`=]/g,'').trim().slice(0,12):'',gl=tr==='amount'?Math.max(0,+(($('#mGoal')||{}).value)||0):0,per=modal.type==='daily'&&$('#mPer')?clamp(Math.round(+$('#mPer').value)||7,1,7):7,rt=($('#mRemT')||{}).value||modal.remT,rem=modal.rem&&/^([01]\d|2[0-3]):[0-5]\d$/.test(rt)?{t:rt,m:modal.rem}:null;
@@ -1448,7 +1448,7 @@ document.addEventListener('click',e=>{
       if(a!==b){toast('The two PINs don’t match');$('#pin2').focus();return}
       const salt=[...crypto.getRandomValues(new Uint8Array(16))].map(x=>x.toString(16).padStart(2,'0')).join('');
       if(P.bio&&NB){NB.bioDisable();P.bio=false}
-      deriveKey(a,salt).then(async key=>{encKey=key;P.lock={salt,enc:1,check:await encText('daybook',key,salt)};applyPrefs();save();if(bioOk&&!P.bioNo){bioPin=a;setTimeout(()=>toastAct('Unlock with your fingerprint too?','Turn on','bioon'),1800)}if(dataDir){fileJson=null;writeFile()}modal=null;toast('PIN set. Your data is now encrypted');render()});return}
+      deriveKey(a,salt).then(async key=>{encKey=key;P.lock={salt,enc:1,check:await encText('groundwork',key,salt)};applyPrefs();save();if(bioOk&&!P.bioNo){bioPin=a;setTimeout(()=>toastAct('Unlock with your fingerprint too?','Turn on','bioon'),1800)}if(dataDir){fileJson=null;writeFile()}modal=null;toast('PIN set. Your data is now encrypted');render()});return}
     case 'pinoff':if(!confirmPinOff){confirmPinOff=true;persist=false;break}if(P.bio&&NB){NB.bioDisable();P.bio=false}P.lock=null;encKey=null;confirmPinOff=false;applyPrefs();fileJson=null;persist=true;toast('PIN removed');break;
     case 'unlock':persist=false;tryUnlock();return;
     case 'bio':persist=false;bioTry();return;
@@ -1463,7 +1463,7 @@ document.addEventListener('click',e=>{
     case 'widget':menuOpen=false;persist=false;if(DFS&&DFS.widget)DFS.widget();break;
     case 'wmain':persist=false;if(DFS&&DFS.showMain)DFS.showMain();break;
     case 'featfold':featOpen=!featOpen;persist=false;break;
-    case 'tipsok':modal=null;persist=false;try{localStorage.setItem('daybook-tips','1')}catch(e){}break;
+    case 'tipsok':modal=null;persist=false;try{localStorage.setItem('groundwork-tips','1')}catch(e){}break;
     case 'tipsshow':modal={kind:'tips'};menuOpen=false;persist=false;break;
     case 'tdelrep':{if(!lastDel)break;let n=0;const gone=[];Object.keys(S.tasks).forEach(k=>{if(k>lastDel.k){S.tasks[k].items.forEach((it,i)=>{if(it.rep===lastDel.rep)gone.push([k,i,it])});const b=S.tasks[k].items.length;S.tasks[k].items=S.tasks[k].items.filter(i=>i.rep!==lastDel.rep);n+=b-S.tasks[k].items.length}});
       if(gone.length)pushUndo(()=>gone.forEach(([k,i,it])=>putBack((S.tasks[k]=S.tasks[k]||{items:[],mind:null}).items,i,it)));
@@ -1507,7 +1507,7 @@ document.addEventListener('keydown',e=>{
     }else if(e.key==='Escape'){addingTask=null;addingText='';repSel={rep:'',until:'m',open:''};render()}
   }
   if(e.target.dataset&&(e.target.dataset.et||e.target.dataset.eg)&&(e.key==='Enter'||e.key==='Escape')){e.preventDefault();e.target.blur();return}
-  if(modal&&e.key==='Escape'){if(modal.kind==='tips')try{localStorage.setItem('daybook-tips','1')}catch(_){}modal=null;render()}
+  if(modal&&e.key==='Escape'){if(modal.kind==='tips')try{localStorage.setItem('groundwork-tips','1')}catch(_){}modal=null;render()}
   if(modal&&e.key==='Enter'&&e.target.id==='gvAmt'){e.preventDefault();$('[data-act=gvalsave]').click();return}
   if(modal&&e.key==='Enter'&&['qTask','qAmt','bioPin'].includes(e.target.id)){e.preventDefault();$('[data-act='+({qTask:'qtask',qAmt:'qgoal',bioPin:'biook'})[e.target.id]+']').click();return}
   if(modal&&e.key==='Enter'&&e.target.id==='impPin'){e.preventDefault();$('[data-act=impok]').click();return}
@@ -1669,7 +1669,7 @@ let backAt=0;
 function onBack(){
   if(pk){pkClose();return}
   if(!locked){
-    if(modal){if(modal.kind==='tips')try{localStorage.setItem('daybook-tips','1')}catch(_){}modal=null;render();return}
+    if(modal){if(modal.kind==='tips')try{localStorage.setItem('groundwork-tips','1')}catch(_){}modal=null;render();return}
     if(menuOpen||insMenu||addingTask||(cpOpen.accent&&view==='settings')){menuOpen=false;insMenu=null;addingTask=null;cpOpen={};render();return}
     if(view==='settings'){location.hash=setSec&&!wideSet()?'settings':setBack;return}}
   if(Date.now()-backAt<2000){if(NB&&NB.exitApp)NB.exitApp();return}
@@ -1707,12 +1707,12 @@ function toCsv(){
 }
 // the backup file: encrypted with the PIN's key when a PIN is set (import asks for that PIN)
 async function backupText(){const j=JSON.stringify(S,null,1);return encOn()&&encKey?encText(j,encKey,P.lock.salt):j}
-async function exportData(){const t=await backupText();shareFile(t,'daybook-backup-'+dk(TODAY)+(isEnc(t)?'-encrypted':'')+'.json','application/json','Groundwork Habits backup',isEnc(t)?'Encrypted backup downloaded. Importing it asks for your PIN':'Backup downloaded')}
+async function exportData(){const t=await backupText();shareFile(t,'groundwork-backup-'+dk(TODAY)+(isEnc(t)?'-encrypted':'')+'.json','application/json','Groundwork Habits backup',isEnc(t)?'Encrypted backup downloaded. Importing it asks for your PIN':'Backup downloaded')}
 // weekly automatic backup: desktop to <data folder or app data>/backups, Android to the chosen folder's backups or app storage; newest 8 kept
 async function autoBackup(force){
   if(encWait||locked&&!encKey||WIDGET||!hasData())return;const can=DFS&&DFS.backup||NB&&NB.backup;if(!can)return;
   const every=P.bakEvery===undefined?7:P.bakEvery;if(!force&&(!every||Date.now()-(P.bakAt||0)<every*864e5))return;
-  try{const t=await backupText(),name='daybook-backup-'+dk(TODAY)+'.json',where=DFS&&DFS.backup?await DFS.backup(name,t):(await NB.backup({name,text:t})).where;
+  try{const t=await backupText(),name='groundwork-backup-'+dk(TODAY)+'.json',where=DFS&&DFS.backup?await DFS.backup(name,t):(await NB.backup({name,text:t})).where;
     if(where){P.bakAt=Date.now();P.bakWhere=String(where).slice(0,300);applyPrefs();if(force)toast('Backup saved')}else if(force)toast('Backup failed')}catch(e){if(force)toast('Backup failed')}}
 function applyImport(d){if(!d||!Array.isArray(d.habits))throw new Error('bad');S=clean(d);save();if(view==='settings')location.hash=setBack;render();toast('Backup restored')}
 
@@ -1725,7 +1725,7 @@ function tasksToIcs(){
   const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Groundwork Habits//Tasks//EN','CALSCALE:GREGORIAN','X-WR-CALNAME:Groundwork Habits tasks'],stamp=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
   Object.keys(S.tasks).sort().forEach(k=>S.tasks[k].items.forEach(it=>{if(it.cal||!it.text.trim())return; // calendar events stay in the calendar
     const d=k.replace(/-/g,''),n=dk(addDays(new Date(k+'T00:00'),1)).replace(/-/g,'');
-    L.push('BEGIN:VEVENT','UID:'+it.id+'@daybook','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+d,'DTEND;VALUE=DATE:'+n,'SUMMARY:'+icsEsc((it.done?'[done] ':'')+it.text),'TRANSP:TRANSPARENT','END:VEVENT')}));
+    L.push('BEGIN:VEVENT','UID:'+it.id+'@groundwork','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+d,'DTEND;VALUE=DATE:'+n,'SUMMARY:'+icsEsc((it.done?'[done] ':'')+it.text),'TRANSP:TRANSPARENT','END:VEVENT')}));
   L.push('END:VCALENDAR');return L.join('\r\n')+'\r\n';
 }
 // parse VEVENTs into {uid,text,day}; shortcut: recurring events (RRULE) only appear on their first date, expand RRULE if users need repeats
@@ -1831,10 +1831,10 @@ window.addEventListener('focus',refreshToday);
 window.addEventListener('storage',e=>{
   if(e.key===KEY&&e.newValue&&!encWait){if(isEnc(e.newValue)){if(encKey)decText(e.newValue,encKey).then(j=>{if(j!==JSON.stringify(S)){S=clean(JSON.parse(j));if(!modal&&!drag)render()}}).catch(()=>{})}
     else if(e.newValue!==JSON.stringify(S)){try{S=clean(JSON.parse(e.newValue));if(!modal&&!drag)render()}catch(_){}}}
-  if(e.key==='daybook-locked'){lockNow(false);return}
+  if(e.key==='groundwork-locked'){lockNow(false);return}
   if(e.key===PKEY&&e.newValue){try{const was=P.lock&&P.lock.salt;Object.assign(P,JSON.parse(e.newValue));if(P.lock&&P.lock.salt!==was){locked=true;encKey=null}if(!P.lock){P.lock=null;encKey=null}const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');d.classList.toggle('notabnames',P.tabNames===false);if(!modal&&!drag)render()}catch(_){}}
 });
-if(TESTING)window.DaybookTest={parseExternal,mergeExternal,tplAdd,parseIcs,applyCalendar,tasksToIcs,state:()=>S,remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
+if(TESTING)window.GroundworkTest={parseExternal,mergeExternal,tplAdd,parseIcs,applyCalendar,tasksToIcs,state:()=>S,remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
 pullCalendar();let calTick=0;
 // daily reminder: a notification at the chosen time if daily habits are still open (only while Groundwork Habits is running)
 // Android app: a real daily notification scheduled with Capacitor Local Notifications (works when the app is closed)
@@ -1855,7 +1855,7 @@ function checkReminder(){
   const n=new Date(),[hh,mm]=(P.remTime||'21:00').split(':').map(Number),k=dk(TODAY);
   if(P.remDay===k||n.getHours()*60+n.getMinutes()<hh*60+mm)return;
   P.remDay=k;applyPrefs();const t=doneToday();
-  if(t.total&&t.done<t.total)try{new Notification('Groundwork Habits',{body:(t.total-t.done)+' of '+t.total+' habits still to do today. You’ve got this.',tag:'daybook-reminder'})}catch(e){}
+  if(t.total&&t.done<t.total)try{new Notification('Groundwork Habits',{body:(t.total-t.done)+' of '+t.total+' habits still to do today. You’ve got this.',tag:'groundwork-reminder'})}catch(e){}
 }
 /* per-habit reminders: h.rem={t:'HH:MM', m:'ask'|'alarm'}. Android schedules real notifications with Yes/No buttons;
    desktop opens a small always-on-top pop-up, the web app shows a notification and an in-app question (only while running) */
@@ -1886,17 +1886,17 @@ function checkHabitReminders(){
   S.habits.forEach(h=>{if(!h.rem)return;const [hh,mm]=h.rem.t.split(':').map(Number),k=pKey(h,TODAY);
     if(isRest(h,TODAY)||(P.remFired||{})[h.id]===d||now<hh*60+mm)return;P.remFired=Object.assign({},P.remFired,{[h.id]:d});applyPrefs();if(L(h)[k])return;
     if(DFS&&DFS.ask){DFS.ask(h.id,k);return}
-    try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(h.name),{body:remBody('Have you done it '+perWord(h)+'?','habit'),tag:'daybook-h-'+h.id,requireInteraction:true,silent:h.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
+    try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(h.name),{body:remBody('Have you done it '+perWord(h)+'?','habit'),tag:'groundwork-h-'+h.id,requireInteraction:true,silent:h.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
     if(!modal&&!locked){modal={kind:'ask',h:h.id,k};render()}if(h.rem.m==='alarm')alarmStart()});
   goalDue().forEach(([g,key,at,txt])=>{if(dk(at)!==d||n<at||(P.remFired||{})[key]===d)return;P.remFired=Object.assign({},P.remFired,{[key]:d});applyPrefs();
-    try{if('Notification' in window&&Notification.permission==='granted')new Notification('Groundwork Habits',{body:feat('remnames')?txt:'A goal deadline is coming up',tag:'daybook-'+key})}catch(e){}toast(txt)});
+    try{if('Notification' in window&&Notification.permission==='granted')new Notification('Groundwork Habits',{body:feat('remnames')?txt:'A goal deadline is coming up',tag:'groundwork-'+key})}catch(e){}toast(txt)});
   ((S.tasks[d]||{}).items||[]).forEach(it=>{if(!it.rem||it.done||it.hidden||it.cal)return;const [hh,mm]=it.rem.t.split(':').map(Number);
     if((P.remFired||{})[it.id]===d||now<hh*60+mm)return;P.remFired=Object.assign({},P.remFired,{[it.id]:d});applyPrefs();
     if(DFS&&DFS.ask){DFS.ask(it.id,d);return}
-    try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(it.text),{body:remBody('Have you done it?','task'),tag:'daybook-t-'+it.id,requireInteraction:true,silent:it.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
+    try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(it.text),{body:remBody('Have you done it?','task'),tag:'groundwork-t-'+it.id,requireInteraction:true,silent:it.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
     if(!modal&&!locked){modal={kind:'ask',h:it.id,k:d};render()}if(it.rem.m==='alarm')alarmStart()})}
 if(ASK){const h=findH(ASK.h),t=findT(ASK.h,ASK.k);if(h&&h.rem&&h.rem.m==='alarm'&&!L(h)[ASK.k]||t&&t.rem&&t.rem.m==='alarm'&&!t.done)alarmStart()}
-// Android: the DaybookNative plugin posts the notifications; Yes/No are stored natively and applied here when the app runs
+// Android: the GroundworkNative plugin posts the notifications; Yes/No are stored natively and applied here when the app runs
 async function takeAnswers(){
   if(!NB||encWait)return;try{const r=await NB.takeAnswers();(r.answers||[]).forEach(a=>{if(a.a==='yes')remYes(a.h,a.k)})}catch(e){}
 }
@@ -1932,6 +1932,6 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/.test(navigator.userAgent)){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
-if(!WIDGET&&!locked){try{if(!localStorage.getItem('daybook-tips'))modal={kind:'tips'}}catch(e){}} // first open: show the tips once
+if(!WIDGET&&!locked){try{if(!localStorage.getItem('groundwork-tips'))modal={kind:'tips'}}catch(e){}} // first open: show the tips once
 render();
 })();

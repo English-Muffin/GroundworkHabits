@@ -1,21 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
-        <receiver android:name="app.daybook.nativebridge.ReminderReceiver" android:exported="false" />
-        <receiver android:name="app.daybook.nativebridge.BootReceiver" android:exported="false">
+        <receiver android:name="app.groundwork.nativebridge.ReminderReceiver" android:exported="false" />
+        <receiver android:name="app.groundwork.nativebridge.BootReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="app.daybook.nativebridge.WidgetProvider" android:exported="false" android:label="Groundwork Habits">
+        <receiver android:name="app.groundwork.nativebridge.WidgetProvider" android:exported="false" android:label="Groundwork Habits">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/dbk_widget_info" />
         </receiver>
-        <receiver android:name="app.daybook.nativebridge.TaskWidgetProvider" android:exported="false" android:label="Groundwork Habits tasks">
+        <receiver android:name="app.groundwork.nativebridge.TaskWidgetProvider" android:exported="false" android:label="Groundwork Habits tasks">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/dbk_tasks_info" />
         </receiver>
-        <service android:name="app.daybook.nativebridge.QsTile" android:exported="true" android:label="@string/dbk_tile_label"
+        <service android:name="app.groundwork.nativebridge.QsTile" android:exported="true" android:label="@string/dbk_tile_label"
             android:icon="@drawable/dbk_stat" android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter><action android:name="android.service.quicksettings.action.QS_TILE" /></intent-filter>
             <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="false" />

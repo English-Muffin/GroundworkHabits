@@ -22,7 +22,7 @@
     "electron-builder": "^25.1.8"
   },
   "build": {
-    "appId": "com.daybook.app",
+    "appId": "com.groundwork.habits",
     "productName": "Groundwork Habits",
     "files": [
       "electron/**",
@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "@capacitor/local-notifications": "^6.1.3",
-    "daybook-native": "file:native/daybook-native"
+    "groundwork-native": "file:native/groundwork-native"
   },
   "repository": {
     "type": "git",

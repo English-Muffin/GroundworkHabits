@@ -1,4 +1,4 @@
-# Contributing to Daybook
+# Contributing to Groundwork Habits
 
 Thanks for helping. Bug reports, ideas and pull requests are all welcome.
 

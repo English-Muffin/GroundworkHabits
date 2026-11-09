@@ -18,6 +18,6 @@ for f in sorted(D.glob('*.txt')):
         if v is None: print(f'{lang}: missing pattern P{i}'); bad += 1; continue
         if sorted(re.findall(r'\$\d', v)) != sorted(re.findall(r'\$\d', en)): print(f'{lang}: P{i} placeholders differ'); bad += 1
         p.append([rx, v])
-    (OUT / f'{lang}.js').write_text('window.DAYBOOK_I18N=' + json.dumps({'lang': lang, 't': t, 'p': p}, ensure_ascii=False, separators=(',', ':')) + ';\n', encoding='utf-8')
+    (OUT / f'{lang}.js').write_text('window.GROUNDWORK_I18N=' + json.dumps({'lang': lang, 't': t, 'p': p}, ensure_ascii=False, separators=(',', ':')) + ';\n', encoding='utf-8')
     print(f'{lang}: {len(t)} strings, {len(p)} patterns')
 sys.exit(1 if bad else 0)

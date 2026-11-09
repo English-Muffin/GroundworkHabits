@@ -65,14 +65,14 @@ async def run():
         for w, h in [(320, 640), (390, 844), (768, 1024), (1024, 768), (1280, 800), (1920, 1080)]:
             for th in ['dark', 'light', 'amoled']:
                 ctx = await b.new_context(viewport={'width': w, 'height': h}, has_touch=w < 800, is_mobile=w < 800)
-                await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')")
+                await ctx.add_init_script("localStorage.getItem('groundwork-tips')||localStorage.setItem('groundwork-tips','1')")
                 pg = await ctx.new_page(); errs = []
                 pg.on('pageerror', lambda e: errs.append(str(e)))
                 await pg.goto(URL)
                 big = await pg.evaluate(BIG)
-                await pg.evaluate("([d,t])=>{localStorage.setItem('daybook-v2',d);localStorage.setItem('daybook-prefs',JSON.stringify({theme:t,accent:'#98c4fb',feat:{reminder:false}}))}", [big, th])
+                await pg.evaluate("([d,t])=>{localStorage.setItem('groundwork-v2',d);localStorage.setItem('groundwork-prefs',JSON.stringify({theme:t,accent:'#98c4fb',feat:{reminder:false}}))}", [big, th])
                 await pg.reload(); await pg.wait_for_timeout(200)
-                assert await pg.evaluate("JSON.parse(localStorage.getItem('daybook-v2')).habits.length") == 40
+                assert await pg.evaluate("JSON.parse(localStorage.getItem('groundwork-v2')).habits.length") == 40
                 for v in VIEWS:
                     await pg.evaluate(f"location.hash='{v}'"); await pg.wait_for_timeout(300)
                     note(f'{w}px {th} {v}', await pg.evaluate(LAYOUT))
@@ -93,9 +93,9 @@ async def run():
         SAFE_SKIP = {'fresh', 'demo', 'import', 'export', 'csv', 'calexport', 'pickdir', 'resetdir', 'widget', 'calset', 'pinset', 'pinforgot', 'wmain', 'calsync', 'goto'}
         for w, h in [(1280, 800), (390, 844)]:
             ctx = await b.new_context(viewport={'width': w, 'height': h}, accept_downloads=True); pg = await ctx.new_page()
-            await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')"); errs = []
+            await ctx.add_init_script("localStorage.getItem('groundwork-tips')||localStorage.setItem('groundwork-tips','1')"); errs = []
             pg.on('pageerror', lambda e: errs.append(str(e)))
-            await pg.goto(URL); big = await pg.evaluate(BIG); await pg.evaluate("d=>{localStorage.setItem('daybook-v2',d);localStorage.removeItem('daybook-prefs')}", big); await pg.reload()
+            await pg.goto(URL); big = await pg.evaluate(BIG); await pg.evaluate("d=>{localStorage.setItem('groundwork-v2',d);localStorage.removeItem('groundwork-prefs')}", big); await pg.reload()
             random.seed(7 + w)
             for i in range(600):
                 if i % 60 == 0: await pg.evaluate(f"location.hash='{random.choice(VIEWS)}'")
@@ -108,13 +108,13 @@ async def run():
                     await pg.evaluate(f"(()=>{{const e=[...document.querySelectorAll('[data-act]')].filter(e=>{{const r=e.getBoundingClientRect();return r.width&&r.height&&!e.disabled}})[{idx}];e&&e.click()}})()")
                 except Exception as ex: errs.append('click failed ' + act + ': ' + str(ex)[:80])
                 if random.random() < .05: await pg.keyboard.press('Escape')
-            ok = await pg.evaluate("(()=>{try{const d=JSON.parse(localStorage.getItem('daybook-v2'));return Array.isArray(d.habits)&&d.habits.length}catch(e){return 'bad: '+e}})()")
+            ok = await pg.evaluate("(()=>{try{const d=JSON.parse(localStorage.getItem('groundwork-v2'));return Array.isArray(d.habits)&&d.habits.length}catch(e){return 'bad: '+e}})()")
             note(f'monkey {w}px errors', errs); note(f'monkey {w}px data after', [] if ok else ['data broken: ' + str(ok)])
             await ctx.close()
         # 3. edge dates via a fixed clock
         for label, iso in [('leap day', '2028-02-29T10:00:00'), ('new year eve 23:59', '2026-12-31T23:59:30'), ('Sunday', '2026-11-08T09:00:00'), ('DST change', '2027-03-28T12:00:00'), ('1st of month', '2027-01-01T08:00:00')]:
             ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); pg = await ctx.new_page()
-            await ctx.add_init_script("localStorage.getItem('daybook-tips')||localStorage.setItem('daybook-tips','1')"); errs = []
+            await ctx.add_init_script("localStorage.getItem('groundwork-tips')||localStorage.setItem('groundwork-tips','1')"); errs = []
             pg.on('pageerror', lambda e: errs.append(str(e)))
             await pg.clock.install(time=iso)
             await pg.goto(URL); await pg.evaluate("s=>{const e=document.querySelector(s);e&&e.click()}", '.empty [data-act=demo]'); await pg.wait_for_timeout(100)

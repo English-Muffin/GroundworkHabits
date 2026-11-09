@@ -1,4 +1,4 @@
-package app.daybook.nativebridge;
+package app.groundwork.nativebridge;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// The folder the user picked (Storage Access Framework tree): daybook.json lives there, backups in its "backups" subfolder.
+// The folder the user picked (Storage Access Framework tree): groundwork.json lives there, backups in its "backups" subfolder.
 // Without a folder, backups go to the app's own storage.
 final class Folder {
     static Uri tree(Context c) {
@@ -48,7 +48,8 @@ final class Folder {
         Uri tree = tree(c);
         if (tree == null) return null;
         ContentResolver r = c.getContentResolver();
-        String id = find(r, tree, DocumentsContract.getTreeDocumentId(tree), "daybook.json");
+        String id = find(r, tree, DocumentsContract.getTreeDocumentId(tree), "groundwork.json");
+        if (id == null) id = find(r, tree, DocumentsContract.getTreeDocumentId(tree), "daybook.json"); // the save's name before the rename
         if (id == null) return null;
         try (InputStream in = r.openInputStream(DocumentsContract.buildDocumentUriUsingTree(tree, id))) {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -69,7 +70,7 @@ final class Folder {
     static void writeData(Context c, String text) throws Exception {
         Uri tree = tree(c);
         if (tree == null) throw new IllegalStateException("No folder");
-        write(c, tree, DocumentsContract.getTreeDocumentId(tree), "daybook.json", "application/json", text);
+        write(c, tree, DocumentsContract.getTreeDocumentId(tree), "groundwork.json", "application/json", text);
     }
 
     // keeps the newest 8 backups
@@ -81,7 +82,7 @@ final class Folder {
             if (dir == null) dir = DocumentsContract.getDocumentId(DocumentsContract.createDocument(r, DocumentsContract.buildDocumentUriUsingTree(tree, root), DocumentsContract.Document.MIME_TYPE_DIR, "backups"));
             write(c, tree, dir, name, "application/json", text);
             List<String[]> all = new ArrayList<>();
-            for (String[] ch : children(r, tree, dir)) if (ch[1] != null && ch[1].startsWith("daybook-backup-")) all.add(ch);
+            for (String[] ch : children(r, tree, dir)) if (ch[1] != null && ch[1].startsWith("groundwork-backup-")) all.add(ch);
             all.sort((a, b) -> b[1].compareTo(a[1]));
             for (int i = 8; i < all.size(); i++) DocumentsContract.deleteDocument(r, DocumentsContract.buildDocumentUriUsingTree(tree, all.get(i)[0]));
             return name(c, tree) + "/backups";
@@ -89,7 +90,7 @@ final class Folder {
         File dir = new File(c.getFilesDir(), "backups");
         dir.mkdirs();
         try (OutputStream out = new FileOutputStream(new File(dir, name))) { out.write(text.getBytes(StandardCharsets.UTF_8)); }
-        File[] fs = dir.listFiles((d, n) -> n.startsWith("daybook-backup-"));
+        File[] fs = dir.listFiles((d, n) -> n.startsWith("groundwork-backup-"));
         if (fs != null && fs.length > 8) {
             List<File> l = new ArrayList<>(); Collections.addAll(l, fs);
             l.sort((a, b) -> b.getName().compareTo(a.getName()));

@@ -2,21 +2,22 @@ const { app, BrowserWindow, Menu, shell, ipcMain, dialog, screen } = require('el
 const path = require('path');
 const fs = require('fs');
 
-/* ---- optional data folder: config lives in userData, data in <folder>/daybook.json ---- */
+/* ---- optional data folder: config lives in userData, data in <folder>/groundwork.json ---- */
 const cfgPath = () => path.join(app.getPath('userData'), 'config.json');
 const readCfg = () => { try { return JSON.parse(fs.readFileSync(cfgPath(), 'utf8')); } catch (e) { return {}; } };
 const writeCfg = c => fs.writeFileSync(cfgPath(), JSON.stringify(c));
-const dataFile = () => { const f = readCfg().folder; return f ? path.join(f, 'daybook.json') : null; };
-const readData = () => { const f = dataFile(); try { return f ? fs.readFileSync(f, 'utf8') : null; } catch (e) { return null; } };
+const dataFile = () => { const f = readCfg().folder; return f ? path.join(f, 'groundwork.json') : null; };
+const oldFile = f => path.join(path.dirname(f), 'daybook.json'); // the save's name before the rename; read until the first write
+const readData = () => { const f = dataFile(); if (!f) return null; try { return fs.readFileSync(f, 'utf8'); } catch (e) { try { return fs.readFileSync(oldFile(f), 'utf8'); } catch (e2) { return null; } } };
 ipcMain.on('fs:folder', e => { e.returnValue = readCfg().folder || ''; });
 ipcMain.on('fs:read', e => { e.returnValue = readData(); });
 // weekly backups: <data folder or app data>/backups, newest 8 kept
 const backupDir = () => { const f = readCfg().folder; return path.join(f || app.getPath('userData'), 'backups'); };
 ipcMain.handle('fs:backup', (e, name, text) => {
-  if (typeof name !== 'string' || !/^daybook-backup-[0-9A-Za-z-]{1,40}\.json$/.test(name) || typeof text !== 'string') return null;
+  if (typeof name !== 'string' || !/^groundwork-backup-[0-9A-Za-z-]{1,40}\.json$/.test(name) || typeof text !== 'string') return null;
   try {
     const d = backupDir(); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, name), text);
-    fs.readdirSync(d).filter(n => n.startsWith('daybook-backup-')).sort().reverse().slice(8).forEach(n => { try { fs.unlinkSync(path.join(d, n)); } catch (err) {} });
+    fs.readdirSync(d).filter(n => n.startsWith('groundwork-backup-')).sort().reverse().slice(8).forEach(n => { try { fs.unlinkSync(path.join(d, n)); } catch (err) {} });
     return d;
   } catch (err) { return null; }
 });
@@ -159,17 +160,18 @@ ipcMain.handle('cal:fetch', async (e, url) => {
     return { ok: false, error: ctl.signal.aborted ? 'Your calendar took too long to respond' : 'Could not reach your calendar' };
   } finally { clearTimeout(timer); }
 });
-// tests: DAYBOOK_TEST_PICK = folder to "pick", DAYBOOK_TEST_ANSWERS = comma list of message box button indexes
-const testAnswers = (process.env.DAYBOOK_TEST_ANSWERS || '').split(',').filter(Boolean).map(Number);
+// tests: GROUNDWORK_TEST_PICK = folder to "pick", GROUNDWORK_TEST_ANSWERS = comma list of message box button indexes
+const testAnswers = (process.env.GROUNDWORK_TEST_ANSWERS || '').split(',').filter(Boolean).map(Number);
 const ask = async opts => testAnswers.length ? testAnswers.shift() : (await dialog.showMessageBox(win, opts)).response;
 ipcMain.handle('fs:choose', async () => {
-  let folder = process.env.DAYBOOK_TEST_PICK;
+  let folder = process.env.GROUNDWORK_TEST_PICK;
   if (!folder) {
     const r = await dialog.showOpenDialog(win, { title: 'Choose where Groundwork Habits saves your data', properties: ['openDirectory', 'createDirectory'] });
     if (r.canceled || !r.filePaths[0]) return null;
     folder = r.filePaths[0];
   }
-  const file = path.join(folder, 'daybook.json');
+  let file = path.join(folder, 'groundwork.json');
+  if (!fs.existsSync(file) && fs.existsSync(oldFile(file))) file = oldFile(file);
   let mode = 'replace';
   if (fs.existsSync(file)) {
     let info = '';
@@ -189,17 +191,25 @@ That save was last changed ${st.mtime.toLocaleString()} and has ${(d.habits || [
       mode = 'load';
     } else {
       // keep the file being replaced, just in case
-      try { fs.copyFileSync(file, path.join(folder, `daybook-replaced-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`)); } catch (e) {}
+      try { fs.copyFileSync(file, path.join(folder, `groundwork-replaced-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`)); } catch (e) {}
     }
   }
   const c = readCfg(); c.folder = folder; writeCfg(c);
   return { folder, mode };
 });
 
-// keep the profile folder from before the rename, so saved data stays where it was
-app.setPath('userData', path.join(app.getPath('appData'), 'Daybook'));
-app.setAppUserModelId('com.daybook.app'); // matches the installer's Start menu shortcut, so Windows shows the app's notifications
-if (process.env.DAYBOOK_USER_DATA) app.setPath('userData', process.env.DAYBOOK_USER_DATA); // tests use a throwaway profile
+// the profile (saved data, settings) moved to a folder with the new name: copy the old one across once, and keep it as a fallback
+const appData = process.env.GROUNDWORK_APPDATA || app.getPath('appData'); // tests point this at a throwaway folder
+const newProfile = path.join(appData, 'Groundwork Habits'), oldProfile = path.join(appData, 'Daybook');
+const moved = path.join(newProfile, 'renamed.txt');
+if (!process.env.GROUNDWORK_USER_DATA && fs.existsSync(oldProfile) && !fs.existsSync(moved)) try {
+  if (fs.existsSync(newProfile)) fs.renameSync(newProfile, newProfile + '-before-rename-' + Date.now()); // a stray folder (e.g. from a test) is set aside, never deleted
+  fs.cpSync(oldProfile, newProfile, { recursive: true });
+  fs.writeFileSync(moved, 'Copied from ' + oldProfile + ' on ' + new Date().toISOString() + '. The old folder is kept as a backup.');
+} catch (e) {}
+app.setPath('userData', newProfile);
+app.setAppUserModelId('com.groundwork.habits'); // matches the installer's Start menu shortcut, so Windows shows the app's notifications
+if (process.env.GROUNDWORK_USER_DATA) app.setPath('userData', process.env.GROUNDWORK_USER_DATA); // tests use a throwaway profile
 if (!app.requestSingleInstanceLock()) app.quit();
 
 let win;

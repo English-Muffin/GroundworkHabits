@@ -7,13 +7,13 @@ android {
         versionName pkg.version
         versionCode v[0] * 10000 + v[1] * 100 + v[2]
     }
-    if (System.getenv('DAYBOOK_KEYSTORE')) {
+    if (System.getenv('GROUNDWORK_KEYSTORE')) {
         signingConfigs {
             release {
-                storeFile file(System.getenv('DAYBOOK_KEYSTORE'))
-                storePassword System.getenv('DAYBOOK_KEYSTORE_PASSWORD')
-                keyAlias System.getenv('DAYBOOK_KEY_ALIAS')
-                keyPassword System.getenv('DAYBOOK_KEYSTORE_PASSWORD')
+                storeFile file(System.getenv('GROUNDWORK_KEYSTORE'))
+                storePassword System.getenv('GROUNDWORK_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('GROUNDWORK_KEY_ALIAS')
+                keyPassword System.getenv('GROUNDWORK_KEYSTORE_PASSWORD')
             }
         }
         buildTypes { release { signingConfig signingConfigs.release } }

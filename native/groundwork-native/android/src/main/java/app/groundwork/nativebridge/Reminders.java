@@ -1,4 +1,4 @@
-package app.daybook.nativebridge;
+package app.groundwork.nativebridge;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -23,7 +23,7 @@ import org.json.JSONObject;
 final class Reminders {
     static final String ALARM = "dbk-alarm", ASK = "dbk-ask";
 
-    static SharedPreferences prefs(Context c) { return c.getSharedPreferences("daybook_native", Context.MODE_PRIVATE); }
+    static SharedPreferences prefs(Context c) { return c.getSharedPreferences("groundwork_native", Context.MODE_PRIVATE); }
 
     static JSONArray items(Context c) {
         try { return new JSONArray(prefs(c).getString("items", "[]")); } catch (Exception e) { return new JSONArray(); }
@@ -79,7 +79,7 @@ final class Reminders {
         }
     }
 
-    // habit reminders carry "rep" (daily/weekly/monthly). When a series runs out (Daybook not opened for a while),
+    // habit reminders carry "rep" (daily/weekly/monthly). When a series runs out (Groundwork Habits not opened for a while),
     // add the next day's reminder so they keep coming. Old entries are pruned so the list stays small.
     static synchronized void extend(Context c) {
         JSONArray a = items(c), keep = new JSONArray();

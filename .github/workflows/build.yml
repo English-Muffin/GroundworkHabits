@@ -58,6 +58,9 @@ jobs:
       - name: Generate Android icons (optional)
         run: npx @capacitor/assets generate --android --iconBackgroundColor '#00000000' --iconBackgroundColorDark '#00000000' --splashBackgroundColor '#080808' --splashBackgroundColorDark '#080808' || true
       - run: npx cap sync android
+      - name: Icon without a background
+        # plain transparent icons, no adaptive icon: launchers fill an adaptive icon's empty background with a colour
+        run: rm -rf android/app/src/main/res/mipmap-anydpi-v26 && cp -r native/android-res/* android/app/src/main/res/
       - name: Apply version and signing settings
         run: |
           echo "apply from: '../../native/release.gradle'" >> android/app/build.gradle
@@ -66,12 +69,12 @@ jobs:
         working-directory: android
         env:
           KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          DAYBOOK_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          DAYBOOK_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          GROUNDWORK_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          GROUNDWORK_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           if [ -n "$KS_B64" ]; then
             echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
-            DAYBOOK_KEYSTORE="$RUNNER_TEMP/release.jks" ./gradlew assembleRelease
+            GROUNDWORK_KEYSTORE="$RUNNER_TEMP/release.jks" ./gradlew assembleRelease
             cp app/build/outputs/apk/release/app-release.apk ../app.apk
           else
             ./gradlew assembleDebug

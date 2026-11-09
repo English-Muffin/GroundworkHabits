@@ -7,7 +7,7 @@ buildscript {
 }
 apply plugin: 'com.android.library'
 android {
-    namespace "app.daybook.nativebridge"
+    namespace "app.groundwork.nativebridge"
     compileSdk project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 34
     defaultConfig {
         minSdkVersion project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 22

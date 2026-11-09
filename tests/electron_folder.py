@@ -14,7 +14,7 @@ async def main():
     tmp = pathlib.Path(tempfile.mkdtemp()); prof, folder = tmp / 'profile', tmp / 'Drive'
     prof.mkdir(); folder.mkdir()
     (prof / 'config.json').write_text(json.dumps({'folder': str(folder)}))
-    (folder / 'daybook.json').write_text(json.dumps({'habits': [{'id': 'a', 'name': 'From folder', 'type': 'daily', 'color': '#8b5cf6'}], 'log': {}, 'tasks': {}, 'goals': [], 'journal': {}}))
+    (folder / 'groundwork.json').write_text(json.dumps({'habits': [{'id': 'a', 'name': 'From folder', 'type': 'daily', 'color': '#8b5cf6'}], 'log': {}, 'tasks': {}, 'goals': [], 'journal': {}}))
     exe = ROOT / 'node_modules' / 'electron' / 'dist' / ('electron.exe' if os.name == 'nt' else 'electron')
     async with async_playwright() as p:
         proc, b, pg = await launch(p, exe, prof, {}); await pg.wait_for_selector('.gname .nb')
@@ -24,14 +24,14 @@ async def main():
         await pg.keyboard.press('Escape')
         await pg.click('[data-act=newhabit] >> nth=0'); await pg.fill('#mName', 'Saved to folder'); await pg.keyboard.press('Enter')
         await pg.wait_for_timeout(600)
-        names = [h['name'] for h in json.loads((folder / 'daybook.json').read_text())['habits']]
+        names = [h['name'] for h in json.loads((folder / 'groundwork.json').read_text())['habits']]
         check('writes changes to the folder', 'Saved to folder' in names)
-        d = json.loads((folder / 'daybook.json').read_text()); d['habits'].append({'id': 'b', 'name': 'Synced in', 'type': 'daily', 'color': '#3b82f6'})
-        (folder / 'daybook.json').write_text(json.dumps(d))
+        d = json.loads((folder / 'groundwork.json').read_text()); d['habits'].append({'id': 'b', 'name': 'Synced in', 'type': 'daily', 'color': '#3b82f6'})
+        (folder / 'groundwork.json').write_text(json.dumps(d))
         await pg.evaluate("window.dispatchEvent(new Event('focus'))"); await pg.wait_for_timeout(200)
         check('picks up outside changes on focus', await pg.locator('.gname .nb', has_text='Synced in').count() == 1)
         # mini widget: opens in its own window and stays in sync with the main window
-        await pg.evaluate("window.daybookFS.widget()")
+        await pg.evaluate("window.groundworkFS.widget()")
         wpg = None
         for _ in range(40):
             wpg = next((x for c in b.contexts for x in c.pages if x.url.endswith('#widget')), None)
@@ -42,11 +42,11 @@ async def main():
         await pg.evaluate("location.hash='today'"); await asyncio.sleep(.3)
         check('widget window ticks a habit and the main window updates', await pg.locator('.trow', has_text='Saved to folder').locator('.cell.on').count() == 1)
         await pg.click('[data-act=gear]'); await pg.click('#main [data-act=baknow]'); await asyncio.sleep(1); await pg.evaluate("location.hash='today'"); await asyncio.sleep(.3)
-        check('Back up now writes a dated backup into the data folder', len(list((folder / 'backups').glob('daybook-backup-*.json'))) == 1)
+        check('Back up now writes a dated backup into the data folder', len(list((folder / 'backups').glob('groundwork-backup-*.json'))) == 1)
         # habit reminder pop-up: Yes in the small window marks the habit done in the main window, then the pop-up closes
         await pg.locator('.trow', has_text='Saved to folder').locator('.cell').click(); await asyncio.sleep(.3)
-        hid, k = await pg.evaluate("(()=>{const s=DaybookTest.state(),d=new Date();return [s.habits.find(h=>h.name==='Saved to folder').id,d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')]})()")
-        await pg.evaluate(f"window.daybookFS.ask('{hid}','{k}')")
+        hid, k = await pg.evaluate("(()=>{const s=GroundworkTest.state(),d=new Date();return [s.habits.find(h=>h.name==='Saved to folder').id,d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')]})()")
+        await pg.evaluate(f"window.groundworkFS.ask('{hid}','{k}')")
         apg = None
         for _ in range(40):
             apg = next((x for c in b.contexts for x in c.pages if '#ask~' in x.url), None)
@@ -60,9 +60,9 @@ async def main():
         await pg.click('[data-act=gear]'); await pg.click('[data-act=pinset]'); await pg.fill('#pin1', '1357'); await pg.fill('#pin2', '1357'); await pg.click('[data-act=pinsave]'); await asyncio.sleep(.5)
         widget_locked = await wpg.locator('#lock').is_visible() and await wpg.locator('#main').inner_text() == ''
         await wpg.fill('#pinIn', '1357'); await wpg.keyboard.press('Enter'); await asyncio.sleep(.3)
-        await pg.evaluate("localStorage.setItem('daybook-locked', String(Date.now()))"); await asyncio.sleep(.4)
+        await pg.evaluate("localStorage.setItem('groundwork-locked', String(Date.now()))"); await asyncio.sleep(.4)
         check('PIN lock applies to the widget window too', widget_locked and await wpg.locator('#lock').is_visible())
-        await asyncio.sleep(1.5); ftxt = (folder / 'daybook.json').read_text()
+        await asyncio.sleep(1.5); ftxt = (folder / 'groundwork.json').read_text()
         check('with a PIN the data folder file is encrypted', ftxt.startswith('enc1:') and 'Saved to folder' not in ftxt)
         await b.close(); kill(proc)
         await choose_flow(p, exe, tmp)
@@ -71,7 +71,7 @@ async def main():
 PORT = [9340]
 async def launch(p, exe, prof, env):
     PORT[0] += 1
-    proc = subprocess.Popen([str(exe), str(ROOT), f'--remote-debugging-port={PORT[0]}'], env={**os.environ, 'DAYBOOK_USER_DATA': str(prof), **env})
+    proc = subprocess.Popen([str(exe), str(ROOT), f'--remote-debugging-port={PORT[0]}'], env={**os.environ, 'GROUNDWORK_USER_DATA': str(prof), **env})
     b = None
     for _ in range(60):
         try: b = await p.chromium.connect_over_cdp(f'http://127.0.0.1:{PORT[0]}'); break
@@ -79,18 +79,18 @@ async def launch(p, exe, prof, env):
     assert b, 'could not connect to Electron'
     while not b.contexts or not b.contexts[0].pages: await asyncio.sleep(.2)
     pg = b.contexts[0].pages[0]; await pg.wait_for_selector('#main')
-    if not await pg.evaluate("localStorage.getItem('daybook-tips')"):
-        await pg.evaluate("localStorage.setItem('daybook-tips','1')"); await pg.reload(); await pg.wait_for_selector('#main')
+    if not await pg.evaluate("localStorage.getItem('groundwork-tips')"):
+        await pg.evaluate("localStorage.setItem('groundwork-tips','1')"); await pg.reload(); await pg.wait_for_selector('#main')
     return proc, b, pg
 
 async def choose_flow(p, exe, tmp):
     drive = tmp / 'Drive2'; drive.mkdir()
     old = {'habits': [{'id': 'o', 'name': 'Old save', 'type': 'daily', 'color': '#8b5cf6'}], 'log': {}, 'tasks': {}, 'goals': [], 'journal': {}}
-    (drive / 'daybook.json').write_text(json.dumps(old))
-    names = lambda: [h['name'] for h in json.loads((drive / 'daybook.json').read_text())['habits']]
+    (drive / 'groundwork.json').write_text(json.dumps(old))
+    names = lambda: [h['name'] for h in json.loads((drive / 'groundwork.json').read_text())['habits']]
     # answers: cancel; load -> back out; replace
     prof = tmp / 'p2'; prof.mkdir()
-    proc, b, pg = await launch(p, exe, prof, {'DAYBOOK_TEST_PICK': str(drive), 'DAYBOOK_TEST_ANSWERS': '2,1,1,0'})
+    proc, b, pg = await launch(p, exe, prof, {'GROUNDWORK_TEST_PICK': str(drive), 'GROUNDWORK_TEST_ANSWERS': '2,1,1,0'})
     await pg.click('[data-act=newhabit] >> nth=0'); await pg.fill('#mName', 'Current'); await pg.keyboard.press('Enter')
     async def pick():
         await pg.click('[data-act=gear]'); await pg.click('[data-act=pickdir]'); await pg.wait_for_timeout(500)
@@ -100,12 +100,12 @@ async def choose_flow(p, exe, tmp):
     await pick()
     check('backing out of the load warning changes nothing', await pg.locator('.gname .nb', has_text='Current').count() == 1 and names() == ['Old save'])
     await pick()
-    check('replace writes current data and keeps a copy of the old save', names() == ['Current'] and len(list(drive.glob('daybook-replaced-*.json'))) == 1)
+    check('replace writes current data and keeps a copy of the old save', names() == ['Current'] and len(list(drive.glob('groundwork-replaced-*.json'))) == 1)
     await b.close(); kill(proc)
     # load path: confirm both prompts
-    (drive / 'daybook.json').write_text(json.dumps(old))
+    (drive / 'groundwork.json').write_text(json.dumps(old))
     prof = tmp / 'p3'; prof.mkdir()
-    proc, b, pg = await launch(p, exe, prof, {'DAYBOOK_TEST_PICK': str(drive), 'DAYBOOK_TEST_ANSWERS': '1,0'})
+    proc, b, pg = await launch(p, exe, prof, {'GROUNDWORK_TEST_PICK': str(drive), 'GROUNDWORK_TEST_ANSWERS': '1,0'})
     await pick()
     check('load after warning shows the folder save', await pg.locator('.gname .nb', has_text='Old save').count() == 1)
     await b.close(); kill(proc)

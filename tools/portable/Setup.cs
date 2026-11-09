@@ -5,7 +5,7 @@
 // Silent use: setup /S [/D=folder] (installs, no window)   setup /update (progress only, then opens the app)
 //             uninstaller /S [/ERASE]
 // Safety: a folder is only ever deleted when it is a Groundwork Habits install (holds "Groundwork Habits.exe" or
-// resources\app.asar), and "Erase everything" deletes only the app's own data folder (%APPDATA%\Daybook).
+// resources\app.asar), and "Erase everything" deletes only the app's own data folder (%APPDATA%\Groundwork Habits).
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,7 +30,7 @@ using Microsoft.Win32;
 static class Setup
 {
     const string Name = "Groundwork Habits", Exe = "Groundwork Habits.exe", UninstExe = "Uninstall Groundwork Habits.exe";
-    const string RegKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\GroundworkHabits", AppId = "com.daybook.app";
+    const string RegKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\GroundworkHabits", AppId = "com.groundwork.habits";
     static readonly Assembly Asm = Assembly.GetExecutingAssembly();
     static string Version = "0";
     static string FontDir;
@@ -407,7 +407,8 @@ static class Setup
             if (erase)
             {
                 say(80, "Erasing your data");
-                RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Daybook"));
+                RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Groundwork Habits"));
+                RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Daybook")); // the data folder's name before the rename
             }
             try { Registry.CurrentUser.DeleteSubKeyTree(RegKey, false); } catch (Exception) { }
             say(100, "Done");

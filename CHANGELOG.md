@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Groundwork Habits (called Daybook up to 1.6.1). Versions match the GitHub releases.
+All notable changes to Groundwork Habits (called Groundwork Habits up to 1.6.1). Versions match the GitHub releases.
 
 ## 1.7.1
 
@@ -16,7 +16,7 @@ All notable changes to Groundwork Habits (called Daybook up to 1.6.1). Versions 
 
 ## 1.7.0
 
-- Daybook is now **Groundwork Habits**, with a new layered logo and app icons. Your data, data
+- Groundwork Habits is now **Groundwork Habits**, with a new layered logo and app icons. Your data, data
   folder and backups carry over untouched.
 - Windows: a new installer (`…-Windows-setup.exe`, per user, no admin) opens the app in under a second.
   The portable exe unpacks itself on every start (10 s or more); it now shows a splash while it does.
@@ -38,7 +38,7 @@ All notable changes to Groundwork Habits (called Daybook up to 1.6.1). Versions 
 - Licence changed from MIT to GNU AGPL-3.0-or-later.
 - Settings is now a page: sections with a side list on desktop and a list on phones, search across every setting, a short description on each switch, a test notification, an auto-lock delay, and About with privacy, shortcuts and licences.
 - Choose how often backups run (off, daily, weekly, monthly); the heatmap shows the months that fit, or a chosen 3, 6 or 12; quick add sits in the middle of the nav.
-- Daybook in 10 more languages: Portuguese, Spanish, French, German, Italian, Dutch, Polish, Russian, Chinese and Japanese (follows the device, or pick one in Settings).
+- Groundwork Habits in 10 more languages: Portuguese, Spanish, French, German, Italian, Dutch, Polish, Russian, Chinese and Japanese (follows the device, or pick one in Settings).
 - Weekly automatic backups (desktop and Android), and with a PIN every export and backup is encrypted.
 - Android: choose a data folder (a synced folder gives sync between devices), a home-screen widget to tick today's habits, and fingerprint unlock.
 - Goals: a history line for amounts and values, repeating contributions (e.g. €500 a month), goals made of tasks, archiving, and a notice a week before and on a deadline.
@@ -56,7 +56,7 @@ All notable changes to Groundwork Habits (called Daybook up to 1.6.1). Versions 
 - The PIN now encrypts your data on the device and in the data folder.
 - Undo works for the last 20 deletes (also Ctrl+Z), without losing later changes.
 - Repeating Google Calendar events show on every date.
-- Reminders: an option to hide habit and task names, reminders keep coming even if Daybook isn't opened for weeks, and alarms ask for exact timing on Android 14+.
+- Reminders: an option to hide habit and task names, reminders keep coming even if Groundwork Habits isn't opened for weeks, and alarms ask for exact timing on Android 14+.
 - The whole habit row lights up on hover; the star streak shows on phones.
 - Fonts are built in (works the same offline), a Check for updates link and the version number in the menu.
 - Builds: signed Android APKs once the signing secrets are added, and CI checks that the desktop apps start.
@@ -72,7 +72,7 @@ All notable changes to Groundwork Habits (called Daybook up to 1.6.1). Versions 
 
 ## 1.4.0
 
-- Each habit can have its own reminder: a quiet notification that stays until you answer Yes or No, or a loud alarm. Yes marks the habit done. On Android, Yes and No work straight from the notification without opening the app, even when it’s closed or after a restart; on desktop a small pop-up appears in the corner while Daybook runs.
+- Each habit can have its own reminder: a quiet notification that stays until you answer Yes or No, or a loud alarm. Yes marks the habit done. On Android, Yes and No work straight from the notification without opening the app, even when it’s closed or after a restart; on desktop a small pop-up appears in the corner while Groundwork Habits runs.
 - Google Calendar sync now works on Android too.
 
 ## 1.3.1

@@ -5,7 +5,7 @@
 # Groundwork Habits
 
 <p>
-<img src="assets/readme/intro.gif" alt="A short tour of Groundwork Habits: ticking habits on Today, the month grid, the task week, goals, insights, and switching accent colours and themes" width="100%">
+<img src="assets/readme/intro.webp" alt="A short tour of Groundwork Habits on a tilted screen: ticking habits on Today, the month grid, the task week, goals, insights and accent colours" width="100%">
 </p>
 
 <a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/version-1.7.2-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.7.2"></a>
@@ -131,9 +131,9 @@ your monthly reflections. Nothing is sent anywhere unless you choose a folder, a
 | Where | What |
 |---|---|
 | App storage | The data itself. With a PIN it is encrypted with a key made from your PIN |
-| `daybook.json` in your data folder (the name from before the rename, so existing folders keep working) | Desktop and Android, when you choose a folder. Written on every change, read when you come back |
-| `backups/daybook-backup-<date>.json` | Automatic backups, the newest 8 kept (encrypted when a PIN is set) |
-| `daybook-replaced-<time>.json` | A copy of a save you chose to replace when picking a folder (desktop) |
+| `groundwork.json` in your data folder (the name from before the rename, so existing folders keep working) | Desktop and Android, when you choose a folder. Written on every change, read when you come back |
+| `backups/groundwork-backup-<date>.json` | Automatic backups, the newest 8 kept (encrypted when a PIN is set) |
+| `groundwork-replaced-<time>.json` | A copy of a save you chose to replace when picking a folder (desktop) |
 
 Backups can be imported on any device; encrypted ones ask for the PIN. Imported data is checked field by
 field before it's used.
@@ -164,7 +164,7 @@ python tests/smoke.py            # 120+ checks in a desktop and a phone-sized br
 python tests/visual.py           # screenshot comparison of 13 screens, light and dark
 python tests/electron_folder.py  # the desktop app: data folder, backups, widget, app lock (needs npm install)
 python tests/stress.py out/      # heavy data, 320 to 1920 px, three themes, layout and overlap checks
-python tests/device_android.py   # a real Android build on a BlueStacks instance named "Daybook testing"
+python tests/device_android.py   # a real Android build on a BlueStacks instance named "Groundwork Habits testing"
 ```
 
 ## How Groundwork Habits is built

@@ -1,4 +1,4 @@
-package app.daybook.nativebridge;
+package app.groundwork.nativebridge;
 
 import com.getcapacitor.JSObject;
 import java.io.ByteArrayOutputStream;

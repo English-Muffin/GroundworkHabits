@@ -1,4 +1,4 @@
-package app.daybook.nativebridge;
+package app.groundwork.nativebridge;
 
 import android.annotation.TargetApi;
 import android.content.ComponentName;

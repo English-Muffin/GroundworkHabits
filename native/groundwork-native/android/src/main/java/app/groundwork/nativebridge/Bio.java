@@ -1,4 +1,4 @@
-package app.daybook.nativebridge;
+package app.groundwork.nativebridge;
 
 import android.content.Context;
 import android.security.keystore.KeyGenParameterSpec;
@@ -18,7 +18,7 @@ import javax.crypto.spec.GCMParameterSpec;
 // Fingerprint / face unlock: the PIN is encrypted with an Android Keystore key that only a successful biometric check can use.
 // A new fingerprint added to the phone invalidates the key (the user then types the PIN once and turns it on again).
 final class Bio {
-    static final String ALIAS = "daybook_bio";
+    static final String ALIAS = "groundwork_bio";
     interface Done { void ok(String pin); void fail(String why); }
 
     static boolean available(Context c) {
