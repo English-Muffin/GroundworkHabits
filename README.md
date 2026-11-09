@@ -5,7 +5,7 @@
 # Groundwork Habits
 
 <p>
-<img src="assets/readme/intro.webp" alt="A short tour of Groundwork Habits on a tilted screen: ticking habits on Today, the month grid, the task week, goals, insights and accent colours" width="100%">
+<img src="assets/readme/intro.webp" alt="Groundwork Habits from a fresh start: adding habits and filling the month grid, planning a week of tasks, adding a goal, Insights, a quit streak, then accent colours and themes" width="100%">
 </p>
 
 <a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/version-1.7.2-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.7.2"></a>
@@ -140,8 +140,8 @@ field before it's used.
 
 ## Build it yourself
 
-The app is three files, [`www/index.html`](www/index.html), [`app.css`](www/app.css) and
-[`app.js`](www/app.js), with no build step and no runtime dependencies. Electron wraps it for Windows and macOS, Capacitor for Android.
+The app is [`www/index.html`](www/index.html), [`app.css`](www/app.css) and the scripts in
+[`www/js`](www/js) (plain files loaded in order, sharing one scope), with no build step and no runtime dependencies. Electron wraps it for Windows and macOS, Capacitor for Android.
 
 ```bash
 git clone https://github.com/English-Muffin/GroundworkHabits

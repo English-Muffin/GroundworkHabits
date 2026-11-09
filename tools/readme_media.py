@@ -20,7 +20,7 @@ class Quiet(http.server.SimpleHTTPRequestHandler):
 
 
 def serve():
-    srv = http.server.ThreadingHTTPServer(('127.0.0.1', PORT), functools.partial(Quiet, directory=str(ROOT)))
+    srv = http.server.ThreadingHTTPServer(('127.0.0.1', PORT), functools.partial(Quiet, directory=os.environ.get('APP_ROOT', str(ROOT))))  # APP_ROOT: serve another checkout
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv
 
@@ -45,6 +45,7 @@ async def page(b, w, h, theme='dark', accent='#9cc96b', lang=None):
     if lang:
         prefs['lang'] = lang
     await pg.evaluate("p=>localStorage.setItem('groundwork-prefs',JSON.stringify(p))", prefs)
+    await pg.reload()  # prefs are read at start-up; a hash change alone keeps the old theme
     await pg.goto(base + '#settings/data'); await pg.wait_for_timeout(250)
     await pg.click('#main [data-act=demo]'); await pg.wait_for_timeout(200)
     return ctx, pg, base
@@ -83,69 +84,144 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505;fon
 #cap{position:fixed;left:0;right:0;top:44px;text-align:center;color:#fff;font-weight:700;font-size:46px;letter-spacing:-.02em;text-shadow:0 4px 30px #000}
 #cap small{display:block;font-size:22px;font-weight:500;color:#cfcfcf;margin-top:8px;letter-spacing:0}
 #cap b{color:var(--ac,#9cc96b)}
-</style></head><body><div id=glow></div><div id=scene><div id=plane><img id=app></div></div><div id=dof></div><div id=vig></div><div id=cap></div></body></html>"""
+</style></head><body><div id=glow></div><div id=scene><div id=plane><img id=a1></div></div><div id=dof></div><div id=vig></div><div id=cap></div></body></html>"""
 
 
 async def gif(b):
-    """Cinematic tour: real app screens on a tilted 3D screen, a moving camera, depth blur at the edges and big captions.
-    Screens are captured flat first, then animated as images (a live app inside a 3D transform crashed headless Chromium)."""
-    W, H, FPS, SCALE = 1280, 720, 16, 0.75
-    shots = {}
-    ctx, pg, base = await page(b, 1440, 900)
-
-    async def cap(name, view=None):
-        if view: await go(pg, base, view)
-        shots[name] = 'data:image/png;base64,' + __import__('base64').b64encode(await pg.screenshot()).decode()
-
-    await cap('today', 'today')
-    cells = pg.locator('.sec .trow:not(.on) .cell')
-    for i in range(3):
-        if await cells.count(): await cells.first.click(); await pg.wait_for_timeout(450)
-        await cap(f'tick{i}')
-    for v in ('habits', 'tasks', 'goals', 'insights'): await cap(v, v)
-    await go(pg, base, 'settings/appearance')
-    cols = ['#22d3be', '#60a5fa', '#a78bfa', '#f472b6', '#fbbf24', '#9cc96b']
-    for c in cols:
-        await pg.click(f'#main [data-act=cset][data-f=accent][data-v="{c}"]'); await pg.wait_for_timeout(250); await cap('acc' + c)
-    await ctx.close()
-
-    sctx = await b.new_context(viewport={'width': W, 'height': H}, device_scale_factor=1)
+    """Hero video like the first draft: the app window on a 3D stage, the camera gliding from a start pose to an end
+    pose in each scene (one eased move per scene), the app close enough to overflow the frame, big
+    captions at the top, depth-of-field bands and a vignette hiding the cropped edges. A fresh start is built up live in nav order: Habits, Tasks, Goals, Insights, Streaks,
+    Make it yours, then the window pulls back. App frames are captured live (2x), then shown as images on the stage."""
+    import base64
+    OW, OH, FPS, SCALE = 1280, 720, 16, 0.9375
+    F = int(1000 / FPS)
+    frames = []
+    ctx = await b.new_context(viewport={'width': 1440, 'height': 900}, device_scale_factor=2)
+    # no first-run tips, and no test-only buttons in the video
+    await ctx.add_init_script("""localStorage.setItem('groundwork-tips','1');document.addEventListener('DOMContentLoaded',()=>{
+        const s=document.createElement('style');s.textContent='[data-act=demo]{display:none!important}';document.head.appendChild(s)})""")
+    # Sunday 29 March: the whole task week is today or later (nothing shows as missed), and March has 29 days to fill
+    pg = await ctx.new_page(); await pg.clock.set_fixed_time('2026-03-29T10:30:00')
+    await pg.goto(f'http://127.0.0.1:{PORT}/www/index.html#habits'); await pg.evaluate('document.fonts.ready'); await pg.wait_for_timeout(400)
+    sctx = await b.new_context(viewport={'width': OW, 'height': OH}, device_scale_factor=1)
     st = await sctx.new_page()
     stage = ROOT / 'out' / 'stage.html'; stage.parent.mkdir(exist_ok=True); stage.write_text(STAGE, encoding='utf-8')
     await st.goto(f'http://127.0.0.1:{PORT}/out/stage.html'); await st.evaluate('document.fonts.ready')
-    frames, durs = [], []
 
     def ease(t): return t * t * (3 - 2 * t)
-    def lerp(a, c, t): return [x + (y - x) * t for x, y in zip(a, c)]
+    S = {'u': None, 'dirty': True, 'cap': '', 'ct': 0, 'ac': '#9cc96b', 'a': None, 'c': None, 't': 0, 'n': 1}
 
-    async def shot(img, cam, capt, capT, ac='#9cc96b'):
-        x, y, z, rx, ry, rz = cam; k = ease(min(1, capT / 0.4))
-        await st.evaluate("""([src,tf,cap,k,ac])=>{const i=document.getElementById('app');if(i.dataset.s!==src){i.src=src;i.dataset.s=src}
-            document.getElementById('plane').style.transform=tf;document.documentElement.style.setProperty('--ac',ac);const c=document.getElementById('cap');
-            if(c.dataset.t!==cap){c.innerHTML=cap;c.dataset.t=cap}c.style.opacity=k;c.style.transform='translateY('+(1-k)*24+'px)';c.style.filter='blur('+(1-k)*8+'px)';
-            return i.decode()}""", [shots[img], f'translate3d({x}px,{y}px,{z}px) rotateX({rx}deg) rotateY({ry}deg) rotateZ({rz}deg)', capt, k, ac])
-        im = Image.open(io.BytesIO(await st.screenshot(type='jpeg', quality=92))).convert('RGB')
-        frames.append(im.resize((int(W * SCALE), int(H * SCALE)), Image.LANCZOS)); durs.append(int(1000 / FPS))
+    def scene(cap, a, c, secs):
+        # the first draft's camera: one smoothstep-eased glide from pose a to pose c over the scene
+        # pose = (x, y, z, rotateX, rotateY, rotateZ)
+        S.update(cap=cap, a=a, c=c, t=0, n=secs * 1000, ct=0)
 
-    async def scene(imgs, capt, a, c, secs, ac='#9cc96b'):
-        n = int(secs * FPS); print('scene', capt[:30], len(frames), flush=True)
-        for i in range(n):
-            img = imgs[min(len(imgs) - 1, i * len(imgs) // n)] if isinstance(imgs, list) else imgs
-            if isinstance(ac, list): a2 = ac[min(len(ac) - 1, i * len(ac) // n)]
-            else: a2 = ac
-            await shot(img, lerp(a, c, ease(i / max(1, n - 1))), capt, i / FPS, a2)
+    async def frame(n=1):
+        if S['dirty']:
+            S['u'] = 'data:image/jpeg;base64,' + base64.b64encode(await pg.screenshot(type='jpeg', quality=90)).decode(); S['dirty'] = False
+        for _ in range(n):
+            e = ease(min(1, S['t'] / S['n'])); x, y, z, rx, ry, rz = [p + (q - p) * e for p, q in zip(S['a'], S['c'])]
+            k = ease(min(1, S['ct'] / 400))
+            await st.evaluate("""([u,tf,cap,k,ac])=>{const s=id=>{const i=document.getElementById(id);if(i.dataset.s!==u){i.src=u;i.dataset.s=u}return i};
+                const a=s('a1');document.getElementById('plane').style.transform=tf;document.documentElement.style.setProperty('--ac',ac);
+                const c=document.getElementById('cap');if(c.dataset.t!==cap){c.innerHTML=cap;c.dataset.t=cap}
+                c.style.opacity=k;c.style.transform='translateY('+(1-k)*24+'px)';c.style.filter='blur('+(1-k)*8+'px)';
+                return a.decode().then(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))))}""",
+                [S['u'], f'translate3d({x:.2f}px,{y:.2f}px,{z:.2f}px) rotateX({rx:.3f}deg) rotateY({ry:.3f}deg) rotateZ({rz:.3f}deg)', S['cap'], k, S['ac']])
+            im = Image.open(io.BytesIO(await st.screenshot(type='jpeg', quality=94))).convert('RGB')
+            frames.append(im.resize((int(OW * SCALE), int(OH * SCALE)), Image.LANCZOS))
+            S['t'] += F; S['ct'] += F
 
-    await scene('today', 'Build the groundwork<small>Habits, tasks and goals in one calm place</small>', (0, 160, -900, 38, 0, -14), (0, 40, -260, 26, 0, -8), 3.0)
-    await scene(['today', 'tick0', 'tick1', 'tick2'], 'Tick today’s <b>habits</b>', (-120, 60, -120, 22, -6, -6), (60, 20, 40, 14, 4, -3), 3.0)
-    await scene('habits', 'Every day of the month<small>Streaks, freezes and rest days</small>', (260, 120, -200, 40, 0, -18), (-200, -40, -40, 30, 0, -10), 3.0)
-    await scene('tasks', 'Plan the <b>week</b>', (0, -180, -300, 48, 0, 12), (0, 120, -160, 34, 0, 6), 2.6)
-    await scene('goals', 'Goals you can <b>measure</b>', (-260, 40, -60, 18, 16, 0), (200, 0, -120, 22, -12, 0), 2.6)
-    await scene('insights', 'See what’s <b>working</b><small>Consistency, heatmaps, leaderboards</small>', (0, 220, -700, 50, 0, -20), (0, 0, -180, 24, 0, -6), 3.0)
-    await scene(['acc' + c for c in cols], 'Make it <b>yours</b>', (180, 40, -120, 20, -10, -4), (-160, 0, -60, 24, 10, -2), 3.0, cols)
-    await scene('tick2', 'Groundwork Habits<small>Private and offline · Windows, macOS, Android, web</small>', (0, 40, -260, 26, 0, -8), (0, 140, -1100, 42, 0, -16), 3.2)
-    await sctx.close()
-    # animated WebP: full size and frame rate at a third of a GIF's size (GitHub shows it in the README)
-    frames[0].save(OUT / 'intro.webp', save_all=True, append_images=frames[1:], duration=durs, loop=0, quality=70, method=4)
+    async def hold(ms): await frame(max(1, round(ms / F)))
+
+    async def act(fn, n=1):
+        await fn(); await pg.wait_for_timeout(40); S['dirty'] = True; await frame(n)
+
+    async def typ(text):
+        for i in range(0, len(text), 3):
+            await pg.keyboard.type(text[i:i + 3]); S['dirty'] = True; await frame()
+
+    async def click(sel, n=1):
+        await act(lambda: pg.locator(sel).first.click(), n)
+
+    async def go(v):
+        await pg.evaluate("v=>location.hash=v", v); await pg.wait_for_timeout(350)
+        await pg.evaluate("()=>{const t=document.getElementById('toast');if(t)t.hidden=true;scrollTo(0,0)}"); S['dirty'] = True
+
+    t0 = 0
+    def mark(label):
+        nonlocal t0
+        now = len(frames) * F; print(f'{t0 / 1000:5.1f}-{now / 1000:5.1f}s {label}'); t0 = now
+
+    # 1 Habits: the empty guide, four habits typed in, then the month filled up to today with some days missed
+    scene('Build the <b>groundwork</b><small>Habits, tasks and goals in one calm place</small>', (0, 160, -900, 38, 0, -14), (0, 40, -260, 26, 0, -8), 2.4)
+    await hold(2400); mark('empty Habits')
+    scene('Add your <b>habits</b>', (-120, 60, -120, 22, -6, -6), (60, 20, 40, 14, 4, -3), 2.5)
+    for name in ('Read 10 pages', 'Morning run', 'Meditate', 'Drink water'):
+        await click('#main [data-act=newhabit]', 2); await typ(name); await hold(120); await click('[data-act=msave]', 2)
+    mark('habits added')
+    ids = await pg.evaluate('window.GroundworkTest.state().habits.map(h=>h.id)')
+    scene('Tick off every <b>day</b><small>Streaks, freezes and rest days</small>', (260, 120, -200, 40, 0, -18), (-200, -40, -40, 30, 0, -10), 6.3)
+    for d in range(1, 30):
+        for j, h in enumerate(ids):
+            if d == 29 or (d * 7 + j * 3) % 10 < 8:     # about one in five days missed, like real life
+                await act(lambda: pg.locator(f'#main button[data-act=cell][data-h="{h}"][data-d="2026-03-{d:02d}"]').click(), 1)
+    await hold(500); mark('month grid ticked')
+    # 2 Tasks: Sunday to Saturday, 2-4 a day, most ticked but not all, so the day rings differ
+    await go('tasks')
+    week = [('2026-03-29', ['Plan the week', 'Meal prep', 'Call mum'], 3), ('2026-03-30', ['Team stand-up', 'Gym class'], 2),
+            ('2026-03-31', ['Book the dentist', 'Pay rent', 'Read chapter 3', 'Laundry'], 2), ('2026-04-01', ['Grocery run', 'Finish the report'], 1),
+            ('2026-04-02', ['Yoga class', 'Reply to emails', 'Fix the bike'], 3), ('2026-04-03', ['Dinner with Sam', 'Water the plants'], 1),
+            ('2026-04-04', ['Long run', 'Clean the flat', 'Movie night'], 1)]
+    scene('Plan the <b>week</b>', (0, -180, -300, 48, 0, 12), (0, 120, -160, 34, 0, 6), 9.4)
+    for day, items, _ in week:
+        await click(f'[data-act=tadd][data-k="{day}"]', 1)
+        for t in items:
+            await typ(t); await pg.keyboard.press('Enter')
+            await act(lambda: pg.evaluate("()=>{const i=document.getElementById('taskInput');if(i)i.value=''}"), 1)  # the focused field keeps its text
+        await act(lambda: pg.keyboard.press('Escape'), 1)
+    for day, _, done in week:
+        for _ in range(done): await click(f'.tlist[data-k="{day}"] [data-act=tdone][aria-pressed=false]', 2)
+    await hold(600); mark('Tasks week')
+    # 3 Goals: the empty guide, then a goal that fills
+    await go('goals')
+    scene('Goals you can <b>measure</b>', (-260, 40, -60, 18, 16, 0), (200, 0, -120, 22, -12, 0), 3.6)
+    await hold(1100)
+    await click('#main [data-act=newgoal]', 2); await typ('Run a half marathon'); await hold(150)
+    for v in range(5, 71, 5):
+        await act(lambda: pg.evaluate("v=>{const r=document.getElementById('gPct');r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}))}", v), 1)
+    await click('[data-act=gsave]', 3); await hold(800); mark('goal')
+    # 4 Insights, with data
+    await go('insights')
+    scene('See what’s <b>working</b><small>Consistency, heatmaps, leaderboards</small>', (0, 220, -700, 50, 0, -20), (0, 0, -180, 24, 0, -6), 3.0)
+    await hold(3000); mark('Insights')
+    # 5 Streaks: a quit streak with its milestones, and a habit challenge in the list
+    await pg.evaluate("()=>{window.GroundworkTest.state().habits[0].ch={from:'2026-03-10',days:30}}")
+    await go('achievements')
+    scene('Keep your <b>streaks</b><small>Quit streaks, milestones and challenges</small>', (-220, 100, -200, 30, 10, -12), (160, 10, 0, 22, -8, -4), 2.1)
+    await hold(400)
+    await click('#main [data-act=newquit]', 2); await typ('No sugar')
+    await act(lambda: pg.evaluate("()=>{const i=document.getElementById('qSince');i.value='2026-03-15T08:00';i.dispatchEvent(new Event('input',{bubbles:true}))}"), 1)
+    await click('[data-act=qsave]', 3); await hold(1100); mark('Streaks')
+    # 6 Make it yours: accents (the glow follows), then the themes
+    await go('settings/appearance')
+    scene('Make it <b>yours</b>', (180, 40, -120, 20, -10, -4), (-160, 0, -60, 24, 10, -2), 4.7)
+    await hold(300)
+    for c in ['#22d3be', '#60a5fa', '#a78bfa', '#f472b6', '#fbbf24', '#9cc96b']:
+        await pg.locator(f'#main [data-act=cset][data-f=accent][data-v="{c}"]').click(); await pg.wait_for_timeout(150); S['ac'] = c; S['dirty'] = True; await hold(450)
+    for t in ['light', 'amoled', 'dark']:
+        await pg.locator(f'[data-act=ptheme][data-v={t}]').click(); await pg.wait_for_timeout(150); S['dirty'] = True; await hold(600)
+    mark('Make it yours')
+    # 7 the window pulls back and sinks away, like the first draft
+    await go('habits')
+    scene('Groundwork Habits<small>Private and offline · Windows, macOS, Android, web</small>', (0, 40, -260, 26, 0, -8), (0, 140, -1100, 42, 0, -16), 3.2)
+    await hold(3200); mark('ending')
+    await sctx.close(); await ctx.close()
+    # every frame lasts the same; the encoder only merges frames that are identical, adding their time together
+    frames[0].save(OUT / 'intro.webp', save_all=True, append_images=frames[1:], duration=F, loop=0, quality=48, method=4)
+    n = len(frames)
+    for i in range(0, n, max(1, n // 10)): frames[i].save(ROOT / 'out' / f'intro-frame-{i}.png')
+    print(n, 'frames', round(n * F / 1000, 1), 's', FPS, 'fps')
 
 
 async def main():
