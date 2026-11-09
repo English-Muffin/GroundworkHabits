@@ -8,7 +8,7 @@
 <img src="assets/readme/intro.gif" alt="A short tour of Groundwork Habits: ticking habits on Today, the month grid, the task week, goals, insights, and switching accent colours and themes" width="100%">
 </p>
 
-<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/version-1.7.1-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.7.1"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/version-1.7.2-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.7.2"></a>
 <a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Android%20%C2%B7%20web-22d3be?style=flat-square&labelColor=0f0f0f" alt="Windows, macOS, Android and web"></a>
 <a href="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/build.yml"><img src="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/build.yml/badge.svg?branch=main" alt="Build"></a>
 <a href="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/test.yml"><img src="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/test.yml/badge.svg?branch=main" alt="Tests"></a>
@@ -112,7 +112,7 @@ folder and it follows you between your computers and your phone.
 
 | | How |
 |---|---|
-| **Windows** | Download `Groundwork-Habits-X.Y.Z-Windows-setup.exe` from the [latest release](https://github.com/English-Muffin/GroundworkHabits/releases/latest) and run it. It installs for your user only (no admin rights) and opens in under a second. Prefer no install? `…-Windows-portable.exe` runs from anywhere but unpacks itself on every start, so it takes 10 seconds or more to open |
+| **Windows** | Download `Groundwork-Habits-X.Y.Z-Windows-setup.exe` from the [latest release](https://github.com/English-Muffin/GroundworkHabits/releases/latest) and run it. Its own installer lets you pick the folder (or make a new one), shows the space needed and progress, needs no admin rights, and puts the old version back if an update fails. The uninstaller asks whether to keep or erase your data. The app opens in under a second. Prefer no install? `…-Windows-portable.exe` runs from anywhere but unpacks itself on every start, so it takes 10 seconds or more to open |
 | **macOS** | Download `Groundwork-Habits-X.Y.Z-mac-universal.zip`, unzip it and drag Groundwork Habits to Applications |
 | **Android** | Download `Groundwork-Habits-X.Y.Z-Android.apk` on the phone and open it. Updates install over it and keep your data |
 | **Any browser** | Open `www/index.html`, or host the `www` folder on any HTTPS static host and install it as an app |
