@@ -29,7 +29,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     static void updateAll(Context c) {
         AppWidgetManager m = AppWidgetManager.getInstance(c);
-        for (WidgetProvider w : new WidgetProvider[] { new WidgetProvider(), new TaskWidgetProvider() }) {
+        for (WidgetProvider w : new WidgetProvider[] { new WidgetProvider(), new TaskWidgetProvider(), new NextWidgetProvider() }) {
             int[] ids = m.getAppWidgetIds(new ComponentName(c, w.getClass()));
             for (int id : ids) m.updateAppWidget(id, w.views(c));
         }

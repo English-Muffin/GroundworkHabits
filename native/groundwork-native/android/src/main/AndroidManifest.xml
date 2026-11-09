@@ -15,6 +15,10 @@
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/dbk_tasks_info" />
         </receiver>
+        <receiver android:name="app.groundwork.nativebridge.NextWidgetProvider" android:exported="false" android:label="Groundwork Habits: next habit">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/dbk_next_info" />
+        </receiver>
         <service android:name="app.groundwork.nativebridge.QsTile" android:exported="true" android:label="@string/dbk_tile_label"
             android:icon="@drawable/dbk_stat" android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter><action android:name="android.service.quicksettings.action.QS_TILE" /></intent-filter>
