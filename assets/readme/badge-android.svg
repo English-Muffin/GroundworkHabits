@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="206" height="48" viewBox="0 0 206 48" role="img" aria-label="Download the Android APK">
+<rect x=".5" y=".5" width="205" height="47" rx="12" fill="#0f0f0f" stroke="#3a3a3a"/>
+<g transform="translate(16 12)" fill="#f2f2f2"><path d="M3.5 8.6h17v9.6c0 .9-.7 1.6-1.6 1.6H17v3a1.4 1.4 0 0 1-2.8 0v-3h-4.4v3a1.4 1.4 0 0 1-2.8 0v-3H5.1c-.9 0-1.6-.7-1.6-1.6zM0 10a1.4 1.4 0 0 1 2.8 0v6a1.4 1.4 0 0 1-2.8 0zm21.2 0a1.4 1.4 0 0 1 2.8 0v6a1.4 1.4 0 0 1-2.8 0zM3.6 7.6a8.5 8.5 0 0 1 4.6-6.4L7.3-.4a.4.4 0 0 1 .7-.4l1 1.7a8.6 8.6 0 0 1 6 0l1-1.7a.4.4 0 0 1 .7.4l-.9 1.6a8.5 8.5 0 0 1 4.6 6.4zm4.6-3a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7.6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></g>
+<text x="52" y="20" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="11" fill="#a3a3a3">Download the</text>
+<text x="52" y="36" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="16" font-weight="700" fill="#f2f2f2">Android APK</text></svg>

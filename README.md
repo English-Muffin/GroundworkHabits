@@ -1,35 +1,45 @@
 <div align="center">
 
-<img src="assets/logo.svg" alt="" width="72">
-
-# Groundwork Habits
-
 <p>
-<img src="assets/readme/intro.webp" alt="Groundwork Habits from a fresh start: adding habits and filling the month grid, planning a week of tasks, adding a goal, Insights, a quit streak, then accent colours and themes" width="100%">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/readme/hero-light.png">
+  <img src="assets/readme/hero-dark.png" alt="Groundwork Habits: habits, tasks and goals in one calm place. Offline, private, yours." width="100%">
+</picture>
 </p>
 
-<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/version-1.7.2-22d3be?style=flat-square&labelColor=0f0f0f" alt="Version 1.7.2"></a>
-<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Android%20%C2%B7%20web-22d3be?style=flat-square&labelColor=0f0f0f" alt="Windows, macOS, Android and web"></a>
-<a href="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/build.yml"><img src="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/build.yml/badge.svg?branch=main" alt="Build"></a>
-<a href="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/test.yml"><img src="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/test.yml/badge.svg?branch=main" alt="Tests"></a>
-<a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-22d3be?style=flat-square&labelColor=0f0f0f" alt="AGPL-3.0 licence"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/stargazers"><img src="https://img.shields.io/github/stars/English-Muffin/GroundworkHabits?logo=github&logoColor=white&label=stars&style=flat-square&labelColor=0f0f0f&color=9cc96b" alt="Stars"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="https://img.shields.io/github/v/release/English-Muffin/GroundworkHabits?label=release&style=flat-square&labelColor=0f0f0f&color=9cc96b" alt="Release"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/releases"><img src="https://img.shields.io/github/downloads/English-Muffin/GroundworkHabits/total?label=downloads&style=flat-square&labelColor=0f0f0f&color=9cc96b" alt="Downloads"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/English-Muffin/GroundworkHabits/test.yml?branch=main&label=tests&style=flat-square&labelColor=0f0f0f&color=9cc96b" alt="Tests"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-9cc96b?style=flat-square&labelColor=0f0f0f" alt="AGPL-3.0"></a>
 
-**[Download for Windows](https://github.com/English-Muffin/GroundworkHabits/releases/latest)** ·
-**[macOS](https://github.com/English-Muffin/GroundworkHabits/releases/latest)** ·
-**[Android](https://github.com/English-Muffin/GroundworkHabits/releases/latest)**
+<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="assets/readme/badge-windows.svg" alt="Download for Windows" height="44"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="assets/readme/badge-macos.svg" alt="Download for macOS" height="44"></a>
+<a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="assets/readme/badge-android.svg" alt="Download the Android APK" height="44"></a>
+<a href="https://english-muffin.github.io/GroundworkHabits/demo/"><img src="assets/readme/badge-web.svg" alt="Try it in your browser" height="44"></a>
 
-[Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+[Live demo](https://english-muffin.github.io/GroundworkHabits/demo/) · [Web app](https://english-muffin.github.io/GroundworkHabits/) · [Roadmap](#roadmap) · [Changelog](CHANGELOG.md)
 
 </div>
 
+<p align="center">
+<img src="assets/readme/intro.webp" alt="Groundwork Habits from a fresh start: adding habits and filling the month grid, planning a week of tasks, adding a goal, Insights, a quit streak, then accent colours and themes" width="100%">
+</p>
+
 ## Why Groundwork Habits
 
-Most habit trackers want an account, a subscription and your data on their servers. Groundwork Habits is one
-offline app that keeps everything on your devices: daily, weekly and monthly habits, a weekly task
-planner, measurable goals, quit streaks and the insights that tie them together.
+Most habit trackers want an account, a subscription and your data on their servers, and some
+disappear when the company does. Groundwork Habits is one offline app that keeps everything on your
+devices: daily, weekly and monthly habits, a weekly task planner, measurable goals, quit streaks and
+the insights that tie them together. It's yours to fork.
 
 No account, no subscription, no ads, no tracking. Back it up automatically, or point it at a synced
 folder and it follows you between your computers and your phone.
+
+The [in-browser demo](https://english-muffin.github.io/GroundworkHabits/demo/) is the real app with
+example data, if you want to try it before installing anything. It saves only in your browser, under
+its own name, so it never mixes with real data.
 
 ## Features
 
@@ -37,35 +47,37 @@ folder and it follows you between your computers and your phone.
 
 - Daily, weekly and monthly habits on a month grid, with streaks, best streaks and completion rates.
 - Track each habit the way it works: done or not, a count (8 glasses of water), or an amount with a
-  unit and an optional goal (5 km run, 30 pages, 2 hours). Days per week for habits you don't do daily.
+  unit and an optional goal (5 km run, 30 pages, 2 hours). Days per week for habits you don't do daily,
+  and rest days that never break a streak.
 - **Streak freezes:** seven days in a row earn a freeze that saves your streak on a missed day.
   Switch them off or change the rules per habit.
+- **Never miss twice:** after a missed day, Today marks the habit so one miss doesn't become two.
+- **Challenges:** 7, 21, 30, 66 or 100 days of a habit, with the day you're on and a medal at the end.
 - **Reminders per habit:** a quiet Yes or No notification, or an alarm. On Android you answer from the
   notification without opening the app.
 
 **Tasks**
 
 - A week of task columns with a progress ring per day and a mindset tracker (energy, focus, motivation).
-- Repeating tasks, reminders on any task, a focus timer, and missed tasks marked with a red X.
+- Repeating tasks (every day, weekday, week, 2 weeks, month, the 2nd Tuesday, the last Friday),
+  reminders on any task, a focus timer, and missed tasks marked with a red X.
 - Google Calendar events (no Google login) show up as tasks, including repeating events, in your time zone.
 
 **Goals**
 
-<p align="center">
-  <img src="assets/readme/goals.png" alt="Goals with an amber accent: life areas and goal progress" width="100%">
-</p>
-
 - Measure a goal the way it works: an **amount** towards a target (€ saved, km run), **from → to**
   (weight 85 → 78 kg, debt down to €0), the number of times a **habit** is done, **steps**, or **tasks**
   that show up on their day.
+- A forecast at the pace so far ("At this pace: 20/04/2026 · before your deadline").
 - Ideas to start from in every life area, your own life areas, deadlines with a reminder, automatic
-  contributions (€500 every month), a history line, pinning and archiving.
+  contributions (€500 every month), a history line, a timeline view, pinning and archiving.
 
-**Insights and achievements**
+**Insights and streaks**
 
 - Consistency over 7, 14 or 30 days, a heatmap that fits your screen (or 3, 6 or 12 months), a weekly
-  review, leaderboards, top streaks and a monthly reflection. Every card can be dragged into place.
+  review, leaderboards, top streaks, a monthly reflection and a year-in-review picture to share.
 - A Streaks tab for things you've stopped ("smoking: 249 days"), with milestones and your best run.
+- Share any habit or goal as an image.
 
 **Make it yours**
 
@@ -74,13 +86,30 @@ folder and it follows you between your computers and your phone.
   <img src="assets/readme/today-light.png" alt="Today in the light theme with a pink accent" width="49%">
 </p>
 
-- Dark, AMOLED and light themes and any accent colour: moss green by default, presets, or your own from the built-in
-  picker (hue, saturation, lightness or a hex code). Habits and life areas get the same picker.
+- Dark, AMOLED and light themes and any accent colour: moss green by default, presets, or your own from
+  the built-in picker (hue, saturation, lightness or a hex code). Habits and life areas get the same picker.
 - **11 languages:** English, Portuguese, Spanish, French, German, Italian, Dutch, Polish, Russian,
   Chinese and Japanese. Groundwork Habits follows your device, or pick one in Settings.
-- Drag tasks, habits, goals and cards into any order. Quick add (+) from anywhere. Undo for the last
-  20 deletes (Ctrl+Z on desktop). Search across everything.
-- A Settings page with search, a short description on every option and a link to each section.
+- Templates for habits, task lists and goals, and import from Loop, Habitica or any CSV.
+- Drag tasks, habits, goals and cards into any order. Quick add (+) from anywhere, search across
+  everything, and undo for every change (Ctrl+Z, Ctrl+Y on desktop).
+- Turn whole features off in Settings → Features: streak freezes, never miss twice, the weekly review,
+  the heatmap, habit notes, the Streaks tab and more.
+
+**On the desktop and the phone**
+
+- Windows (installer or portable `.exe`), macOS (universal for Intel and Apple Silicon), Android (`.apk`)
+  and any browser, where it installs as an app and works offline.
+- An always-on-top mini widget on the desktop. On Android: home-screen widgets for today's habits,
+  today's tasks and the next habit, a quick settings tile, and the system back button that behaves.
+
+<p align="center">
+  <img src="assets/readme/phone-today.png" alt="Today on a phone, pink accent" width="19%">
+  <img src="assets/readme/phone-habits.png" alt="Habits on a phone, light theme" width="19%">
+  <img src="assets/readme/phone-tasks.png" alt="Tasks on a phone, AMOLED with amber" width="19%">
+  <img src="assets/readme/phone-goals.png" alt="Goals on a phone, green accent" width="19%">
+  <img src="assets/readme/phone-settings.png" alt="Settings on a phone in German" width="19%">
+</p>
 
 **Your data stays yours**
 
@@ -91,99 +120,171 @@ folder and it follows you between your computers and your phone.
 - **PIN lock with encryption:** with a PIN, your data, backups and exports are encrypted (AES-GCM).
   Fingerprint unlock on Android.
 
-**Desktop and phone**
+The full list of what changed release by release is in the [changelog](CHANGELOG.md).
 
-- Windows (portable `.exe`), macOS (universal for Intel and Apple Silicon), Android (`.apk`) and any browser.
-- An always-on-top mini widget on desktop, and a home-screen widget on Android to tick today's habits.
+## Quick start
 
-<p align="center">
-  <img src="assets/readme/phone-today.png" alt="Today on a phone, pink accent" width="19%">
-  <img src="assets/readme/phone-habits.png" alt="Habits on a phone, light theme" width="19%">
-  <img src="assets/readme/phone-tasks.png" alt="Tasks on a phone, AMOLED with amber" width="19%">
-  <img src="assets/readme/phone-goals.png" alt="Goals on a phone, green accent" width="19%">
-  <img src="assets/readme/phone-settings.png" alt="Settings on a phone in German" width="19%">
-</p>
-<p align="center">
-  <img src="assets/readme/insights.png" alt="Insights with a blue accent" width="49%">
-  <img src="assets/readme/settings.png" alt="Settings in the light theme with a teal accent: theme, accent picker and tab names" width="49%">
-</p>
+Try it without installing: the **[in-browser demo](https://english-muffin.github.io/GroundworkHabits/demo/)**
+has example data, and the **[web app](https://english-muffin.github.io/GroundworkHabits/)** starts empty
+and keeps your data in that browser (install it from the browser menu to get it as an app).
+
+To run it from the source, all you need is Python (or any static web server):
+
+```bash
+git clone https://github.com/English-Muffin/GroundworkHabits
+cd GroundworkHabits
+python -m http.server 8765 --directory www
+```
+
+Open <http://localhost:8765> and add your first habit. Add `?demo` to the address for the example data.
 
 ## Get it
 
 | | How |
 |---|---|
-| **Windows** | Download `Groundwork-Habits-X.Y.Z-Windows-setup.exe` from the [latest release](https://github.com/English-Muffin/GroundworkHabits/releases/latest) and run it. Its own installer lets you pick the folder (or make a new one), shows the space needed and progress, needs no admin rights, and puts the old version back if an update fails. The uninstaller asks whether to keep or erase your data. The app opens in under a second. Prefer no install? `…-Windows-portable.exe` runs from anywhere but unpacks itself on every start, so it takes 10 seconds or more to open |
+| **Windows** | Download `Groundwork-Habits-X.Y.Z-Windows-setup.exe` from the [latest release](https://github.com/English-Muffin/GroundworkHabits/releases/latest) and run it. Its own installer lets you pick the folder (or make a new one), shows the space needed and progress, needs no admin rights, and puts the old version back if an update fails. The uninstaller asks whether to keep or erase your data. Prefer no install? `…-Windows-portable.exe` runs from anywhere |
 | **macOS** | Download `Groundwork-Habits-X.Y.Z-mac-universal.zip`, unzip it and drag Groundwork Habits to Applications |
 | **Android** | Download `Groundwork-Habits-X.Y.Z-Android.apk` on the phone and open it. Updates install over it and keep your data |
-| **Any browser** | Open `www/index.html`, or host the `www` folder on any HTTPS static host and install it as an app |
+| **Any browser** | The [web app](https://english-muffin.github.io/GroundworkHabits/), or host the `www` folder on any HTTPS static host |
+
+Every download sits next to its `.sha256`. The desktop app can check for updates once a day (off by
+default) and verifies the download before installing it.
 
 > [!NOTE]
-> The Android APK is signed. The desktop builds are not code-signed yet. Windows SmartScreen may say "unknown publisher": choose
-> **More info**, then **Run anyway**. macOS will say the app "cannot be verified": right-click
-> Groundwork Habits and choose **Open** (on macOS 15+, try once, then **System Settings → Privacy & Security →
-> Open Anyway**). On Android, allow "install unknown apps" for the app you open the APK with.
+> The Android APK is signed. The desktop builds are not code-signed yet. Windows SmartScreen may say
+> "unknown publisher": choose **More info**, then **Run anyway**. macOS will say the app "cannot be
+> verified": right-click Groundwork Habits and choose **Open** (on macOS 15+, try once, then
+> **System Settings → Privacy & Security → Open Anyway**). On Android, allow "install unknown apps" for
+> the app you open the APK with.
 
-## Your data
+## How it works
 
-Groundwork Habits keeps one document on each device: habits, ticks, amounts, notes, tasks, goals, streaks and
-your monthly reflections. Nothing is sent anywhere unless you choose a folder, a backup or a calendar.
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/architecture-dark.png">
+  <img src="assets/readme/architecture-light.png" alt="How it fits together: Windows and macOS (Electron), Android (Capacitor) and any browser all run the same web app in www/; it saves on the device on every change, optionally to a synced data folder, and makes weekly backups." width="720">
+</picture>
+</p>
+
+- **`www/`** is the whole app: [`index.html`](www/index.html), [`app.css`](www/app.css) and plain
+  scripts in [`www/js`](www/js), loaded in order and sharing one scope. No framework, no build step,
+  no runtime dependencies, no server.
+- **`electron/`** wraps it for Windows and macOS, with a data folder, backups, a mini widget, reminder
+  pop-ups and optional updates. **`tools/portable/`** holds the Windows installer, uninstaller and
+  portable launcher, written in C# and compiled with the compiler that ships with Windows.
+- **Capacitor** wraps it for Android; **`native/groundwork-native/`** adds reminders you answer from
+  the notification, widgets, the quick settings tile, the data folder and fingerprint unlock.
+
+The app logic (streaks and freezes, repeat rules, goal progress and forecasts, backup checks) is
+covered by unit tests that run in plain Node, and the screens by browser tests at phone and desktop
+sizes.
+
+### How the data folder works
+
+Each device keeps one data document. With a data folder chosen, every change is also written to
+`groundwork.json` in that folder (written to a temporary file, then renamed, so it's never half
+written), and the file is read again whenever you come back to the app, so a newer save from your
+other device wins. Picking a folder that already has a save asks whether to replace it (the old one is
+kept as a copy) or load it.
+
+### Your data
 
 | Where | What |
 |---|---|
-| App storage | The data itself. With a PIN it is encrypted with a key made from your PIN |
-| `groundwork.json` in your data folder (the name from before the rename, so existing folders keep working) | Desktop and Android, when you choose a folder. Written on every change, read when you come back |
+| App storage | The data itself, plus a copy in the browser database. With a PIN it is encrypted with a key made from your PIN |
+| `groundwork.json` in your data folder | Desktop and Android, when you choose a folder. Written on every change, read when you come back |
 | `backups/groundwork-backup-<date>.json` | Automatic backups, the newest 8 kept (encrypted when a PIN is set) |
 | `groundwork-replaced-<time>.json` | A copy of a save you chose to replace when picking a folder (desktop) |
 
-Backups can be imported on any device; encrypted ones ask for the PIN. Imported data is checked field by
-field before it's used.
+Back up the data folder (or export from Settings → Data) and you've backed up everything. Backups can
+be imported on any device; encrypted ones ask for the PIN. Imported data is checked field by field
+before it's used.
+
+## Documentation
+
+| I want to | Read |
+|---|---|
+| Try it first | The [in-browser demo](https://english-muffin.github.io/GroundworkHabits/demo/) |
+| Install it | [Get it](#get-it) |
+| Keep my phone and computer in step | [How the data folder works](#how-the-data-folder-works) |
+| Know where my data is | [Your data](#your-data) |
+| See what changed | [Changelog](CHANGELOG.md) |
+| Build it or change it | [Build it yourself](#build-it-yourself) and [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Report a security problem | [Security](SECURITY.md) |
 
 ## Build it yourself
 
-The app is [`www/index.html`](www/index.html), [`app.css`](www/app.css) and the scripts in
-[`www/js`](www/js) (plain files loaded in order, sharing one scope), with no build step and no runtime dependencies. Electron wraps it for Windows and macOS, Capacitor for Android.
-
-```bash
-git clone https://github.com/English-Muffin/GroundworkHabits
-cd GroundworkHabits
-python -m http.server 8765 --directory www   # then open http://localhost:8765
-```
-
 | Build | Command |
 |---|---|
-| Windows portable `.exe` | `npm install && npm run dist:win` (output in `dist/`) |
+| Web app | Nothing to build: serve `www/` |
+| Windows installer and portable `.exe` | `npm install && npm run dist:win` (output in `dist/`) |
 | macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac) |
 | Android `.apk` | `npm install && npx cap add android && npx cap sync android`, then build in Android Studio |
-| All three, in the cloud | Push a tag like `v1.6.1`: [GitHub Actions](.github/workflows/build.yml) builds them and attaches them to a release |
+| Everything, in the cloud | Push a tag like `v1.7.3`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
 
 ### Tests
 
 ```bash
+npm install && npm run lint && npm run test:unit   # undefined names across files, and the app logic in Node
 pip install playwright && playwright install chromium
-python tests/smoke.py            # 120+ checks in a desktop and a phone-sized browser
+python tests/smoke.py            # 130+ checks in a desktop and a phone-sized browser
 python tests/visual.py           # screenshot comparison of 13 screens, light and dark
-python tests/electron_folder.py  # the desktop app: data folder, backups, widget, app lock (needs npm install)
+python tests/electron_folder.py  # the desktop app: data folder, backups, widget, app lock
 python tests/stress.py out/      # heavy data, 320 to 1920 px, three themes, layout and overlap checks
 python tests/device_android.py   # a real Android build on a BlueStacks instance named "Groundwork Habits testing"
 ```
 
+## Roadmap
+
+A release whenever a batch has passed testing on Windows, Android and the browser.
+
+| Release | When | Theme |
+|---|---|---|
+| v1.7.0 | released Nov 2026 | The new name, faster start, templates, in-app pickers, rest days, import from other apps |
+| v1.7.1 | released Nov 2026 | Android widgets for tasks and the quick tile, optional desktop updates |
+| v1.7.2 | released Nov 2026 | Our own Windows installer and uninstaller |
+| v1.7.3 | next | Undo for everything, never miss twice, challenges, goal forecasts, empty-screen guides, the in-browser demo |
+| later | ideas | A Lite edition, right-to-left languages, a Wear OS tile, two-way calendar sync, signed desktop builds |
+
+## Community
+
+- **[Issues](https://github.com/English-Muffin/GroundworkHabits/issues)** for bugs and ideas. Settings →
+  About → **Copy diagnostics** gives you the version, device and recent errors to paste in (none of your data).
+- **[Pull requests](https://github.com/English-Muffin/GroundworkHabits/pulls)** are welcome; start with
+  [CONTRIBUTING.md](CONTRIBUTING.md).
+- Found a security problem? Please follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
+
+<a href="https://github.com/English-Muffin/GroundworkHabits/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=English-Muffin/GroundworkHabits&max=60" alt="Contributors">
+</a>
+
 ## How Groundwork Habits is built
 
-Groundwork Habits is developed with [Claude Code](https://claude.com/claude-code), Anthropic's coding agent.
-Most of the code, tests and documentation are drafted in Claude Code sessions, and the repository
-carries a [`CLAUDE.md`](CLAUDE.md) with the project context those sessions start from. What goes in,
-what gets released, and testing on real devices are the maintainer's call. The app itself doesn't
-use any AI service.
+Plainly: **Groundwork Habits is developed with [Claude Code](https://claude.com/claude-code)**,
+Anthropic's coding agent. Most of the code, tests and documentation are drafted in Claude Code
+sessions, and the repository carries a [`CLAUDE.md`](CLAUDE.md) with the project context those
+sessions start from.
 
-## Contributing
+What that does and doesn't mean:
 
-Bug reports and ideas are welcome in [Issues](https://github.com/English-Muffin/GroundworkHabits/issues).
-Pull requests too: start with [CONTRIBUTING.md](CONTRIBUTING.md). Found a security problem? Please
-follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
+- **A person decides and ships.** What goes in and every release are the maintainer's call. Changes
+  are tested on Windows, in the browser and on a real Android build before they are tagged.
+- **Tests hold the logic in place.** Unit tests, browser tests, screenshot comparison and a layout
+  stress test run on every push. That is the guard against plausible-looking code that is wrong,
+  whoever or whatever wrote it.
+- **The app itself doesn't use AI.** Nothing in it calls an AI service, and nothing leaves your
+  device unless you choose a folder, a backup or a calendar.
+
+## Support
+
+Groundwork Habits is free and stays free: AGPL, no paid tier, no ads. A star, a bug report or a pull
+request helps the most.
+
+[![Star History Chart](https://api.star-history.com/svg?repos=English-Muffin/GroundworkHabits&type=Date)](https://star-history.com/#English-Muffin/GroundworkHabits&Date)
 
 ## License
 
-Groundwork Habits is free and open-source software under the [GNU Affero General Public License v3.0 or later](LICENSE)
-(AGPL-3.0-or-later). You may use, study, share and change it; if you distribute a changed version, or run one
-as a service for others, you must share its source under the same licence. The bundled Space Grotesk font is
-under the SIL Open Font License (`www/fonts/OFL.txt`).
+Groundwork Habits is free and open-source software under the [GNU Affero General Public License v3.0
+or later](LICENSE) (AGPL-3.0-or-later). You may use, study, share and change it; if you distribute a
+changed version, or run one as a service for others, you must share its source under the same
+licence. The bundled Space Grotesk font is under the SIL Open Font License (`www/fonts/OFL.txt`).
