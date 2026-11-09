@@ -409,6 +409,7 @@ static class Setup
                 say(80, "Erasing your data");
                 RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Groundwork Habits"));
                 RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Daybook")); // the data folder's name before the rename
+                try { foreach (var x in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Name + "-before-rename-*")) RemoveDir(x); } catch (Exception) { }
             }
             try { Registry.CurrentUser.DeleteSubKeyTree(RegKey, false); } catch (Exception) { }
             say(100, "Done");

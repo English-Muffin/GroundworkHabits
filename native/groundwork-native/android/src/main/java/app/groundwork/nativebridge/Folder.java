@@ -70,7 +70,12 @@ final class Folder {
     static void writeData(Context c, String text) throws Exception {
         Uri tree = tree(c);
         if (tree == null) throw new IllegalStateException("No folder");
-        write(c, tree, DocumentsContract.getTreeDocumentId(tree), "groundwork.json", "application/json", text);
+        String root = DocumentsContract.getTreeDocumentId(tree);
+        write(c, tree, root, "groundwork.json", "application/json", text);
+        // the save under its name before the rename: gone once the new one is written, so no stale (unencrypted) copy stays
+        ContentResolver r = c.getContentResolver();
+        String old = find(r, tree, root, "daybook.json");
+        if (old != null) try { DocumentsContract.deleteDocument(r, DocumentsContract.buildDocumentUriUsingTree(tree, old)); } catch (Exception e) { }
     }
 
     // keeps the newest 8 backups

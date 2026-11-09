@@ -25,7 +25,8 @@ ipcMain.on('fs:openBackups', () => { const d = backupDir(); fs.mkdirSync(d, { re
 ipcMain.on('fs:reset', e => { const c = readCfg(); delete c.folder; writeCfg(c); e.returnValue = true; });
 ipcMain.on('fs:write', (e, text) => {
   const f = dataFile(); if (!f || typeof text !== 'string') { e.returnValue = false; return; }
-  try { fs.writeFileSync(f + '.tmp', text); fs.renameSync(f + '.tmp', f); e.returnValue = true; } catch (err) { e.returnValue = false; } // tmp+rename: never a half-written file
+  try { fs.writeFileSync(f + '.tmp', text); fs.renameSync(f + '.tmp', f); e.returnValue = true; } catch (err) { e.returnValue = false; return; } // tmp+rename: never a half-written file
+  try { fs.unlinkSync(oldFile(f)); } catch (err) {} // the pre-rename save goes once the new one exists, so no stale (unencrypted) copy stays
 });
 // calendar feed: fetched here because the page itself is blocked by CORS.
 // https only on every redirect hop, 5 MB and 20 s caps, no cookies. The public-address check runs inside the
@@ -205,7 +206,8 @@ const moved = path.join(newProfile, 'renamed.txt');
 if (!process.env.GROUNDWORK_USER_DATA && fs.existsSync(oldProfile) && !fs.existsSync(moved)) try {
   if (fs.existsSync(newProfile)) fs.renameSync(newProfile, newProfile + '-before-rename-' + Date.now()); // a stray folder (e.g. from a test) is set aside, never deleted
   fs.cpSync(oldProfile, newProfile, { recursive: true });
-  fs.writeFileSync(moved, 'Copied from ' + oldProfile + ' on ' + new Date().toISOString() + '. The old folder is kept as a backup.');
+  fs.writeFileSync(moved, 'Copied from ' + oldProfile + ' on ' + new Date().toISOString() + '.');
+  fs.rmSync(oldProfile, { recursive: true, force: true }); // only after a complete copy: no second (possibly unencrypted) copy of the data stays behind
 } catch (e) {}
 app.setPath('userData', newProfile);
 app.setAppUserModelId('com.groundwork.habits'); // matches the installer's Start menu shortcut, so Windows shows the app's notifications
