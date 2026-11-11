@@ -10,6 +10,7 @@ OUT = ROOT / 'assets' / 'readme'
 PORT = 8797
 import os
 GIF_ONLY = os.environ.get('GIF_ONLY') == '1'
+SHOTS_ONLY = os.environ.get('SHOTS_ONLY') == '1'  # refresh the screenshots, keep the intro
 DEBUG = os.environ.get('DEBUG') == '1'
 FONT = ROOT / 'www' / 'fonts' / 'space-grotesk-latin.woff2'
 
@@ -229,7 +230,7 @@ async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch()
         if not GIF_ONLY: await screenshots(b)
-        await gif(b)
+        if not SHOTS_ONLY: await gif(b)
         await b.close()
     srv.shutdown()
     for f in sorted(OUT.iterdir()):
