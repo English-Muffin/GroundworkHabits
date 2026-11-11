@@ -1,5 +1,5 @@
 /* Groundwork Habits service worker: works offline after the first visit. Bump VERSION to ship updates. */
-const VERSION = 'groundwork-v52';
+const VERSION = 'groundwork-v53';
 const CORE = ['./', './index.html', './app.css', './js/core.js', './js/habits.js', './js/tasks.js', './js/goals.js', './js/settings.js', './js/render.js', './js/events.js', './js/extras.js', './js/boot.js', './fonts/space-grotesk-latin.woff2', './fonts/space-grotesk-latin-ext.woff2', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png'];
 
 self.addEventListener('install', e => {

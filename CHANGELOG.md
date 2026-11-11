@@ -1,6 +1,33 @@
 # Changelog
 
-All notable changes to Groundwork Habits (called Groundwork Habits up to 1.6.1). Versions match the GitHub releases.
+All notable changes to Groundwork Habits. Versions match the GitHub releases.
+
+## 1.7.3
+
+- **Undo for every change:** Ctrl+Z steps back through anything you changed (deleted items come back first,
+  in place), Ctrl+Y redoes it.
+- **Never miss twice:** after a missed day, Today marks the habit so one miss doesn't become two.
+- **Challenges:** 7, 21, 30, 66 or 100 days of a habit, shown on Today and with a medal on the Streaks tab.
+- **Goal forecasts:** when you'll reach an amount, from-to or habit goal at the pace so far.
+- More ways to repeat a task: every 2 weeks, the 2nd Tuesday of the month, the last Friday of the month.
+- Share any habit or goal as an image.
+- New empty screens with a small drawing and the next step, on every tab.
+- **In-browser demo** with example data, and the web app on GitHub Pages.
+- Android: a small "Next habit" widget, and the app icon without a background. The app ID is now
+  `com.groundwork.habits`, so it installs as a new app: export your data from the old one and import it.
+- Your data is also kept in the browser database, so a full browser storage never loses a save.
+  Backups from a newer version or damaged files are refused before anything changes.
+- Settings → About → **Copy diagnostics** for bug reports (no habits, tasks or other data).
+- iPhone and iPad: a one-time hint on how to install the web app.
+- Accessibility: every control has a name for screen readers, reduced motion stops animations, and
+  Windows high-contrast mode is supported.
+- Every internal name now uses the new name; data saved under the old one moves across on first start.
+
+## 1.7.2
+
+- Windows: our own installer and uninstaller in the app's style. Pick the folder (type a path or make a new
+  one), see the space needed and the progress, cancel safely; an update that fails puts the old version
+  back. The uninstaller asks whether to keep or erase your data.
 
 ## 1.7.1
 
@@ -16,8 +43,8 @@ All notable changes to Groundwork Habits (called Groundwork Habits up to 1.6.1).
 
 ## 1.7.0
 
-- Groundwork Habits is now **Groundwork Habits**, with a new layered logo and app icons. Your data, data
-  folder and backups carry over untouched.
+- A new name, **Groundwork Habits**, with a new layered logo and app icons. Your data, data folder and
+  backups carry over untouched.
 - Windows: a new installer (`…-Windows-setup.exe`, per user, no admin) opens the app in under a second.
   The portable exe unpacks itself on every start (10 s or more); it now shows a splash while it does.
 - A colour picker built into the app for the accent, habits and life areas (hue, saturation, lightness,
