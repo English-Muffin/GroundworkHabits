@@ -504,6 +504,24 @@ async def languages(b):
     await pg.click('[data-act=gear]'); await pg.select_option('#langSel', 'en'); await pg.wait_for_timeout(600)
     nav2 = await pg.locator('#nav').inner_text()
     check('language: German shows German labels and dates, switching back to English works', 'Heute' in nav and 'Gewohnheiten' in nav and 'Today' in nav2 and not errs, [nav, nav2, errs])
+    # right-to-left: Hebrew flips the page, the header buttons move to the left, nothing overflows sideways
+    await pg.evaluate("localStorage.setItem('groundwork-prefs',JSON.stringify({lang:'he'}))"); await pg.goto(URL + '#today'); await pg.reload(); await pg.wait_for_timeout(300)
+    await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(200)
+    r = await pg.evaluate("""async()=>{const o={dir:document.dir,nav:document.querySelector('#nav').innerText,gear:document.querySelector('#gearBtn').getBoundingClientRect().left<innerWidth/2,flip:getComputedStyle(document.querySelector('.ic.flip')||document.body).transform};
+      for(const h of ['#habits','#tasks','#goals','#insights']){location.hash=h;await new Promise(r=>setTimeout(r,200));if(document.documentElement.scrollWidth>innerWidth+1)o.over=h}return o}""")
+    check('language: Hebrew lays the app out right to left without sideways overflow', r['dir'] == 'rtl' and 'היום' in r['nav'] and r['gear'] and 'over' not in r and not errs, [r, errs])
+    await ctx.close()
+
+async def dialogFocus(b):
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
+    await pg.goto(URL); await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(150)
+    await pg.focus('.navq'); await pg.keyboard.press('Enter'); await pg.wait_for_timeout(150)
+    inside = await pg.evaluate("!!document.activeElement.closest('#modal [role=dialog]')")
+    for _ in range(30): await pg.keyboard.press('Tab')
+    stays = await pg.evaluate("!!document.activeElement.closest('#modal [role=dialog]')")
+    await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+    back = await pg.evaluate("document.activeElement&&document.activeElement.className")
+    check('dialogs: focus moves in, Tab stays inside, Esc returns focus to the opener', inside and stays and back == 'navq', [inside, stays, back])
     await ctx.close()
 
 async def newFeatures(b):
@@ -798,7 +816,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")
