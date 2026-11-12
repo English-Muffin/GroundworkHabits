@@ -1,6 +1,8 @@
 // Builds the Windows installer in the app's own look: compiles tools/portable/Setup.cs twice with the C# compiler that ships
 // with Windows (.NET Framework 4.x): the uninstaller first, then the setup that carries it and the zipped app
 // (dist/win-unpacked, made by `electron-builder --win dir`). Output: dist/Groundwork-Habits-<version>-Windows-setup.exe
+// Code signing (CI) runs in two passes so every exe a user runs is signed: UNINST_ONLY=<file> writes just the uninstaller
+// there (signed with the app exe), then UNINST=<signed uninstaller> builds the setup around it (signed last).
 const { execFileSync } = require('child_process'), fs = require('fs'), path = require('path'), os = require('os');
 const root = path.join(__dirname, '..'), dist = path.join(root, 'dist'), src = process.env.APP_DIR || path.join(dist, 'win-unpacked') /* APP_DIR: the Tauri Lite build (build_lite_win.js) */, dir = path.join(__dirname, 'portable');
 const pkg = require(path.join(root, 'package.json')), version = pkg.version, product = pkg.build.productName, lite = /Lite$/.test(product), file = product.replace(/ /g, '-');
@@ -21,7 +23,12 @@ const common = ['/nologo', '/target:winexe', '/optimize+', '/platform:x64', `/wi
   `/resource:${path.join(root, 'www', 'icons', 'icon-512.png')},logo.png`, `/resource:${ver},version.txt`,
   `/resource:${path.join(dir, 'SpaceGrotesk-Regular.ttf')},SpaceGrotesk-Regular.ttf`, `/resource:${path.join(dir, 'SpaceGrotesk-Bold.ttf')},SpaceGrotesk-Bold.ttf`];
 const cs = path.join(dir, 'Setup.cs');
-execFileSync(csc, [...common, ...(lite ? ['/define:LITE'] : []), '/define:UNINST', `/out:${uninst}`, cs], { stdio: 'inherit' });
+if (process.env.UNINST_ONLY) {
+  execFileSync(csc, [...common, ...(lite ? ['/define:LITE'] : []), '/define:UNINST', `/out:${process.env.UNINST_ONLY}`, cs], { stdio: 'inherit' });
+  fs.rmSync(work, { recursive: true, force: true }); console.log('Uninstaller: ' + process.env.UNINST_ONLY); process.exit(0);
+}
+if (process.env.UNINST) fs.copyFileSync(process.env.UNINST, uninst);
+else execFileSync(csc, [...common, ...(lite ? ['/define:LITE'] : []), '/define:UNINST', `/out:${uninst}`, cs], { stdio: 'inherit' });
 const out = path.join(dist, `${file}-${version}-Windows-setup.exe`);
 execFileSync(csc, [...common, ...(lite ? ['/define:LITE'] : []), `/out:${out}`, `/resource:${zip},app.zip`, `/resource:${uninst},uninstaller.exe`, cs], { stdio: 'inherit' });
 fs.rmSync(work, { recursive: true, force: true });

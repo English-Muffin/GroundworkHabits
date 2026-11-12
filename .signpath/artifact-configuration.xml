@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SignPath artifact configuration "windows-exe" (paste into SignPath: project GroundworkHabits > Artifact configurations).
+     The CI uploads each pass as a GitHub artifact, which arrives as a zip: pass 1 holds the app exe and the uninstaller,
+     pass 2 the setup. Every exe in it gets an Authenticode signature with a timestamp. -->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <zip-file>
+    <pe-file path="*.exe" min-matches="1" max-matches="unbounded">
+      <authenticode-sign hash-algorithm="sha256" description="Groundwork Habits" description-url="https://github.com/English-Muffin/GroundworkHabits" />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>

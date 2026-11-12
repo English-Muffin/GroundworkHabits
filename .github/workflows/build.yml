@@ -55,17 +55,25 @@ jobs:
         if: matrix.edition == 'full'
         working-directory: tauri
         run: cargo test --release --features full
-      # Code signing (SignPath, free for open source). Stays off until the SIGNPATH_* secrets exist: apply at
-      # signpath.org with this repository, then add SIGNPATH_API_TOKEN and SIGNPATH_ORGANIZATION_ID.
+      # Code signing (SignPath Foundation, free for open source), release tags only. Stays off until the SIGNPATH_* secrets
+      # exist. Two passes so every exe a user runs is signed: 1) the app exe and the uninstaller, 2) the setup built around
+      # them. SignPath's artifact configuration for both: .signpath/artifact-configuration.xml
       - name: Is signing set up?
         id: sign
         env: { TOKEN: '${{ secrets.SIGNPATH_API_TOKEN }}' }
         shell: bash
-        run: echo "enabled=$([ -n "$TOKEN" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v4
-        id: unsigned
+        run: echo "enabled=$([ -n "$TOKEN" ] && [[ "$GITHUB_REF" == refs/tags/v* ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: 'Signing, pass 1: collect the app exe and the uninstaller'
         if: steps.sign.outputs.enabled == 'true'
-        with: { name: 'Groundwork-Habits-Windows-unsigned-${{ matrix.edition }}', path: dist/*.exe }
+        shell: bash
+        run: |
+          d=dist/win-unpacked-tauri; [ "${{ matrix.edition }}" = lite ] && d=dist/win-unpacked-lite
+          p="$(node -p "require('./package.json').build.productName")"
+          mkdir -p sign1 && cp "$d/$p.exe" sign1/ && APP_DIR="$d" UNINST_ONLY="$(pwd -W)/sign1/uninstaller.exe" node tools/build_setup.js
+      - uses: actions/upload-artifact@v4
+        id: unsigned1
+        if: steps.sign.outputs.enabled == 'true'
+        with: { name: 'unsigned-app-${{ matrix.edition }}', path: sign1/*.exe }
       - uses: signpath/github-action-submit-signing-request@ced31329c0317e779dad2eec2a7c3bb46ea1343e # v1, pinned
         if: steps.sign.outputs.enabled == 'true'
         with:
@@ -73,9 +81,41 @@ jobs:
           organization-id: '${{ secrets.SIGNPATH_ORGANIZATION_ID }}'
           project-slug: GroundworkHabits
           signing-policy-slug: release-signing
-          github-artifact-id: '${{ steps.unsigned.outputs.artifact-id }}'
+          artifact-configuration-slug: windows-exe
+          github-artifact-id: '${{ steps.unsigned1.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: signed1
+      - name: 'Signing, pass 2: the portable exe and the setup from the signed parts'
+        if: steps.sign.outputs.enabled == 'true'
+        shell: bash
+        run: |
+          d=dist/win-unpacked-tauri; [ "${{ matrix.edition }}" = lite ] && d=dist/win-unpacked-lite
+          p="$(node -p "require('./package.json').build.productName")"; v="$(node -p "require('./package.json').version")"
+          cp "signed1/$p.exe" "$d/$p.exe" && cp "signed1/$p.exe" "dist/${p// /-}-$v-Windows-portable.exe"
+          rm -f dist/*-Windows-setup.exe && APP_DIR="$d" UNINST="$(pwd -W)/signed1/uninstaller.exe" node tools/build_setup.js
+          mkdir -p sign2 && mv dist/*-Windows-setup.exe sign2/
+      - uses: actions/upload-artifact@v4
+        id: unsigned2
+        if: steps.sign.outputs.enabled == 'true'
+        with: { name: 'unsigned-setup-${{ matrix.edition }}', path: sign2/*.exe }
+      - uses: signpath/github-action-submit-signing-request@ced31329c0317e779dad2eec2a7c3bb46ea1343e # v1, pinned
+        if: steps.sign.outputs.enabled == 'true'
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '${{ secrets.SIGNPATH_ORGANIZATION_ID }}'
+          project-slug: GroundworkHabits
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: windows-exe
+          github-artifact-id: '${{ steps.unsigned2.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: dist
+      - name: Check the signatures
+        if: steps.sign.outputs.enabled == 'true'
+        shell: pwsh
+        run: |
+          $bad = Get-ChildItem dist/*.exe | Where-Object { (Get-AuthenticodeSignature $_.FullName).Status -ne 'Valid' }
+          if ($bad) { "Not signed: $($bad.Name -join ', ')"; exit 1 }
+          Get-ChildItem dist/*.exe | ForEach-Object { "$($_.Name): $((Get-AuthenticodeSignature $_.FullName).SignerCertificate.Subject)" }
       - uses: actions/upload-artifact@v4
         with: { name: 'Groundwork-Habits-Windows-${{ matrix.edition }}', path: dist/*.exe }
 
