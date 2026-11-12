@@ -16,6 +16,9 @@ AutoName: Groundwork Habits
 
 RepoType: git
 Repo: https://github.com/English-Muffin/GroundworkHabits.git
+# reproducible: F-Droid rebuilds the app, checks it matches our signed release APK byte for byte, then ships ours
+Binaries: https://github.com/English-Muffin/GroundworkHabits/releases/download/v%v/Groundwork-Habits-%v-Android.apk
+AllowedAPKSigningKeys: 60264d56dee51abf9d4532b904dbc02e695bd9012d752b7b0ebe6cf2f2644627
 
 Builds:
   - versionName: 1.7.6

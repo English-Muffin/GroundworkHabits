@@ -152,7 +152,7 @@ jobs:
         with: { node-version: 20 }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
-      - run: npm install
+      - run: npm ci   # exact versions from package-lock.json: the APK must be reproducible (F-Droid)
       - name: Lite edition
         if: matrix.edition == 'lite'
         run: node tools/edition.js lite

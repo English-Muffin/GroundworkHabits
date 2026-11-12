@@ -7,6 +7,12 @@ android {
         versionName pkg.version
         versionCode v[0] * 10000 + v[1] * 100 + v[2]
     }
+    // reproducible builds (F-Droid ships our signed APK when its own build matches it byte for byte): no encrypted
+    // Google dependency report in the signing block
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
     // smaller release APK: R8 removes unused code and resources (keep rules in native/proguard-groundwork.pro)
     buildTypes {
         release {
