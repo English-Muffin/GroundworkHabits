@@ -22,10 +22,10 @@ const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturda
 /* translations: the English text in the code is the key. i18n/<lang>.js (loaded by index.html before this file) sets
    window.GROUNDWORK_I18N={t:{English:translation}, p:[[regex source, replacement]]}. After each render the visible text,
    placeholders and labels are swapped; user content (names, notes, task text) is never touched. */
-const LANGS=[['en','English'],['pt','Português'],['es','Español'],['fr','Français'],['de','Deutsch'],['it','Italiano'],['nl','Nederlands'],['pl','Polski'],['ru','Русский'],['zh','中文'],['ja','日本語']];
+const LANGS=[['en','English'],['pt','Português'],['es','Español'],['fr','Français'],['de','Deutsch'],['it','Italiano'],['nl','Nederlands'],['pl','Polski'],['ru','Русский'],['zh','中文'],['ja','日本語'],['ar','العربية'],['he','עברית']];
 const I18=window.GROUNDWORK_I18N||{t:{},p:[]},LANG=window.GROUNDWORK_LANG&&I18.lang===window.GROUNDWORK_LANG?window.GROUNDWORK_LANG:'en';
 const I18P=(I18.p||[]).map(x=>[new RegExp(x[0]),x[1]]);
-if(LANG!=='en'){const loc=LANG==='zh'?'zh-CN':LANG,f=(o,i)=>new Intl.DateTimeFormat(loc,o).format(i),cap=x=>x.charAt(0).toUpperCase()+x.slice(1);
+if(LANG!=='en'){const loc=LANG==='zh'?'zh-CN':LANG==='ar'?'ar-u-nu-latn':LANG,f=(o,i)=>new Intl.DateTimeFormat(loc,o).format(i),cap=x=>x.charAt(0).toUpperCase()+x.slice(1);
   for(let i=0;i<7;i++)DAYS[i]=cap(f({weekday:'long'},new Date(2023,0,1+i)));
   for(let i=0;i<12;i++){MONTHS[i]=cap(f({month:'long'},new Date(2023,i,15)));MON3[i]=cap(f({month:'short'},new Date(2023,i,15)).replace('.',''))}}
 function tx(s){if(LANG==='en'||!s)return s;const k=String(s).trim();if(!k)return s;const v=I18.t[k];if(v!==undefined)return String(s).replace(k,v);
@@ -69,7 +69,7 @@ const ICON={
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   prev:'<path d="M15 6l-6 6 6 6"/>',next:'<path d="M9 6l6 6-6 6"/>'
 };
-const ic=(n,c)=>'<svg class="ic'+(c?' '+c:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+ICON[n]+'</svg>';
+const ic=(n,c)=>'<svg class="ic'+(/^(prev|next|back)$/.test(n)?' flip':'')+(c?' '+c:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+ICON[n]+'</svg>';
 const XMARK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
 const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const FLAME='<svg class="flame" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.6 5.2 5.6 5.2 10.3a5.2 5.2 0 0 1-10.4 0c0-2.1 1-3.4 2.1-4.3 0 2.1 1 3.1 2.1 3.1C11 8.5 10 5.5 12 2z"/></svg>';

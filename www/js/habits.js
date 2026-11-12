@@ -161,7 +161,7 @@ function vToday(){
   let o='<section class="card thero">'+ring(pct,190,16,'<div class="tpct">'+pct+'%</div><div class="lbl" style="font-size:10px">Today</div>')
    +'<div><div class="tdate">'+DAYS[TODAY.getDay()]+' '+TODAY.getDate()+' '+MONTHS[m]+'</div><div class="muted" style="margin-top:4px">'+t.done+' / '+t.total+' habits completed</div></div>'
    +(feat('freeze')&&freezeTotal()?'<div class="fzpill">'+ic('snow')+freezeTotal()+(freezeTotal()===1?' streak freeze':' streak freezes')+' saved up</div>':'')+'</section>'
-   +'<section class="card ttasks"><div class="ch"><span class="lbl">Tasks today</span><span>'+(feat('focus')?'<button class="link" data-act="focusnew" style="margin-right:14px">Focus</button>':'')+'<button class="link" data-act="goto" data-v="tasks">Open</button></span></div>'
+   +'<section class="card ttasks"><div class="ch"><span class="lbl">Tasks today</span><span>'+(feat('focus')?'<button class="link" data-act="focusnew" style="margin-inline-end:14px">Focus</button>':'')+'<button class="link" data-act="goto" data-v="tasks">Open</button></span></div>'
    +'<div class="tlist" data-drop="tasks" data-k="'+k+'">'+vis(day.items).map(it=>taskChip(k,it)).join('')+'</div>'+(vis(day.items).length?'':'<p class="muted" style="margin:0 0 8px;font-size:12px">Nothing planned yet.</p>')
    +taskAdder(k,false)+'</section>';
   if(feat('streaks')&&feat('ach')&&S.quits.length)o+='<section class="card tstreaks"><div class="ch"><span class="lbl">Streaks</span><button class="link" data-act="goto" data-v="achievements">Open</button></div><div class="tsg">'
