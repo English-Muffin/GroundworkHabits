@@ -30,3 +30,5 @@ Before you open a pull request:
 - Bump `VERSION` in `www/sw.js` when shipped files change.
 
 By contributing you agree that your work is released under the [GNU AGPL-3.0-or-later](LICENSE).
+
+By taking part you agree to the [code of conduct](CODE_OF_CONDUCT.md).
