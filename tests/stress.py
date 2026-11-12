@@ -63,29 +63,29 @@ async def run():
         b = await p.chromium.launch()
         # 1. layout across sizes and themes with heavy data
         for w, h in [(320, 640), (390, 844), (768, 1024), (1024, 768), (1280, 800), (1920, 1080)]:
-            for th in ['dark', 'light', 'amoled']:
+            for th, lang in [('dark', ''), ('light', ''), ('amoled', ''), ('dark', 'ar'), ('light', 'he')]:
                 ctx = await b.new_context(viewport={'width': w, 'height': h}, has_touch=w < 800, is_mobile=w < 800)
                 await ctx.add_init_script("localStorage.getItem('groundwork-tips')||localStorage.setItem('groundwork-tips','1')")
                 pg = await ctx.new_page(); errs = []
                 pg.on('pageerror', lambda e: errs.append(str(e)))
                 await pg.goto(URL)
                 big = await pg.evaluate(BIG)
-                await pg.evaluate("([d,t])=>{localStorage.setItem('groundwork-v2',d);localStorage.setItem('groundwork-prefs',JSON.stringify({theme:t,accent:'#98c4fb',feat:{reminder:false}}))}", [big, th])
+                await pg.evaluate("([d,t,l])=>{localStorage.setItem('groundwork-v2',d);localStorage.setItem('groundwork-prefs',JSON.stringify(Object.assign({theme:t,accent:'#98c4fb',feat:{reminder:false}},l?{lang:l}:{})))}", [big, th, lang])
                 await pg.reload(); await pg.wait_for_timeout(200)
                 assert await pg.evaluate("JSON.parse(localStorage.getItem('groundwork-v2')).habits.length") == 40
                 for v in VIEWS:
                     await pg.evaluate(f"location.hash='{v}'"); await pg.wait_for_timeout(300)
-                    note(f'{w}px {th} {v}', await pg.evaluate(LAYOUT))
-                    if th == 'dark': await pg.screenshot(path=f'{OUT}/{w}-{v}.png', full_page=False)
+                    note(f'{w}px {th}{lang} {v}', await pg.evaluate(LAYOUT))
+                    if th == 'dark' and not lang: await pg.screenshot(path=f'{OUT}/{w}-{v}.png', full_page=False)
                 await pg.keyboard.press('Escape'); await pg.evaluate("s=>{const e=document.querySelector(s);e&&e.click()}", '[data-act=gear]'); await pg.evaluate("s=>{const e=document.querySelector(s);e&&e.click()}", '[data-act=featfold]'); await pg.wait_for_timeout(100)
-                note(f'{w}px {th} settings', await pg.evaluate(LAYOUT))
-                if th == 'dark': await pg.screenshot(path=f'{OUT}/{w}-settings.png')
+                note(f'{w}px {th}{lang} settings', await pg.evaluate(LAYOUT))
+                if th == 'dark' and not lang: await pg.screenshot(path=f'{OUT}/{w}-settings.png')
                 for m in ['newhabit', 'search', 'focusnew']:
                     await pg.keyboard.press('Escape'); await pg.evaluate("location.hash='today'"); await pg.reload(); await pg.wait_for_timeout(150)
                     if await pg.locator(f'[data-act={m}]').count():
                         await pg.evaluate("s=>{const e=document.querySelector(s);e&&e.click()}", f'[data-act={m}]'); await pg.wait_for_timeout(120)
-                        note(f'{w}px {th} modal {m}', await pg.evaluate(LAYOUT))
-                note(f'{w}px {th} errors', errs)
+                        note(f'{w}px {th}{lang} modal {m}', await pg.evaluate(LAYOUT))
+                note(f'{w}px {th}{lang} errors', errs)
                 await ctx.close()
         if os.environ.get('LAYOUT_ONLY'):
             await b.close(); srv.kill(); dump(findings); return
