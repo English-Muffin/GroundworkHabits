@@ -21,6 +21,13 @@ const BRIDGE: &str = include_str!("bridge.js");
 fn route(hash: &str) -> String {
     format!("{BRIDGE}\nif (location.hash !== '#{hash}') history.replaceState(null, '', '#{hash}');")
 }
+// tests only: GROUNDWORK_DEBUG_PORT opens WebView2's debugging port (some machines ignore WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS).
+// Every window must get the same arguments, or WebView2 refuses to make the second one. The flags are Tauri's defaults.
+fn web_args() -> String {
+    let mut a = String::from("--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection");
+    if let Ok(p) = std::env::var("GROUNDWORK_DEBUG_PORT") { if p.parse::<u16>().is_ok() { a.push_str(&format!(" --remote-debugging-port={p}")); } }
+    a
+}
 fn product(app: &AppHandle) -> String { app.config().product_name.clone().unwrap_or_else(|| "Groundwork Habits".into()) }
 
 fn backup_dir(app: &AppHandle) -> Result<PathBuf, String> {
@@ -81,7 +88,7 @@ async fn widget(app: AppHandle) -> Result<(), String> {
     if let Some(w) = app.get_webview_window("widget") { let _ = w.set_focus(); return Ok(()); }
     WebviewWindowBuilder::new(&app, "widget", WebviewUrl::App("index.html".into()))
         .title(format!("{} widget", product(&app))).inner_size(340.0, 560.0).min_inner_size(280.0, 320.0)
-        .always_on_top(true).initialization_script(&route("widget")).build().map_err(|e| e.to_string())?;
+        .always_on_top(true).initialization_script(&route("widget")).additional_browser_args(&web_args()).build().map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -101,7 +108,7 @@ async fn ask(app: AppHandle, h: String, k: String) -> Result<(), String> {
     WebviewWindowBuilder::new(&app, &label, WebviewUrl::App("index.html".into()))
         .title(format!("{} reminder", product(&app))).inner_size(340.0, 230.0).position(x, y)
         .decorations(false).resizable(false).always_on_top(true).skip_taskbar(true)
-        .initialization_script(&route(&format!("ask~{h}~{k}"))).build().map_err(|e| e.to_string())?;
+        .initialization_script(&route(&format!("ask~{h}~{k}"))).additional_browser_args(&web_args()).build().map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -166,7 +173,7 @@ fn main() {
             let name = app.config().product_name.clone().unwrap_or_else(|| "Groundwork Habits".into());
             WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
                 .title(name).inner_size(1320.0, 860.0).min_inner_size(420.0, 600.0)
-                .initialization_script(BRIDGE).build()?;
+                .initialization_script(BRIDGE).additional_browser_args(&web_args()).build()?;
             Ok(())
         })
         .invoke_handler({

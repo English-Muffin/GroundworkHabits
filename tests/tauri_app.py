@@ -22,7 +22,7 @@ def check(name, ok, info=''):
     if not ok: fails.append(name)
 
 def start(env_extra=None):
-    env = {**os.environ, 'WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS': f'--remote-debugging-port={PORT}', **(env_extra or {})}
+    env = {**os.environ, 'GROUNDWORK_DEBUG_PORT': str(PORT), **(env_extra or {})}
     p = subprocess.Popen([EXE], env=env)
     for _ in range(60):
         try:
