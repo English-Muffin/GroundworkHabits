@@ -1,10 +1,10 @@
 name: Web app and demo (GitHub Pages)
 # Publishes the app to https://english-muffin.github.io/GroundworkHabits/ (installable, data stays in the browser)
-# and the in-browser demo with example data to .../demo/ (its own storage, never mixed with real data).
+# the in-browser demo with example data to .../demo/ (its own storage, never mixed with real data), and Lite to .../lite/.
 on:
   push:
     branches: [main]
-    paths: ['www/**', '.github/workflows/pages.yml', 'tools/release_strip.js']
+    paths: ['www/**', '.github/workflows/pages.yml', 'tools/release_strip.js', 'tools/edition.js']
   workflow_dispatch:
 
 permissions:
@@ -28,6 +28,8 @@ jobs:
         run: |
           mkdir _site && cp -r www/. _site/ && mkdir _site/demo && cp -r www/. _site/demo/
           touch _site/.nojekyll
+      - name: Groundwork Habits Lite in /lite/ (its own storage keys, offline only)
+        run: node tools/edition.js lite && mkdir _site/lite && cp -r www/. _site/lite/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
