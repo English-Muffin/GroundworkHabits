@@ -1,0 +1,28 @@
+Groundwork Habits is a habit tracker, weekly task planner and goal tracker that keeps everything on your phone. No account, no subscription, no ads and no tracking.
+
+<b>Habits</b>
+<ul>
+<li>Daily, weekly and monthly habits on a month grid</li>
+<li>Count habits (tap several times) and amounts (litres, pages, minutes)</li>
+<li>Streaks with streak freezes, rest days and challenges</li>
+<li>Reminders you can answer Yes or No straight from the notification</li>
+</ul>
+
+<b>Tasks and goals</b>
+<ul>
+<li>A week of tasks with repeating tasks, reminders and a mindset tracker</li>
+<li>Goals measured by percentage, steps, amounts, a habit or tasks, with deadlines and forecasts</li>
+<li>Quit streaks for things you're giving up</li>
+</ul>
+
+<b>Your data stays yours</b>
+<ul>
+<li>Works fully offline; nothing leaves the device unless you choose a folder or a calendar link</li>
+<li>Automatic weekly backups, export to JSON or a spreadsheet, import from Loop and Habitica</li>
+<li>Optional PIN lock with encryption and fingerprint unlock</li>
+<li>Keep the same data on your computer by choosing a synced folder (the desktop apps are on GitHub)</li>
+</ul>
+
+Also: home-screen widgets, a quick settings tile, light, dark and AMOLED themes with your own accent colour, and 11 languages.
+
+The app is free and open source (AGPL-3.0). Tips are welcome on Ko-fi but never needed.

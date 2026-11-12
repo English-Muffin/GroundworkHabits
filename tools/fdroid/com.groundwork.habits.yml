@@ -1,0 +1,41 @@
+# Draft F-Droid build recipe. It goes into the fdroiddata repository (gitlab.com/fdroid/fdroiddata) as
+# metadata/com.groundwork.habits.yml through a merge request; F-Droid builds the app from source and signs it.
+# The store texts, icon and screenshots come from fastlane/metadata/android in this repository.
+# Needs a release whose tag has tools/android_prepare.sh (1.7.6 or later).
+Categories:
+  - Sports & Health
+  - Time
+License: AGPL-3.0-or-later
+AuthorName: English-Muffin
+SourceCode: https://github.com/English-Muffin/GroundworkHabits
+IssueTracker: https://github.com/English-Muffin/GroundworkHabits/issues
+Changelog: https://github.com/English-Muffin/GroundworkHabits/blob/HEAD/CHANGELOG.md
+Donate: https://ko-fi.com/englishmuffin
+
+AutoName: Groundwork Habits
+
+RepoType: git
+Repo: https://github.com/English-Muffin/GroundworkHabits.git
+
+Builds:
+  - versionName: 1.7.6
+    versionCode: 10706
+    commit: v1.7.6
+    sudo:
+      - apt-get update
+      - apt-get install -y npm
+    init: npm ci
+    # turn off the test-only features (release builds do the same), then generate android/ from www/ and native/
+    prebuild:
+      - node tools/release_strip.js
+      - sh tools/android_prepare.sh
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - node_modules
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9.]+$
+CurrentVersion: 1.7.6
+CurrentVersionCode: 10706
