@@ -512,6 +512,27 @@ async def languages(b):
     check('language: Hebrew lays the app out right to left without sideways overflow', r['dir'] == 'rtl' and 'היום' in r['nav'] and r['gear'] and 'over' not in r and not errs, [r, errs])
     await ctx.close()
 
+async def webFolder(b):
+    # web data folder: the folder picker is stubbed with the browser's private file system (same handle API)
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); errs = []
+    await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.showDirectoryPicker=async()=>navigator.storage.getDirectory()")
+    pg = await ctx.new_page(); pg.on('pageerror', lambda e: errs.append(str(e)))
+    await pg.goto(URL); await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(150)
+    await pg.evaluate("location.hash='#settings/data'"); await pg.wait_for_timeout(200)
+    await pg.click('#main [data-act=apick]'); await pg.wait_for_timeout(300)
+    if await pg.locator('[data-act=afoldkeep]').count(): await pg.click('[data-act=afoldkeep]')
+    await pg.wait_for_timeout(1300)
+    rd = "async()=>{try{const f=await (await (await navigator.storage.getDirectory()).getFileHandle('groundwork.json')).getFile();return JSON.parse(await f.text())}catch(e){return null}}"
+    first = await pg.evaluate(rd)
+    # another device writes a newer copy: it replaces this browser's data when the app comes back
+    await pg.evaluate("async()=>{const d=GroundworkTest.state(),c=JSON.parse(JSON.stringify(d));c.habits[0].name='From the other device';c.at=Date.now()+60000;const w=await (await (await navigator.storage.getDirectory()).getFileHandle('groundwork.json')).createWritable();await w.write(JSON.stringify(c));await w.close();window.dispatchEvent(new Event('focus'))}")
+    await pg.wait_for_timeout(800); newer = await pg.evaluate("GroundworkTest.state().habits[0].name")
+    # an older copy in the folder does not replace newer data here: this browser writes its own out instead
+    await pg.evaluate("async()=>{const c=JSON.parse(JSON.stringify(GroundworkTest.state()));c.habits[0].name='Old copy';c.at=1;const w=await (await (await navigator.storage.getDirectory()).getFileHandle('groundwork.json')).createWritable();await w.write(JSON.stringify(c));await w.close();window.dispatchEvent(new Event('focus'))}")
+    await pg.wait_for_timeout(1800); kept = await pg.evaluate("GroundworkTest.state().habits[0].name"); after = await pg.evaluate(rd)
+    check('web data folder: saves there, loads a newer copy, keeps newer data over an older one', first and len(first['habits']) > 0 and newer == 'From the other device' and kept == 'From the other device' and after['habits'][0]['name'] == 'From the other device' and not errs, [bool(first), newer, kept, after and after['habits'][0]['name'], errs])
+    await ctx.close()
+
 async def dialogFocus(b):
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
     await pg.goto(URL); await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(150)
@@ -816,7 +837,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")

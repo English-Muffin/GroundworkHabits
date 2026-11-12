@@ -892,3 +892,9 @@ P88|Nog geen doelen in $1
 804|Energie, focus en motivatie per dag bij Taken en in het weekoverzicht
 805|Sta installaties van Groundwork Habits toe en tik daarna opnieuw op Installeren
 806|Gered door een reeksbevriezing
+807|TREND
+808|GEM.
+809|Alleen in deze browser. Kies een Google Drive-, OneDrive- of Dropbox-map om tussen apparaten te synchroniseren
+810|Alleen opslaan in deze browser
+811|Opnieuw verbinden
+812|Verbind je gegevensmap opnieuw

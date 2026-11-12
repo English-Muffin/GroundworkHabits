@@ -892,3 +892,9 @@ P88|Aún no hay objetivos en $1
 804|Energía, concentración y motivación por día en Tareas y en el resumen semanal
 805|Permite instalaciones desde Groundwork Habits y vuelve a tocar Instalar
 806|Salvado por una congelación de racha
+807|TENDENCIA
+808|PROM.
+809|Solo en este navegador. Elige una carpeta de Google Drive, OneDrive o Dropbox para sincronizar entre dispositivos
+810|Guardando solo en este navegador
+811|Reconectar
+812|Vuelve a conectar tu carpeta de datos

@@ -892,3 +892,9 @@ P88|Ainda sem objetivos em $1
 804|Energia, foco e motivação por dia em Tarefas e no resumo semanal
 805|Permita instalações do Groundwork Habits e toque em Instalar de novo
 806|Salvo por um congelamento de sequência
+807|TENDÊNCIA
+808|MÉD.
+809|Só neste navegador. Escolha uma pasta do Google Drive, OneDrive ou Dropbox para sincronizar entre dispositivos
+810|Guardando só neste navegador
+811|Reconectar
+812|Reconecte sua pasta de dados

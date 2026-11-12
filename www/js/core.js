@@ -102,6 +102,9 @@ let idbDb=null,idbLate=null;
 const idbOpen=()=>idbDb||(idbDb=new Promise((ok,no)=>{try{const r=indexedDB.open('groundwork',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}}));
 const idbPut=(t,at)=>idbOpen().then(db=>db.transaction('kv','readwrite').objectStore('kv').put({t,at},KEY)).catch(()=>{});
 const idbGet=()=>idbOpen().then(db=>new Promise(ok=>{const r=db.transaction('kv').objectStore('kv').get(KEY);r.onsuccess=()=>ok(r.result||null);r.onerror=()=>ok(null)})).catch(()=>null);
+/* web data folder (Chrome, Edge): the same sync as Android's, through a folder the browser may write to.
+   The folder handle lives in IndexedDB; after a restart the browser may want the user's OK again (WEBF.off, "Reconnect") */
+const idbKv=(k,v,del)=>idbOpen().then(db=>new Promise(ok=>{const s=db.transaction('kv',v===undefined&&!del?'readonly':'readwrite').objectStore('kv'),r=del?s.delete(k):v===undefined?s.get(k):s.put(v,k);r.onsuccess=()=>ok(r.result);r.onerror=()=>ok(null)})).catch(()=>null);
 function putData(t){const at=Date.now();let ok=true;try{localStorage.setItem(KEY,t);localStorage.setItem(KEY+'-at',String(at))}catch(e){ok=false}idbPut(t,at);
   if(!ok&&!putData.warned){putData.warned=1;toast('Browser storage is full, so your data is saved in the browser database instead')}}
 function load(){try{const r=localStorage.getItem(KEY);if(isEnc(r)){encWait=true;return null}return r?JSON.parse(r):null}catch(e){return null}}
@@ -109,11 +112,11 @@ function load(){try{const r=localStorage.getItem(KEY);if(isEnc(r)){encWait=true;
 function saveRaw(j,put){if(!encOn()){put(j);return}if(!encKey)return;const key=encKey,salt=P.lock.salt;save.p=(save.p||Promise.resolve()).then(()=>encText(j,key,salt)).then(put).catch(()=>{})}
 /* Android data folder (a synced folder gives cloud sync): groundwork.json is written a moment after each save and read when the app comes back */
 let andText=null;
-function andWrite(){if(!NB||!P.andDir||encWait)return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{if(t===andText)return;NB.writeFolder({text:t}).then(()=>{andText=t}).catch(()=>toast('Could not save to your data folder'))}),800)}
+function andWrite(){if(!FOLD||!P.andDir||encWait||(WEBF&&WEBF.off))return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{if(t===andText)return;FOLD.writeFolder({text:t}).then(()=>{andText=t}).catch(e=>{if(!(WEBF&&WEBF.off))toast('Could not save to your data folder')})}),800)}
 async function andApply(t,announce,newest){try{const j=isEnc(t)?(encKey?await decText(t,encKey):null):t;if(j===null)return;const d=JSON.parse(j);if(!d||!Array.isArray(d.habits))return;
   if(newest&&(+d.at||0)<(S.at||0)){andText=null;andWrite();return} // this phone has newer changes (a write failed or is pending): keep them and write them out
   S=clean(d);andText=t;saveRaw(JSON.stringify(S),putData);if(!modal&&!drag)render();if(announce)toast('Loaded the save from that folder')}catch(e){}}
-async function andRead(){if(!NB||!P.andDir||encWait)return;try{const t=(await NB.readFolder()).text;if(t&&t!==andText)andApply(t,false,true)}catch(e){}}
+async function andRead(){if(!FOLD||!P.andDir||encWait||(WEBF&&WEBF.off))return;try{const t=(await FOLD.readFolder()).text;if(t&&t!==andText)andApply(t,false,true)}catch(e){if(WEBF&&WEBF.off&&!andRead.told){andRead.told=1;toastAct('Reconnect your data folder','Reconnect','areconnect')}}}
 // Android home-screen widget: today's daily habits (names only while there's no PIN)
 function pushWidget(){if(!NB||!NB.widget||WIDGET||encWait)return;clearTimeout(pushWidget.t);pushWidget.t=setTimeout(()=>{const k=dk(TODAY);
   NB.widget({data:{locked:!!P.lock,lockedText:tx('Groundwork Habits is locked'),emptyText:tx('Add a daily habit in Groundwork Habits'),title:tx(DAYS[TODAY.getDay()]),
@@ -130,6 +133,14 @@ function save(){if(encWait)return;S.at=Date.now();snap();andWrite();pushWidget()
 const DFS=window.groundworkFS||null,NB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.GroundworkNative||null,calFetch=LITE?null:DFS&&DFS.fetchCal?DFS.fetchCal:NB?(u=>NB.fetchCal({url:u})):null;let dataDir=DFS?DFS.folder():'',fileText=null,fileJson=null;
 // updates: desktop through the Tauri bridge, Android through GroundworkNative (full app only)
 const UPD=LITE?null:DFS&&DFS.updateCheck?DFS:NB&&NB.updateCheck?{updateCheck:()=>NB.updateCheck(),updateInstall:()=>NB.updateInstall()}:null;
+const WEBF=!NB&&!DFS&&!LITE&&!DEMO&&typeof window.showDirectoryPicker==='function'?{h:null,off:false,
+  async handle(ask){if(!this.h)this.h=await idbKv(KEY+'-dir');if(!this.h)throw new Error('That folder can’t be used');const o={mode:'readwrite'};
+    if(this.h.queryPermission&&await this.h.queryPermission(o)!=='granted'&&!(ask&&await this.h.requestPermission(o)==='granted')){this.off=true;throw new Error('reconnect')}this.off=false;return this.h},
+  async pickFolder(){let h;try{h=await window.showDirectoryPicker({id:'groundwork',mode:'readwrite'})}catch(e){return {picked:false}}this.h=h;this.off=false;await idbKv(KEY+'-dir',h);return {picked:true,name:h.name||'groundwork'}},
+  async readFolder(){const h=await this.handle();try{return {text:await (await (await h.getFileHandle('groundwork.json')).getFile()).text()}}catch(e){if(e&&e.name==='NotFoundError')return {};throw e}},
+  async writeFolder(o){const w=await (await (await this.handle()).getFileHandle('groundwork.json',{create:true})).createWritable();await w.write(o.text);await w.close()}, // written to a temp file, swapped in on close
+  async clearFolder(){this.h=null;this.off=false;await idbKv(KEY+'-dir',undefined,true)}}:null;
+const FOLD=NB&&NB.pickFolder&&!DFS?NB:WEBF; // Android plugin or the web folder: same calls
 function writeFile(){clearTimeout(save.t);save.t=0;if(!dataDir||encWait)return;const j=JSON.stringify(S);if(j===fileJson)return;
   saveRaw(j,t=>{if(DFS.write(t)){fileJson=j;fileText=t}else toast('Could not save to your data folder')})}
 // the folder file wins over this device; an encrypted file is opened with the key once the PIN is in (async, renders itself)
@@ -154,7 +165,7 @@ let cpOpen={},cpHsl={};
 function pickHsl(f,hex){const m=cpHsl[f];if(m&&hslHex(...m)===hex)return m;const v=hexHsl(hex);if(m&&(v[1]===0||v[2]===0||v[2]===100)){v[0]=m[0];if(v[2]===0||v[2]===100)v[1]=m[1]}return cpHsl[f]=v}
 function colorPicker(f,hex,presets,lbl){const [h,sa,l]=pickHsl(f,hex),custom=!presets.some(p=>p[1]===hex);
   return '<div class="cpk" data-cpk="'+f+'" style="--h:'+h+';--s:'+sa+'%;--l:'+l+'%;--c:'+hex+'"><div class="cpsw" role="group" aria-label="'+lbl+'">'
-   +presets.map(p=>'<button class="csw'+(p[1]===hex?' on':'')+'" style="--c:'+p[1]+'" data-act="cset" data-f="'+f+'" data-sw="'+f+'" data-v="'+p[1]+'" aria-pressed="'+(p[1]===hex)+'" aria-label="'+p[0]+'" title="'+p[0]+'"></button>').join('')
+   +presets.map(p=>'<button class="csw'+(p[1]===hex?' on':'')+'" style="--c:'+p[1]+'" data-act="cset" data-f="'+f+'" data-sw="'+f+'" data-v="'+p[1]+'" role="checkbox" aria-checked="'+(p[1]===hex)+'" aria-label="'+p[0]+'" title="'+p[0]+'"></button>').join('')
    +'<button class="csw cmore'+(custom?' on':'')+'" data-act="cpopen" data-f="'+f+'" aria-expanded="'+!!cpOpen[f]+'" aria-label="Custom colour" title="Custom colour"></button></div>'
    +(cpOpen[f]?'<div class="cpp"><div class="cpv"><span class="cprev" aria-hidden="true"></span><input class="ain chex" data-cf="'+f+'" data-k="hex" value="'+hex+'" maxlength="7" spellcheck="false" aria-label="Hex code"></div>'
    +[['h','Hue',360,h],['s','Saturation',100,sa],['l','Lightness',100,l]].map(x=>'<label class="cpr"><span>'+x[1]+'</span><input type="range" class="crng cr-'+x[0]+'" min="0" max="'+x[2]+'" value="'+x[3]+'" data-cf="'+f+'" data-k="'+x[0]+'" aria-label="'+x[1]+'"></label>').join('')+'</div>':'')+'</div>'}

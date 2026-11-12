@@ -892,3 +892,9 @@ P88|Noch keine Ziele in $1
 804|Energie, Fokus und Motivation pro Tag bei Aufgaben und im Wochenrückblick
 805|Erlaube Installationen von Groundwork Habits und tippe dann erneut auf Installieren
 806|Durch einen Serien-Freeze gerettet
+807|TREND
+808|Ø
+809|Nur in diesem Browser. Wähle einen Google-Drive-, OneDrive- oder Dropbox-Ordner, um zwischen Geräten zu synchronisieren
+810|Speichert nur in diesem Browser
+811|Neu verbinden
+812|Verbinde deinen Datenordner neu

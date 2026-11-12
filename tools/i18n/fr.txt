@@ -892,3 +892,9 @@ P88|Aucun objectif en $1 pour l’instant
 804|Énergie, concentration et motivation par jour dans Tâches et dans le bilan de la semaine
 805|Autorisez les installations depuis Groundwork Habits, puis touchez à nouveau Installer
 806|Sauvé par un gel de série
+807|TENDANCE
+808|MOY.
+809|Ce navigateur uniquement. Choisissez un dossier Google Drive, OneDrive ou Dropbox pour synchroniser entre appareils
+810|Enregistrement dans ce navigateur uniquement
+811|Reconnecter
+812|Reconnectez votre dossier de données

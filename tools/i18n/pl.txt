@@ -892,3 +892,9 @@ P88|Brak celów w obszarze $1
 804|Energia, skupienie i motywacja na każdy dzień w Zadaniach i w podsumowaniu tygodnia
 805|Zezwól na instalacje z Groundwork Habits, a potem ponownie dotknij Zainstaluj
 806|Uratowane przez zamrożenie serii
+807|TREND
+808|ŚR.
+809|Tylko w tej przeglądarce. Wybierz folder Google Drive, OneDrive lub Dropbox, aby synchronizować między urządzeniami
+810|Zapisywanie tylko w tej przeglądarce
+811|Połącz ponownie
+812|Połącz ponownie folder danych

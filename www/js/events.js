@@ -101,13 +101,14 @@ document.addEventListener('click',e=>{
     case 'impok':{persist=false;const pin=$('#impPin').value,txt=modal.text;deriveKey(pin,encSalt(txt)).then(k=>decText(txt,k)).then(j=>{modal=null;applyImport(JSON.parse(j))}).catch(()=>{toast('Wrong PIN, or not a Groundwork Habits backup');const e=$('#impPin');if(e){e.value='';e.focus()}});return}
     case 'baknow':persist=false;menuOpen=false;autoBackup(true);break;
     case 'bakopen':persist=false;if(DFS&&DFS.openBackups)DFS.openBackups();break;
-    case 'apick':persist=false;menuOpen=false;NB.pickFolder().then(async r=>{if(!r||!r.picked)return;P.andDir=r.name;applyPrefs();
-      let ex=null;try{ex=(await NB.readFolder()).text}catch(e){}
+    case 'apick':persist=false;menuOpen=false;FOLD.pickFolder().then(async r=>{if(!r||!r.picked)return;P.andDir=r.name;applyPrefs();
+      let ex=null;try{ex=(await FOLD.readFolder()).text}catch(e){}
       if(ex&&ex!==fileText){modal={kind:'afold',text:ex};render()}else{andText=null;andWrite();render();toast('Groundwork Habits now saves to '+r.name)}}).catch(e=>toast(e&&e.message||'That folder can’t be used'));break;
     case 'afoldkeep':modal=null;andText=null;andWrite();toast('Groundwork Habits now saves to '+P.andDir);break;
     case 'afoldload':if(!modal.confirm){modal.confirm=true;persist=false;break}{const t=modal.text;modal=null;persist=false;andApply(t,true)}break;
-    case 'afoldno':modal=null;persist=false;NB.clearFolder();P.andDir='';applyPrefs();break;
-    case 'aclear':persist=false;NB.clearFolder();P.andDir='';applyPrefs();toast('Saving on this phone only');break;
+    case 'afoldno':modal=null;persist=false;FOLD.clearFolder();P.andDir='';applyPrefs();break;
+    case 'aclear':persist=false;FOLD.clearFolder();P.andDir='';applyPrefs();toast(NB?'Saving on this phone only':'Saving in this browser only');break;
+    case 'areconnect':persist=false;WEBF.handle(true).then(()=>{andText=null;andRead();render()}).catch(()=>toast('That folder can’t be used'));break;
     case 'exactok':persist=false;$('#toast').hidden=true;if(NB&&NB.openExactSettings)NB.openExactSettings();break;
     case 'askyes':alarmStop();remYes(t.dataset.h,t.dataset.k);if(ASK){window.close();return}modal=null;break;
     case 'askno':alarmStop();if(ASK){window.close();return}modal=null;persist=false;break;
