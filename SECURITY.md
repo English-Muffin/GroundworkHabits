@@ -16,6 +16,8 @@ Only the latest release gets fixes.
 
 ## Good to know
 
-- The PIN lock hides data on screen; it does not encrypt the saved data.
+- With a PIN set, the saved data, exports and weekly backups are encrypted (AES-GCM, key derived from the
+  PIN with PBKDF2). Settings such as theme and accent are not. A short PIN can be guessed by someone who
+  has a copy of the file, so use a longer one if that matters to you.
 - Builds are not code-signed yet. Download them only from this repository's releases, and compare the
   `.sha256` file next to each download.
