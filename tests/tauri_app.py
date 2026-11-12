@@ -127,7 +127,10 @@ def main():
     # a set-aside folder left by an interrupted run may hold real data: never delete or overwrite it, stop instead
     left = [d.with_name(d.name + '.test-bak') for d in DIRS if d.with_name(d.name + '.test-bak').exists()]
     if left: sys.exit('A folder set aside by an earlier, interrupted run is still there. Check it holds your data, rename it back, then rerun: ' + ', '.join(map(str, left)))
-    kept = []
+    # the app must be closed: its open files can't be moved, and a half-moved set must never be cleaned up
+    running = subprocess.run(['tasklist', '/FI', 'IMAGENAME eq ' + os.path.basename(EXE), '/NH'], capture_output=True, text=True).stdout
+    if os.path.basename(EXE).lower() in running.lower(): sys.exit('Close ' + os.path.basename(EXE) + ' first (it is running), then rerun')
+    kept, existed = [], [d for d in DIRS if d.exists()]
     try:
         for d in DIRS:
             if d.exists(): bak = d.with_name(d.name + '.test-bak'); d.rename(bak); kept.append((d, bak))
@@ -142,8 +145,9 @@ def main():
             shutil.rmtree(d, ignore_errors=True)
             if not d.exists(): bak.rename(d)
             else: print(f'WARNING: could not restore {bak} to {d}: rename it back by hand')
+        # only folders this test made: one that existed before and was not set aside is real data
         for d in DIRS:
-            if not any(d == k for k, _ in kept): shutil.rmtree(d, ignore_errors=True)
+            if d not in existed: shutil.rmtree(d, ignore_errors=True)
         shutil.rmtree(PICK, ignore_errors=True)
     print(f'\n{len(fails)} failure(s)' if fails else '\nAll checks passed'); sys.exit(1 if fails else 0)
 
