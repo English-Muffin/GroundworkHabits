@@ -45,6 +45,8 @@ jobs:
           node tests/launch_check.js "$exe"
           node tests/launch_check.js "$exe" --disable-gpu
       - name: 'The Tauri app works (bridge, backups, widget, pop-ups, close, data kept; full also data folder, calendar rules, updates)'
+        # it drives the app through window.GroundworkTest, which release builds leave out; main runs it on the same code
+        if: "!startsWith(github.ref, 'refs/tags/v')"
         shell: bash
         run: |
           d=dist/win-unpacked-tauri; [ "${{ matrix.edition }}" = lite ] && d=dist/win-unpacked-lite
