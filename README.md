@@ -42,6 +42,12 @@ Want to look around first? The [in-browser demo](https://english-muffin.github.i
 is the real app with some example data. It keeps its own separate storage in your browser, so it never
 touches anything real.
 
+## Why the releases start at 1.7.0
+
+The app existed before 1.7.0, first under the name Daybook. Those versions went out under the wrong
+licence, so when the project moved to the AGPL and its new name, the old releases were deleted. 1.7.0
+is the first proper one. What changed in the earlier versions is still in the [changelog](CHANGELOG.md).
+
 ## Features
 
 **Habits**
@@ -273,10 +279,10 @@ What that does and doesn't mean:
 Groundwork Habits is 100% free and will stay that way: AGPL, no paid tier, no ads, nothing locked
 behind a payment. A star, a bug report or a pull request helps the most.
 
-If you'd like to say thanks with a coffee, you can on Ko-fi. It's completely optional and changes
-nothing in the app.
+If you'd like to say thanks, you can tip on Ko-fi. It's completely optional and changes nothing in
+the app.
 
-<a href="https://ko-fi.com/englishmuffin"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-Ko--fi-9cc96b?style=flat-square&logo=kofi&logoColor=white&labelColor=0f0f0f" alt="Buy me a coffee on Ko-fi" height="28"></a>
+<a href="https://ko-fi.com/englishmuffin"><img src="https://img.shields.io/badge/Ko--fi-englishmuffin-9cc96b?style=flat-square&logo=kofi&logoColor=white&labelColor=0f0f0f" alt="Ko-fi" height="28"></a>
 
 <a href="https://star-history.com/#English-Muffin/GroundworkHabits&Date">
   <picture>
@@ -284,12 +290,6 @@ nothing in the app.
     <img src="https://api.star-history.com/svg?repos=English-Muffin/GroundworkHabits&type=Date" alt="Star history" width="600">
   </picture>
 </a>
-
-### Why the releases start at 1.7.0
-
-The app existed before 1.7.0, first under the name Daybook. Those versions went out under the wrong
-licence, so when the project moved to the AGPL and its new name, the old releases were deleted. 1.7.0
-is the first proper one. What changed in the earlier versions is still in the [changelog](CHANGELOG.md).
 
 ## License
 
