@@ -37,6 +37,15 @@ const days = (from, n, skip = []) => { const o = {}; for (let i = 0; i < n; i++)
 
 T.setToday(day('2026-03-18'));
 
+// calendar repeat rules (RRULE): one task per date in the window, 30 days back to 90 ahead
+const ics = rule => T.parseIcs(['BEGIN:VEVENT', 'UID:e1', 'SUMMARY:Ev', 'DTSTART;VALUE=DATE:20260302', 'RRULE:' + rule, 'END:VEVENT'].join('\n')).map(e => e.day);
+test('calendar: weekly on Monday and Wednesday, 4 dates', () => same(ics('FREQ=WEEKLY;BYDAY=MO,WE;COUNT=4'), ['2026-03-02', '2026-03-04', '2026-03-09', '2026-03-11']));
+test('calendar: second Tuesday of each month until May', () => same(ics('FREQ=MONTHLY;BYDAY=2TU;UNTIL=20260531'), ['2026-03-10', '2026-04-14', '2026-05-12']));
+test('calendar: last weekday of the month (BYSETPOS=-1)', () => same(ics('FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1;COUNT=3'), ['2026-03-31', '2026-04-30', '2026-05-29']));
+test('calendar: monthly on the last day (BYMONTHDAY=-1)', () => same(ics('FREQ=MONTHLY;BYMONTHDAY=-1;COUNT=3'), ['2026-03-31', '2026-04-30', '2026-05-31']));
+test('calendar: yearly on the first Monday of June (BYMONTH + BYDAY)', () => same(ics('FREQ=YEARLY;BYMONTH=6;BYDAY=1MO;COUNT=1'), ['2026-06-01']));
+test('calendar: EXDATE skips one date', () => same(T.parseIcs(['BEGIN:VEVENT', 'UID:e2', 'DTSTART;VALUE=DATE:20260302', 'RRULE:FREQ=DAILY;COUNT=3', 'EXDATE;VALUE=DATE:20260303', 'END:VEVENT'].join('\n')).map(e => e.day), ['2026-03-02', '2026-03-04']));
+
 test('repeat: every 2 weeks lands on the same weekday, 14 days apart', () => {
   same(T.repeatDates('2026-03-03', 'w2', 'm'), ['2026-03-03', '2026-03-17', '2026-03-31']);
 });
