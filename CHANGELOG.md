@@ -2,6 +2,15 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
+## Unreleased
+
+- **Groundwork Habits Lite:** the same app with no online parts and without the extras, for every platform.
+- **Windows runs on Tauri:** the installer is 3 MB instead of 102 MB, and the app uses Windows' own
+  WebView2. Your data moves over from the old version on first start.
+- Backups and exports now include your settings (theme, accent, features), never the PIN or folders.
+- The mindset tracker has its own switch in Settings → Features.
+- Smaller Android downloads: about 1.8 MB.
+
 ## 1.7.3
 
 - **Undo for every change:** Ctrl+Z steps back through anything you changed (deleted items come back first,

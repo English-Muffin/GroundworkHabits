@@ -59,7 +59,7 @@ svg{{position:absolute;inset:0}} line{{stroke:{c['muted']};stroke-width:1.6}} te
 {arrow(250, 110, 390, 220)}{arrow(250, 250, 390, 250)}{arrow(250, 390, 390, 280)}
 {arrow(650, 230, 780, 140, 'every save')}{arrow(650, 260, 780, 260, 'optional')}{arrow(650, 290, 780, 390, 'weekly')}
 </svg>
-{box(24, 60, 226, 100, 'Windows · macOS', 'Electron wraps the web app; own installer and auto-update')}
+{box(24, 60, 226, 100, 'Windows · macOS', 'Tauri on Windows (5 MB), Electron on macOS; own installer')}
 {box(24, 200, 226, 100, 'Android', 'Capacitor, plus native reminders, widgets and a quick tile')}
 {box(24, 340, 226, 100, 'Any browser', 'Installable web app (PWA) that works offline')}
 {box(390, 180, 260, 140, 'The app: www/', 'Plain HTML, CSS and JS, no build step and no server. One data document per device', True)}
