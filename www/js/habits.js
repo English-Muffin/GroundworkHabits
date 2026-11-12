@@ -117,7 +117,7 @@ function dailyGrid(){
     o+='<div class="grow hrow" data-drag="habits-daily" data-id="'+h.id+'">'+nameCell(h);
     for(let d=1;d<=n;d++){
       const k=dkey(vy,vm,d),fut=new Date(vy,vm,d)>TODAY,on=!!l[k];
-      o+='<div class="cellw"><button class="cell '+(on?'on':fzs&&fzs.has(k)?'fz-day':isRest(h,k)?'rest':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" '+(fut?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+', '+d+' '+MONTHS[vm]+tgt(h,k)+'"'+noteTitle(h,k)+'>'+cellIn(h,k,on)+'</button></div>';
+      o+='<div class="cellw"><button class="cell '+(on?'on':fzs&&fzs.has(k)?'fz-day':isRest(h,k)?'rest':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" '+(fut?'disabled':'')+' aria-pressed="'+on+'" aria-label="'+esc(h.name)+', '+d+' '+MONTHS[vm]+tgt(h,k)+(on?'':fzs&&fzs.has(k)?', '+tx('Saved by a streak freeze'):isRest(h,k)?', '+tx('Rest day'):'')+'"'+noteTitle(h,k)+'>'+cellIn(h,k,on)+'</button></div>';
     }
     o+='<div class="gstat">'+statCell(st)+'</div></div>';
   });

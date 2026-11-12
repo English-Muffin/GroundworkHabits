@@ -890,3 +890,5 @@ P88|Brak celów w obszarze $1
 802|Przywrócono przykładowe dane
 803|Wszystko jest zapisywane na tym urządzeniu i nigdy go nie opuszcza. Kopię wyeksportujesz w ustawieniach.
 804|Energia, skupienie i motywacja na każdy dzień w Zadaniach i w podsumowaniu tygodnia
+805|Zezwól na instalacje z Groundwork Habits, a potem ponownie dotknij Zainstaluj
+806|Uratowane przez zamrożenie serii

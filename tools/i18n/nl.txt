@@ -890,3 +890,5 @@ P88|Nog geen doelen in $1
 802|Voorbeeldgegevens hersteld
 803|Alles wordt op dit apparaat opgeslagen en verlaat het nooit. Exporteer een back-up via de instellingen.
 804|Energie, focus en motivatie per dag bij Taken en in het weekoverzicht
+805|Sta installaties van Groundwork Habits toe en tik daarna opnieuw op Installeren
+806|Gered door een reeksbevriezing

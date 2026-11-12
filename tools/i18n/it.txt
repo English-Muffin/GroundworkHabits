@@ -890,3 +890,5 @@ P88|Ancora nessun obiettivo in $1
 802|Dati di esempio ripristinati
 803|Tutto viene salvato su questo dispositivo e non lo lascia mai. Esporta un backup dalle impostazioni.
 804|Energia, concentrazione e motivazione per giorno in Attività e nel riepilogo settimanale
+805|Consenti le installazioni da Groundwork Habits, poi tocca di nuovo Installa
+806|Salvato da un congelamento della serie

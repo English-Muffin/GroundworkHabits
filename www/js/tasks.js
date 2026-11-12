@@ -161,7 +161,7 @@ function vInsights(){
     else{let c=0;for(let k=0;k<3;k++){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()-k,1);if(L(h)[mkey(d.getFullYear(),d.getMonth())])c++}p=Math.round(c/3*100)}
     return {h,p}}).sort((a,b)=>b.p-a.p).slice(0,5);
   const MC=['#facc15','#cbd5e1','#d08a4a','#555','#555'];
-  o+='<section class="card h" data-card="leader"><div class="ch"><span class="lbl">HABIT LEADERBOARD</span><div class="dwm">'+[['daily','D'],['weekly','W'],['monthly','M']].map(t=>'<button data-act="lb" data-v="'+t[0]+'" class="'+(lbTab===t[0]?'on':'')+'" aria-label="'+t[0]+'">'+t[1]+'</button>').join('')+'</div></div>'
+  o+='<section class="card h" data-card="leader"><div class="ch"><span class="lbl">HABIT LEADERBOARD</span><div class="dwm">'+[['daily','D'],['weekly','W'],['monthly','M']].map(t=>'<button data-act="lb" data-v="'+t[0]+'" aria-pressed="'+(lbTab===t[0])+'" class="'+(lbTab===t[0]?'on':'')+'" aria-label="'+t[0]+'">'+t[1]+'</button>').join('')+'</div></div>'
    +(lh.length?lh.map((x,i)=>'<div class="lrow"><span>'+medal(MC[i])+'</span><div><div class="top"><span>'+esc(x.h.name)+'</span><b>'+x.p+'%</b></div><div class="tr"><i style="width:'+x.p+'%"></i></div></div></div>').join(''):'<p class="muted" style="font-size:12px">No '+ty+' habits yet.</p>')+'</section>';
   const ts=dh.map(h=>({h,s:curStreak(h)})).sort((a,b)=>b.s-a.s).slice(0,5);
   o+='<section class="card h" data-card="topstreaks"><div class="ch"><span class="lbl">TOP STREAKS</span></div>'+ts.map((x,i)=>'<div class="lrow"><span>'+medal(MC[i])+'</span><div><div class="top"><span>'+esc(x.h.name)+'</span><b>'+x.s+'d</b></div><div class="tr"><i style="width:'+Math.max(3,Math.min(100,x.s/30*100))+'%"></i></div></div></div>').join('')+'</section>';

@@ -890,3 +890,5 @@ P88|Ainda sem objetivos em $1
 802|Dados de exemplo repostos
 803|Tudo é guardado neste dispositivo e nunca sai dele. Exporte uma cópia nas definições.
 804|Energia, foco e motivação por dia em Tarefas e no resumo semanal
+805|Permita instalações do Groundwork Habits e toque em Instalar de novo
+806|Salvo por um congelamento de sequência
