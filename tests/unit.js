@@ -93,6 +93,9 @@ test('clean: drops unknown fields and unsafe values, keeps challenges', () => {
   const d = T.clean({ habits: [{ id: 'a', name: 'X', color: 'red;}', evil: 1, ch: { from: '2026-03-01', days: 999 } }], log: {} });
   assert.strictEqual(d.habits[0].evil, undefined); assert.match(d.habits[0].color, /^#[0-9a-f]{6}$/); assert.strictEqual(d.habits[0].ch.days, 365);
 });
+test('clean: keeps the last save time (the Android data folder keeps the newest copy)', () => {
+  assert.strictEqual(T.clean({ habits: [], log: {}, at: 1763000000000 }).at, 1763000000000); assert.strictEqual(T.clean({ habits: [], log: {}, at: 'x' }).at, 0);
+});
 test('undo history: undo and redo step through saved changes', () => {
   habit({}); const S = T.getS(); sandbox.save(); S.habits[0].name = 'One'; sandbox.save();
   T.getS().habits[0].name = 'Two'; sandbox.save(); // a burst within 1.5 s is one step

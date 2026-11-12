@@ -110,9 +110,10 @@ function saveRaw(j,put){if(!encOn()){put(j);return}if(!encKey)return;const key=e
 /* Android data folder (a synced folder gives cloud sync): groundwork.json is written a moment after each save and read when the app comes back */
 let andText=null;
 function andWrite(){if(!NB||!P.andDir||encWait)return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{if(t===andText)return;NB.writeFolder({text:t}).then(()=>{andText=t}).catch(()=>toast('Could not save to your data folder'))}),800)}
-async function andApply(t,announce){try{const j=isEnc(t)?(encKey?await decText(t,encKey):null):t;if(j===null)return;const d=JSON.parse(j);if(!d||!Array.isArray(d.habits))return;
+async function andApply(t,announce,newest){try{const j=isEnc(t)?(encKey?await decText(t,encKey):null):t;if(j===null)return;const d=JSON.parse(j);if(!d||!Array.isArray(d.habits))return;
+  if(newest&&(+d.at||0)<(S.at||0)){andText=null;andWrite();return} // this phone has newer changes (a write failed or is pending): keep them and write them out
   S=clean(d);andText=t;saveRaw(JSON.stringify(S),putData);if(!modal&&!drag)render();if(announce)toast('Loaded the save from that folder')}catch(e){}}
-async function andRead(){if(!NB||!P.andDir||encWait)return;try{const t=(await NB.readFolder()).text;if(t&&t!==andText)andApply(t)}catch(e){}}
+async function andRead(){if(!NB||!P.andDir||encWait)return;try{const t=(await NB.readFolder()).text;if(t&&t!==andText)andApply(t,false,true)}catch(e){}}
 // Android home-screen widget: today's daily habits (names only while there's no PIN)
 function pushWidget(){if(!NB||!NB.widget||WIDGET||encWait)return;clearTimeout(pushWidget.t);pushWidget.t=setTimeout(()=>{const k=dk(TODAY);
   NB.widget({data:{locked:!!P.lock,lockedText:tx('Groundwork Habits is locked'),emptyText:tx('Add a daily habit in Groundwork Habits'),title:tx(DAYS[TODAY.getDay()]),
@@ -121,11 +122,14 @@ function pushWidget(){if(!NB||!NB.widget||WIDGET||encWait)return;clearTimeout(pu
     items:P.lock?[]:vis(((S.tasks[k]||{}).items)||[]).slice(0,6).map(t=>({h:t.id,k,name:t.text,done:!!t.done}))}}).catch(()=>{})},600)}
 /* undo history for every change: the saved state before each change (a burst within 1.5 s, like typing, is one step), up to 30, plus redo */
 let hist=[],redos=[],histJ=null,histT=0;
-function snap(){const j=JSON.stringify(S);if(histJ!==null&&j!==histJ){if(Date.now()-histT>1500){hist.push(histJ);if(hist.length>30)hist.shift()}histT=Date.now();redos=[]}histJ=j}
-function histStep(back){const from=back?hist:redos,to=back?redos:hist;if(!from.length||encWait)return false;to.push(JSON.stringify(S));S=clean(JSON.parse(from.pop()));histJ=JSON.stringify(S);histT=0;save();return true}
-function save(){if(encWait)return;snap();andWrite();pushWidget();saveRaw(JSON.stringify(S),putData);clearTimeout(save.r);save.r=setTimeout(()=>syncReminders(),1500);if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
+const histOf=()=>JSON.stringify(Object.assign({},S,{at:0})); // the save time is not a change
+function snap(){const j=histOf();if(histJ!==null&&j!==histJ){if(Date.now()-histT>1500){hist.push(histJ);if(hist.length>30)hist.shift()}histT=Date.now();redos=[]}histJ=j}
+function histStep(back){const from=back?hist:redos,to=back?redos:hist;if(!from.length||encWait)return false;to.push(JSON.stringify(S));S=clean(JSON.parse(from.pop()));histJ=histOf();histT=0;save();return true}
+function save(){if(encWait)return;S.at=Date.now();snap();andWrite();pushWidget();saveRaw(JSON.stringify(S),putData);clearTimeout(save.r);save.r=setTimeout(()=>syncReminders(),1500);if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
 /* desktop only: mirror data to <folder>/groundwork.json (a Drive/OneDrive/Dropbox folder gives cloud sync) */
 const DFS=window.groundworkFS||null,NB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.GroundworkNative||null,calFetch=LITE?null:DFS&&DFS.fetchCal?DFS.fetchCal:NB?(u=>NB.fetchCal({url:u})):null;let dataDir=DFS?DFS.folder():'',fileText=null,fileJson=null;
+// updates: desktop through the Tauri bridge, Android through GroundworkNative (full app only)
+const UPD=LITE?null:DFS&&DFS.updateCheck?DFS:NB&&NB.updateCheck?{updateCheck:()=>NB.updateCheck(),updateInstall:()=>NB.updateInstall()}:null;
 function writeFile(){clearTimeout(save.t);save.t=0;if(!dataDir||encWait)return;const j=JSON.stringify(S);if(j===fileJson)return;
   saveRaw(j,t=>{if(DFS.write(t)){fileJson=j;fileText=t}else toast('Could not save to your data folder')})}
 // the folder file wins over this device; an encrypted file is opened with the key once the PIN is in (async, renders itself)
@@ -226,7 +230,7 @@ function clean(d){
   const o=empty(),obj=x=>x&&typeof x==='object'&&!Array.isArray(x),str=x=>typeof x==='string'?x:'',ID=/^[A-Za-z0-9_-]{1,40}$/,DK=/^\d{4}-\d{2}-\d{2}$/;
   const num=(x,lo,hi,dflt)=>Number.isFinite(+x)&&x!==null&&x!==''?Math.max(lo,Math.min(hi,Math.round(+x))):dflt,id=x=>ID.test(x)?x:uid();
   if(!obj(d))return o;
-  o.v=num(d.v,1,999,1);
+  o.v=num(d.v,1,999,1);o.at=num(d.at,0,9e15,0); // last save time: the Android data folder keeps the newest copy
   (Array.isArray(d.habits)?d.habits:[]).forEach(h=>{if(!obj(h))return;const i=id(h.id);
     o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0],target:num(h.target,1,99,1),per:num(h.per,1,7,7),track:['check','count','amount'].includes(h.track)?h.track:(num(h.target,1,99,1)>1?'count':'check'),unit:str(h.unit).replace(/[<>"'&`=]/g,'').slice(0,12),goal:Number.isFinite(+h.goal)&&+h.goal>0?Math.min(1e6,+h.goal):0,fz:obj(h.fz)?{off:!!h.fz.off,every:num(h.fz.every,3,30,7),max:num(h.fz.max,1,5,3)}:null,rem:obj(h.rem)&&/^([01]\d|2[0-3]):[0-5]\d$/.test(h.rem.t)&&['ask','alarm'].includes(h.rem.m)?{t:h.rem.t,m:h.rem.m}:null,rest:Array.isArray(h.rest)?[...new Set(h.rest.map(Number).filter(x=>Number.isInteger(x)&&x>=0&&x<7))].sort().slice(0,6):undefined,ch:obj(h.ch)&&/^\d{4}-\d{2}-\d{2}$/.test(h.ch.from)?{from:h.ch.from,days:num(h.ch.days,3,365,30)}:undefined});
     const LK=/^\d{4}-\d{2}(-\d{2}|-W\d)?$/,cn=obj(d.count)&&obj(d.count[h.id])?d.count[h.id]:{},nt=obj(d.notes)&&obj(d.notes[h.id])?d.notes[h.id]:{};
