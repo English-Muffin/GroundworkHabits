@@ -25,6 +25,18 @@ jobs:
         run: node tools/release_strip.js
       # Windows: both editions on Tauri (tauri/, Windows' own WebView2: about 5 MB instead of 100 MB of Electron)
       - run: npm run dist:win
+      # the Tauri app needs the WebView2 runtime (every Windows 10/11 PC has it; the server images may not)
+      - name: WebView2 runtime
+        shell: pwsh
+        run: |
+          $k = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
+          $v = (Get-ItemProperty $k -ErrorAction SilentlyContinue).pv
+          if (-not $v) {
+            Invoke-WebRequest 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile "$env:RUNNER_TEMP\wv2.exe"
+            Start-Process "$env:RUNNER_TEMP\wv2.exe" -ArgumentList '/silent','/install' -Wait
+            $v = (Get-ItemProperty $k -ErrorAction SilentlyContinue).pv
+          }
+          "WebView2 runtime: $v"
       - name: Check the built app starts
         shell: bash
         run: |
