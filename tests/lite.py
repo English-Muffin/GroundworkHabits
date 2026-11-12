@@ -1,7 +1,7 @@
 """Groundwork Habits Lite: python tests/lite.py
 Builds a Lite copy of www/ (LITE=true, as tools/edition.js does) and checks what Lite leaves out is gone
 (calendar, update checks, data folder, templates, sharing, focus timer, challenges), that its data uses its own storage keys, and that the core app still works."""
-import asyncio, functools, http.server, pathlib, shutil, sys, tempfile, threading
+import subprocess, asyncio, functools, http.server, pathlib, shutil, sys, tempfile, threading
 from playwright.async_api import async_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -18,6 +18,12 @@ async def main():
     ed = (ROOT / 'tools' / 'edition.js').read_text(encoding='utf-8')
     check('desktop: edition.js gives Lite its own app ID in tauri.conf.json',
           '"identifier": "com.groundwork.habits",' in ed and "ID = 'com.groundwork.habits.lite'" in ed)
+    # edition.js must still find every line it edits (a reformatted package.json once broke every Lite build in CI)
+    ed_root = pathlib.Path(tempfile.mkdtemp())
+    for f in ['tools/edition.js', 'package.json', 'capacitor.config.json', 'www/manifest.webmanifest', 'www/js/core.js', 'tauri/tauri.conf.json']:
+        (ed_root / f).parent.mkdir(parents=True, exist_ok=True); shutil.copy(ROOT / f, ed_root / f)
+    r = subprocess.run(['node', str(ed_root / 'tools' / 'edition.js'), 'lite'], capture_output=True, text=True)
+    check('edition.js turns a copy of the repo into Lite', r.returncode == 0 and '"productName": "Groundwork Habits Lite"' in (ed_root / 'package.json').read_text(encoding='utf-8'), r.stderr)
     tmp = pathlib.Path(tempfile.mkdtemp()) / 'www'
     shutil.copytree(ROOT / 'www', tmp)
     core = tmp / 'js' / 'core.js'; s = core.read_text(encoding='utf-8')

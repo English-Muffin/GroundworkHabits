@@ -15,7 +15,7 @@ function edit(file, from, to) {
 edit('www/js/core.js', 'const LITE=false;', 'const LITE=true;');
 edit('package.json', '"name": "groundwork-habits",', '"name": "groundwork-habits-lite",'); // npm's package name
 edit('package.json', '"appId": "com.groundwork.habits",', `"appId": "${ID}",`);
-edit('package.json', '"productName": "Groundwork Habits",', `"productName": "${NAME}",`);
+edit('package.json', '"productName": "Groundwork Habits"', `"productName": "${NAME}"`);
 edit('capacitor.config.json', '"appId": "com.groundwork.habits",', `"appId": "${ID}",`);
 edit('capacitor.config.json', '"appName": "Groundwork Habits",', `"appName": "${NAME}",`);
 edit('www/manifest.webmanifest', '"name": "Groundwork Habits",', `"name": "${NAME}",`);
