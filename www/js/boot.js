@@ -112,10 +112,10 @@ checkReminder();checkHabitReminders();
 // desktop updates: "Check for updates" (manual) or once a day when switched on. The installed app downloads the new
 // setup, checks it and installs over itself (the old version is removed once the new one works); the portable app and
 // macOS have no installer, so they open the release page
-function updCheck(now,manual){if(LITE||!DFS||!DFS.updateCheck||WIDGET||ASK||(!manual&&!P.updAuto))return;if(!now&&Date.now()-(P.updAt||0)<864e5)return;P.updAt=Date.now();applyPrefs();
-  DFS.updateCheck().then(r=>{if(r&&r.ok&&r.update){updCheck.info=r;if(r.auto)updInstall();else if(manual)window.open(r.page,'_blank');else toastAct('Version '+r.version+' is available','Download','updinstall')}else if(now)toast(r&&r.ok?'You have the latest version':'Couldn’t check for updates')})}
+function updCheck(now,manual){if(!UPD||WIDGET||ASK||(!manual&&!P.updAuto))return;if(!now&&Date.now()-(P.updAt||0)<864e5)return;P.updAt=Date.now();applyPrefs();
+  UPD.updateCheck().then(r=>{if(r&&r.ok&&r.update){updCheck.info=r;if(r.auto&&(manual||!NB))updInstall();else if(r.auto)toastAct('Version '+r.version+' is available','Install','updinstall');else if(manual)window.open(r.page,'_blank');else toastAct('Version '+r.version+' is available','Download','updinstall')}else if(now)toast(r&&r.ok?'You have the latest version':'Couldn’t check for updates')})}
 // finish any pending save first: the app closes while the setup runs
-async function updInstall(){const u=updCheck.info;if(!u)return;if(!u.auto){window.open(u.page,'_blank');return}toast('Downloading the update…');try{if(save.t)writeFile();await save.p}catch(e){}const r=await DFS.updateInstall();if(!r||!r.ok)toast((r&&r.error)||'Update failed')}
+async function updInstall(){const u=updCheck.info;if(!u)return;if(!u.auto){window.open(u.page,'_blank');return}toast('Downloading the update…');try{if(save.t)writeFile();await save.p}catch(e){}const r=await UPD.updateInstall();if(!r||!r.ok)toast(r&&r.error==='permission'?'Allow installs from Groundwork Habits, then tap Install again':(r&&r.error)||'Update failed')}
 setTimeout(()=>updCheck(false),8000);
 setInterval(()=>{refreshToday();checkReminder();checkHabitReminders();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
@@ -129,5 +129,5 @@ const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='Mac
 if(IOS&&!navigator.standalone&&!WIDGET&&!window.Capacitor)try{if(!localStorage.getItem('groundwork-ioshint'))setTimeout(()=>{localStorage.setItem('groundwork-ioshint','1');toastAct('Install it: tap Share, then Add to Home Screen','OK','toastclose')},4000)}catch(e){}
 // the IndexedDB copy is newer than localStorage's (localStorage was full): use it
 idbGet().then(r=>{if(!r||WIDGET)return;let at=0;try{at=+localStorage.getItem(KEY+'-at')||0;if(r.t===localStorage.getItem(KEY))return}catch(e){}if(r.at<=at)return;
-  if(isEnc(r.t)){idbLate=r.t;return}try{S=clean(JSON.parse(r.t));histJ=JSON.stringify(S);if(!modal)render()}catch(e){}});
+  if(isEnc(r.t)){idbLate=r.t;return}try{S=clean(JSON.parse(r.t));histJ=histOf();if(!modal)render()}catch(e){}});
 render();

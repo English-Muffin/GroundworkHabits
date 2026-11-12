@@ -24,6 +24,7 @@ public class GroundworkNativePlugin extends Plugin {
     public void load() {
         live = this;
         Reminders.channels(getContext());
+        new Thread(() -> Update.cleanup(getContext())).start(); // a finished update leaves its APK behind
         // the system back button/gesture goes to the app: it closes dialogs, leaves Settings, steps back through screens,
         // and only leaves the app after a second back on the home screen (see onBack in app.js)
         getActivity().runOnUiThread(() -> getActivity().getOnBackPressedDispatcher().addCallback(getActivity(), new OnBackPressedCallback(true) {
@@ -62,6 +63,12 @@ public class GroundworkNativePlugin extends Plugin {
         try { r.put("answers", new JSArray(Reminders.takeAnswers(getContext()))); } catch (Exception e) { r.put("answers", new JSArray()); }
         call.resolve(r);
     }
+
+    @PluginMethod
+    public void updateCheck(PluginCall call) { new Thread(() -> call.resolve(Update.check(getContext()))).start(); }
+
+    @PluginMethod
+    public void updateInstall(PluginCall call) { new Thread(() -> call.resolve(Update.install(getContext()))).start(); }
 
     @PluginMethod
     public void fetchCal(PluginCall call) {
