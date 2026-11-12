@@ -52,9 +52,9 @@ svg{display:block}
 .menu .mlbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 12px 4px}
 .menu .mrw{display:flex;gap:6px;padding:4px 12px 8px;flex-wrap:wrap}
 .menu .mrw button{width:auto;padding:6px 12px;border:1px solid var(--line2);border-radius:999px;font-size:12px}
-.menu .mrw button[aria-pressed=true]{border-color:var(--teal);color:var(--text)}
+.menu .mrw button:is([aria-pressed=true],[aria-checked=true]){border-color:var(--teal);color:var(--text)}
 .menu .mrw .sw{width:26px;height:26px;padding:0;border-radius:50%;border:2px solid transparent}
-.menu .mrw .sw[aria-pressed=true]{border-color:var(--text)}
+.menu .mrw .sw:is([aria-pressed=true],[aria-checked=true]){border-color:var(--text)}
 .cpick{width:34px;height:30px;padding:0;border:1px solid var(--line2);border-radius:8px;background:none;cursor:pointer}
 .cfx{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .cfx+.cfx{margin-top:10px}
@@ -559,7 +559,7 @@ html.light .navq{color:#fff}
 .sw2.on{background:var(--teal)}.sw2.on i{inset-inline-start:21px;background:#fff}
 .sbtn{height:auto;padding:8px 14px;font-size:12px;text-decoration:none}.ssel{margin:0;width:auto;min-width:150px;padding:8px 12px}.stime{margin:0;width:auto}
 .sseg{display:flex;gap:6px;padding:4px 18px 14px}.sseg button{flex:1;background:var(--g15);border:1px solid var(--g22);border-radius:12px;color:var(--gcf);font:inherit;font-size:13px;padding:10px}.sseg button.on{border-color:var(--teal);color:var(--text);background:color-mix(in srgb,var(--teal) 12%,var(--g15))}
-.sacc{display:flex;gap:12px;padding:4px 18px 10px;flex-wrap:wrap}.sacc .sw{width:30px;height:30px;border-radius:50%;border:0}.sacc .sw[aria-pressed=true]{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--teal)}.sacc2{padding:0 18px 14px}
+.sacc{display:flex;gap:12px;padding:4px 18px 10px;flex-wrap:wrap}.sacc .sw{width:30px;height:30px;border-radius:50%;border:0}.sacc .sw:is([aria-pressed=true],[aria-checked=true]){box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--teal)}.sacc2{padding:0 18px 14px}
 .slist .si{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--teal) 13%,transparent);flex:none}.slist .si .ic{width:17px;height:17px;color:var(--teal)}.slist .srow{justify-content:flex-start}.slist .sl{flex:1}
 kbd{font:inherit;font-size:11px;background:var(--g15);border:1px solid var(--g22);border-bottom-width:2px;border-radius:6px;padding:3px 8px;color:var(--gcf)}
 /* phones: the list shows; searching shows matching rows from every section instead */
