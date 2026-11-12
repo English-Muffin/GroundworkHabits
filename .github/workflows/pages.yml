@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: { name: github-pages, url: '${{ steps.deploy.outputs.page_url }}' }
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 20 }
       - name: Turn off testing features
         run: node tools/release_strip.js
@@ -30,8 +30,8 @@ jobs:
           touch _site/.nojekyll
       - name: Groundwork Habits Lite in /lite/ (its own storage keys, offline only)
         run: node tools/edition.js lite && mkdir _site/lite && cp -r www/. _site/lite/
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with: { path: _site }
       - id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
