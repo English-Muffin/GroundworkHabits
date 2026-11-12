@@ -13,8 +13,8 @@ jobs:
     runs-on: windows-latest
     strategy: { matrix: { edition: [full, lite] }, fail-fast: false }   # each platform builds the full app and Lite
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 20 }
       - run: npm install
       - name: Lite edition
@@ -70,11 +70,11 @@ jobs:
           d=dist/win-unpacked-tauri; [ "${{ matrix.edition }}" = lite ] && d=dist/win-unpacked-lite
           p="$(node -p "require('./package.json').build.productName")"
           mkdir -p sign1 && cp "$d/$p.exe" sign1/ && APP_DIR="$d" UNINST_ONLY="$(pwd -W)/sign1/uninstaller.exe" node tools/build_setup.js
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         id: unsigned1
         if: steps.sign.outputs.enabled == 'true'
         with: { name: 'unsigned-app-${{ matrix.edition }}', path: sign1/*.exe }
-      - uses: signpath/github-action-submit-signing-request@ced31329c0317e779dad2eec2a7c3bb46ea1343e # v1, pinned
+      - uses: signpath/github-action-submit-signing-request@f6d04783b4569d051e0c80105fe66e82819d0092 # v1, pinned
         if: steps.sign.outputs.enabled == 'true'
         with:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
@@ -94,11 +94,11 @@ jobs:
           cp "signed1/$p.exe" "$d/$p.exe" && cp "signed1/$p.exe" "dist/${p// /-}-$v-Windows-portable.exe"
           rm -f dist/*-Windows-setup.exe && APP_DIR="$d" UNINST="$(pwd -W)/signed1/uninstaller.exe" node tools/build_setup.js
           mkdir -p sign2 && mv dist/*-Windows-setup.exe sign2/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         id: unsigned2
         if: steps.sign.outputs.enabled == 'true'
         with: { name: 'unsigned-setup-${{ matrix.edition }}', path: sign2/*.exe }
-      - uses: signpath/github-action-submit-signing-request@ced31329c0317e779dad2eec2a7c3bb46ea1343e # v1, pinned
+      - uses: signpath/github-action-submit-signing-request@f6d04783b4569d051e0c80105fe66e82819d0092 # v1, pinned
         if: steps.sign.outputs.enabled == 'true'
         with:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
@@ -116,15 +116,15 @@ jobs:
           $bad = Get-ChildItem dist/*.exe | Where-Object { (Get-AuthenticodeSignature $_.FullName).Status -ne 'Valid' }
           if ($bad) { "Not signed: $($bad.Name -join ', ')"; exit 1 }
           Get-ChildItem dist/*.exe | ForEach-Object { "$($_.Name): $((Get-AuthenticodeSignature $_.FullName).SignerCertificate.Subject)" }
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: 'Groundwork-Habits-Windows-${{ matrix.edition }}', path: dist/*.exe }
 
   macos:
     runs-on: macos-latest
     strategy: { matrix: { edition: [full, lite] }, fail-fast: false }   # each platform builds the full app and Lite
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 20 }
       - run: npm install
       - name: Lite edition
@@ -140,17 +140,17 @@ jobs:
         run: |
           p="$(node -p "require('./package.json').build.productName")"
           node tests/launch_check.js "dist/mac-universal/$p.app/Contents/MacOS/$p" --${{ matrix.edition }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: 'Groundwork-Habits-macOS-${{ matrix.edition }}', path: dist/*.zip }
 
   android:
     runs-on: ubuntu-latest
     strategy: { matrix: { edition: [full, lite] }, fail-fast: false }   # each platform builds the full app and Lite
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 20 }
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: 17 }
       - run: npm ci   # exact versions from package-lock.json: the APK must be reproducible (F-Droid)
       - name: Lite edition
@@ -179,7 +179,7 @@ jobs:
             cp app/build/outputs/apk/debug/app-debug.apk ../app.apk
           fi
       - run: mkdir out && cp app.apk "out/$(node -p "require('./package.json').build.productName.replace(/ /g,'-')")-$(node -p "require('./package.json').version")-Android.apk"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: 'Groundwork-Habits-Android-${{ matrix.edition }}', path: out/*.apk }
 
   release:
@@ -187,18 +187,18 @@ jobs:
     needs: [windows, macos, android]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Release notes from CHANGELOG.md
         run: |
           v="${GITHUB_REF_NAME#v}"
           awk -v v="## $v" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md > notes.md
           test -s notes.md || echo "See CHANGELOG.md" > notes.md
       # only the final builds: the unsigned-* artifacts from code signing share file names with the signed ones
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with: { pattern: 'Groundwork-Habits-*', path: files, merge-multiple: true }
       - name: Checksums
         run: cd files && for f in *; do sha256sum "$f" > "$f.sha256"; done
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with: { files: files/*, body_path: notes.md, name: 'Groundwork Habits ${{ github.ref_name }}' }
       # the desktop auto-update needs the setup and its .sha256 on the release; fail loudly if either is missing
       - name: Check the update files are on the release
