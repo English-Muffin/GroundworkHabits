@@ -549,6 +549,12 @@ async def unnamedControls(b):
         await pg.evaluate(f"location.hash='{v}'"); await pg.wait_for_timeout(300)
         bad += [v + ' ' + n['role']['value'] for n in (await cdp.send('Accessibility.getFullAXTree'))['nodes'] if not n.get('ignored') and n.get('role', {}).get('value') in roles and not str((n.get('name') or {}).get('value', '')).strip()]
     check('screen readers: every control on every screen has a name', not bad, bad[:5])
+    # keyboard: every clickable control can be reached with Tab (the dialog backdrop is mouse-only; Esc does the same)
+    unreach = []
+    for v in ['today', 'habits', 'tasks', 'goals', 'insights', 'achievements', 'settings']:
+        await pg.evaluate(f"location.hash='{v}'"); await pg.wait_for_timeout(300)
+        unreach += await pg.evaluate("v=>[...document.querySelectorAll('[data-act]:not(.ov)')].filter(e=>(e.offsetParent||getComputedStyle(e).position==='fixed')&&!e.disabled&&!(e.tabIndex>=0)).map(e=>v+' '+e.dataset.act)", v)
+    check('keyboard: every control on every screen can be reached with Tab', not unreach, unreach[:5])
     await ctx.close()
 
 async def dialogFocus(b):
