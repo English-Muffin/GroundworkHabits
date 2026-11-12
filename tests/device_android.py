@@ -129,4 +129,4 @@ async def run(D, sh):
         await pg.evaluate("document.querySelector('#main [data-act=export]').click()"); await b.close(); time.sleep(3)
         r = resumed(sh); check('Export opens the Android Save to screen', 'documentsui' in r.lower(), r); sh('input', 'keyevent', '4')
 
-main()
+if __name__ == "__main__": main()

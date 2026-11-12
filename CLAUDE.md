@@ -92,6 +92,8 @@ Text greys (`--g4a`..`--g8a`) meet WCAG AA 4.5:1 on cards in dark and light; lig
 - Import from other apps (`parseExternal`, `mergeExternal`, modal `impext`): Loop .zip/Checkmarks.csv (2 = done, numbers ×1000), Habitica .json (dailies history, open to-dos), wide or long CSV. Merges by habit name.
 - Goals: `goalView` cards/timeline (`goalTimeline`: deadlines + dated steps). Insights: `yearCard`/`yearImage` (canvas PNG via `shareFile(blob)`; Android `saveFile` takes `base64`).
 - Android: `TaskWidgetProvider` (prefs `widgetTasks`), `QsTile` "Next habit" (ticks the first open habit from prefs `widget`); `NB.widget({data,tasks})`.
+- Android updates (full app): `UPD` (core.js) wraps the desktop bridge or `GroundworkNative.updateCheck/updateInstall` (`Update.java`): GitHub hosts only (every redirect checked), APK `Groundwork-Habits-<digit>…-Android.apk` must match its `.sha256`, then Android's installer opens (it refuses a different signing key). First time asks "Allow from this source" (`REQUEST_INSTALL_PACKAGES`). The APK sits in `cache/update` (FileProvider `UpdateFiles`, authority `<appId>.gwupdate`) and is deleted on the next start. A background check shows an Install toast; only Check for updates installs straight away.
+- Android data folder keeps the newest copy: `save()` stamps `S.at`; `andRead` applies the folder only if its `at` is not older, else writes this phone's data out. Undo history ignores `at` (`histOf`).
 - Desktop updates (`P.updAuto`, off by default): `upd:check` reads GitHub's latest release, `upd:install` downloads the setup, checks its `.sha256` and runs it (installed app only). Needs the repository to be public.
 
 ## Added in 1.7.3
