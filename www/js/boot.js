@@ -109,9 +109,13 @@ if(applyRecurring())save();
 takeAnswers().then(syncReminders);
 setTimeout(()=>{autoBackup();andRead()},3000);
 checkReminder();checkHabitReminders();
-// desktop updates, only when switched on: once a day, an Install button when a newer version is out
-function updCheck(now){if(LITE||!DFS||!DFS.updateCheck||!P.updAuto||WIDGET||ASK)return;if(!now&&Date.now()-(P.updAt||0)<864e5)return;P.updAt=Date.now();applyPrefs();
-  DFS.updateCheck().then(r=>{if(r&&r.ok&&r.update){updCheck.info=r;toastAct('Version '+r.version+' is available',r.auto?'Install':'Download','updinstall')}else if(now)toast(r&&r.ok?'You have the latest version':'Couldn’t check for updates')})}
+// desktop updates: "Check for updates" (manual) or once a day when switched on. The installed app downloads the new
+// setup, checks it and installs over itself (the old version is removed once the new one works); the portable app and
+// macOS have no installer, so they open the release page
+function updCheck(now,manual){if(LITE||!DFS||!DFS.updateCheck||WIDGET||ASK||(!manual&&!P.updAuto))return;if(!now&&Date.now()-(P.updAt||0)<864e5)return;P.updAt=Date.now();applyPrefs();
+  DFS.updateCheck().then(r=>{if(r&&r.ok&&r.update){updCheck.info=r;if(r.auto)updInstall();else if(manual)window.open(r.page,'_blank');else toastAct('Version '+r.version+' is available','Download','updinstall')}else if(now)toast(r&&r.ok?'You have the latest version':'Couldn’t check for updates')})}
+// finish any pending save first: the app closes while the setup runs
+async function updInstall(){const u=updCheck.info;if(!u)return;if(!u.auto){window.open(u.page,'_blank');return}toast('Downloading the update…');try{if(save.t)writeFile();await save.p}catch(e){}const r=await DFS.updateInstall();if(!r||!r.ok)toast((r&&r.error)||'Update failed')}
 setTimeout(()=>updCheck(false),8000);
 setInterval(()=>{refreshToday();checkReminder();checkHabitReminders();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}

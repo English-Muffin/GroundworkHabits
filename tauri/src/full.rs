@@ -202,8 +202,10 @@ pub async fn update_install(app: AppHandle) -> serde_json::Value {
         Err(_) => serde_json::json!({ "ok": false, "error": "Download failed" }),
         Ok(f) => {
             // start the installer once this app has exited, so it never finds the app still open
-            let ps = format!("Wait-Process -Id {} -Timeout 30 -ErrorAction SilentlyContinue; Start-Process -FilePath '{}' -ArgumentList '/update'",
-                std::process::id(), f.to_string_lossy().replace('\'', "''"));
+            // and delete the downloaded setup once it is done (WaitForExit: -Wait would also wait for the app the setup reopens)
+            let q = f.to_string_lossy().replace('\'', "''");
+            let ps = format!("Wait-Process -Id {} -Timeout 30 -ErrorAction SilentlyContinue; (Start-Process -FilePath '{q}' -ArgumentList '/update' -PassThru).WaitForExit(); Remove-Item -LiteralPath '{q}' -Force -ErrorAction SilentlyContinue",
+                std::process::id());
             let _ = std::process::Command::new("powershell.exe").args(["-NoProfile", "-WindowStyle", "Hidden", "-Command", &ps]).spawn();
             let a = app.clone();
             std::thread::spawn(move || { std::thread::sleep(Duration::from_millis(300)); a.exit(0); });

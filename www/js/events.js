@@ -126,7 +126,8 @@ document.addEventListener('click',e=>{
     case 'sharecard':persist=false;progressImage(t.dataset.v,t.dataset.i);break;
     case 'gview':goalView=t.dataset.v;persist=false;break;
     case 'updauto':P.updAuto=!P.updAuto;applyPrefs();if(P.updAuto)updCheck(true);persist=false;break;
-    case 'updinstall':{persist=false;const u=updCheck.info;if(!u)break;if(!u.auto){window.open(u.page,'_blank');break}toast('Downloading the update…');DFS.updateInstall().then(r=>{if(!r.ok)toast(r.error||'Update failed')});break}
+    case 'updinstall':persist=false;updInstall();break;
+    case 'updnow':persist=false;updCheck(true,true);break;
     case 'mrest':{const i=+t.dataset.v,r=modal.rest=modal.rest||[];if(r.includes(i))r.splice(r.indexOf(i),1);else if(r.length<6)r.push(i);else toast('Keep at least one day to do the habit');persist=false;break}
     case 'mcolor':setColor('habit',t.dataset.v);persist=false;break;
     case 'cset':setColor(t.dataset.f,t.dataset.v);persist=t.dataset.f==='accent'?false:false;break;
