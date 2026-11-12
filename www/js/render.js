@@ -41,7 +41,7 @@ function render(){
   if(view==='tasks')bindMind();
   if(view==='settings'){filterSettings();spySettings()}
   if(focusSel){const el=$(focusSel);if(el)el.focus();focusSel=null}
-  if(repSel.open){const l=$('.rlist');if(l)l.scrollIntoView({block:'nearest',behavior:'smooth'})} // the open repeat menu is never hidden behind the bottom bar
+  if(repSel.open){const l=$('.rlist');if(l)l.scrollIntoView({block:'nearest',behavior:SMOOTH()})} // the open repeat menu is never hidden behind the bottom bar
 }
 /* ---------- drag to rearrange (mouse, touch and arrow keys) ----------
    [data-drop=list] holds [data-drag=list][data-id] items; each item has a .grip handle.
@@ -195,7 +195,7 @@ const isField=e=>e&&(e.tagName==='INPUT'&&!/^(range|checkbox|radio|color|button)
 function keepVisible(){
   const a=document.activeElement;if(!isField(a))return;const box=a.closest('.tadd,.mod')||a;if(box.classList.contains('mod'))return;
   const h=window.visualViewport?visualViewport.height:innerHeight,r=box.getBoundingClientRect();
-  if(r.bottom>h-16||r.top<80)box.scrollIntoView({block:r.height>h*.6?'start':'center',behavior:'smooth'});
+  if(r.bottom>h-16||r.top<80)box.scrollIntoView({block:r.height>h*.6?'start':'center',behavior:SMOOTH()});
 }
 if(TOUCH){
   document.addEventListener('focusin',e=>{if(isField(e.target)){document.body.classList.add('kb');setTimeout(keepVisible,350)}});

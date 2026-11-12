@@ -111,7 +111,7 @@ if(NB&&!WIDGET)NB.addListener('back',onBack);
 window.addEventListener('hashchange',()=>{
   const v=(location.hash||'#habits').slice(1),was=view;
   if(!WIDGET&&routeTo(v)){menuOpen=false;insMenu=null;addingTask=null;modal=null;if(view==='settings'&&was!=='settings'){setBack=was;setQ=''}render();
-    if(view==='settings'&&was==='settings'&&setSec&&wideSet()){const e=$('#set-'+setSec);if(e){markSec(setSec);spyHold=Date.now()+1200;e.scrollIntoView({block:'start',behavior:'smooth'})}}else window.scrollTo(0,0)}
+    if(view==='settings'&&was==='settings'&&setSec&&wideSet()){const e=$('#set-'+setSec);if(e){markSec(setSec);spyHold=Date.now()+1200;e.scrollIntoView({block:'start',behavior:SMOOTH()})}}else window.scrollTo(0,0)}
 });
 async function shareFile(text,name,type,title,done){
   if(NB&&NB.saveFile){try{const r=await NB.saveFile(text instanceof Blob?{name,type,base64:await new Promise(ok=>{const f=new FileReader();f.onload=()=>ok(String(f.result).split(',')[1]);f.readAsDataURL(text)})}:{name,type,text});if(r&&r.saved)toast('Saved '+name)}catch(e){toast('Export failed')}return} // Android: pick where to save
