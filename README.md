@@ -163,16 +163,16 @@ default) and verifies the download before installing it.
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/readme/architecture-dark.png">
-  <img src="assets/readme/architecture-light.png" alt="How it fits together: Windows (Tauri), macOS (Electron), Android (Capacitor) and any browser all run the same web app in www/; it saves on the device on every change, optionally to a synced data folder, and makes weekly backups." width="720">
+  <img src="assets/readme/architecture-light.png" alt="How it fits together: Windows and macOS (Tauri), Android (Capacitor) and any browser all run the same web app in www/; it saves on the device on every change, optionally to a synced data folder, and makes weekly backups." width="720">
 </picture>
 </p>
 
 - **`www/`** is the whole app: [`index.html`](www/index.html), [`app.css`](www/app.css) and plain
   scripts in [`www/js`](www/js), loaded in order and sharing one scope. No framework, no build step,
   no runtime dependencies, no server.
-- **`tauri/`** wraps it for Windows: one ~5 MB exe (Lite ~4 MB) on Windows' own WebView2, written in Rust.
-  Lite is built without the network code. **`electron/`** wraps it for macOS, with a data folder, backups, a mini widget, reminder
-  pop-ups and optional updates. **`tools/portable/`** holds the Windows installer, uninstaller and
+- **`tauri/`** wraps it for Windows and macOS, written in Rust: one small app on the system's own web engine
+  (WebView2 on Windows, WebKit on macOS) with a data folder, backups, a mini widget, reminder pop-ups and
+  optional updates. Lite is built without the network code. **`tools/portable/`** holds the Windows installer, uninstaller and
   portable launcher, written in C# and compiled with the compiler that ships with Windows.
 - **Capacitor** wraps it for Android; **`native/groundwork-native/`** adds reminders you answer from
   the notification, widgets, the quick settings tile, the data folder and fingerprint unlock.
@@ -221,7 +221,7 @@ before it's used.
 | Web app | Nothing to build: serve `www/` |
 | Windows installer and portable `.exe` | `npm install && npm run dist:win` (needs Rust and the VS C++ build tools; output in `dist/`) |
 | Lite edition | `node tools/edition.js lite` on a copy of the repository, then the same commands |
-| macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac) |
+| macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac, with Rust) |
 | Android `.apk` | `npm install && npx cap add android && npx cap sync android`, then build in Android Studio |
 | Everything, in the cloud | Push a tag like `v1.7.4`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
 
@@ -232,7 +232,6 @@ npm install && npm run lint && npm run test:unit   # undefined names across file
 pip install playwright && playwright install chromium
 python tests/smoke.py            # 130+ checks in a desktop and a phone-sized browser
 python tests/visual.py           # screenshot comparison of 13 screens, light and dark
-python tests/electron_folder.py  # the macOS (Electron) app: data folder, backups, widget, app lock
 python tests/tauri_app.py "<full path to the exe>"  # the Windows app: bridge, data folder, calendar rules, updates
 python tests/lite.py             # the Lite edition has no online parts
 python tests/stress.py out/      # heavy data, 320 to 1920 px, three themes, layout and overlap checks

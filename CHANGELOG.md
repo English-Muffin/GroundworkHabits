@@ -2,6 +2,11 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
+## Unreleased
+
+- **macOS runs on Tauri too:** about 10 MB instead of 166 MB, on the Mac's own web engine. Your data moves
+  over from the old version on first start.
+
 ## 1.7.4
 
 - **Groundwork Habits Lite:** the same app with no online parts and without the extras, for every platform.

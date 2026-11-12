@@ -1,8 +1,7 @@
 # Security policy
 
 Groundwork Habits stores everything on the user's device and has no server. The parts that touch the outside
-world are the desktop app's calendar download (`tauri/src/full.rs` and `tauri/src/net.rs` on Windows,
-`electron/main.js` on macOS), the update check, the data folder, backup import and
+world are the desktop app's calendar download (`tauri/src/full.rs` and `tauri/src/net.rs`), the update check, the data folder, backup import and
 the PIN lock.
 
 ## Reporting a vulnerability
