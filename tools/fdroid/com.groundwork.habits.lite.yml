@@ -1,0 +1,45 @@
+# Draft F-Droid recipe for Groundwork Habits Lite (no network code): metadata/com.groundwork.habits.lite.yml in
+# fdroiddata, in its own merge request once the full app (fdroid/fdroiddata!57021) is accepted. Store texts: fastlane-lite/
+# (copied into place by the prebuild so F-Droid does not pick up the full app's texts).
+Categories:
+  - Sports & Health
+  - Time
+License: AGPL-3.0-or-later
+AuthorName: English-Muffin
+SourceCode: https://github.com/English-Muffin/GroundworkHabits
+IssueTracker: https://github.com/English-Muffin/GroundworkHabits/issues
+Changelog: https://github.com/English-Muffin/GroundworkHabits/blob/HEAD/CHANGELOG.md
+Donate: https://ko-fi.com/englishmuffin
+
+AutoName: Groundwork Habits Lite
+
+RepoType: git
+Repo: https://github.com/English-Muffin/GroundworkHabits.git
+# reproducible: F-Droid rebuilds the app, checks it matches our signed release APK byte for byte, then ships ours
+Binaries: https://github.com/English-Muffin/GroundworkHabits/releases/download/v%v/Groundwork-Habits-Lite-%v-Android.apk
+AllowedAPKSigningKeys: 60264d56dee51abf9d4532b904dbc02e695bd9012d752b7b0ebe6cf2f2644627
+
+Builds:
+  - versionName: 1.7.6
+    versionCode: 10706
+    commit: 5201d8a3d05faf3eef99e9c92d376a01ed8be51c  # v1.7.6 (F-Droid wants the full hash, not the tag)
+    sudo:
+      - apt-get update
+      - apt-get install -y npm
+    init: npm ci
+    # turn off the test-only features (release builds do the same), then generate android/ from www/ and native/
+    prebuild:
+      - node tools/edition.js lite
+      - node tools/release_strip.js
+      - rm -rf fastlane && mv fastlane-lite fastlane
+      - sh tools/android_prepare.sh
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - node_modules
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9.]+$
+CurrentVersion: 1.7.6
+CurrentVersionCode: 10706

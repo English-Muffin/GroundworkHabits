@@ -1,0 +1,25 @@
+Groundwork Habits Lite is the same habit tracker, weekly task planner and goal tracker as Groundwork Habits, without any online part: it has no calendar link and no network code. Everything stays on your phone. No account, no ads, no tracking.
+
+<b>Habits</b>
+<ul>
+<li>Daily, weekly and monthly habits on a month grid, with count and amount habits</li>
+<li>Streaks with streak freezes and rest days</li>
+<li>Reminders you can answer Yes or No straight from the notification</li>
+</ul>
+
+<b>Tasks and goals</b>
+<ul>
+<li>A week of tasks with repeating tasks, reminders and a mindset tracker</li>
+<li>Goals measured by percentage, steps, amounts, a habit or tasks, with deadlines and forecasts</li>
+<li>Quit streaks for things you're giving up</li>
+</ul>
+
+<b>Your data stays yours</b>
+<ul>
+<li>Automatic backups, export to JSON or a spreadsheet, import from Loop and Habitica</li>
+<li>Optional PIN lock with encryption and fingerprint unlock</li>
+</ul>
+
+Lite leaves out the online parts and a few extras (templates, share cards, focus timer, challenges). It installs next to the full app and keeps its own data.
+
+Free and open source (AGPL-3.0). Tips are welcome on Ko-fi but never needed.
