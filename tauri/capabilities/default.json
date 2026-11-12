@@ -1,0 +1,11 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "What the app's pages may call: our own commands (registered in main.rs) and notifications. Nothing else.",
+  "windows": ["main", "widget", "ask-*"],
+  "permissions": [
+    "core:default",
+    "core:event:default",
+    "notification:default"
+  ]
+}

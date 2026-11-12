@@ -55,9 +55,15 @@ def resumed(sh):
     m = re.search(r'(?:mResumedActivity|topResumedActivity)[^\n]*?(\S+/\S+)', sh('dumpsys', 'activity', 'activities')); return m.group(1) if m else '?'
 
 async def page(p, D, sh):
-    pid = sh('pidof', 'com.groundwork.habits').strip()
-    subprocess.run(D + ['forward', 'tcp:9444', 'localabstract:webview_devtools_remote_' + pid], capture_output=True)
-    b = await p.chromium.connect_over_cdp('http://127.0.0.1:9444'); return b, b.contexts[0].pages[0]
+    # a release build starts slower: wait up to 20 s for its WebView to accept the debugger
+    for _ in range(20):
+        pid = sh('pidof', 'com.groundwork.habits').strip()
+        subprocess.run(D + ['forward', 'tcp:9444', 'localabstract:webview_devtools_remote_' + pid], capture_output=True)
+        try:
+            b = await p.chromium.connect_over_cdp('http://127.0.0.1:9444'); return b, b.contexts[0].pages[0]
+        except Exception:
+            await asyncio.sleep(1)
+    raise RuntimeError('the WebView never accepted the debugger')
 
 async def run(D, sh):
     async with async_playwright() as p:

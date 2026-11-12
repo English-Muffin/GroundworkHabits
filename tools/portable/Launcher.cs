@@ -21,7 +21,12 @@ using System.Windows.Media.Imaging;
 
 static class Launcher
 {
-    const string Exe = "Groundwork Habits.exe";
+#if LITE
+    const string Name = "Groundwork Habits Lite", Tag = "GroundworkHabitsLite"; // build_portable.js passes /define:LITE
+#else
+    const string Name = "Groundwork Habits", Tag = "GroundworkHabits";
+#endif
+    const string Exe = Name + ".exe";
 
     [STAThread]
     static int Main(string[] args)
@@ -29,7 +34,7 @@ static class Launcher
         var asm = Assembly.GetExecutingAssembly();
         string version = asm.GetManifestResourceNames().Contains("version.txt") ? Read(asm, "version.txt").Trim() : "0";
         string root = Path.GetTempPath();
-        string dir = Path.Combine(root, "GroundworkHabits-" + version);
+        string dir = Path.Combine(root, Tag + "-" + version);
         string done = Path.Combine(dir, ".complete");
         string cmd = string.Join(" ", args.Select(a => "\"" + a.Replace("\"", "\\\"") + "\""));
 
@@ -47,7 +52,7 @@ static class Launcher
                         z.ExtractToDirectory(dir);
                     File.WriteAllText(done, version);
                 }
-                foreach (var old in Directory.GetDirectories(root, "GroundworkHabits-*").Where(d => !string.Equals(d, dir, StringComparison.OrdinalIgnoreCase)))
+                foreach (var old in Directory.GetDirectories(root, Tag + "-*").Where(d => !string.Equals(d, dir, StringComparison.OrdinalIgnoreCase)))
                     try { Directory.Delete(old, true); } catch (Exception) { }
                 var p = Process.Start(new ProcessStartInfo(Path.Combine(dir, Exe), cmd) { UseShellExecute = false, WorkingDirectory = dir });
                 // keep the logo until the app's window is up (or 20 s), so there is never a moment with nothing on screen
@@ -55,12 +60,12 @@ static class Launcher
             }
             catch (Exception e)
             {
-                try { File.WriteAllText(Path.Combine(root, "GroundworkHabits-launcher.log"), DateTime.Now + " " + e); } catch (Exception) { }
-                app.Dispatcher.Invoke(new Action(() => MessageBox.Show("Groundwork Habits could not start:\n" + e.Message, "Groundwork Habits", MessageBoxButton.OK, MessageBoxImage.Error)));
+                try { File.WriteAllText(Path.Combine(root, Tag + "-launcher.log"), DateTime.Now + " " + e); } catch (Exception) { }
+                app.Dispatcher.Invoke(new Action(() => MessageBox.Show(Name + " could not start:\n" + e.Message, Name, MessageBoxButton.OK, MessageBoxImage.Error)));
             }
             app.Dispatcher.Invoke(new Action(() => app.Shutdown()));
         });
-        app.DispatcherUnhandledException += (o, e) => { try { File.WriteAllText(Path.Combine(root, "GroundworkHabits-launcher.log"), DateTime.Now + " " + e.Exception); } catch (Exception) { } };
+        app.DispatcherUnhandledException += (o, e) => { try { File.WriteAllText(Path.Combine(root, Tag + "-launcher.log"), DateTime.Now + " " + e.Exception); } catch (Exception) { } };
         app.Run();
         return 0;
     }
@@ -92,7 +97,7 @@ static class Launcher
         var w = new Window
         {
             WindowStyle = WindowStyle.None, AllowsTransparency = true, Background = Brushes.Transparent, Topmost = true,
-            ShowInTaskbar = true, Title = "Groundwork Habits", Width = 200, Height = 200, ResizeMode = ResizeMode.NoResize,
+            ShowInTaskbar = true, Title = Name, Width = 200, Height = 200, ResizeMode = ResizeMode.NoResize,
             WindowStartupLocation = WindowStartupLocation.CenterScreen, Content = new Grid { Children = { img } }
         };
         // a slow, smooth pulse: fade and breathe together, eased both ways

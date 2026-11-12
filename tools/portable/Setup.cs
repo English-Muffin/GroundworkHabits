@@ -29,8 +29,14 @@ using Microsoft.Win32;
 
 static class Setup
 {
+#if LITE
+    // Groundwork Habits Lite (build_setup.js passes /define:LITE): its own folder, entry, profile and app ID, next to the full app
+    const string Name = "Groundwork Habits Lite", Exe = "Groundwork Habits Lite.exe", UninstExe = "Uninstall Groundwork Habits Lite.exe";
+    const string RegKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\GroundworkHabitsLite", AppId = "com.groundwork.habits.lite";
+#else
     const string Name = "Groundwork Habits", Exe = "Groundwork Habits.exe", UninstExe = "Uninstall Groundwork Habits.exe";
     const string RegKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\GroundworkHabits", AppId = "com.groundwork.habits";
+#endif
     static readonly Assembly Asm = Assembly.GetExecutingAssembly();
     static string Version = "0";
     static string FontDir;
@@ -62,7 +68,7 @@ static class Setup
         bool silent = args.Any(a => a.Equals("/S", StringComparison.OrdinalIgnoreCase));
         bool created; var one = new Mutex(true, "GroundworkHabits-setup", out created); // one setup or uninstaller at a time
         if (!created && !args.Any(x => x.StartsWith("/FROM=", StringComparison.OrdinalIgnoreCase)))
-        { if (!silent) MessageBox.Show("Groundwork Habits setup is already running.", "Groundwork Habits"); return 1; }
+        { if (!silent) MessageBox.Show(Name + " setup is already running.", Name); return 1; }
         GC.KeepAlive(one);
         ShotDir = Arg(args, "/SHOTS=");
 #if UNINST
@@ -186,11 +192,12 @@ static class Setup
             if (u == null) return r;
             foreach (var n in u.GetSubKeyNames())
             {
-                if (n == "GroundworkHabits") continue;
+                if (n == "GroundworkHabits" || n == "GroundworkHabitsLite") continue; // the current installs of both editions
                 using (var k = u.OpenSubKey(n))
                 {
                     var dn = k == null ? null : k.GetValue("DisplayName") as string;
-                    if (dn == null || !dn.StartsWith(Name)) continue;
+                    // old installs only: the full app must never take Lite ("Groundwork Habits Lite…") for one of its own
+                    if (dn == null || !dn.StartsWith(Name) || dn.StartsWith(Name + " Lite")) continue;
                     var us = (k.GetValue("UninstallString") as string ?? "").Trim();
                     string exe = us.StartsWith("\"") ? us.Substring(1, Math.Max(0, us.IndexOf('"', 1) - 1)) : us.Split(' ')[0];
                     r.Add(Tuple.Create(n, exe.Length > 0 ? Path.GetDirectoryName(exe) : null));
@@ -258,7 +265,7 @@ static class Setup
             var probe = Path.Combine(dir, ".write-test");
             try { File.WriteAllText(probe, ""); File.Delete(probe); }
             catch (Exception) { if (fresh) try { Directory.Delete(dir); } catch (Exception) { } throw new Exception("Can’t write to “" + dir + "”. Choose a folder in your user profile, or run setup as administrator."); }
-            say(2, "Closing Groundwork Habits");
+            say(2, "Closing " + Name);
             CloseApp();
             say(8, "Removing the old version");
             var later = new List<string>(); // other folders go only once the new version is in place
@@ -397,7 +404,7 @@ static class Setup
         Action<double, string> say = (p, s) => { Log(s); if (report != null) report(p, s); };
         try
         {
-            say(5, "Closing Groundwork Habits");
+            say(5, "Closing " + Name);
             CloseApp();
             say(25, "Removing shortcuts");
             try { File.Delete(ShortcutPath(true)); } catch (Exception) { }
@@ -407,8 +414,13 @@ static class Setup
             if (erase)
             {
                 say(80, "Erasing your data");
-                RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Groundwork Habits"));
+                RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Name));
+                // the Tauri shell keeps its web storage (WebView2) under the app ID in Local, and Lite its backups in Roaming
+                RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppId));
+                RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppId));
+#if !LITE
                 RemoveDir(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Daybook")); // the data folder's name before the rename
+#endif
                 try { foreach (var x in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Name + "-before-rename-*")) RemoveDir(x); } catch (Exception) { }
             }
             try { Registry.CurrentUser.DeleteSubKeyTree(RegKey, false); } catch (Exception) { }
@@ -625,7 +637,7 @@ static class Setup
     static Window SetupWindow(string dArg, bool update)
     {
         ContentControl body; StackPanel foot; Border close;
-        var w = Shell("Groundwork Habits setup", out body, out foot, out close);
+        var w = Shell(Name + " setup", out body, out foot, out close);
         Busy = false;
         bool finished = false;
         Action quit = () => { if (Busy) return; if (finished || update) { w.Close(); return; } Confirm(w, "Cancel setup?", Name + " won’t be installed. You can run setup again any time.", "Cancel setup", false, () => w.Close()); };
@@ -781,7 +793,7 @@ static class Setup
             finished = true;
             if (update) { Launch(dir); w.Close(); return; }
             var s = Hero(Check(), "All set", Name + " is installed.");
-            open = new Opt("Open Groundwork Habits now", null, true, false, null, null); open.Root.Width = 420; s.Children.Add(open.Root);
+            open = new Opt("Open " + Name + " now", null, true, false, null, null); open.Root.Width = 420; s.Children.Add(open.Root);
             body.Content = s;
             Foot(foot, Btn("Finish", true, () => { if (open.On) Launch(dir); w.Close(); }));
         };
@@ -805,13 +817,13 @@ static class Setup
     static Window UninstallWindow(string dir)
     {
         ContentControl body; StackPanel foot; Border close;
-        var w = Shell("Uninstall Groundwork Habits", out body, out foot, out close);
+        var w = Shell("Uninstall " + Name, out body, out foot, out close);
         Busy = false;
         close.MouseLeftButtonUp += (o, e) => { if (!Busy) w.Close(); };
         Opt keep = null, erase = null;
         Action ask = () =>
         {
-            var s = Page("Remove Groundwork Habits", "What should happen to your data?");
+            var s = Page("Remove " + Name, "What should happen to your data?");
             keep = new Opt("Keep my data", "Habits, tasks, goals and settings stay on this PC, ready if you install again.", true, true, null, () => erase.Set(false));
             erase = new Opt("Erase everything", "Also deletes habits, tasks, goals, settings and automatic backups. This can’t be undone.", false, true, Red, () => keep.Set(false));
             s.Children.Add(keep.Root); s.Children.Add(erase.Root);
