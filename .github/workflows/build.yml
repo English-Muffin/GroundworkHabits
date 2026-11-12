@@ -200,8 +200,9 @@ jobs:
           v="${GITHUB_REF_NAME#v}"
           awk -v v="## $v" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md > notes.md
           test -s notes.md || echo "See CHANGELOG.md" > notes.md
+      # only the final builds: the unsigned-* artifacts from code signing share file names with the signed ones
       - uses: actions/download-artifact@v4
-        with: { path: files, merge-multiple: true }
+        with: { pattern: 'Groundwork-Habits-*', path: files, merge-multiple: true }
       - name: Checksums
         run: cd files && for f in *; do sha256sum "$f" > "$f.sha256"; done
       - uses: softprops/action-gh-release@v2
