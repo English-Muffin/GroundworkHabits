@@ -11,7 +11,8 @@
     "android:add": "cap add android",
     "android:sync": "cap sync android",
     "android:open": "cap open android",
-    "dist:mac": "electron-builder --mac zip --universal --publish never",
+    "dist:mac": "node tools/build_tauri_mac.js",
+    "dist:mac:electron": "electron-builder --mac zip --universal --publish never",
     "lint": "eslint www/js",
     "test:unit": "node tests/unit.js",
     "dist:win:electron": "electron-builder --win dir --publish never && node tools/build_portable.js && node tools/build_setup.js"
