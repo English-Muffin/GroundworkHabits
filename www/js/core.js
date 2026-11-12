@@ -81,7 +81,7 @@ const $$=q=>[...document.querySelectorAll(q)];
 const LITE=false; // Groundwork Habits Lite (tools/edition.js lite): offline only, no extras. Never commit true
 // the in-browser demo (GitHub Pages /demo/, or ?demo): example data under its own keys, never mixed with real data
 const DEMO=/\/demo\/(index\.html)?$/.test(location.pathname)||/[?&]demo(=|&|$)/.test(location.search);
-const KEY=DEMO?'groundwork-demo-v2':LITE?'groundwork-lite-v2':'groundwork-v2',APPV='1.7.3',RELEASES='https://github.com/English-Muffin/GroundworkHabits/releases/latest'; // APPV: bump with package.json
+const KEY=DEMO?'groundwork-demo-v2':LITE?'groundwork-lite-v2':'groundwork-v2',APPV='1.7.4',RELEASES='https://github.com/English-Muffin/GroundworkHabits/releases/latest'; // APPV: bump with package.json
 const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'],CNAMED=[['Violet','#8b5cf6'],['Blue','#3b82f6'],['Red','#f43f5e'],['Green','#22c55e'],['Amber','#f59e0b'],['Pink','#ec4899'],['Teal','#14b8a6'],['Slate','#94a3b8']];
 const AREAS=['Health','Fitness','Career','Money','Learning','Relationships','Family','Fun','Home','Mindset'];
 /* PIN encryption: with a PIN, data is saved as 'enc1:<salt>:<base64 iv+AES-GCM>' with a key made from the PIN (PBKDF2).

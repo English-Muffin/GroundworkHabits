@@ -223,7 +223,7 @@ before it's used.
 | Lite edition | `node tools/edition.js lite` on a copy of the repository, then the same commands |
 | macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac) |
 | Android `.apk` | `npm install && npx cap add android && npx cap sync android`, then build in Android Studio |
-| Everything, in the cloud | Push a tag like `v1.7.3`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
+| Everything, in the cloud | Push a tag like `v1.7.4`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
 
 ### Tests
 
@@ -249,7 +249,7 @@ A release whenever a batch has passed testing on Windows, Android and the browse
 | v1.7.1 | released Nov 2026 | Android widgets for tasks and the quick tile, optional desktop updates |
 | v1.7.2 | released Nov 2026 | Our own Windows installer and uninstaller |
 | v1.7.3 | released Nov 2026 | Undo for everything, never miss twice, challenges, goal forecasts, empty-screen guides, the in-browser demo |
-| v1.7.4 | next | Groundwork Habits Lite, Windows on Tauri (2 to 5 MB instead of 100 MB), settings in backups, mindset switch |
+| v1.7.4 | released Nov 2026 | Groundwork Habits Lite, Windows on Tauri (2 to 5 MB instead of 100 MB), settings in backups, mindset switch |
 | later | ideas | Right-to-left languages, a Wear OS tile, two-way calendar sync, signed desktop builds |
 
 ## Community

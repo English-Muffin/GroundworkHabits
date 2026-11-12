@@ -2,7 +2,7 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
-## Unreleased
+## 1.7.4
 
 - **Groundwork Habits Lite:** the same app with no online parts and without the extras, for every platform.
 - **Windows runs on Tauri:** the installer is 3 MB instead of 102 MB, and the app uses Windows' own
