@@ -44,6 +44,10 @@ test('calendar: second Tuesday of each month until May', () => same(ics('FREQ=MO
 test('calendar: last weekday of the month (BYSETPOS=-1)', () => same(ics('FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1;COUNT=3'), ['2026-03-31', '2026-04-30', '2026-05-29']));
 test('calendar: monthly on the last day (BYMONTHDAY=-1)', () => same(ics('FREQ=MONTHLY;BYMONTHDAY=-1;COUNT=3'), ['2026-03-31', '2026-04-30', '2026-05-31']));
 test('calendar: yearly on the first Monday of June (BYMONTH + BYDAY)', () => same(ics('FREQ=YEARLY;BYMONTH=6;BYDAY=1MO;COUNT=1'), ['2026-06-01']));
+test('calendar: a crafted rule (huge BYDAY list, BYMONTH that never matches) finishes quickly', () => {
+  const t0 = Date.now(); ics('FREQ=MONTHLY;BYDAY=' + Array(50000).fill('MO').join(',')); ics('FREQ=MONTHLY;BYMONTH=2;BYMONTHDAY=31');
+  assert.ok(Date.now() - t0 < 500, 'took ' + (Date.now() - t0) + ' ms');
+});
 test('calendar: EXDATE skips one date', () => same(T.parseIcs(['BEGIN:VEVENT', 'UID:e2', 'DTSTART;VALUE=DATE:20260302', 'RRULE:FREQ=DAILY;COUNT=3', 'EXDATE;VALUE=DATE:20260303', 'END:VEVENT'].join('\n')).map(e => e.day), ['2026-03-02', '2026-03-04']));
 
 test('repeat: every 2 weeks lands on the same weekday, 14 days apart', () => {

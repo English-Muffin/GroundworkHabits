@@ -231,13 +231,15 @@ function parseIcs(txt){
 function expandRule(rule,s,lo,hi){
   const r={};rule.split(';').forEach(p=>{const q=p.split('=');r[q[0]]=q[1]||''});
   const WD={SU:0,MO:1,TU:2,WE:3,TH:4,FR:5,SA:6},iv=Math.max(1,parseInt(r.INTERVAL)||1),cnt=parseInt(r.COUNT)||0,until=r.UNTIL?icsDate(r.UNTIL):null;
-  const by=(r.BYDAY||'').split(',').map(x=>x.match(/^([+-]?\d+)?(SU|MO|TU|WE|TH|FR|SA)$/)).filter(Boolean).map(m=>({n:parseInt(m[1])||0,w:WD[m[2]]}));
-  const bmd=(r.BYMONTHDAY||'').split(',').map(Number).filter(x=>x&&Math.abs(x)<=31);
-  const bmo=(r.BYMONTH||'').split(',').map(Number).filter(x=>x>=1&&x<=12),pos=(r.BYSETPOS||'').split(',').map(Number).filter(Boolean);
+  // the rule comes from someone else's calendar: duplicates dropped and each list capped, so a crafted rule can't stall the app
+  const uniq=(a,max)=>[...new Set(a)].slice(0,max);
+  const by=uniq((r.BYDAY||'').split(',').slice(0,64),64).map(x=>x.match(/^([+-]?\d+)?(SU|MO|TU|WE|TH|FR|SA)$/)).filter(Boolean).map(m=>({n:parseInt(m[1])||0,w:WD[m[2]]})).slice(0,35);
+  const bmd=uniq((r.BYMONTHDAY||'').split(',').slice(0,64).map(Number).filter(x=>x&&Math.abs(x)<=31),62);
+  const bmo=uniq((r.BYMONTH||'').split(',').slice(0,24).map(Number).filter(x=>x>=1&&x<=12),12),pos=uniq((r.BYSETPOS||'').split(',').slice(0,64).map(Number).filter(x=>x&&Math.abs(x)<=366),32);
   // the dates of month m (of year y) that BYDAY / BYMONTHDAY pick, or the start date's day of the month
   const inMonth=(y,m,dflt)=>{const last=new Date(y,m+1,0).getDate(),c=[];
     if(by.length)by.forEach(b=>{const all=[];for(let d=1;d<=last;d++){const x=new Date(y,m,d);if(x.getDay()===b.w)all.push(x)}
-      if(!b.n)c.push(...all);else{const x=b.n>0?all[b.n-1]:all[all.length+b.n];if(x)c.push(x)}});
+      if(!b.n)all.forEach(x=>c.push(x));else{const x=b.n>0?all[b.n-1]:all[all.length+b.n];if(x)c.push(x)}});
     else (bmd.length?bmd:[dflt]).forEach(d=>{const dd=d>0?d:last+d+1;if(dd>=1&&dd<=last)c.push(new Date(y,m,dd))});
     return c};
   const out=[];let n=0;
@@ -249,13 +251,16 @@ function expandRule(rule,s,lo,hi){
     else if(r.FREQ==='MONTHLY'){const x=new Date(s.getFullYear(),s.getMonth()+i*iv,1);if(!bmo.length||bmo.includes(x.getMonth()+1))c=inMonth(x.getFullYear(),x.getMonth(),s.getDate())}
     else if(r.FREQ==='YEARLY'){const y=s.getFullYear()+i*iv;
       if(!by.length&&!bmd.length&&!bmo.length){const x=new Date(y,s.getMonth(),s.getDate());if(x.getMonth()===s.getMonth())c=[x]}
-      else (bmo.length?bmo:[s.getMonth()+1]).forEach(mo=>c.push(...inMonth(y,mo-1,s.getDate())))}
+      else (bmo.length?bmo:[s.getMonth()+1]).forEach(mo=>{c=c.concat(inMonth(y,mo-1,s.getDate()))})}
     else return [s];
     c.sort((a,b)=>a-b);
     // BYSETPOS keeps the n-th (or n-th from the end) date of each period, e.g. the last weekday of the month
     if(pos.length&&c.length){const k=c;c=pos.map(p=>p>0?k[p-1]:k[k.length+p]).filter(Boolean).sort((a,b)=>a-b)}
     for(const d of c){if(d<s)continue;if(until&&d>until||cnt&&n>=cnt)return out;n++;if(d>hi)return out;if(d>=lo)out.push(d)}
     if(c.length&&c[0]>hi)return out;
+    // a period that starts after the window ends it, even when the rule picked no date in it (e.g. BYMONTH never matching)
+    const ps=r.FREQ==='DAILY'?addDays(s,i*iv):r.FREQ==='WEEKLY'?addDays(s,-s.getDay()+i*iv*7):r.FREQ==='MONTHLY'?new Date(s.getFullYear(),s.getMonth()+i*iv,1):new Date(s.getFullYear()+i*iv,0,1);
+    if(ps>hi)return out;
   }
   return out;
 }
