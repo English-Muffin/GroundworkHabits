@@ -532,6 +532,24 @@ async def webFolder(b):
     await pg.wait_for_timeout(1800); kept = await pg.evaluate("GroundworkTest.state().habits[0].name"); after = await pg.evaluate(rd)
     check('web data folder: saves there, loads a newer copy, keeps newer data over an older one', first and len(first['habits']) > 0 and newer == 'From the other device' and kept == 'From the other device' and after['habits'][0]['name'] == 'From the other device' and not errs, [bool(first), newer, kept, after and after['habits'][0]['name'], errs])
     await ctx.close()
+    # a browser without folder access (Android Chrome, Firefox, Safari) offers Export and Import instead
+    ctx = await b.new_context(viewport={'width': 390, 'height': 844}, has_touch=True, is_mobile=True)
+    await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');delete window.showDirectoryPicker")
+    pg = await ctx.new_page(); await pg.goto(URL + '#settings/data'); await pg.wait_for_timeout(300)
+    n = await pg.locator('#main [data-act=export]').count(), await pg.locator('#main [data-act=import]').count(), await pg.locator('#main [data-act=apick]').count()
+    check('web without folder access: Data folder offers Export and Import', n[0] > 0 and n[1] > 0 and n[2] == 0, n)
+    await ctx.close()
+
+async def unnamedControls(b):
+    # every control must have a name a screen reader can read (Chromium's tree = WebView2's, which NVDA and Narrator read)
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
+    await pg.goto(URL); await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(200)
+    cdp = await ctx.new_cdp_session(pg); roles = {'button','checkbox','switch','link','textbox','combobox','slider','tab','menuitem','radio','spinbutton','searchbox'}; bad = []
+    for v in ['today', 'habits', 'tasks', 'goals', 'insights', 'achievements', 'settings']:
+        await pg.evaluate(f"location.hash='{v}'"); await pg.wait_for_timeout(300)
+        bad += [v + ' ' + n['role']['value'] for n in (await cdp.send('Accessibility.getFullAXTree'))['nodes'] if not n.get('ignored') and n.get('role', {}).get('value') in roles and not str((n.get('name') or {}).get('value', '')).strip()]
+    check('screen readers: every control on every screen has a name', not bad, bad[:5])
+    await ctx.close()
 
 async def dialogFocus(b):
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
@@ -837,7 +855,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await unnamedControls(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")
