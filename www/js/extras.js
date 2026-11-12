@@ -138,7 +138,19 @@ function toCsv(){
   return '\ufeff'+rows.map(r=>r.map(q).join(',')).join('\r\n');
 }
 // the backup file: encrypted with the PIN's key when a PIN is set (import asks for that PIN)
-async function backupText(){const j=JSON.stringify(S,null,1);return encOn()&&encKey?encText(j,encKey,P.lock.salt):j}
+/* settings travel with backups: look, features, layout and reminder time. Never the PIN, fingerprint, calendar link,
+   folders or per-device state: a backup can be shared, and those belong to one device or are secret */
+const PREF_KEYS={theme:v=>['dark','light','amoled'].includes(v),accent:v=>/^#[0-9a-f]{6}$/i.test(v),
+  feat:v=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(x=>typeof x==='boolean'),
+  lang:v=>LANGS.some(l=>l[0]===v),tabNames:v=>typeof v==='boolean',remTime:v=>/^([01]\d|2[0-3]):[0-5]\d$/.test(v),
+  heatM:v=>[3,6,12].includes(v),bakEvery:v=>[0,1,7,30].includes(v),lockIdle:v=>[1,5,15,30].includes(v),focusMin:v=>Number.isInteger(v)&&v>0&&v<=240,
+  layout:v=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(a=>Array.isArray(a)&&a.every(x=>typeof x==='string'&&x.length<40))};
+const backupPrefs=()=>Object.fromEntries(Object.keys(PREF_KEYS).filter(k=>P[k]!==undefined).map(k=>[k,P[k]]));
+// puts back the checked settings from a backup; anything unknown or malformed is skipped. True when the language changed
+function restorePrefs(p){if(!p||typeof p!=='object')return false;const lang=P.lang;
+  Object.keys(PREF_KEYS).forEach(k=>{if(k in p&&PREF_KEYS[k](p[k]))P[k]=k==='feat'||k==='layout'?JSON.parse(JSON.stringify(p[k])):p[k]});
+  applyPrefs();return P.lang!==lang}
+async function backupText(){const j=JSON.stringify(Object.assign({},S,{prefs:backupPrefs()}),null,1);return encOn()&&encKey?encText(j,encKey,P.lock.salt):j}
 async function exportData(){const t=await backupText();shareFile(t,'groundwork-backup-'+dk(TODAY)+(isEnc(t)?'-encrypted':'')+'.json','application/json','Groundwork Habits backup',isEnc(t)?'Encrypted backup downloaded. Importing it asks for your PIN':'Backup downloaded')}
 // weekly automatic backup: desktop to <data folder or app data>/backups, Android to the chosen folder's backups or app storage; newest 8 kept
 async function autoBackup(force){
@@ -148,7 +160,7 @@ async function autoBackup(force){
     if(where){P.bakAt=Date.now();P.bakWhere=String(where).slice(0,300);applyPrefs();if(force)toast('Backup saved')}else if(force)toast('Backup failed')}catch(e){if(force)toast('Backup failed')}}
 // a plain-text report for bug reports: version, platform, sizes and recent errors; never names, notes or other content
 function diagText(){const n=o=>Object.keys(o||{}).length;
-  return ['Groundwork Habits '+APPV+(TESTING?' (test build)':''),'Platform: '+(DFS?'desktop':NB?'android':'web')+' · '+navigator.userAgent,'Language: '+LANG+' · theme '+P.theme+' · screen '+innerWidth+'x'+innerHeight,
+  return ['Groundwork Habits '+(LITE?'Lite ':'')+APPV+(TESTING?' (test build)':''),'Platform: '+(DFS?'desktop':NB?'android':'web')+' · '+navigator.userAgent,'Language: '+LANG+' · theme '+P.theme+' · screen '+innerWidth+'x'+innerHeight,
     'Data: '+S.habits.length+' habits, '+n(S.tasks)+' task days, '+S.goals.length+' goals, '+S.quits.length+' streaks, '+JSON.stringify(S).length+' bytes'+(P.lock?' · PIN on':'')+(dataDir||P.andDir?' · data folder on':''),
     'Features off: '+(FEAT.filter(f=>!feat(f[0])).map(f=>f[0]).join(', ')||'none'),'Recent errors:'].concat(ERRS.length?ERRS:['none']).join('\n')}
 // checks a backup's shape before anything is replaced; clean() then keeps only known fields
@@ -157,7 +169,7 @@ function backupProblem(d){const o=x=>x===undefined||(x&&typeof x==='object'&&!Ar
   if(+d.v>DATA_V)return 'This backup is from a newer version of Groundwork Habits. Update the app, then import it';
   if(!o(d.log)||!o(d.tasks)||!a(d.goals)||!a(d.quits)||!o(d.journal)||!o(d.notes)||!o(d.count)||!o(d.amt))return 'That backup is damaged, so nothing was changed';
   return null}
-function applyImport(d){const bad=backupProblem(d);if(bad){toast(bad);return}S=clean(d);save();if(view==='settings')location.hash=setBack;render();toastAct('Backup restored','Undo','histundo')}
+function applyImport(d){const bad=backupProblem(d);if(bad){toast(bad);return}S=clean(d);save();if(restorePrefs(d.prefs)){location.reload();return}if(view==='settings')location.hash=setBack;render();toastAct('Backup restored','Undo','histundo')}
 
 /* ---------- Google Calendar (no login) ----------
    In: the desktop app reads a calendar's "secret address in iCal format" and mirrors its events into tasks.

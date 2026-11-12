@@ -315,6 +315,12 @@ async def desktop(b):
     await npg.goto(URL + '#settings/about'); await npg.wait_for_timeout(150)
     check('Settings > About offers Copy diagnostics', await npg.locator('#main [data-act=diag]').count() >= 1)
     await nc.close()
+    # the mindset tracker switch hides it on Tasks
+    mc = await b.new_context(viewport={'width': 1280, 'height': 800}); mpg = await mc.new_page()
+    await mpg.add_init_script("localStorage.setItem('groundwork-tips','1');localStorage.setItem('groundwork-prefs',JSON.stringify({feat:{mind:false}}))")
+    await mpg.goto(URL + '#tasks'); await mpg.wait_for_timeout(250)
+    check('mindset switch off: no mindset tracker on Tasks', await mpg.evaluate("![...document.querySelectorAll('.card.mind,.mh')].some(e=>e.offsetParent!==null)"))
+    await mc.close()
     # the in-browser demo (?demo, GitHub Pages /demo/): example data under its own keys, a banner, real data untouched
     dc = await b.new_context(viewport={'width': 1280, 'height': 800}); dp = await dc.new_page()
     await dp.goto(URL + '?demo#habits'); await dp.wait_for_timeout(300)

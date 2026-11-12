@@ -107,12 +107,12 @@ function reviewCard(){
   days.forEach(d=>{const t=S.tasks[dk(d)];if(!t)return;const a=todo(t.items);tt+=a.length;td+=a.filter(x=>x.done).length;if(t.mind)Object.keys(md).forEach(f=>md[f].push(t.mind[f]))});
   const best=byType('daily').map(h=>({h,s:curStreak(h)})).sort((a,b)=>b.s-a.s)[0],lo=days[0].getTime();
   const miles=S.quits.flatMap(q=>MILES.filter(x=>{const at=qDate(q).getTime()+x*864e5;return at>=lo&&at<=Date.now()}).map(x=>esc(q.name)+' reached '+dur(x)));
-  const mood=md.energy.length?MF.map(f=>'<span style="color:'+f[1]+'">'+f[2]+' '+(md[f[0]].reduce((a,b)=>a+b,0)/md[f[0]].length).toFixed(1)+'</span>').join(' · '):'<span class="muted">Not logged this week</span>';
+  const mood=!feat('mind')?'':md.energy.length?MF.map(f=>'<span style="color:'+f[1]+'">'+f[2]+' '+(md[f[0]].reduce((a,b)=>a+b,0)/md[f[0]].length).toFixed(1)+'</span>').join(' · '):'<span class="muted">Not logged this week</span>';
   return '<section class="card review"><div class="ch"><span class="lbl">Your week in review</span><span class="sub" style="margin:0">'+days[0].getDate()+' '+MON3[days[0].getMonth()]+' – '+TODAY.getDate()+' '+MON3[TODAY.getMonth()]+'</span></div><div class="rvg">'
    +'<div><div class="lbl" style="font-size:9px">Habits</div><b>'+(dh?hp+'%':'–')+'</b>'+(dh?'<span class="sub" style="margin:0;color:'+(diff>=0?'var(--teal)':'var(--red)')+'">'+(diff>=0?'+':'')+diff+'% vs last week</span>':'')+'</div>'
    +'<div><div class="lbl" style="font-size:9px">Tasks</div><b>'+td+' / '+tt+'</b><span class="sub" style="margin:0">done</span></div>'
    +'<div><div class="lbl" style="font-size:9px">Best streak</div><b>'+(best&&best.s?best.s+'d':'–')+'</b><span class="sub" style="margin:0">'+(best&&best.s?esc(best.h.name):'Tick a daily habit to start one')+'</span></div>'
-   +'<div><div class="lbl" style="font-size:9px">Mindset</div><span class="sub" style="margin:0">'+mood+'</span></div></div>'
+   +(feat('mind')?'<div><div class="lbl" style="font-size:9px">Mindset</div><span class="sub" style="margin:0">'+mood+'</span></div>':'')+'</div>'
    +(miles.length?'<div class="miles" style="margin-top:12px">'+miles.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+'</section>';
 }
 /* year heatmap: the last 53 weeks of daily habits, one square per day; fills wide screens, scrolls (newest in view) on phones */

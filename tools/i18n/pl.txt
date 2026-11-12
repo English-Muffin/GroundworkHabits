@@ -888,3 +888,5 @@ P88|Brak celów w obszarze $1
 800|Demo z przykładowymi danymi. Zmiany zostają w tej przeglądarce.
 801|Pobierz aplikację
 802|Przywrócono przykładowe dane
+803|Wszystko jest zapisywane na tym urządzeniu i nigdy go nie opuszcza. Kopię wyeksportujesz w ustawieniach.
+804|Energia, skupienie i motywacja na każdy dzień w Zadaniach i w podsumowaniu tygodnia

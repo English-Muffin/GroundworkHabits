@@ -888,3 +888,5 @@ P88|Aún no hay objetivos en $1
 800|Demo con datos de ejemplo. Los cambios se quedan en este navegador.
 801|Descargar la app
 802|Datos de ejemplo restablecidos
+803|Todo se guarda en este dispositivo y nunca sale de él. Exporta una copia desde los ajustes.
+804|Energía, concentración y motivación por día en Tareas y en el resumen semanal

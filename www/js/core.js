@@ -78,9 +78,10 @@ const medal=c=>'<svg class="medal" viewBox="0 0 24 24" style="stroke:'+c+'"><cir
 
 /* ---------- state ---------- */
 const $$=q=>[...document.querySelectorAll(q)];
+const LITE=false; // Groundwork Habits Lite (tools/edition.js lite): offline only, no extras. Never commit true
 // the in-browser demo (GitHub Pages /demo/, or ?demo): example data under its own keys, never mixed with real data
 const DEMO=/\/demo\/(index\.html)?$/.test(location.pathname)||/[?&]demo(=|&|$)/.test(location.search);
-const KEY=DEMO?'groundwork-demo-v2':'groundwork-v2',APPV='1.7.3',RELEASES='https://github.com/English-Muffin/GroundworkHabits/releases/latest'; // APPV: bump with package.json
+const KEY=DEMO?'groundwork-demo-v2':LITE?'groundwork-lite-v2':'groundwork-v2',APPV='1.7.3',RELEASES='https://github.com/English-Muffin/GroundworkHabits/releases/latest'; // APPV: bump with package.json
 const COLORS=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'],CNAMED=[['Violet','#8b5cf6'],['Blue','#3b82f6'],['Red','#f43f5e'],['Green','#22c55e'],['Amber','#f59e0b'],['Pink','#ec4899'],['Teal','#14b8a6'],['Slate','#94a3b8']];
 const AREAS=['Health','Fitness','Career','Money','Learning','Relationships','Family','Fun','Home','Mindset'];
 /* PIN encryption: with a PIN, data is saved as 'enc1:<salt>:<base64 iv+AES-GCM>' with a key made from the PIN (PBKDF2).
@@ -124,7 +125,7 @@ function snap(){const j=JSON.stringify(S);if(histJ!==null&&j!==histJ){if(Date.no
 function histStep(back){const from=back?hist:redos,to=back?redos:hist;if(!from.length||encWait)return false;to.push(JSON.stringify(S));S=clean(JSON.parse(from.pop()));histJ=JSON.stringify(S);histT=0;save();return true}
 function save(){if(encWait)return;snap();andWrite();pushWidget();saveRaw(JSON.stringify(S),putData);clearTimeout(save.r);save.r=setTimeout(()=>syncReminders(),1500);if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
 /* desktop only: mirror data to <folder>/groundwork.json (a Drive/OneDrive/Dropbox folder gives cloud sync) */
-const DFS=window.groundworkFS||null,NB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.GroundworkNative||null,calFetch=DFS&&DFS.fetchCal?DFS.fetchCal:NB?(u=>NB.fetchCal({url:u})):null;let dataDir=DFS?DFS.folder():'',fileText=null,fileJson=null;
+const DFS=window.groundworkFS||null,NB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.GroundworkNative||null,calFetch=LITE?null:DFS&&DFS.fetchCal?DFS.fetchCal:NB?(u=>NB.fetchCal({url:u})):null;let dataDir=DFS?DFS.folder():'',fileText=null,fileJson=null;
 function writeFile(){clearTimeout(save.t);save.t=0;if(!dataDir||encWait)return;const j=JSON.stringify(S);if(j===fileJson)return;
   saveRaw(j,t=>{if(DFS.write(t)){fileJson=j;fileText=t}else toast('Could not save to your data folder')})}
 // the folder file wins over this device; an encrypted file is opened with the key once the PIN is in (async, renders itself)
@@ -136,7 +137,7 @@ window.addEventListener('beforeunload',()=>{if(save.t)writeFile()});
 if(DFS&&DFS.onFlush)DFS.onFlush(async()=>{if(save.t)writeFile();await save.p}); // desktop: finish encrypted saves before the window closes
 const DATA_V=1; // bump and migrate in load-time block below when the saved shape changes
 const TESTING=true; // release builds: false (tools/release_strip.js), which hides demo data and the test hook
-const PKEY=DEMO?'groundwork-demo-prefs':'groundwork-prefs',ACCENTS=[['Moss','#9cc96b'],['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
+const PKEY=DEMO?'groundwork-demo-prefs':LITE?'groundwork-lite-prefs':'groundwork-prefs',ACCENTS=[['Moss','#9cc96b'],['Teal','#22d3be'],['Blue','#60a5fa'],['Violet','#a78bfa'],['Pink','#f472b6'],['Amber','#fbbf24'],['Green','#4ade80']];
 let P={theme:'dark',accent:ACCENTS[0][1],feat:{},remTime:'21:00'};try{Object.assign(P,JSON.parse(localStorage.getItem(PKEY))||{})}catch(e){}
 const hexRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const rgbHex=a=>'#'+a.map(v=>v.toString(16).padStart(2,'0')).join('');
@@ -162,13 +163,13 @@ function setColor(f,hex,from){COLOR_SET[f](hex);
   document.querySelectorAll('[data-cf="'+f+'"]').forEach(e=>{if(e===from)return;const k=e.dataset.k;if(k==='hex')e.value=hex;else if(!slid)e.value=hsl['hsl'.indexOf(k)]});
   let pre=false;document.querySelectorAll('[data-sw="'+f+'"]').forEach(b=>{const on=b.dataset.v===hex;if(on)pre=true;b.setAttribute('aria-pressed',on);b.classList.toggle('on',on)});
   document.querySelectorAll('[data-cpk="'+f+'"]').forEach(w=>{w.style.setProperty('--h',hsl[0]);w.style.setProperty('--s',hsl[1]+'%');w.style.setProperty('--l',hsl[2]+'%');w.style.setProperty('--c',hex);const m=w.querySelector('.cmore');if(m)m.classList.toggle('on',!pre)})}
-function applyPrefs(){const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');d.classList.toggle('notabnames',P.tabNames===false);
+function applyPrefs(){const d=document.documentElement;d.classList.toggle('lite',LITE);d.classList.toggle('nomind',!!P.feat&&P.feat.mind===false);/* not feat(): defined later in this file */d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');d.classList.toggle('notabnames',P.tabNames===false);
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=P.theme==='light'?'#f7f7f7':P.theme==='amoled'?'#000000':'#080808';try{localStorage.setItem(PKEY,JSON.stringify(P))}catch(e){}}
 applyPrefs();
 // optional features, switched in Settings > Features (all on except the reminder)
-const FEAT=[['freeze','Streak freezes'],['twice','Never miss twice'],['streaks','Streaks on Today'],['review','Weekly review'],['heatmap','Year heatmap'],['notes','Habit notes'],['missed','Mark missed tasks'],['drag','Drag to rearrange'],['focus','Focus timer'],['reminder','Daily reminder'],['remnames','Show names in reminders']];
-const FEATD={freeze:'Seven days in a row earn a freeze that saves a streak on a missed day',twice:'After a missed day, Today marks the habit so one miss doesn’t become two',streaks:'Your stopped-habit streaks on the Today screen',review:'A summary of last week on Sundays',heatmap:'The year of squares on Insights',notes:'A short note on any day of a habit',missed:'Past tasks you didn’t do show a red X',ach:'Track things you’ve stopped, like smoking',drag:'Move tasks, habits, goals and cards by dragging',focus:'A timer for focused work on a task',reminder:'One notification a day if habits are still open',remnames:'Notifications say which habit or task; off shows just “Groundwork Habits”'};
-const feat=k=>k==='ach'?true:P.feat&&k in P.feat?!!P.feat[k]:k!=='reminder';
+const FEAT=[['freeze','Streak freezes'],['twice','Never miss twice'],['streaks','Streaks on Today'],['review','Weekly review'],['heatmap','Year heatmap'],['notes','Habit notes'],['missed','Mark missed tasks'],['drag','Drag to rearrange'],['focus','Focus timer'],['mind','Mindset tracker'],['reminder','Daily reminder'],['remnames','Show names in reminders']].filter(f=>!LITE||f[0]!=='focus');
+const FEATD={freeze:'Seven days in a row earn a freeze that saves a streak on a missed day',twice:'After a missed day, Today marks the habit so one miss doesn’t become two',streaks:'Your stopped-habit streaks on the Today screen',review:'A summary of last week on Sundays',heatmap:'The year of squares on Insights',notes:'A short note on any day of a habit',missed:'Past tasks you didn’t do show a red X',ach:'Track things you’ve stopped, like smoking',drag:'Move tasks, habits, goals and cards by dragging',focus:'A timer for focused work on a task',mind:'Energy, focus and motivation per day on Tasks, and in the weekly review',reminder:'One notification a day if habits are still open',remnames:'Notifications say which habit or task; off shows just “Groundwork Habits”'};
+const feat=k=>LITE&&k==='focus'?false:k==='ach'?true:P.feat&&k in P.feat?!!P.feat[k]:k!=='reminder';
 const empty=()=>({v:DATA_V,habits:[],log:{},tasks:{},goals:[],journal:{},quits:[],count:{},notes:{},amt:{},areas:[]});
 
 // true when there is anything the user would lose (not just habits)
@@ -263,7 +264,7 @@ const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tas
 const views=()=>VIEWS.filter(v=>v[0]!=='achievements'||feat('ach'));
 // settings is a page of its own: #settings (all sections; on phones the section list) and #settings/<section>
 let setSec='',setQ='',setBack='today';
-const SETSECS=['appearance','language','features','reminders','calendar','data','security','about'];
+const SETSECS=['appearance','language','features','reminders','calendar','data','security','about'].filter(s=>!LITE||s!=='calendar');
 function routeTo(v){const m=/^settings(?:\/([a-z]+))?$/.exec(v);if(m){view='settings';setSec=SETSECS.includes(m[1])?m[1]:'';return true}if(views().some(x=>x[0]===v)){view=v;return true}return false}
 if(!WIDGET&&!routeTo(view))view='habits';
 let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',featOpen=false,confirmDemo=false,confirmGoal=null,confirmPinOff=false,menuOpen=false,confirmReset=false,

@@ -24,7 +24,7 @@ vm.createContext(sandbox);
 const src = order.map(n => fs.readFileSync(path.join(www, 'js', n + '.js'), 'utf8').replace("'use strict';", '')).join('\n');
 // the files share one scope; the tail hands the functions under test (and a way to set "today") to this script
 vm.runInContext("'use strict';\n" + src + `
-;globalThis.__T={freezeOf,curStreak,repeatDates,gPct,gForecast,gLine,clean,backupProblem,missTwice,chDone,chLine,histStep,
+;globalThis.__T={backupPrefs,restorePrefs,getP:()=>P,freezeOf,curStreak,repeatDates,gPct,gForecast,gLine,clean,backupProblem,missTwice,chDone,chLine,histStep,
   setToday:d=>{TODAY=d},setS:x=>{S=x;fzCache.clear()},getS:()=>S,dk,addDays,empty,parseIcs:typeof parseIcs==='function'?parseIcs:null};`, sandbox, { filename: 'app' });
 const T = sandbox.__T;
 
@@ -85,6 +85,18 @@ test('undo history: undo and redo step through saved changes', () => {
   T.getS().habits[0].name = 'Two'; sandbox.save(); // a burst within 1.5 s is one step
   assert.ok(T.histStep(true)); assert.strictEqual(T.getS().habits[0].name, 'Read');
   assert.ok(T.histStep(false)); assert.strictEqual(T.getS().habits[0].name, 'Two');
+});
+test('backups carry settings, never the PIN, calendar link or folders', () => {
+  const P = T.getP(); Object.assign(P, { theme: 'light', accent: '#60a5fa', feat: { mind: false }, lock: { salt: 's', enc: 1 }, cal: 'https://secret.ics', andDir: 'x' });
+  const b = T.backupPrefs();
+  assert.strictEqual(b.theme, 'light'); assert.strictEqual(b.accent, '#60a5fa'); assert.strictEqual(b.feat.mind, false);
+  assert.ok(!('lock' in b) && !('cal' in b) && !('andDir' in b), 'secrets and device state stay out');
+});
+test('restoring settings keeps only valid values and never touches the PIN', () => {
+  const P = T.getP(); P.theme = 'dark'; P.accent = '#9cc96b'; P.lock = null;
+  T.restorePrefs({ theme: 'amoled', accent: 'red;}', lock: { salt: 'evil' }, feat: { twice: false }, remTime: '25:99' });
+  assert.strictEqual(P.theme, 'amoled'); assert.strictEqual(P.accent, '#9cc96b', 'bad colour ignored');
+  assert.strictEqual(P.lock, null, 'PIN from a file ignored'); assert.strictEqual(P.feat.twice, false); assert.notStrictEqual(P.remTime, '25:99');
 });
 
 console.log(`\n${n - fails} of ${n} unit tests passed`);

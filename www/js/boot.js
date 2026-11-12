@@ -110,12 +110,12 @@ takeAnswers().then(syncReminders);
 setTimeout(()=>{autoBackup();andRead()},3000);
 checkReminder();checkHabitReminders();
 // desktop updates, only when switched on: once a day, an Install button when a newer version is out
-function updCheck(now){if(!DFS||!DFS.updateCheck||!P.updAuto||WIDGET||ASK)return;if(!now&&Date.now()-(P.updAt||0)<864e5)return;P.updAt=Date.now();applyPrefs();
+function updCheck(now){if(LITE||!DFS||!DFS.updateCheck||!P.updAuto||WIDGET||ASK)return;if(!now&&Date.now()-(P.updAt||0)<864e5)return;P.updAt=Date.now();applyPrefs();
   DFS.updateCheck().then(r=>{if(r&&r.ok&&r.update){updCheck.info=r;toastAct('Version '+r.version+' is available',r.auto?'Install':'Download','updinstall')}else if(now)toast(r&&r.ok?'You have the latest version':'Couldn’t check for updates')})}
 setTimeout(()=>updCheck(false),8000);
 setInterval(()=>{refreshToday();checkReminder();checkHabitReminders();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
-if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/.test(navigator.userAgent)){
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/.test(navigator.userAgent)&&!window.__TAURI_INTERNALS__){ // desktop and Android ship their files: no offline cache that could serve an old version
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 if(DEMO){document.body.insertAdjacentHTML('afterbegin','<div class="demobar" role="note"><span>'+tx('Demo with example data. Changes stay in this browser.')+'</span><button class="link" data-act="demoreset">'+tx('Reset')+'</button><a class="link" href="'+RELEASES+'" target="_blank" rel="noopener">'+tx('Get the app')+'</a></div>');document.documentElement.classList.add('isdemo')}

@@ -713,3 +713,9 @@ html.notabnames .pnav a span{display:none}
 /* in-browser demo: a slim bar on top */
 .demobar{position:sticky;top:0;z-index:60;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;padding:7px 12px;font-size:12.5px;background:color-mix(in srgb,var(--teal) 16%,var(--bg));color:var(--text);border-bottom:1px solid color-mix(in srgb,var(--teal) 35%,transparent)}
 .demobar .link{font-size:12.5px;font-weight:600}
+
+/* Groundwork Habits Lite: no templates, sharing or focus timer */
+html.lite [data-act=tpl],html.lite [data-act=sharecard],html.lite [data-act=yearimg],html.lite [data-act=focusnew]{display:none!important}
+/* mindset tracker switched off (Settings > Features) */
+html.nomind .card.mind,html.nomind .mh,html.nomind .ms{display:none!important}
+html.nomind .tgrid{grid-template-columns:1fr}
