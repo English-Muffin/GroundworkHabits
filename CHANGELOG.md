@@ -2,9 +2,11 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
-## Unreleased
+## 1.7.5
 
-- **macOS runs on Tauri too:** about 10 MB instead of 166 MB, on the Mac's own web engine. Your data moves
+- **Check for updates installs the update:** on the installed Windows app it downloads the new version,
+  checks it and installs over the old one, leaving nothing behind. Automatic updates do the same once a day.
+- **macOS runs on Tauri too:** about 6 MB instead of 166 MB, on the Mac's own web engine. Your data moves
   over from the old version on first start.
 
 ## 1.7.4

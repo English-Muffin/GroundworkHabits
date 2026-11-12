@@ -1,6 +1,6 @@
 [package]
 name = "groundwork-habits"
-version = "1.7.4"
+version = "1.7.5"
 description = "Groundwork Habits: the desktop shell (Tauri) around the web app in ../www, for the full app and Lite"
 license = "AGPL-3.0-or-later"
 edition = "2021"

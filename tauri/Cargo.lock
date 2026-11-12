@@ -1504,7 +1504,7 @@ dependencies = [
 
 [[package]]
 name = "groundwork-habits"
-version = "1.7.4"
+version = "1.7.5"
 dependencies = [
  "reqwest 0.12.28",
  "rfd",
