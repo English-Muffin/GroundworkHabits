@@ -23,7 +23,7 @@ jobs:
       - name: Turn off testing features (releases only)
         if: startsWith(github.ref, 'refs/tags/v')
         run: node tools/release_strip.js
-      # Windows: both editions on Tauri (tauri/, Windows' own WebView2: about 5 MB instead of 100 MB of Electron)
+      # Windows: both editions on Tauri (tauri/, on Windows' own WebView2)
       - run: npm run dist:win
       # the Tauri app needs the WebView2 runtime (every Windows 10/11 PC has it; the server images may not)
       - name: WebView2 runtime
@@ -159,16 +159,9 @@ jobs:
       - name: Turn off testing features (releases only)
         if: startsWith(github.ref, 'refs/tags/v')
         run: node tools/release_strip.js
-      - run: npx cap add android
-      - name: Generate Android icons (optional)
-        run: npx @capacitor/assets generate --android --iconBackgroundColor '#00000000' --iconBackgroundColorDark '#00000000' --splashBackgroundColor '#080808' --splashBackgroundColorDark '#080808' || true
-      - run: npx cap sync android
-      - name: Icon without a background
-        # plain transparent icons, no adaptive icon: launchers fill an adaptive icon's empty background with a colour
-        run: rm -rf android/app/src/main/res/mipmap-anydpi-v26 && cp -r native/android-res/* android/app/src/main/res/
-      - name: Apply version and signing settings
-        run: |
-          echo "apply from: '../../native/release.gradle'" >> android/app/build.gradle
+      # the Android project from www/ and native/ (icons and splash committed in native/android-res): the same script
+      # F-Droid's build recipe runs (tools/fdroid/)
+      - run: sh tools/android_prepare.sh
       # signed release APK when the ANDROID_KEYSTORE_* secrets exist, otherwise the debug-signed APK as before
       - name: Build APK
         working-directory: android
