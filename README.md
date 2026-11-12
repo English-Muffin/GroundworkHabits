@@ -19,7 +19,7 @@
 <a href="https://github.com/English-Muffin/GroundworkHabits/releases/latest"><img src="assets/readme/badge-android.svg" alt="Download the Android APK" height="44"></a>
 <a href="https://english-muffin.github.io/GroundworkHabits/demo/"><img src="assets/readme/badge-web.svg" alt="Try it in your browser" height="44"></a>
 
-[Live demo](https://english-muffin.github.io/GroundworkHabits/demo/) · [Web app](https://english-muffin.github.io/GroundworkHabits/) · [Roadmap](#roadmap) · [Changelog](CHANGELOG.md)
+[Live demo](https://english-muffin.github.io/GroundworkHabits/demo/) · [Web app](https://english-muffin.github.io/GroundworkHabits/) · [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -29,17 +29,18 @@
 
 ## Why Groundwork Habits
 
-Most habit trackers want an account, a subscription and your data on their servers, and some
-disappear when the company does. Groundwork Habits is one offline app that keeps everything on your
-devices: daily, weekly and monthly habits, a weekly task planner, measurable goals, quit streaks and
-the insights that tie them together. It's yours to fork.
+I wanted a habit tracker that didn't ask me to make an account, pay every month, or trust a company to
+still be around next year. So this one lives on your own devices and nowhere else. It does habits
+(daily, weekly or monthly), a week of tasks, goals you can actually measure, quit streaks, and a few
+charts that show how it's all going.
 
-No account, no subscription, no ads, no tracking. Back it up automatically, or point it at a synced
-folder and it follows you between your computers and your phone.
+There's no account, no subscription, no ads and nothing tracking you. It backs itself up, and if you
+point it at a Google Drive, OneDrive or Dropbox folder, the same data follows you from your computer to
+your phone. The code is open, so if you'd do something differently, fork it.
 
-The [in-browser demo](https://english-muffin.github.io/GroundworkHabits/demo/) is the real app with
-example data, if you want to try it before installing anything. It saves only in your browser, under
-its own name, so it never mixes with real data.
+Want to look around first? The [in-browser demo](https://english-muffin.github.io/GroundworkHabits/demo/)
+is the real app with some example data. It keeps its own separate storage in your browser, so it never
+touches anything real.
 
 ## Features
 
@@ -238,20 +239,6 @@ python tests/stress.py out/      # heavy data, 320 to 1920 px, three themes, lay
 python tests/device_android.py   # a real Android build on a BlueStacks instance named "Groundwork Habits testing"
 ```
 
-## Roadmap
-
-A release whenever a batch has passed testing on Windows, Android and the browser.
-
-| Release | When | Theme |
-|---|---|---|
-| v1.7.0 | released Nov 2026 | The new name, faster start, templates, in-app pickers, rest days, import from other apps |
-| v1.7.1 | released Nov 2026 | Android widgets for tasks and the quick tile, optional desktop updates |
-| v1.7.2 | released Nov 2026 | Our own Windows installer and uninstaller |
-| v1.7.3 | released Nov 2026 | Undo for everything, never miss twice, challenges, goal forecasts, empty-screen guides, the in-browser demo |
-| v1.7.4 | released Nov 2026 | Groundwork Habits Lite, Windows on Tauri (2 to 5 MB instead of 100 MB), settings in backups, mindset switch |
-| v1.7.5 | released Nov 2026 | macOS on Tauri (6 MB instead of 166), one-click updates on Windows |
-| later | ideas | Right-to-left languages, a Wear OS tile, two-way calendar sync, signed desktop builds |
-
 ## Community
 
 - **[Issues](https://github.com/English-Muffin/GroundworkHabits/issues)** for bugs and ideas. Settings →
@@ -283,10 +270,26 @@ What that does and doesn't mean:
 
 ## Support
 
-Groundwork Habits is free and stays free: AGPL, no paid tier, no ads. A star, a bug report or a pull
-request helps the most.
+Groundwork Habits is 100% free and will stay that way: AGPL, no paid tier, no ads, nothing locked
+behind a payment. A star, a bug report or a pull request helps the most.
 
-[![Star History Chart](https://api.star-history.com/svg?repos=English-Muffin/GroundworkHabits&type=Date)](https://star-history.com/#English-Muffin/GroundworkHabits&Date)
+If you'd like to say thanks with a coffee, you can on Ko-fi. It's completely optional and changes
+nothing in the app.
+
+<a href="https://ko-fi.com/englishmuffin"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-Ko--fi-9cc96b?style=flat-square&logo=kofi&logoColor=white&labelColor=0f0f0f" alt="Buy me a coffee on Ko-fi" height="28"></a>
+
+<a href="https://star-history.com/#English-Muffin/GroundworkHabits&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=English-Muffin/GroundworkHabits&type=Date&theme=dark">
+    <img src="https://api.star-history.com/svg?repos=English-Muffin/GroundworkHabits&type=Date" alt="Star history" width="600">
+  </picture>
+</a>
+
+### Why the releases start at 1.7.0
+
+The app existed before 1.7.0, first under the name Daybook. Those versions went out under the wrong
+licence, so when the project moved to the AGPL and its new name, the old releases were deleted. 1.7.0
+is the first proper one. What changed in the earlier versions is still in the [changelog](CHANGELOG.md).
 
 ## License
 
