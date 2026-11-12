@@ -27,17 +27,17 @@ function render(){
   trDom(tpl);if(lastView!==view)$('#main').innerHTML='';morphKids($('#main'),tpl);
   const mn=$('#menu');mn.hidden=!menuOpen;
   mn.innerHTML='';
-  $('#modal').innerHTML=vModal();['#modal','#menu','#nav','#ttl'].forEach(q=>trDom($(q)));document.title=tx(vi[1])+' | Groundwork Habits';
+  $('#modal').innerHTML=vModal();['#modal','#menu','#nav','#ttl'].forEach(q=>trDom($(q)));dlgFocus();document.title=tx(vi[1])+' | Groundwork Habits';
   keep.forEach(k=>{const el=$(k[0]);if(el){el.scrollLeft=k[1];el.scrollTop=k[2]}});
   if(lastView===view&&sy>0)window.scrollTo(0,sy);
   // opening Habits on a narrow screen: scroll the month so today sits next to the pinned stats column
   // Tasks on a narrow window (days in a sideways row that doesn't fit): start scrolled to today
-  if(view==='tasks'&&lastView!==view){const g=$('.days'),n=$('.days .day.now');if(g&&n&&g.scrollWidth>g.clientWidth)g.scrollLeft=Math.max(0,n.offsetLeft-g.offsetLeft-8)}
-  if(view==='habits'&&lastView!==view){const g=$('.gcard'),n=$('.hdr .dn.now'),st=$('.gcard .gstat');if(g&&n&&st&&g.scrollWidth>g.clientWidth)g.scrollLeft=Math.max(0,n.offsetLeft+n.offsetWidth-(g.clientWidth-st.offsetWidth)+4)}
+  if(view==='tasks'&&lastView!==view){const g=$('.days'),n=$('.days .day.now');if(g&&n&&g.scrollWidth>g.clientWidth){if(document.dir==='rtl')n.scrollIntoView({block:'nearest',inline:'center'});else g.scrollLeft=Math.max(0,n.offsetLeft-g.offsetLeft-8)}}
+  if(view==='habits'&&lastView!==view){const g=$('.gcard'),n=$('.hdr .dn.now'),st=$('.gcard .gstat');if(g&&n&&st&&g.scrollWidth>g.clientWidth){if(document.dir==='rtl')n.scrollIntoView({block:'nearest',inline:'center'});else g.scrollLeft=Math.max(0,n.offsetLeft+n.offsetWidth-(g.clientWidth-st.offsetWidth)+4)}}
   lastView=view;
   const box=$('#main');delete box.dataset.drop;box.classList.toggle('tdash',view==='today');box.classList.toggle('idash',view==='insights');if(view==='insights')box.dataset.axis='x';else delete box.dataset.axis;
   if((view==='today'||view==='insights')&&feat('drag'))box.dataset.drop='cards';
-  if(view==='insights'){bindChart();const hw=$('.hwrap');if(hw)hw.scrollLeft=hw.scrollWidth}
+  if(view==='insights'){bindChart();const hw=$('.hwrap');if(hw)hw.scrollLeft=document.dir==='rtl'?-hw.scrollWidth:hw.scrollWidth}
   if(view==='tasks')bindMind();
   if(view==='settings'){filterSettings();spySettings()}
   if(focusSel){const el=$(focusSel);if(el)el.focus();focusSel=null}
@@ -122,11 +122,11 @@ document.addEventListener('contextmenu',e=>{if(drag||hold)e.preventDefault()});
 document.addEventListener('keydown',e=>{
   const g=e.target;if(!g.classList||!g.classList.contains('grip')||!/^Arrow(Up|Down|Left|Right)$/.test(e.key))return;
   const it=g.closest('[data-drag]'),c=it.parentElement,list=it.dataset.drag;e.preventDefault();
-  let to=c;
+  let to=c;const back=e.key==='ArrowUp'||(e.key==='ArrowLeft')!==(document.dir==='rtl'); // right-to-left: Left moves forward
   if(list==='tasks'&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){ // tasks hop to the previous/next day
-    const cs=[...document.querySelectorAll('[data-drop="tasks"]')],n=cs[cs.indexOf(c)+(e.key==='ArrowLeft'?-1:1)];if(!n)return;to=n;to.appendChild(it);
+    const cs=[...document.querySelectorAll('[data-drop="tasks"]')],n=cs[cs.indexOf(c)+(back?-1:1)];if(!n)return;to=n;to.appendChild(it);
   }else{
-    const sibs=[...c.querySelectorAll(':scope>[data-drag="'+list+'"]')],d=/Up|Left/.test(e.key)?-1:1,n=sibs[sibs.indexOf(it)+d];if(!n)return;
+    const sibs=[...c.querySelectorAll(':scope>[data-drag="'+list+'"]')],d=back?-1:1,n=sibs[sibs.indexOf(it)+d];if(!n)return;
     c.insertBefore(it,d<0?n:n.nextSibling);
   }
   focusSel='[data-drag="'+list+'"][data-id="'+it.dataset.id+'"] > .grip';commitDrag(list,[...new Set([c,to])]);
@@ -204,3 +204,14 @@ if(TOUCH){
 }
 function toast(msg){const t=$('#toast');t.textContent=tx(msg);t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true},2600)}
 
+
+// keyboard and screen reader users: focus moves into a dialog when it opens, Tab stays inside it, and focus returns to the opener on close
+let dlgOpener=null,dlgLast=null;document.addEventListener('focusin',e=>{if(!e.target.closest('#modal'))dlgLast=e.target}); // render() may replace the opener before the dialog shows
+const FOCUSABLE='button:not([disabled]),[href],input:not([type=hidden]):not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"]),[contenteditable=true]';
+function dlgFocus(){const d=$('#modal [role=dialog],#modal [role=alertdialog]');
+  if(d&&!dlgOpener){dlgOpener=dlgLast||document.body;if(!d.contains(document.activeElement)){d.tabIndex=-1;d.focus({preventScroll:true})}}
+  else if(!d&&dlgOpener){let o=dlgOpener;dlgOpener=null;if(!o.isConnected&&o.dataset&&o.dataset.act)o=$('[data-act="'+o.dataset.act+'"]'+(o.dataset.id?'[data-id="'+o.dataset.id+'"]':'')); // re-rendered: the same control
+  if(o&&o.isConnected&&o.focus)o.focus({preventScroll:true})}}
+document.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const d=$('#modal [role=dialog],#modal [role=alertdialog]');if(!d)return;
+  const f=[...d.querySelectorAll(FOCUSABLE)].filter(x=>x.offsetParent!==null);if(!f.length)return;const a=f[0],z=f[f.length-1];
+  if(!d.contains(document.activeElement)){e.preventDefault();a.focus()}else if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}});
