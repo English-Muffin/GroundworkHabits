@@ -16,6 +16,8 @@ exports.default = async function (context) {
   // Windows: Chromium's software Vulkan (SwiftShader) only serves WebGL/WebGPU on machines without a GPU; the app uses
   // neither, and pages still render without it (tests/launch_check.js runs with the GPU off too). About 6.4 MB.
   for (const f of ['vk_swiftshader.dll', 'vk_swiftshader_icd.json', 'vulkan-1.dll']) fs.rmSync(path.join(context.appOutDir, f), { force: true });
+  // shortcut: macOS universal builds merge two asars and refuse files only one has, so the Mac app keeps node_modules; strip in a universal-aware way to shrink it
+  if (context.electronPlatformName === 'darwin') return;
   const file = findAsar(context.appOutDir);
   if (!file) throw new Error('after_pack: app.asar not found in ' + context.appOutDir);
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-asar-'));
