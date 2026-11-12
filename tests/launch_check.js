@@ -18,7 +18,8 @@ app.on('exit', c => { console.error('The app quit during start-up (code ' + c + 
   }
   if (process.platform === 'win32') { // diagnostics: did WebView2 start, and did it make its profile?
     const { execSync } = require('child_process'), sh = c => { try { return execSync(c, { encoding: 'utf8' }); } catch (e) { return String(e.message); } };
-    console.error(sh('tasklist /FI "IMAGENAME eq msedgewebview2.exe"') + sh('tasklist /FI "PID eq ' + app.pid + '"'));
+    console.error(sh('tasklist /FI "IMAGENAME eq msedgewebview2.exe"') + sh('tasklist /FI "PID eq ' + app.pid + '"')
+      + sh('netstat -ano -p tcp | findstr LISTENING') + sh('reg query HKLM\\SOFTWARE\\Policies\\Microsoft\\Edge /s') + sh('reg query HKLM\\SOFTWARE\\Policies\\Microsoft\\Edge\\WebView2 /s'));
     for (const id of ['com.groundwork.habits', 'com.groundwork.habits.lite']) console.error(id + ': ' + sh('dir /s /b "' + path.join(process.env.LOCALAPPDATA, id) + '"').split(/\r?\n/).slice(0, 15).join(' | '));
   }
   console.error('The app did not render within 60 s. Pages: ' + JSON.stringify((await pages()).map(p => [p.type, p.url, p.title]))); app.removeAllListeners('exit'); stop(1);
