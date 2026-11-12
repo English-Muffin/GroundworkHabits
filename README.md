@@ -291,6 +291,20 @@ the app.
   </picture>
 </a>
 
+## Code signing policy
+
+Windows releases are signed through [SignPath.io](https://about.signpath.io/), with a certificate from the
+[SignPath Foundation](https://signpath.org/) (free code signing for open-source projects). Only builds made by
+this repository's [GitHub Actions workflow](.github/workflows/build.yml) from a release tag are signed, and
+every signing request is approved by hand.
+
+- Committers and reviewers: [English-Muffin](https://github.com/English-Muffin)
+- Approvers: [English-Muffin](https://github.com/English-Muffin)
+
+Privacy: the app sends nothing anywhere on its own. It connects to the internet only for things you switch
+on yourself: a calendar link you add, or the update check, which asks GitHub for the latest release. See
+[Your data](#your-data).
+
 ## License
 
 Groundwork Habits is free and open-source software under the [GNU Affero General Public License v3.0

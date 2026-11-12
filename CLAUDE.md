@@ -109,6 +109,9 @@ Windows ships on Tauri, not Electron: `tauri/` (Rust, Tauri 2) embeds `www/` in 
 - Data: WebView2 storage in `%LOCALAPPDATA%\<app ID>`; the uninstaller's erase removes it, `%APPDATA%\<app ID>` (Lite backups) and `%APPDATA%\<Name>`.
 - `python tests/tauri_app.py "<absolute path to exe>"` drives the real exe over WebView2's debug port (24 checks full, 13 Lite). It sets the app's data folders aside and restores them; it refuses to run if a `.test-bak` from an interrupted run is still there (that may be real data). Needs Rust and VS Build Tools (C++) locally; CI runners have both.
 
+## Code signing (Windows, SignPath)
+Release tags only, and only once the `SIGNPATH_API_TOKEN` / `SIGNPATH_ORGANIZATION_ID` secrets exist. Two passes in build.yml so every exe a user runs is signed: 1) the app exe plus the uninstaller (`UNINST_ONLY=<file> node tools/build_setup.js` writes just the uninstaller), 2) the setup rebuilt around the signed parts (`UNINST=<signed uninstaller>`), then signed itself; the signed app exe is also the portable download. SignPath project `GroundworkHabits`, policy `release-signing`, artifact configuration `windows-exe` (copy in `.signpath/artifact-configuration.xml`). README carries the signing policy SignPath Foundation requires. Never test the setup with `/S` on this PC without `/D` to a throwaway folder AND no real install: a second install moves the existing one.
+
 ## Feature switches
 `P.feat` (Settings > Features): streak freezes, show names in reminders (`remnames`), streaks on Today, weekly review, year heatmap, habit notes, missed X, Streaks tab, daily reminder (`P.remTime`, Notification API, only while the app runs). Read with `feat(key)`. Deletes push a restore function with `pushUndo()` (up to 20; each puts back only what was deleted) and show `toastUndo()`; Ctrl+Z undoes outside text fields.
 
