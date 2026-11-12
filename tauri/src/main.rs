@@ -117,6 +117,21 @@ fn show_main(app: AppHandle) {
     if let Some(w) = app.get_webview_window("main") { let _ = w.unminimize(); let _ = w.show(); let _ = w.set_focus(); }
 }
 
+// CI on macOS (no debugging port in Safari's engine): GROUNDWORK_SELFTEST=<file> makes the main window report what
+// it sees once the app has rendered, then the app quits. tests/launch_check.js reads the file
+const SELFTEST: &str = r#"(function st() {
+  if (!window.__TAURI_INTERNALS__ || !window.groundworkFS || !/\| Groundwork Habits/.test(document.title)) return setTimeout(st, 200);
+  const f = window.groundworkFS;
+  window.__TAURI_INTERNALS__.invoke('selftest', { report: JSON.stringify({ title: document.title, lite: document.documentElement.classList.contains('lite'), folder: typeof f.folder(), gw: !!f.fetchCal, sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller) }) });
+})();"#;
+#[tauri::command]
+fn selftest(app: AppHandle, report: String) -> Result<(), String> {
+    let path = std::env::var("GROUNDWORK_SELFTEST").map_err(|_| "off".to_string())?;
+    fs::write(path, report).map_err(|e| e.to_string())?;
+    app.exit(0);
+    Ok(())
+}
+
 // the page finished its last (possibly encrypted) save: quit, taking the widget and any pop-ups with it
 #[tauri::command]
 fn flushed(app: AppHandle) {
@@ -173,12 +188,14 @@ fn main() {
             let name = app.config().product_name.clone().unwrap_or_else(|| "Groundwork Habits".into());
             WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
                 .title(name).inner_size(1320.0, 860.0).min_inner_size(420.0, 600.0)
-                .initialization_script(BRIDGE).additional_browser_args(&web_args()).build()?;
+                .initialization_script(&if std::env::var("GROUNDWORK_SELFTEST").is_ok() { format!("{BRIDGE}
+{SELFTEST}") } else { BRIDGE.to_string() })
+                .additional_browser_args(&web_args()).build()?;
             Ok(())
         })
         .invoke_handler({
-            #[cfg(feature = "full")] { tauri::generate_handler![backup, open_backups, open_external, notify, widget, ask, show_main, flushed, choose, fetch_cal, update_check, update_install] }
-            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, open_backups, open_external, notify, widget, ask, show_main, flushed] }
+            #[cfg(feature = "full")] { tauri::generate_handler![backup, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, choose, fetch_cal, update_check, update_install] }
+            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest] }
         })
         .on_window_event(|window, event| {
             // closing the main window: let the page finish saving first (at most 3 s), like the Electron app

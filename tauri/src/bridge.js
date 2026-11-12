@@ -18,7 +18,9 @@
   };
   // the full app (built with --features full) answers on a local "gw" address with its data folder; Lite has none.
   // Synchronous on purpose: the page reads and writes the folder file synchronously, like the Electron preload
-  const gw = (method, path, body) => { try { const x = new XMLHttpRequest(); x.open(method, 'http://gw.localhost' + path, false); x.send(body === undefined ? null : body); return x; } catch (e) { return null; } };
+  // Windows (WebView2) serves custom schemes as http://<scheme>.localhost, macOS (WebKit) as <scheme>://localhost
+  const GW = location.protocol === 'tauri:' ? 'gw://localhost' : 'http://gw.localhost';
+  const gw = (method, path, body) => { try { const x = new XMLHttpRequest(); x.open(method, GW + path, false); x.send(body === undefined ? null : body); return x; } catch (e) { return null; } };
   const probe = gw('GET', '/folder');
   if (probe && probe.status === 200) {
     Object.assign(window.groundworkFS, {
