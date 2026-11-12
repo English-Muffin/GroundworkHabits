@@ -230,7 +230,7 @@ before it's used.
 | Lite edition | `node tools/edition.js lite` on a copy of the repository, then the same commands |
 | macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac, with Rust) |
 | Android `.apk` | `npm install && npx cap add android && npx cap sync android`, then build in Android Studio |
-| Everything, in the cloud | Push a tag like `v1.7.5`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
+| Everything, in the cloud | Push a tag like `v1.7.6`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
 
 ### Tests
 

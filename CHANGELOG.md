@@ -2,6 +2,13 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
+## 1.7.6
+
+- The desktop apps run only on Tauri now: the old Electron version is gone. Installs of 1.7.3 or older still
+  move their data over on first start.
+- Windows releases are ready for code signing through the SignPath Foundation.
+- Ready for F-Droid: store texts, icon and screenshots, and a build from source.
+
 ## 1.7.5
 
 - **Check for updates installs the update:** on the installed Windows app it downloads the new version,

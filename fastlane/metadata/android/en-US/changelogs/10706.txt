@@ -1,0 +1,2 @@
+- Smaller and simpler builds: the old desktop shell is gone.
+- First version on F-Droid.
