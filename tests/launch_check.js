@@ -1,6 +1,6 @@
 // CI check that a packaged desktop build starts and renders: node tests/launch_check.js <path to the app executable> [extra args]
 // (CI also runs it with --disable-gpu: the app ships without Chromium's software Vulkan, so it must render without a GPU)
-// Works for Electron and for the Tauri Lite build (WebView2 gets the debugging port from its environment).
+// Windows: the Tauri app opens WebView2's debugging port when GROUNDWORK_DEBUG_PORT is set.
 // The page sets its title ("Habits | Groundwork Habits") only after the app script has run, so seeing it proves the build works.
 const { spawn } = require('child_process'), http = require('http'), path = require('path'), os = require('os'), fs = require('fs');
 const exe = process.argv[2];

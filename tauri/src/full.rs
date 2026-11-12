@@ -1,4 +1,4 @@
-// The full app's desktop features, ported from electron/main.js (same rules and wording): the data folder,
+// The full app's desktop features, first written for the Electron app (same rules and wording): the data folder,
 // the calendar feed, updates, and moving data over from the Electron app on the first start.
 use crate::net::{self, Got};
 use std::{fs, path::{Path, PathBuf}, time::Duration};

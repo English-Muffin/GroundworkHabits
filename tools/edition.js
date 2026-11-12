@@ -13,10 +13,9 @@ function edit(file, from, to) {
   fs.writeFileSync(f, s.replace(from, to));
 }
 edit('www/js/core.js', 'const LITE=false;', 'const LITE=true;');
-edit('package.json', '"name": "groundwork-habits",', '"name": "groundwork-habits-lite",'); // Electron's app.getName(): main.js picks the Lite profile from it
+edit('package.json', '"name": "groundwork-habits",', '"name": "groundwork-habits-lite",'); // npm's package name
 edit('package.json', '"appId": "com.groundwork.habits",', `"appId": "${ID}",`);
 edit('package.json', '"productName": "Groundwork Habits",', `"productName": "${NAME}",`);
-edit('package.json', '"artifactName": "Groundwork-Habits-${version}', '"artifactName": "Groundwork-Habits-Lite-${version}');
 edit('capacitor.config.json', '"appId": "com.groundwork.habits",', `"appId": "${ID}",`);
 edit('capacitor.config.json', '"appName": "Groundwork Habits",', `"appName": "${NAME}",`);
 edit('www/manifest.webmanifest', '"name": "Groundwork Habits",', `"name": "${NAME}",`);

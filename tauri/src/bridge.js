@@ -1,5 +1,5 @@
-// Runs in every Lite window before the app's scripts: gives the app the same window.groundworkFS bridge the Electron
-// preload offers (electron/preload.js), backed by the commands in main.rs. Lite has no data folder, calendar or
+// Runs in every window before the app's scripts: gives the app its desktop bridge, window.groundworkFS (it began as
+// the Electron app's preload), backed by the commands in main.rs. Lite has no data folder, calendar or
 // updates, so those calls answer "none". Web notifications and new-window links are routed to the desktop too.
 (function () {
   if (window.groundworkFS) return;

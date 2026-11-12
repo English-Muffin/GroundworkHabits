@@ -1,4 +1,4 @@
-// Network rules for the full app (calendar feed, updates), the same as electron/main.js:
+// Network rules for the full app (calendar feed, updates), the same as the Electron app had:
 // https only on every redirect hop, size and time caps, no cookies, and only public addresses. The address check runs
 // in the DNS resolver itself, so the address that was checked is the one connected to (no rebinding window).
 use std::{net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr}, sync::Arc, time::Duration};

@@ -2,73 +2,29 @@
   "name": "groundwork-habits",
   "version": "1.7.5",
   "description": "Habits, tasks and goals in one calm place.",
-  "main": "electron/main.js",
   "author": "English-Muffin",
   "license": "AGPL-3.0-or-later",
   "scripts": {
-    "start": "electron .",
     "dist:win": "node tools/build_tauri_win.js",
     "android:add": "cap add android",
     "android:sync": "cap sync android",
     "android:open": "cap open android",
     "dist:mac": "node tools/build_tauri_mac.js",
-    "dist:mac:electron": "electron-builder --mac zip --universal --publish never",
     "lint": "eslint www/js",
     "test:unit": "node tests/unit.js",
-    "dist:win:electron": "electron-builder --win dir --publish never && node tools/build_portable.js && node tools/build_setup.js"
+    "start": "python -m http.server 8765 --directory www"
   },
   "devDependencies": {
     "@capacitor/android": "^6.1.2",
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
-    "electron": "^33.0.0",
-    "electron-builder": "^25.1.8",
     "eslint": "^9.39.5",
     "globals": "^15.15.0"
   },
   "build": {
     "appId": "com.groundwork.habits",
-    "productName": "Groundwork Habits",
-    "files": [
-      "electron/**",
-      "www/**",
-      "assets/icon.png",
-      "!node_modules/**"
-    ],
-    "directories": {
-      "output": "dist"
-    },
-    "win": {
-      "icon": "assets/icon.ico",
-      "target": [
-        {
-          "target": "dir",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
-    },
-    "artifactName": "Groundwork-Habits-${version}-${os}-${arch}.${ext}",
-    "mac": {
-      "icon": "assets/icon.png",
-      "category": "public.app-category.productivity",
-      "identity": null,
-      "target": [
-        {
-          "target": "zip",
-          "arch": [
-            "universal"
-          ]
-        }
-      ]
-    },
-    "compression": "normal",
-    "electronLanguages": [
-      "en-US"
-    ],
-    "afterPack": "tools/after_pack.js"
+    "productName": "Groundwork Habits"
   },
   "dependencies": {
     "@capacitor/local-notifications": "^6.1.3",

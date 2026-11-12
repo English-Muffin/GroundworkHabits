@@ -119,7 +119,7 @@ async function updInstall(){const u=updCheck.info;if(!u)return;if(!u.auto){windo
 setTimeout(()=>updCheck(false),8000);
 setInterval(()=>{refreshToday();checkReminder();checkHabitReminders();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
-if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/.test(navigator.userAgent)&&!window.__TAURI_INTERNALS__){ // desktop and Android ship their files: no offline cache that could serve an old version
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!window.__TAURI_INTERNALS__){ // desktop and Android ship their files: no offline cache that could serve an old version
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 if(DEMO){document.body.insertAdjacentHTML('afterbegin','<div class="demobar" role="note"><span>'+tx('Demo with example data. Changes stay in this browser.')+'</span><button class="link" data-act="demoreset">'+tx('Reset')+'</button><a class="link" href="'+RELEASES+'" target="_blank" rel="noopener">'+tx('Get the app')+'</a></div>');document.documentElement.classList.add('isdemo')}

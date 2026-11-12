@@ -1,6 +1,6 @@
 // Builds the Windows installer in the app's own look: compiles tools/portable/Setup.cs twice with the C# compiler that ships
 // with Windows (.NET Framework 4.x): the uninstaller first, then the setup that carries it and the zipped app
-// (dist/win-unpacked, made by `electron-builder --win dir`). Output: dist/Groundwork-Habits-<version>-Windows-setup.exe
+// (APP_DIR, made by tools/build_tauri_win.js). Output: dist/Groundwork-Habits-<version>-Windows-setup.exe
 // Code signing (CI) runs in two passes so every exe a user runs is signed: UNINST_ONLY=<file> writes just the uninstaller
 // there (signed with the app exe), then UNINST=<signed uninstaller> builds the setup around it (signed last).
 const { execFileSync } = require('child_process'), fs = require('fs'), path = require('path'), os = require('os');

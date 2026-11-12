@@ -14,11 +14,10 @@ class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 
 async def main():
-    # the desktop app finds its Lite profile by package name: edition.js and main.js must agree on it
-    # (a mismatch made Lite share the full app's profile folder once)
-    main = (ROOT / 'electron' / 'main.js').read_text(encoding='utf-8'); ed = (ROOT / 'tools' / 'edition.js').read_text(encoding='utf-8')
-    check('desktop: Lite profile name matches the name edition.js gives the package',
-          "app.getName() === 'groundwork-habits-lite'" in main and '"name": "groundwork-habits-lite",' in ed)
+    # the desktop app keeps its data under its app ID: Lite must get its own, or it would share the full app's data
+    ed = (ROOT / 'tools' / 'edition.js').read_text(encoding='utf-8')
+    check('desktop: edition.js gives Lite its own app ID in tauri.conf.json',
+          '"identifier": "com.groundwork.habits",' in ed and "ID = 'com.groundwork.habits.lite'" in ed)
     tmp = pathlib.Path(tempfile.mkdtemp()) / 'www'
     shutil.copytree(ROOT / 'www', tmp)
     core = tmp / 'js' / 'core.js'; s = core.read_text(encoding='utf-8')
