@@ -7,6 +7,14 @@ android {
         versionName pkg.version
         versionCode v[0] * 10000 + v[1] * 100 + v[2]
     }
+    // smaller release APK: R8 removes unused code and resources (keep rules in native/proguard-groundwork.pro)
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), rootProject.file('../native/proguard-groundwork.pro')
+        }
+    }
     if (System.getenv('GROUNDWORK_KEYSTORE')) {
         signingConfigs {
             release {

@@ -120,7 +120,7 @@ ipcMain.handle('upd:check', async () => {
     const rel = JSON.parse((await getUrl('https://api.github.com/repos/' + REPO + '/releases/latest', 2e6, 'application/vnd.github+json')).toString('utf8'));
     const v = String(rel.tag_name || '').replace(/^v/, '');
     if (!/^\d+\.\d+\.\d+$/.test(v) || !newer(v, app.getVersion())) return { ok: true, update: false };
-    const setup = (rel.assets || []).find(a => /-Windows-setup\.exe$/.test(a.name)), sum = (rel.assets || []).find(a => setup && a.name === setup.name + '.sha256');
+    const setup = (rel.assets || []).find(a => /^Groundwork-Habits-\d[\w.-]*-Windows-setup\.exe$/.test(a.name)), sum = (rel.assets || []).find(a => setup && a.name === setup.name + '.sha256');
     const ours = x => { try { const u = new URL(x); return u.protocol === 'https:' && u.hostname === 'github.com' && u.pathname.startsWith('/' + REPO + '/releases/download/'); } catch (e) { return false; } };
     // the download addresses stay here in the main process; the page can only say "install"
     pending = installed() && setup && sum && ours(setup.browser_download_url) && ours(sum.browser_download_url) ? { version: v, setup: setup.browser_download_url, sum: sum.browser_download_url } : null;
@@ -201,16 +201,17 @@ That save was last changed ${st.mtime.toLocaleString()} and has ${(d.habits || [
 
 // the profile (saved data, settings) moved to a folder with the new name: copy the old one across once, and keep it as a fallback
 const appData = process.env.GROUNDWORK_APPDATA || app.getPath('appData'); // tests point this at a throwaway folder
-const newProfile = path.join(appData, 'Groundwork Habits'), oldProfile = path.join(appData, 'Daybook');
+const LITE_APP = app.getName() === 'groundwork-habits-lite'; // package.json "name", set by tools/edition.js: Lite gets its own profile and app ID, and nothing to migrate
+const newProfile = path.join(appData, LITE_APP ? 'Groundwork Habits Lite' : 'Groundwork Habits'), oldProfile = path.join(appData, 'Daybook');
 const moved = path.join(newProfile, 'renamed.txt');
-if (!process.env.GROUNDWORK_USER_DATA && fs.existsSync(oldProfile) && !fs.existsSync(moved)) try {
+if (!LITE_APP && !process.env.GROUNDWORK_USER_DATA && fs.existsSync(oldProfile) && !fs.existsSync(moved)) try {
   if (fs.existsSync(newProfile)) fs.renameSync(newProfile, newProfile + '-before-rename-' + Date.now()); // a stray folder (e.g. from a test) is set aside, never deleted
   fs.cpSync(oldProfile, newProfile, { recursive: true });
   fs.writeFileSync(moved, 'Copied from ' + oldProfile + ' on ' + new Date().toISOString() + '.');
   fs.rmSync(oldProfile, { recursive: true, force: true }); // only after a complete copy: no second (possibly unencrypted) copy of the data stays behind
 } catch (e) {}
 app.setPath('userData', newProfile);
-app.setAppUserModelId('com.groundwork.habits'); // matches the installer's Start menu shortcut, so Windows shows the app's notifications
+app.setAppUserModelId(LITE_APP ? 'com.groundwork.habits.lite' : 'com.groundwork.habits'); // matches the installer's Start menu shortcut, so Windows shows the app's notifications
 if (process.env.GROUNDWORK_USER_DATA) app.setPath('userData', process.env.GROUNDWORK_USER_DATA); // tests use a throwaway profile
 if (!app.requestSingleInstanceLock()) app.quit();
 
