@@ -16,5 +16,5 @@ app.on('exit', c => { console.error('The app quit during start-up (code ' + c + 
     const t = (await pages()).map(p => p.title);
     if (t.some(x => / \| Groundwork Habits$/.test(x))) { console.log('Launched and rendered: ' + t.join(', ')); app.removeAllListeners('exit'); stop(0); }
   }
-  console.error('The app did not render within 60 s'); app.removeAllListeners('exit'); stop(1);
+  console.error('The app did not render within 60 s. Pages: ' + JSON.stringify((await pages()).map(p => [p.type, p.url, p.title]))); app.removeAllListeners('exit'); stop(1);
 })();
