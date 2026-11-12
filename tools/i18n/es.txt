@@ -898,3 +898,4 @@ P88|Aún no hay objetivos en $1
 810|Guardando solo en este navegador
 811|Reconectar
 812|Vuelve a conectar tu carpeta de datos
+813|Este navegador no puede sincronizar con una carpeta. Usa Exportar e Importar para mover tus datos

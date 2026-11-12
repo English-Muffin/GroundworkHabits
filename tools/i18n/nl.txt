@@ -898,3 +898,4 @@ P88|Nog geen doelen in $1
 810|Alleen opslaan in deze browser
 811|Opnieuw verbinden
 812|Verbind je gegevensmap opnieuw
+813|Deze browser kan niet via een map synchroniseren. Gebruik Exporteren en Importeren om je gegevens te verplaatsen

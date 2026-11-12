@@ -898,3 +898,4 @@ P88|Ancora nessun obiettivo in $1
 810|Salvataggio solo in questo browser
 811|Riconnetti
 812|Riconnetti la cartella dei dati
+813|Questo browser non può sincronizzare tramite una cartella. Usa Esporta e Importa per spostare i tuoi dati

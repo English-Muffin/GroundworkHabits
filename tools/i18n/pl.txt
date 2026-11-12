@@ -898,3 +898,4 @@ P88|Brak celów w obszarze $1
 810|Zapisywanie tylko w tej przeglądarce
 811|Połącz ponownie
 812|Połącz ponownie folder danych
+813|Ta przeglądarka nie synchronizuje przez folder. Użyj Eksportu i Importu, aby przenieść dane

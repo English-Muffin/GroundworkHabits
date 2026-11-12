@@ -898,3 +898,4 @@ P88|Aucun objectif en $1 pour l’instant
 810|Enregistrement dans ce navigateur uniquement
 811|Reconnecter
 812|Reconnectez votre dossier de données
+813|Ce navigateur ne peut pas synchroniser via un dossier. Utilisez Exporter et Importer pour déplacer vos données

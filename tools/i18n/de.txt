@@ -898,3 +898,4 @@ P88|Noch keine Ziele in $1
 810|Speichert nur in diesem Browser
 811|Neu verbinden
 812|Verbinde deinen Datenordner neu
+813|Dieser Browser kann nicht über einen Ordner synchronisieren. Nutze Exportieren und Importieren, um deine Daten zu übertragen
