@@ -1,0 +1,4 @@
+- Arabic and Hebrew, with right-to-left layout.
+- Screen reader names, keyboard reach and WCAG AA contrast everywhere.
+- Works at the largest font sizes; reduce motion respected.
+- About twice as fast with years of data.

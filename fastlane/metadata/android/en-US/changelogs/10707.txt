@@ -1,0 +1,6 @@
+- Arabic and Hebrew, with right-to-left layout.
+- Check for updates downloads and installs the new version.
+- The data folder keeps the newest copy.
+- Screen reader names, keyboard reach and WCAG AA contrast everywhere.
+- Works at the largest font sizes; reduce motion respected.
+- About twice as fast with years of data.

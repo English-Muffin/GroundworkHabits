@@ -2,6 +2,20 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
+## 1.7.7
+
+- **Arabic and Hebrew:** two new languages, with the whole layout mirrored right to left.
+- **Web sync through a folder:** in Chrome and Edge, pick a folder (for example a synced Google Drive or
+  OneDrive folder) and the web app keeps your data there. Other browsers point you to Export and Import.
+- **Android updates itself:** Check for updates downloads the new APK, checks it and opens the installer.
+  The data folder on Android now keeps the newest copy instead of always taking the folder's.
+- **Accessibility:** text meets WCAG AA contrast in dark and light, every control has a screen reader name
+  and can be reached with Tab, dialogs keep focus, and TalkBack reads icon-only toggles.
+- **Large text and high contrast:** cards wrap and shrink at Android's biggest font sizes; in Windows high
+  contrast the current tab, selected buttons and charts stay visible. Reduce motion stops gliding scrolls.
+- **Faster with years of data:** taps take about half as long.
+- Calendar repeat rules understand BYSETPOS and BYMONTH, and a crafted feed can no longer stall the app.
+
 ## 1.7.6
 
 - The desktop apps run only on Tauri now: the old Electron version is gone. Installs of 1.7.3 or older still

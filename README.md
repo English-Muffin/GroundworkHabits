@@ -95,8 +95,11 @@ is the first proper one. What changed in the earlier versions is still in the [c
 
 - Dark, AMOLED and light themes and any accent colour: moss green by default, presets, or your own from
   the built-in picker (hue, saturation, lightness or a hex code). Habits and life areas get the same picker.
-- **11 languages:** English, Portuguese, Spanish, French, German, Italian, Dutch, Polish, Russian,
-  Chinese and Japanese. Groundwork Habits follows your device, or pick one in Settings.
+- **13 languages:** English, Portuguese, Spanish, French, German, Italian, Dutch, Polish, Russian,
+  Chinese, Japanese, and Arabic and Hebrew right to left. Groundwork Habits follows your device, or pick
+  one in Settings.
+- Made for everyone: screen reader names on every control, full keyboard use, WCAG AA contrast, the
+  largest font sizes, Windows high contrast and reduce motion.
 - Templates for habits, task lists and goals, and import from Loop, Habitica or any CSV.
 - Drag tasks, habits, goals and cards into any order. Quick add (+) from anywhere, search across
   everything, and undo for every change (Ctrl+Z, Ctrl+Y on desktop).
@@ -230,7 +233,7 @@ before it's used.
 | Lite edition | `node tools/edition.js lite` on a copy of the repository, then the same commands |
 | macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac, with Rust) |
 | Android `.apk` | `npm install && npx cap add android && npx cap sync android`, then build in Android Studio |
-| Everything, in the cloud | Push a tag like `v1.7.6`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
+| Everything, in the cloud | Push a tag like `v1.7.7`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
 
 ### Tests
 
