@@ -567,6 +567,15 @@ async def reducedMotion(b):
     check('reduce motion: no animations or transitions on any screen', not moving, moving[:5])
     await ctx.close()
 
+async def highContrast(b):
+    # Windows high contrast replaces colours: the current tab stays marked and data bars keep their colour
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}, forced_colors='active'); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
+    await pg.goto(URL); await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(200)
+    await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(300)
+    r = await pg.evaluate("()=>{const bg=e=>e&&getComputedStyle(e).backgroundColor;const on=bg(document.querySelector('.pnav a.on')),off=bg(document.querySelector('.pnav a:not(.on)')),b=document.querySelector('.tr i'),bar=b&&getComputedStyle(b).backgroundImage!=='none'?'image':bg(b);return [on,off,bar]}")
+    check('high contrast: current tab is marked and goal bars keep their colour', r[0] != r[1] and r[2] not in (None, 'rgba(0, 0, 0, 0)', r[1]), r)
+    await ctx.close()
+
 async def dialogFocus(b):
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
     await pg.goto(URL); await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(150)
@@ -871,7 +880,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await unnamedControls(b); await reducedMotion(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await unnamedControls(b); await reducedMotion(b); await highContrast(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")
