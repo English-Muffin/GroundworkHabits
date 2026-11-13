@@ -126,10 +126,12 @@ function pushWidget(){if(!NB||!NB.widget||WIDGET||encWait)return;clearTimeout(pu
     items:P.lock?[]:vis(((S.tasks[k]||{}).items)||[]).slice(0,6).map(t=>({h:t.id,k,name:t.text,done:!!t.done}))}}).catch(()=>{})},600)}
 /* undo history for every change: the saved state before each change (a burst within 1.5 s, like typing, is one step), up to 30, plus redo */
 let hist=[],redos=[],histJ=null,histT=0;
-const histOf=()=>JSON.stringify(Object.assign({},S,{at:0})); // the save time is not a change
-function snap(){const j=histOf();if(histJ!==null&&j!==histJ){if(Date.now()-histT>1500){hist.push(histJ);if(hist.length>30)hist.shift()}histT=Date.now();redos=[]}histJ=j}
+const histOf=()=>{const r=Object.assign({},S);delete r.at;return JSON.stringify(r)}; // the save time is not a change
+function snap(j){j=j||histOf();if(histJ!==null&&j!==histJ){if(Date.now()-histT>1500){hist.push(histJ);if(hist.length>30)hist.shift()}histT=Date.now();redos=[]}histJ=j}
 function histStep(back){const from=back?hist:redos,to=back?redos:hist;if(!from.length||encWait)return false;to.push(JSON.stringify(S));S=clean(JSON.parse(from.pop()));histJ=histOf();histT=0;save();return true}
-function save(){if(encWait)return;S.at=Date.now();snap();andWrite();pushWidget();saveRaw(JSON.stringify(S),putData);clearTimeout(save.r);save.r=setTimeout(()=>syncReminders(),1500);if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
+// one JSON pass per save: at is re-added as the last key, so the history copy (no at) plus at is the full state
+function save(){if(encWait)return;delete S.at;const j=JSON.stringify(S),at=S.at=Date.now();snap(j);andWrite();pushWidget();
+  saveRaw(j.length>2?j.slice(0,-1)+',"at":'+at+'}':'{"at":'+at+'}',putData);clearTimeout(save.r);save.r=setTimeout(()=>syncReminders(),1500);if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
 /* desktop only: mirror data to <folder>/groundwork.json (a Drive/OneDrive/Dropbox folder gives cloud sync) */
 const DFS=window.groundworkFS||null,NB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.GroundworkNative||null,calFetch=LITE?null:DFS&&DFS.fetchCal?DFS.fetchCal:NB?(u=>NB.fetchCal({url:u})):null;let dataDir=DFS?DFS.folder():'',fileText=null,fileJson=null;
 // updates: desktop through the Tauri bridge, Android through GroundworkNative (full app only)

@@ -46,14 +46,20 @@ const weekDone=h=>{const l=L(h),s=wkStart(TODAY);let n=0;for(let i=0;i<7;i++){co
 /* streak freezes (every-day habits): every 7 days done in a row earns a freeze (up to 3); a missed day uses one
    and the streak carries on. Worked out from the history, so nothing extra is stored. */
 let fzCache=new Map();
+/* every day key (and weekday) from the earliest day asked for to today, built once and shared by all habits:
+   replaying years of history per habit with Date objects made each tap slow */
+let dayL={end:'',keys:[],dows:[]};
+function daysFrom(first){const end=dk(TODAY);if(dayL.end!==end)dayL={end,keys:[],dows:[]};
+  if(first<=end&&(!dayL.keys.length||dayL.keys[0]>first)){const keys=[],dows=[];for(let d=new Date(first+'T00:00'),k=dk(d);k<=end;d=addDays(d,1),k=dk(d)){keys.push(k);dows.push(d.getDay())}dayL.keys=keys;dayL.dows=dows}
+  const i=first>end?dayL.keys.length:dayL.keys.indexOf(first);return {keys:dayL.keys,dows:dayL.dows,i:i<0?dayL.keys.length:i}}
 function freezeOf(h){
   if(fzCache.has(h.id))return fzCache.get(h.id);
   const l=L(h),keys=Object.keys(l).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)).sort(),res={tokens:0,frozen:new Set(),streak:0,best:0};
   const fs=h.fz||{every:7,max:3};
-  if(keys.length&&(h.per||7)===7&&feat('freeze')&&!fs.off){let d=new Date(keys[0]+'T00:00'),run=0;const end=dk(TODAY);
-    for(let k=dk(d);k<=end;d=addDays(d,1),k=dk(d)){
+  if(keys.length&&(h.per||7)===7&&feat('freeze')&&!fs.off){let run=0;const end=dk(TODAY),D=daysFrom(keys[0]),rs=h.rest&&h.rest.length?h.rest:null;
+    for(let i=D.i;i<D.keys.length;i++){const k=D.keys[i];
       if(l[k]){res.streak++;run++;if(run%fs.every===0&&res.tokens<fs.max){res.tokens++}}
-      else if(k===end||isRest(h,k)){}
+      else if(k===end||(rs&&rs.includes(D.dows[i]))){}
       else if(res.streak&&res.tokens){res.tokens--;res.frozen.add(k)}
       else{res.streak=0;run=0}
       res.best=Math.max(res.best,res.streak)}}

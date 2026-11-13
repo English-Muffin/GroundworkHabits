@@ -69,6 +69,14 @@ test('freezes: 7 days in a row earn one, and one missed day keeps the streak', (
   const h = habit(days('2026-03-01', 18, ['2026-03-12'])); const f = T.freezeOf(h);
   assert.ok(f.frozen.has('2026-03-12'), 'the missed day is frozen'); assert.strictEqual(f.streak, 17);
 });
+test('freezes: a rest day is skipped, not frozen', () => {
+  const h = habit(days('2026-03-01', 18, ['2026-03-12'])); h.rest = [new Date('2026-03-12T00:00').getDay()]; const f = T.freezeOf(h);
+  assert.ok(!f.frozen.has('2026-03-12'), 'rest days need no freeze'); assert.strictEqual(f.streak, 17);
+});
+test('save writes the whole state with its save time in one pass', () => {
+  habit({}); sandbox.save(); const saved = JSON.parse(store.get('groundwork-v2'));
+  assert.ok(saved.at > 0); assert.strictEqual(saved.habits[0].name, T.getS().habits[0].name); assert.deepStrictEqual(Object.keys(saved).sort(), Object.keys(T.getS()).sort());
+});
 test('never miss twice: marked after one missed day, not after a done day', () => {
   const h = habit(days('2026-03-01', 16)); assert.strictEqual(T.missTwice(h), true); // done up to the 16th, missed the 17th
   const h2 = habit(days('2026-03-01', 17)); assert.strictEqual(T.missTwice(h2), false);
