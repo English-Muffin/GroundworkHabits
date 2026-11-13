@@ -1,5 +1,6 @@
 """Stress test: big data, every view, 6 sizes x 3 themes, layout checks, random clicking, edge dates.
-Run: python tests/stress.py <out-folder>   (LAYOUT_ONLY=1 for the layout pass only). Writes report.txt and screenshots."""
+Run: python tests/stress.py <out-folder>   (LAYOUT_ONLY=1 for the layout pass only; TEXT_SCALE=2 runs it on phones with
+Android's font size setting simulated: the WebView zooms all text, px sizes too). Writes report.txt and screenshots."""
 import asyncio, subprocess, sys, time, json, random, os
 from playwright.async_api import async_playwright
 OUT = sys.argv[1]; os.makedirs(OUT, exist_ok=True)
@@ -50,6 +51,9 @@ LAYOUT = r"""(()=>{const out=[],W=document.documentElement.clientWidth;
      if(w>3&&h>3)out.push('overlap in '+p.tagName+'.'+(typeof p.className==='string'?p.className:'')+': '+kids[i][0].className+' / '+kids[j][0].className)}});
  return [...new Set(out)].slice(0,25)})()"""
 
+# Android text zoom: every text size times s (each element once, from its own original size)
+SCALE = r"""s=>{const all=[...document.querySelectorAll('body *')];const z=all.map(e=>parseFloat(getComputedStyle(e).fontSize));all.forEach((e,i)=>{if(!e.dataset.fs){e.dataset.fs=1;e.style.fontSize=z[i]*s+'px'}})}"""
+
 def dump(findings):
     rep = sorted(((k, sorted(v)) for k, v in findings.items()), key=lambda x: -len(x[1]))
     NL = chr(10)
@@ -62,8 +66,9 @@ async def run():
     async with async_playwright() as p:
         b = await p.chromium.launch()
         # 1. layout across sizes and themes with heavy data
-        for w, h in [(320, 640), (390, 844), (768, 1024), (1024, 768), (1280, 800), (1920, 1080)]:
-            for th, lang in [('dark', ''), ('light', ''), ('amoled', ''), ('dark', 'ar'), ('light', 'he')]:
+        TS = float(os.environ.get('TEXT_SCALE') or 0)
+        for w, h in [(320, 640), (390, 844), (768, 1024)] if TS else [(320, 640), (390, 844), (768, 1024), (1024, 768), (1280, 800), (1920, 1080)]:
+            for th, lang in [('dark', '')] if TS else [('dark', ''), ('light', ''), ('amoled', ''), ('dark', 'ar'), ('light', 'he')]:
                 ctx = await b.new_context(viewport={'width': w, 'height': h}, has_touch=w < 800, is_mobile=w < 800)
                 await ctx.add_init_script("localStorage.getItem('groundwork-tips')||localStorage.setItem('groundwork-tips','1')")
                 pg = await ctx.new_page(); errs = []
@@ -75,6 +80,7 @@ async def run():
                 assert await pg.evaluate("JSON.parse(localStorage.getItem('groundwork-v2')).habits.length") == 40
                 for v in VIEWS:
                     await pg.evaluate(f"location.hash='{v}'"); await pg.wait_for_timeout(300)
+                    if TS: await pg.evaluate(SCALE, TS)
                     note(f'{w}px {th}{lang} {v}', await pg.evaluate(LAYOUT))
                     if th == 'dark' and not lang: await pg.screenshot(path=f'{OUT}/{w}-{v}.png', full_page=False)
                 await pg.keyboard.press('Escape'); await pg.evaluate("s=>{const e=document.querySelector(s);e&&e.click()}", '[data-act=gear]'); await pg.evaluate("s=>{const e=document.querySelector(s);e&&e.click()}", '[data-act=featfold]'); await pg.wait_for_timeout(100)

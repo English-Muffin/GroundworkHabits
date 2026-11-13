@@ -61,6 +61,9 @@ Top-level names in any file are visible to the others, but load-time code only s
 Exports and weekly backups are encrypted too when a PIN is set; importing an `enc1:` file asks for that PIN (`impin` modal). Android fingerprint unlock (`Bio.java`) keeps the PIN encrypted by a biometric-bound Keystore key; `bioTry()` runs on the lock screen.
 With a PIN, `S` is saved as `enc1:<salt>:<base64>` (AES-GCM, key from PBKDF2 of the PIN, in memory only). Until the PIN is entered `encWait` is true and nothing may save, sync reminders or pull the calendar. Old hash-only PINs upgrade on unlock. Desktop waits for pending encrypted saves before closing (`app:flush`). Each window unlocks itself.
 
+## Large text, high contrast, speed
+Android's font size zooms px text too, so long words wrap (`body{overflow-wrap:anywhere}`) and grid/flex children that hold text need `min-width:0` / `minmax(0,1fr)`. Windows high contrast (`forced-colors`): data drawn as coloured blocks (bars, heatmap, dots) sets `forced-color-adjust:none`; the current tab and selected segment use `Highlight`. Speed: `daysFrom()` shares one list of day keys for every habit's freeze replay; `save()` makes one JSON pass (`at` re-added as the last key). Smoke checks names, Tab reach, reduce motion and high contrast.
+
 ## Streak freezes
 Per habit `h.fz` {off, every 3-30, max 1-5} (default every 7, max 3). `freezeOf(h)` replays an every-day habit's history: 7 done in a row earn a freeze (max 3), a missed day uses one. `curStreak` and `dailyStats` honour them; nothing extra is stored. Switch: `feat('freeze')`.
 
@@ -164,7 +167,7 @@ Dark is the designed theme. Settings > Customize adds accent colours (sets `--te
 ## Before you finish any change
 Commits: one per logical change with a specific subject (not one message for everything), so GitHub's file list says what changed where.
 After the tests pass, rebuild `dist/` so the user can test before a release: `npm run dist:win` (rename to `Groundwork Habits-X.Y.Z-test-Windows-portable.exe`) and the debug APK (`npx cap sync android`, `android/gradlew assembleDebug`, copy to `dist/Groundwork Habits-X.Y.Z-test-Android.apk`). Delete older test builds there.
-Run all five (and `python tests/device_android.py` before a release): `python tests/smoke.py` (starts with a JS syntax check), `python tests/visual.py`, `LAYOUT_ONLY=1 python tests/stress.py out/` (layout, overlap and covered-element checks at 6 sizes x 3 themes; must report 0 findings) and `python tests/tauri_app.py "<full path to the built exe>"` (close the installed app first). Editing big chunks with scripts has removed neighbouring code before: diff the list of `case '...'` actions and `modal.kind` branches against the previous version after large edits.
+Run all five (and `python tests/device_android.py` before a release): `python tests/smoke.py` (starts with a JS syntax check), `python tests/visual.py`, `LAYOUT_ONLY=1 python tests/stress.py out/` (layout, overlap and covered-element checks at 6 sizes x 3 themes plus Arabic and Hebrew; must report 0 findings; also `TEXT_SCALE=2`, Android's largest font size, on phone widths) and `python tests/tauri_app.py "<full path to the built exe>"` (close the installed app first). Editing big chunks with scripts has removed neighbouring code before: diff the list of `case '...'` actions and `modal.kind` branches against the previous version after large edits.
 Run `python tests/smoke.py`. When you fix a bug, add a check for it. Test at 390px wide as well as desktop.
 
 ## Ideas not done yet
