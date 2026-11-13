@@ -182,7 +182,7 @@ async def gif(b):
             await act(lambda: pg.evaluate("()=>{const i=document.getElementById('taskInput');if(i)i.value=''}"), 1)  # the focused field keeps its text
         await act(lambda: pg.keyboard.press('Escape'), 1)
     for day, _, done in week:
-        for _ in range(done): await click(f'.tlist[data-k="{day}"] [data-act=tdone][aria-pressed=false]', 2)
+        for _ in range(done): await click(f'.tlist[data-k="{day}"] [data-act=tdone][aria-checked=false]', 2)
     await hold(600); mark('Tasks week')
     # 3 Goals: the empty guide, then a goal that fills
     await go('goals')
