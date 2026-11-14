@@ -940,3 +940,11 @@ P91|Dettagli di $1
 849|Ordina abitudini
 P92|Salta oggi: $1
 P93|Mese migliore: $1
+850|Archivia abitudine
+851|Ripristina abitudine
+852|Abitudine archiviata
+853|Abitudine ripristinata
+854|Tocca un giorno per aprire la sua settimana.
+855|Hai finito? Archiviare la nasconde ovunque e ne conserva la cronologia. Ripristinala in fondo ad Abitudini.
+P94|$1 $2: attività $3, fatte $4
+P95|$1 $2: nessuna attività

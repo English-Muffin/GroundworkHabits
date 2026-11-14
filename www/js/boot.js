@@ -69,7 +69,7 @@ function alarmStart(){ // short beeps every 1.5 s for up to a minute
   beep();alarmT=setInterval(beep,1500)}
 function checkHabitReminders(){
   if(LN||WIDGET||encWait)return;const n=new Date(),now=n.getHours()*60+n.getMinutes(),d=dk(TODAY);
-  S.habits.forEach(h=>{if(!h.rem)return;const [hh,mm]=h.rem.t.split(':').map(Number),k=pKey(h,TODAY);
+  S.habits.forEach(h=>{if(!h.rem||h.arch)return;const [hh,mm]=h.rem.t.split(':').map(Number),k=pKey(h,TODAY);
     if(isRest(h,TODAY)||(P.remFired||{})[h.id]===d||now<hh*60+mm)return;P.remFired=Object.assign({},P.remFired,{[h.id]:d});applyPrefs();if(L(h)[k])return;
     if(DFS&&DFS.ask){DFS.ask(h.id,k);return}
     try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(h.name),{body:remBody('Have you done it '+perWord(h)+'?','habit'),tag:'groundwork-h-'+h.id,requireInteraction:true,silent:h.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
@@ -89,7 +89,7 @@ async function takeAnswers(){
 async function syncReminders(){
   if(!NB||WIDGET||encWait)return;
   try{
-    const hs=S.habits.filter(h=>h.rem),now0=new Date(),end=addDays(now0,14),ts=[];
+    const hs=S.habits.filter(h=>h.rem&&!h.arch),now0=new Date(),end=addDays(now0,14),ts=[];
     Object.keys(S.tasks).forEach(k=>{const d=new Date(k+'T00:00');if(d<sod(now0)||d>end)return;S.tasks[k].items.forEach(it=>{if(it.rem&&!it.done&&!it.hidden&&!it.cal)ts.push([k,it])})});
     if((hs.length||ts.length||S.goals.some(g=>g.due))&&LN){const pr=await LN.checkPermissions();if(pr.display!=='granted'&&(await LN.requestPermissions()).display!=='granted'){toast('Notifications are blocked. Allow them in Android settings');return}}
     // shortcut: schedules the next 14 days and reschedules on every change and app open; a phone left untouched for 2 weeks stops reminding

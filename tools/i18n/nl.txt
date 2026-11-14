@@ -940,3 +940,11 @@ P91|Details van $1
 849|Gewoontes sorteren
 P92|Vandaag overslaan: $1
 P93|Beste maand: $1
+850|Gewoonte archiveren
+851|Gewoonte terugzetten
+852|Gewoonte gearchiveerd
+853|Gewoonte teruggezet
+854|Tik op een dag om de week te openen.
+855|Klaar ermee? Archiveren verbergt hem overal en bewaart de geschiedenis. Zet hem terug onderaan Gewoontes.
+P94|$1 $2: taken $3, gedaan $4
+P95|$1 $2: geen taken

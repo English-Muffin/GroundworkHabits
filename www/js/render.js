@@ -58,7 +58,7 @@ function commitDrag(list,conts){
       day.items=ids(c).map(id=>all[id]).filter(Boolean).concat(day.items.filter(i=>!inDom.has(i.id)))}); // calendar/hidden items keep their place at the end
   }else if(list.startsWith('habits-')){
     const ty=list.slice(7),q=ids(conts[0]).map(findH).filter(Boolean);
-    if(q.length===byType(ty).length){let j=0;S.habits=S.habits.map(h=>h.type===ty?q[j++]:h)}
+    if(q.length===byType(ty).length){let j=0;S.habits=S.habits.map(h=>h.type===ty&&!h.arch?q[j++]:h)}
   }else if(list==='goals'||list==='quits'){
     const a=S[list],o=ids(conts[0]);S[list]=o.map(id=>a.find(x=>x.id===id)).filter(Boolean).concat(a.filter(x=>!o.includes(x.id)));
   }else if(list==='cards'){P.layout=Object.assign({},P.layout,{[view]:ids(conts[0])});applyPrefs();render();return}

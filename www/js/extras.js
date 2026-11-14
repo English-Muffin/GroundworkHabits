@@ -143,7 +143,7 @@ function toCsv(){
 const PREF_KEYS={theme:v=>['dark','light','amoled'].includes(v),accent:v=>/^#[0-9a-f]{6}$/i.test(v),
   feat:v=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(x=>typeof x==='boolean'),
   lang:v=>LANGS.some(l=>l[0]===v),tabNames:v=>typeof v==='boolean',remTime:v=>/^([01]\d|2[0-3]):[0-5]\d$/.test(v),
-  heatM:v=>[3,6,12].includes(v),bakEvery:v=>[0,1,7,30].includes(v),lockIdle:v=>[1,5,15,30].includes(v),focusMin:v=>Number.isInteger(v)&&v>0&&v<=240,
+  heatM:v=>[3,6,12].includes(v),hsort:v=>['streak','name','missed'].includes(v),bakEvery:v=>[0,1,7,30].includes(v),lockIdle:v=>[1,5,15,30].includes(v),focusMin:v=>Number.isInteger(v)&&v>0&&v<=240,
   layout:v=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(a=>Array.isArray(a)&&a.every(x=>typeof x==='string'&&x.length<40))};
 const backupPrefs=()=>Object.fromEntries(Object.keys(PREF_KEYS).filter(k=>P[k]!==undefined).map(k=>[k,P[k]]));
 // puts back the checked settings from a backup; anything unknown or malformed is skipped. True when the language changed

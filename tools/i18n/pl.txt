@@ -940,3 +940,11 @@ P91|Szczegóły: $1
 849|Sortuj nawyki
 P92|Pomiń dziś: $1
 P93|Najlepszy miesiąc: $1
+850|Archiwizuj nawyk
+851|Przywróć nawyk
+852|Nawyk zarchiwizowany
+853|Nawyk przywrócony
+854|Dotknij dnia, aby otworzyć jego tydzień.
+855|Koniec z nim? Archiwizacja ukrywa go wszędzie i zachowuje historię. Przywrócisz go na dole strony Nawyki.
+P94|$1 $2: zadania $3, zrobione $4
+P95|$1 $2: brak zadań

@@ -741,3 +741,9 @@ body{overflow-wrap:anywhere}.pnav a,.tsi,.g2area,.g2aw,.lrow .top>*{min-width:0}
 .hdh .hmon,.hdh .hgrid{grid-template-columns:repeat(var(--hw),minmax(0,1fr));gap:2px}.hdh .hcol{gap:2px}
 .hdm .tr{height:6px;background:var(--track);border-radius:99px;overflow:hidden}.hdm .tr i{display:block;height:100%;background:var(--teal);border-radius:99px}
 .skb.on{color:var(--teal)}
+.harch{margin-top:16px;padding:12px 16px}.harch summary{cursor:pointer;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:4px 0}
+.harow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);min-width:0}.harow .nm{flex:1;min-width:0;font-weight:600}.harow .tdot{width:8px;height:8px;border-radius:50%;background:var(--c);flex:none}
+.mch{display:flex;align-items:center;justify-content:space-between;gap:8px}.mch h2{margin:0;text-align:center;flex:1}
+.mcal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.mcw{text-align:center;font-size:10px;color:var(--g8a);font-weight:600}
+.mcd{aspect-ratio:1;border:1px solid var(--line);background:none;border-radius:10px;color:var(--text);font:inherit;display:grid;place-content:center;gap:1px;cursor:pointer;min-width:0;padding:0}
+.mcd b{font-size:13px}.mcd small{font-size:9px;color:var(--g8a)}.mcd.has{border-color:var(--teal)}.mcd.all{background:var(--teal);border-color:var(--teal);color:var(--on)}.mcd.all small{color:var(--on)}.mcd.now b{text-decoration:underline;text-underline-offset:3px}

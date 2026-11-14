@@ -16,7 +16,8 @@ const monthAmt=(h,y,m)=>Object.entries(S.amt[h.id]||{}).filter(([k])=>k.startsWi
 const cellIn=(h,k,on)=>isAmt(h)?(amtOf(h,k)?'<span class="cn'+(on?' on':'')+'">'+fmtN(amtOf(h,k))+'</span>':''):on?CHECK:((h.target||1)>1&&(S.count[h.id]||{})[k]?'<span class="cn">'+S.count[h.id][k]+'</span>':'');
 const noteTitle=(h,k)=>feat('notes')&&(S.notes[h.id]||{})[k]?' title="'+esc(S.notes[h.id][k])+'"':'';
 const tgt=(h,k)=>isAmt(h)?', '+fmtN(amtOf(h,k))+' '+esc(unitOf(h))+(h.goal?' of '+fmtN(h.goal):''):(h.target||1)>1?', '+((S.count[h.id]||{})[k]||(L(h)[k]?h.target:0))+' of '+h.target:'';
-const byType=t=>S.habits.filter(h=>h.type===t);
+// archived habits (h.arch = day archived) are left out everywhere except the Archived list and search
+const byType=t=>S.habits.filter(h=>h.type===t&&!h.arch);
 const isCurM=(y,m)=>y===TODAY.getFullYear()&&m===TODAY.getMonth();
 const isFutM=(y,m)=>new Date(y,m,1)>TODAY;
 const dkey=(y,m,d)=>y+'-'+p2(m+1)+'-'+p2(d);
@@ -109,10 +110,13 @@ function sortH(hs){const k=P.hsort,y=TODAY.getFullYear(),m=TODAY.getMonth();if(!
   const str=h=>h.type==='daily'?curStreak(h):h.type==='weekly'?weeklyStats(h,y,m).cur:Object.keys(L(h)).filter(x=>/^\d{4}-\d{2}$/.test(x)).length;
   const v=k==='streak'?str:k==='missed'?miss:null;
   return hs.slice().sort((a,b)=>v?v(b)-v(a)||a.name.localeCompare(b.name,LANG):a.name.localeCompare(b.name,LANG))}
+let archOpen=false;
 function vHabits(){
   let out=summary();
   out+='<div class="tabs"><div class="seg" role="tablist">'+['daily','weekly','monthly'].map(t=>'<button role="tab" aria-selected="'+(tab===t)+'" class="'+(tab===t?'on':'')+'" data-act="tab" data-v="'+t+'">'+t+'</button>').join('')+'</div><span class="tabbt"><select class="mini-sel hsort" id="hSort" aria-label="Sort habits">'+HSORTS.map(x=>'<option value="'+x[0]+'"'+((P.hsort||'')===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select><button class="btn ghost" data-act="tpl" data-v="habits">Templates</button><button class="btn" data-act="newhabit">+ New Habit</button></span></div>';
   if(tab==='daily')out+=dailyGrid();else if(tab==='weekly')out+=weeklyList();else out+=monthlyList();
+  const ar=S.habits.filter(h=>h.arch);
+  if(ar.length)out+='<details class="card harch"'+(archOpen?' open':'')+'><summary data-act="archtog">Archived ('+ar.length+')</summary>'+ar.map(h=>'<div class="harow" style="--c:'+h.color+'"><span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'">'+esc(h.name)+'</button><span class="sub" style="margin:0">'+h.type+'</span><button class="btn ghost sbtn" data-act="harch" data-h="'+h.id+'">Restore</button></div>').join('')+'</details>';
   return out;
 }
 function dailyGrid(){

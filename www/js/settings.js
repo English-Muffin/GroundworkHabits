@@ -113,7 +113,7 @@ function vAch(){
      +'</section>'}).join('')+'</div>'+chList();
 }
 // habit challenges ("30 days of …"), running and finished
-function chList(){const hs=S.habits.filter(h=>h.ch);if(!hs.length)return '';
+function chList(){const hs=S.habits.filter(h=>h.ch&&!h.arch);if(!hs.length)return '';
   return '<section class="card chl"><div class="lbl">Challenges</div>'+hs.map(h=>{const n=chDone(h),ok=n>=h.ch.days;return '<div class="chr'+(ok?' ok':'')+'"><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">'+chLine(h)+'</span>'+(ok?medal(h.color):'')+'</div>'}).join('')+'</section>'}
 /* search across tasks, notes, reflections, goals, habits and streaks */
 function searchHits(q){
@@ -148,6 +148,8 @@ function openAmt(h,k){modal={kind:'amt',h:h.id,k};focusSel='#aVal'}
 function vModal(){
   if(!modal)return '';
   if(modal.kind==='tips')return tipsHtml();
+  if(modal.kind==='tmonth'){const f=modal.m;return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Month"><div class="mch"><button class="btn ghost sbtn" data-act="tmprev" aria-label="Previous month">'+ic('prev')+'</button><h2>'+MONTHS[f.getMonth()]+' '+f.getFullYear()+'</h2><button class="btn ghost sbtn" data-act="tmnext" aria-label="Next month">'+ic('next')+'</button></div>'+monthCal(f)
+     +'<p class="sub" style="margin:0">Tap a day to open its week.</p><div class="row"><button class="btn ghost" data-act="modalclose">Close</button></div></div></div>'}
   if(modal.kind==='hdetail'){const h=findH(modal.h);if(!h)return '';return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="'+esc(h.name)+'"><h2 style="--c:'+h.color+'"><span class="tdot"></span> <span data-nt>'+esc(h.name)+'</span></h2>'+habitDetail(h)
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Close</button><button class="btn" data-act="edithabit" data-h="'+h.id+'">Edit</button></div></div></div>'}
   if(modal.kind==='habit'){
@@ -168,7 +170,8 @@ function vModal(){
      +(modal.type==='daily'&&!LITE?(()=>{const c=(findH(modal.id)||{}).ch,v=modal.chDays!==undefined?modal.chDays:c?c.days:0;return '<label class="sub" style="margin:0" for="mCh">Challenge</label><select class="field" id="mCh">'+[[0,'No challenge'],[7,'7 days'],[21,'21 days'],[30,'30 days'],[66,'66 days'],[100,'100 days']].map(x=>'<option value="'+x[0]+'"'+(+v===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select>'+(c?'<p class="sub" style="margin:0">'+chLine(findH(modal.id))+'</p>':'')})():'')
      +(modal.type==='daily'?'<label class="sub" style="margin:0" for="mTod">Time of day</label><select class="field" id="mTod">'+[['','Anytime']].concat(TODS).map(x=>'<option value="'+x[0]+'"'+((modal.tod||'')===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select>':'')
      +remPicker('habit')
-     +(modal.id?(()=>{const h=findH(modal.id),p=h&&pausedNow(h)&&h.off.find(x=>!x.t||x.t>=dk(TODAY));return '<div class="lbl" style="font-size:9px">Pause</div>'+(p?'<p class="sub" style="margin:0">Paused since '+esc(new Intl.DateTimeFormat(LANG,{dateStyle:'medium'}).format(new Date(p.f+'T00:00')))+'</p><button class="btn ghost" data-act="mpause">Resume habit</button>':'<p class="sub" style="margin:0">For holidays or a sick week: hides it from Today and reminders. Paused days don’t break the streak.</p><button class="btn ghost" data-act="mpause">Pause habit</button>')})():'')
+     +(modal.id?(()=>{const h=findH(modal.id),p=h&&pausedNow(h)&&h.off.find(x=>!x.t||x.t>=dk(TODAY));return '<div class="lbl" style="font-size:9px">Pause</div>'+(p?'<p class="sub" style="margin:0">Paused since '+esc(new Intl.DateTimeFormat(LANG,{dateStyle:'medium'}).format(new Date(p.f+'T00:00')))+'</p><button class="btn ghost" data-act="mpause">Resume habit</button>':'<p class="sub" style="margin:0">For holidays or a sick week: hides it from Today and reminders. Paused days don’t break the streak.</p><button class="btn ghost" data-act="mpause">Pause habit</button>')
+       +'<div class="lbl" style="font-size:9px">Archive</div>'+(h&&h.arch?'<button class="btn ghost" data-act="harch" data-h="'+h.id+'">Restore habit</button>':'<p class="sub" style="margin:0">Done with it? Archiving hides it everywhere and keeps its history. Restore it from the bottom of Habits.</p><button class="btn ghost" data-act="harch" data-h="'+modal.id+'">Archive habit</button>')})():'')
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button>'+(modal.id?'<button class="btn ghost" data-act="hdetail" data-h="'+modal.id+'">Details</button><button class="btn ghost" data-act="sharecard" data-v="h" data-i="'+modal.id+'">Share</button>':'')+(modal.id?'<button class="btn danger" data-act="mdel">'+(modal.confirm?'Tap again to delete':'Delete')+'</button>':'')+'<button class="btn" data-act="msave">'+(modal.id?'Save':'Add habit')+'</button></div></div></div>';
   }
   if(modal.kind==='ask')return '<div class="ov"><div class="mod" role="alertdialog" aria-modal="true" aria-label="Reminder">'+askHtml(modal.h,modal.k)+'</div></div>';

@@ -124,7 +124,8 @@ test('backups carry settings, never the PIN, calendar link or folders', () => {
 });
 test('restoring settings keeps only valid values and never touches the PIN', () => {
   const P = T.getP(); P.theme = 'dark'; P.accent = '#9cc96b'; P.lock = null;
-  T.restorePrefs({ theme: 'amoled', accent: 'red;}', lock: { salt: 'evil' }, feat: { twice: false }, remTime: '25:99' });
+  T.restorePrefs({ theme: 'amoled', accent: 'red;}', lock: { salt: 'evil' }, feat: { twice: false }, remTime: '25:99', hsort: 'name' });
+  assert.strictEqual(P.hsort, 'name', 'habit sort order comes back'); T.restorePrefs({ hsort: '<b>' }); assert.strictEqual(P.hsort, 'name', 'bad sort ignored');
   assert.strictEqual(P.theme, 'amoled'); assert.strictEqual(P.accent, '#9cc96b', 'bad colour ignored');
   assert.strictEqual(P.lock, null, 'PIN from a file ignored'); assert.strictEqual(P.feat.twice, false); assert.notStrictEqual(P.remTime, '25:99');
 });

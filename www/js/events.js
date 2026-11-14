@@ -134,6 +134,8 @@ document.addEventListener('click',e=>{
       if(pausedNow(h)){const p=h.off.find(x=>!x.t||x.t>=td);if(p.f>y)h.off.splice(h.off.indexOf(p),1);else p.t=y;if(!h.off.length)delete h.off;toast('Habit resumed')}
       else{(h.off=h.off||[]).push({f:td});toast('Habit paused')}modal=null;break}
     case 'imprevok':{persist=false;const d=modal.d;modal=null;applyImport(d);break}
+    case 'harch':{const h=findH(t.dataset.h);if(!h)break;if(h.arch){delete h.arch;toast('Habit restored')}else{h.arch=dk(TODAY);toast('Habit archived')}modal=null;break}
+    case 'archtog':e.preventDefault();archOpen=!archOpen;persist=false;break;
     case 'hskip':{const h=findH(t.dataset.h),k=dk(TODAY);if(!h)break;const s=h.skip=h.skip||[];if(s.includes(k))s.splice(s.indexOf(k),1);else s.push(k);if(!s.length)delete h.skip;break}
     case 'hdetail':modal={kind:'hdetail',h:t.dataset.h};persist=false;break;
     case 'mrest':{const i=+t.dataset.v,r=modal.rest=modal.rest||[];if(r.includes(i))r.splice(r.indexOf(i),1);else if(r.length<6)r.push(i);else toast('Keep at least one day to do the habit');persist=false;break}
@@ -235,6 +237,9 @@ document.addEventListener('click',e=>{
     case 'amtsave':case 'amtclear':{const h=findH(modal.h);if(h)setAmt(h,modal.k,act==='amtclear'?0:$('#aVal').value);modal=null;break}
     case 'gdel':if(confirmGoal!==t.dataset.g){confirmGoal=t.dataset.g;persist=false;break}
       {const i=S.goals.findIndex(g=>g.id===t.dataset.g),g=S.goals[i];if(g)pushUndo(()=>putBack(S.goals,i,g))}S.goals=S.goals.filter(g=>g.id!==t.dataset.g);confirmGoal=null;if(modal&&modal.kind==='goal')modal=null;toastUndo('Goal deleted');break;
+    case 'tmonth':modal={kind:'tmonth',m:new Date(taskWeek.getFullYear(),addDays(taskWeek,3).getMonth(),1)};persist=false;break;
+    case 'tmprev':case 'tmnext':modal.m=new Date(modal.m.getFullYear(),modal.m.getMonth()+(act==='tmnext'?1:-1),1);persist=false;break;
+    case 'tmday':taskWeek=wkStart(new Date(t.dataset.k+'T00:00'));modal=null;persist=false;break;
     case 'tprev':taskWeek=addDays(taskWeek,-7);persist=false;break;
     case 'tnext':taskWeek=addDays(taskWeek,7);persist=false;break;
     case 'tnow':taskWeek=wkStart(TODAY);persist=false;break;

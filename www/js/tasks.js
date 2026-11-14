@@ -54,6 +54,12 @@ function taskAdder(k,copy){
   if(copy&&!items.length)o+='<button class="cpy" data-act="tcopy" data-k="'+k+'">Copy yesterday’s list</button>';
   return o;
 }
+// month calendar (modal tmonth): tasks per day for a whole month; tapping a day opens its week
+function monthCal(first){const y=first.getFullYear(),m=first.getMonth(),n=dim(y,m),lead=first.getDay(),td=dk(TODAY);
+  let o='<div class="mcal">'+[0,1,2,3,4,5,6].map(i=>'<span class="mcw" aria-hidden="true">'+new Intl.DateTimeFormat(LANG,{weekday:'narrow'}).format(new Date(2026,2,1+i))+'</span>').join('')+'<span></span>'.repeat(lead);
+  for(let d=1;d<=n;d++){const k=dkey(y,m,d),t=todo((S.tasks[k]||{items:[]}).items),dn=t.filter(x=>x.done).length;
+    o+='<button class="mcd'+(t.length?(dn===t.length?' all':' has'):'')+(k===td?' now':'')+'" data-act="tmday" data-k="'+k+'" aria-label="'+d+' '+MONTHS[m]+': '+pl(t.length,'task')+(t.length?', '+dn+' done':'')+'"><b>'+d+'</b>'+(t.length?'<small>'+dn+'/'+t.length+'</small>':'')+'</button>'}
+  return o+'</div>'}
 function vTasks(){
   const days=[];for(let i=0;i<7;i++)days.push(addDays(taskWeek,i));
   const data=days.map(d=>{const t=S.tasks[dk(d)]||{items:[],mind:null};const td=todo(t.items);return {d,k:dk(d),items:vis(t.items),todo:td,mind:t.mind,done:td.filter(i=>i.done).length}});
@@ -63,7 +69,7 @@ function vTasks(){
   const range=p2(taskWeek.getDate())+' '+MONR[taskWeek.getMonth()]+' – '+p2(e.getDate())+' '+MONR[e.getMonth()]+' '+e.getFullYear();
   const H=110;
   let o='<div class="ttop"><section class="card wk"><div class="wkhead"><div><div class="lbl" style="font-size:9px">WEEK STARTING</div><span class="wkpill">'+range+'</span></div>'
-   +'<div class="wknav"><button data-act="tpl" data-v="tasks" class="wktpl">Templates</button><button data-act="tprev" aria-label="Previous week">'+ic('prev')+'</button><button data-act="tnow">'+(isNow?'This week':'Go to this week')+'</button><button data-act="tnext" aria-label="Next week">'+ic('next')+'</button></div></div>'
+   +'<div class="wknav"><button data-act="tpl" data-v="tasks" class="wktpl">Templates</button><button data-act="tprev" aria-label="Previous week">'+ic('prev')+'</button><button data-act="tnow">'+(isNow?'This week':'Go to this week')+'</button><button data-act="tnext" aria-label="Next week">'+ic('next')+'</button><button data-act="tmonth">Month</button></div></div>'
    +'<div class="wkbody"><div class="ovp"><div class="t">Overall progress</div><div class="bars">'+data.map(x=>{
       const th=x.todo.length?Math.max(10,x.todo.length/mx*H):6,fh=x.todo.length?x.done/mx*H:0;
       return '<div class="bcol"><div class="bt" style="height:'+th+'px"><i style="height:'+fh+'px"></i></div><span>'+x.d.toLocaleDateString('en-GB',{weekday:'short'})+'</span></div>'}).join('')+'</div></div>'

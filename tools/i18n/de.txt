@@ -940,3 +940,11 @@ P91|Details zu $1
 849|Gewohnheiten sortieren
 P92|Heute überspringen: $1
 P93|Bester Monat: $1
+850|Gewohnheit archivieren
+851|Gewohnheit wiederherstellen
+852|Gewohnheit archiviert
+853|Gewohnheit wiederhergestellt
+854|Tippe auf einen Tag, um seine Woche zu öffnen.
+855|Fertig damit? Archivieren blendet sie überall aus und behält ihren Verlauf. Wiederherstellen unten auf der Gewohnheiten-Seite.
+P94|$1. $2: Aufgaben $3, erledigt $4
+P95|$1. $2: keine Aufgaben

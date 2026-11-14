@@ -658,6 +658,20 @@ async def pauseAndTimes(b):
     det2 = await pg.locator('#modal [role=dialog]').inner_text()
     check('amount habit details show the best month with its total', '12.5 km' in det2 and 'Best month: Jan 2026' in det2, det2[:300])
     await pg.click('#modal [data-act=modalclose]'); await pg.wait_for_timeout(200)
+    # archive: hidden from Today and the grid, listed under Archived, Restore brings it back
+    aid = await pg.evaluate("GroundworkTest.state().habits.find(h=>h.type==='daily').id")
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(200)
+    await pg.click(f'[data-act=edithabit][data-h="{aid}"]'); await pg.click('#modal [data-act=harch]'); await pg.wait_for_timeout(200)
+    ingrid = await pg.locator(f'.hrow[data-id="{aid}"]').count(); listed = await pg.locator(f'.harch [data-h="{aid}"]').count()
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200); ontoday = await pg.locator(f'#main .trow[data-id="{aid}"]').count()
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(200); await pg.click('.harch summary'); await pg.click(f'.harch [data-act=harch][data-h="{aid}"]'); await pg.wait_for_timeout(200)
+    check('archive hides a habit from Today and the grid, Restore brings it back', ingrid == 0 and listed >= 1 and ontoday == 0 and await pg.locator(f'.hrow[data-id="{aid}"]').count() == 1 and await pg.locator('.harch').count() == 0, [ingrid, listed, ontoday])
+    # month calendar: shows the month, tapping a day opens its week
+    await pg.evaluate("location.hash='tasks'"); await pg.wait_for_timeout(200)
+    await pg.click('[data-act=tmonth]'); await pg.wait_for_timeout(200); cells = await pg.locator('#modal .mcd').count()
+    await pg.click('#modal [data-act=tmnext]'); await pg.wait_for_timeout(200); await pg.locator('#modal .mcd').nth(14).click(); await pg.wait_for_timeout(200)
+    wk = await pg.locator('.wkpill').inner_text()
+    check('month calendar lists every day and a tap opens that week', cells >= 28 and await pg.locator('#modal [role=dialog]').count() == 0 and await pg.evaluate("(()=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+1);d.setDate(15);const s=new Date(d);s.setDate(15-d.getDay());return String(s.getDate()).padStart(2,'0')})()") in wk, [cells, wk])
     # backup preview: Cancel leaves data alone
     before = await pg.evaluate("GroundworkTest.state().habits.length")
     f = os.path.join(tempfile.gettempdir(), 'gw-prev.json'); open(f, 'w', encoding='utf-8').write(json.dumps({'v': 1, 'at': 1767225600000, 'habits': [{'id': 'x1', 'name': 'Only one', 'type': 'daily'}], 'log': {}, 'tasks': {}, 'goals': []}))

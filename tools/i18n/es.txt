@@ -940,3 +940,11 @@ P91|Detalles de $1
 849|Ordenar hábitos
 P92|Saltar hoy: $1
 P93|Mejor mes: $1
+850|Archivar hábito
+851|Restaurar hábito
+852|Hábito archivado
+853|Hábito restaurado
+854|Toca un día para abrir su semana.
+855|¿Ya terminaste? Archivar lo oculta en todas partes y guarda su historial. Restáuralo al final de Hábitos.
+P94|$1 de $2: tareas $3, hechas $4
+P95|$1 de $2: sin tareas
