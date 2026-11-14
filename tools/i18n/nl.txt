@@ -493,7 +493,7 @@
 605|tot nu toe, in Groundwork Habits
 606|Vandaag geen taken
 607|Automatisch naar updates zoeken
-608|Vraagt één keer per dag aan GitHub of er een nieuwe versie is. Standaard uit: er wordt niets verstuurd tenzij je het aanzet.
+608|Vraagt één keer per dag aan GitHub of er een nieuwe versie is en vraagt het je voordat die wordt geïnstalleerd. Standaard uit: er wordt niets verstuurd tenzij je het aanzet.
 609|Update wordt gedownload…
 610|Installeren
 611|Downloaden
@@ -899,3 +899,12 @@ P88|Nog geen doelen in $1
 811|Opnieuw verbinden
 812|Verbind je gegevensmap opnieuw
 813|Deze browser kan niet via een map synchroniseren. Gebruik Exporteren en Importeren om je gegevens te verplaatsen
+814|Update beschikbaar
+815|Download de nieuwe versie van de releasepagina en installeer die.
+816|Groundwork Habits downloadt hem van GitHub, controleert hem en daarna vraagt Android of je hem wilt installeren. Je gegevens blijven op deze telefoon.
+817|Groundwork Habits downloadt hem van GitHub, controleert hem, sluit af, installeert hem en opent weer. Je gegevens blijven bewaard.
+818|Wat is er nieuw
+819|Niet nu
+820|Nu bijwerken
+821|Bekijken
+P89|Je hebt versie $1.

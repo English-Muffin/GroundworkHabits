@@ -113,7 +113,7 @@ checkReminder();checkHabitReminders();
 // setup, checks it and installs over itself (the old version is removed once the new one works); the portable app and
 // macOS have no installer, so they open the release page
 function updCheck(now,manual){if(!UPD||WIDGET||ASK||(!manual&&!P.updAuto))return;if(!now&&Date.now()-(P.updAt||0)<864e5)return;P.updAt=Date.now();applyPrefs();
-  UPD.updateCheck().then(r=>{if(r&&r.ok&&r.update){updCheck.info=r;if(r.auto&&(manual||!NB))updInstall();else if(r.auto)toastAct('Version '+r.version+' is available','Install','updinstall');else if(manual)window.open(r.page,'_blank');else toastAct('Version '+r.version+' is available','Download','updinstall')}else if(now)toast(r&&r.ok?'You have the latest version':'Couldn’t check for updates')})}
+  UPD.updateCheck().then(r=>{if(r&&r.ok&&r.update){updCheck.info=r;if(manual||!modal&&!encWait){modal={kind:'upd'};render()}else toastAct('Version '+r.version+' is available','See','updshow')}else if(now)toast(r&&r.ok?'You have the latest version':'Couldn’t check for updates')})}
 // finish any pending save first: the app closes while the setup runs
 async function updInstall(){const u=updCheck.info;if(!u)return;if(!u.auto){window.open(u.page,'_blank');return}toast('Downloading the update…');try{if(save.t)writeFile();await save.p}catch(e){}const r=await UPD.updateInstall();if(!r||!r.ok)toast(r&&r.error==='permission'?'Allow installs from Groundwork Habits, then tap Install again':(r&&r.error)||'Update failed')}
 setTimeout(()=>updCheck(false),8000);

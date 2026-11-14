@@ -567,6 +567,25 @@ async def reducedMotion(b):
     check('reduce motion: no animations or transitions on any screen', not moving, moving[:5])
     await ctx.close()
 
+async def updateAsk(b):
+    # an update is never installed without a yes: Check for updates and the daily check both open the update dialog
+    fake = ("window.__inst=0;window.groundworkFS={folder:()=>'',read:()=>null,write:()=>true,reset:()=>{},backup:()=>Promise.resolve({ok:true}),"
+            "updateCheck:()=>Promise.resolve({ok:true,update:true,version:'9.9.9',page:'https://github.com/English-Muffin/GroundworkHabits/releases/latest',auto:true}),"
+            "updateInstall:()=>{window.__inst++;return Promise.resolve({ok:true})}};localStorage.setItem('groundwork-tips','1')")
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script(fake); pg = await ctx.new_page()
+    await pg.goto(URL + '#settings/about'); await pg.wait_for_timeout(300)
+    await pg.click('[data-act=updnow]'); await pg.wait_for_timeout(300)
+    txt = await pg.locator('#modal [role=dialog]').inner_text() if await pg.locator('#modal [role=dialog]').count() else ''
+    check('Check for updates asks first: dialog shows the new and current version', '9.9.9' in txt and 'You have version' in txt and await pg.evaluate('__inst') == 0, txt)
+    await pg.click('#modal [data-act=modalclose]'); await pg.wait_for_timeout(200)
+    check('Not now closes the update dialog without installing', await pg.locator('#modal [role=dialog]').count() == 0 and await pg.evaluate('__inst') == 0)
+    await pg.click('[data-act=updnow]'); await pg.wait_for_timeout(300); await pg.click('#modal [data-act=updinstall]'); await pg.wait_for_timeout(300)
+    check('Update now installs once', await pg.evaluate('__inst') == 1)
+    await pg.evaluate("()=>{const p=JSON.parse(localStorage.getItem('groundwork-prefs')||'{}');p.updAuto=true;p.updAt=0;localStorage.setItem('groundwork-prefs',JSON.stringify(p))}")
+    await pg.goto(URL + '?r=1#today'); await pg.wait_for_timeout(9000)
+    check('the daily check asks instead of installing', await pg.locator('#modal [data-act=updinstall]').count() == 1 and await pg.evaluate('__inst') == 0)
+    await ctx.close()
+
 async def highContrast(b):
     # Windows high contrast replaces colours: the current tab stays marked and data bars keep their colour
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}, forced_colors='active'); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
@@ -880,7 +899,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await unnamedControls(b); await reducedMotion(b); await highContrast(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await unnamedControls(b); await reducedMotion(b); await highContrast(b); await updateAsk(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")

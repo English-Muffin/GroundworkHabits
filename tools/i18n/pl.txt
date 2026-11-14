@@ -493,7 +493,7 @@
 605|do tej pory, w Groundwork Habits
 606|Brak zadań na dziś
 607|Automatycznie sprawdzaj aktualizacje
-608|Raz dziennie pyta GitHub o nową wersję. Domyślnie wyłączone: nic nie jest wysyłane, dopóki tego nie włączysz.
+608|Raz dziennie pyta GitHub, czy jest nowa wersja, i pyta cię przed jej instalacją. Domyślnie wyłączone: nic nie jest wysyłane, dopóki tego nie włączysz.
 609|Pobieranie aktualizacji…
 610|Zainstaluj
 611|Pobierz
@@ -899,3 +899,12 @@ P88|Brak celów w obszarze $1
 811|Połącz ponownie
 812|Połącz ponownie folder danych
 813|Ta przeglądarka nie synchronizuje przez folder. Użyj Eksportu i Importu, aby przenieść dane
+814|Dostępna aktualizacja
+815|Pobierz nową wersję ze strony wydania i zainstaluj ją.
+816|Groundwork Habits pobiera ją z GitHuba, sprawdza, a potem Android prosi o instalację. Twoje dane zostają na tym telefonie.
+817|Groundwork Habits pobiera ją z GitHuba, sprawdza, zamyka się, instaluje ją i otwiera ponownie. Twoje dane zostają.
+818|Co nowego
+819|Nie teraz
+820|Aktualizuj teraz
+821|Zobacz
+P89|Masz wersję $1.

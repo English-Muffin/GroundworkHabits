@@ -493,7 +493,7 @@
 605|finora, in Groundwork Habits
 606|Nessuna attività oggi
 607|Cerca aggiornamenti automaticamente
-608|Una volta al giorno chiede a GitHub se c’è una nuova versione. Spento di default: non viene inviato nulla finché non lo attivi.
+608|Una volta al giorno chiede a GitHub se c’è una nuova versione e ti chiede prima di installarla. Disattivato di default: non viene inviato nulla finché non lo attivi.
 609|Download dell’aggiornamento…
 610|Installa
 611|Scarica
@@ -899,3 +899,12 @@ P88|Ancora nessun obiettivo in $1
 811|Riconnetti
 812|Riconnetti la cartella dei dati
 813|Questo browser non può sincronizzare tramite una cartella. Usa Esporta e Importa per spostare i tuoi dati
+814|Aggiornamento disponibile
+815|Scarica la nuova versione dalla pagina di rilascio e installala.
+816|Groundwork Habits la scarica da GitHub, la controlla, poi Android ti chiede di installarla. I tuoi dati restano su questo telefono.
+817|Groundwork Habits la scarica da GitHub, la controlla, si chiude, la installa e si riapre. I tuoi dati restano.
+818|Novità
+819|Non ora
+820|Aggiorna ora
+821|Vedi
+P89|Hai la versione $1.

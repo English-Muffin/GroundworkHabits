@@ -493,7 +493,7 @@
 605|hasta ahora, en Groundwork Habits
 606|No hay tareas hoy
 607|Buscar actualizaciones automáticamente
-608|Una vez al día, pregunta a GitHub si hay una versión nueva. Desactivado por defecto: no se envía nada si no lo activas.
+608|Una vez al día, pregunta a GitHub si hay una versión nueva y te pregunta antes de instalarla. Desactivado por defecto: no se envía nada a menos que lo actives.
 609|Descargando la actualización…
 610|Instalar
 611|Descargar
@@ -899,3 +899,12 @@ P88|Aún no hay objetivos en $1
 811|Reconectar
 812|Vuelve a conectar tu carpeta de datos
 813|Este navegador no puede sincronizar con una carpeta. Usa Exportar e Importar para mover tus datos
+814|Actualización disponible
+815|Descarga la nueva versión desde la página de la versión e instálala.
+816|Groundwork Habits la descarga de GitHub, la comprueba y luego Android te pide instalarla. Tus datos se quedan en este teléfono.
+817|Groundwork Habits la descarga de GitHub, la comprueba, se cierra, la instala y se vuelve a abrir. Tus datos se conservan.
+818|Novedades
+819|Ahora no
+820|Actualizar ahora
+821|Ver
+P89|Tienes la versión $1.

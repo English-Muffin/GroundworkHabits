@@ -493,7 +493,7 @@
 605|até agora, no Groundwork Habits
 606|Sem tarefas hoje
 607|Procurar atualizações automaticamente
-608|Uma vez por dia, pergunta ao GitHub se há uma nova versão. Desligado por defeito: nada é enviado se não o ligar.
+608|Uma vez por dia, pergunta ao GitHub se há uma nova versão e pede a tua confirmação antes de a instalar. Desligado por padrão: nada é enviado a menos que o ligues.
 609|A transferir a atualização…
 610|Instalar
 611|Transferir
@@ -899,3 +899,12 @@ P88|Ainda sem objetivos em $1
 811|Reconectar
 812|Reconecte sua pasta de dados
 813|Este navegador não sincroniza por uma pasta. Use Exportar e Importar para mover seus dados
+814|Atualização disponível
+815|Transfere a nova versão na página de lançamento e instala-a.
+816|O Groundwork Habits transfere-a do GitHub, verifica-a e depois o Android pede para a instalares. Os teus dados ficam neste telemóvel.
+817|O Groundwork Habits transfere-a do GitHub, verifica-a, fecha, instala-a e volta a abrir. Os teus dados ficam.
+818|Novidades
+819|Agora não
+820|Atualizar agora
+821|Ver
+P89|Tens a versão $1.
