@@ -33,13 +33,13 @@ function dailyStats(h,y,m){
   return {pct:Math.min(100,Math.round(checks/Math.max(1,n-rest)*100)),cur,best};
 }
 function weeklyStats(h,y,m){
-  const wn=Math.ceil(dim(y,m)/7),l=L(h);
+  const wn=Math.ceil(dim(y,m)/7),l=L(h),pz=w=>pausedW(h,y,m,w);
   const el=isCurM(y,m)?Math.ceil(TODAY.getDate()/7):(isFutM(y,m)?0:wn);
-  let done=0,run=0,best=0;
-  for(let w=1;w<=wn;w++){if(l[wkey(y,m,w)]){done++;run++;best=Math.max(best,run)}else run=0}
+  let done=0,run=0,best=0,off=0;
+  for(let w=1;w<=wn;w++){if(l[wkey(y,m,w)]){done++;run++;best=Math.max(best,run)}else if(pz(w)){if(w<=el)off++}else run=0}
   let w=el,cur=0;if(isCurM(y,m)&&w>0&&!l[wkey(y,m,w)])w--;
-  while(w>=1&&l[wkey(y,m,w)]){cur++;w--}
-  return {pct:el?Math.min(100,Math.round(done/el*100)):0,cur,best,wn,el};
+  while(w>=1&&(l[wkey(y,m,w)]||pz(w))){if(l[wkey(y,m,w)])cur++;w--}
+  return {pct:el-off>0?Math.min(100,Math.round(done/(el-off)*100)):0,cur,best,wn,el};
 }
 // days-per-week habits: how many days this week (Sunday start) are done
 const weekDone=h=>{const l=L(h),s=wkStart(TODAY);let n=0;for(let i=0;i<7;i++){const d=addDays(s,i);if(d<=TODAY&&l[dk(d)])n++}return n};
@@ -70,6 +70,8 @@ const dayPct=date=>{const k=dk(date),hs=byType('daily').filter(h=>L(h)[k]||!isRe
 const habitPct=(h,n)=>{const l=L(h);let c=0;for(let i=0;i<n;i++)if(l[dk(addDays(TODAY,-i))])c++;return Math.round(c/n*100)};
 // rest days: planned days off for an every-day habit; they neither count nor break a streak (a tick on one still counts)
 // paused habits: h.off=[{f,t?}] day ranges (t missing = still paused); paused days count like rest days
+// a week (days 1-7, 8-14 … of the month) or a month counts as paused when any of its days is
+const pausedSpan=(h,a,b)=>!!h.off&&h.off.some(p=>p.f<=b&&(!p.t||p.t>=a)),pausedW=(h,y,m,w)=>pausedSpan(h,dkey(y,m,(w-1)*7+1),dkey(y,m,Math.min(w*7,dim(y,m)))),pausedM=(h,y,m)=>pausedSpan(h,dkey(y,m,1),dkey(y,m,dim(y,m)));
 const pausedK=(h,k)=>!!h.off&&h.off.some(p=>k>=p.f&&(!p.t||k<=p.t)),pausedNow=h=>pausedK(h,dk(TODAY));
 const isRest=(h,d)=>(!!h.off&&pausedK(h,typeof d==='string'?d:dk(d)))||!!(h.rest&&h.rest.length&&(h.per||7)===7&&h.rest.includes((typeof d==='string'?new Date(d+'T00:00'):d).getDay()));
 const doneToday=()=>{const k=dk(TODAY),hs=byType('daily').filter(h=>!pausedNow(h)&&(L(h)[k]||!isRest(h,TODAY)));return {done:hs.filter(h=>L(h)[k]).length,total:hs.length}};
@@ -127,7 +129,7 @@ function dailyGrid(){
       const k=dkey(vy,vm,d),fut=new Date(vy,vm,d)>TODAY,on=!!l[k];
       o+='<div class="cellw"><button class="cell '+(on?'on':fzs&&fzs.has(k)?'fz-day':isRest(h,k)?'rest':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" '+(fut?'disabled':'')+' role="checkbox" aria-checked="'+on+'" aria-label="'+esc(h.name)+', '+d+' '+MONTHS[vm]+tgt(h,k)+(on?'':fzs&&fzs.has(k)?', '+tx('Saved by a streak freeze'):isRest(h,k)?', '+tx('Rest day'):'')+'"'+noteTitle(h,k)+'>'+cellIn(h,k,on)+'</button></div>';
     }
-    o+='<div class="gstat">'+statCell(st)+'</div></div>';
+    o+='<div class="gstat"><button class="nb gsb" data-act="hdetail" data-h="'+h.id+'" aria-label="Details for '+esc(h.name)+'">'+statCell(st)+'</button></div></div>';
   });
   return o+'</div></div>';
 }
@@ -141,8 +143,8 @@ function weeklyList(){
     const l=L(h),st=weeklyStats(h,vy,vm);
     o+='<div class="wrow" data-drag="habits-weekly" data-id="'+h.id+'">'+nameCell(h);
     for(let w=1;w<=wn;w++){const on=!!l[wkey(vy,vm,w)];
-      o+='<div class="c"><button class="cell '+(on?'on':'')+'" data-act="wcell" data-h="'+h.id+'" data-w="'+w+'" '+(w>el?'disabled':'')+' role="checkbox" aria-checked="'+on+'" aria-label="'+esc(h.name)+', week '+w+tgt(h,wkey(vy,vm,w))+'">'+cellIn(h,wkey(vy,vm,w),on)+'</button></div>'}
-    o+='<div class="gstat">'+statCell(st)+'</div></div>';
+      o+='<div class="c"><button class="cell '+(on?'on':pausedW(h,vy,vm,w)?'rest':'')+'" data-act="wcell" data-h="'+h.id+'" data-w="'+w+'" '+(w>el?'disabled':'')+' role="checkbox" aria-checked="'+on+'" aria-label="'+esc(h.name)+', week '+w+tgt(h,wkey(vy,vm,w))+'">'+cellIn(h,wkey(vy,vm,w),on)+'</button></div>'}
+    o+='<div class="gstat"><button class="nb gsb" data-act="hdetail" data-h="'+h.id+'" aria-label="Details for '+esc(h.name)+'">'+statCell(st)+'</button></div></div>';
   });
   return o+'</div></div>';
 }
@@ -150,9 +152,31 @@ function monthlyList(){
   const hs=byType('monthly');if(!hs.length)return emptyHabits();
   return '<div class="mlist" data-drop="habits-monthly">'+hs.map(h=>{
     const on=!!L(h)[mkey(vy,vm)],fut=isFutM(vy,vm);
-    return '<div class="mrow" data-drag="habits-monthly" data-id="'+h.id+'" style="--c:'+h.color+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" '+(fut?'disabled':'')+' role="checkbox" aria-checked="'+on+'" aria-label="'+esc(h.name)+tgt(h,mkey(vy,vm))+'">'+cellIn(h,mkey(vy,vm),on)+'</button><span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="'+esc(h.name)+'. Tap to edit">'+esc(h.name)+'</button><span class="st '+(on?'d':'')+'">'+(on?'Done':'Pending')+'</span></div>';
+    return '<div class="mrow" data-drag="habits-monthly" data-id="'+h.id+'" style="--c:'+h.color+'">'+GRIP('habit')+'<button class="cell '+(on?'on':pausedM(h,vy,vm)?'rest':'')+'" data-act="mcell" data-h="'+h.id+'" '+(fut?'disabled':'')+' role="checkbox" aria-checked="'+on+'" aria-label="'+esc(h.name)+tgt(h,mkey(vy,vm))+'">'+cellIn(h,mkey(vy,vm),on)+'</button><span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="'+esc(h.name)+'. Tap to edit">'+esc(h.name)+'</button><span class="st '+(on?'d':'')+'">'+(on?'Done':'Pending')+'</span></div>';
   }).join('')+'</div>';
 }
+
+/* ---------- habit details (modal hdetail): streaks, check-ins, the last 26 weeks, the last 6 months, notes and pauses ---------- */
+function bestStreak(h){if(feat('freeze')&&(h.per||7)===7&&!(h.fz&&h.fz.off))return freezeOf(h).best;
+  const l=L(h),ks=Object.keys(l).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)).sort();if(!ks.length)return 0;const D=daysFrom(ks[0]);let run=0,best=0;
+  for(let i=D.i;i<D.keys.length;i++){const k=D.keys[i];if(l[k]){run++;best=Math.max(best,run)}else if(!isRest(h,k)&&k!==D.keys[D.keys.length-1])run=0}return best}
+function habitDetail(h){
+  const l=L(h),fmt=new RegExp(h.type==='daily'?'^\\d{4}-\\d{2}-\\d{2}$':h.type==='weekly'?'-W\\d$':'^\\d{4}-\\d{2}$'),n=Object.keys(l).filter(k=>fmt.test(k)).length;
+  const y=TODAY.getFullYear(),m=TODAY.getMonth(),stat=(a,b)=>'<div class="hds"><b>'+a+'</b><span class="sub" style="margin:0">'+b+'</span></div>';
+  let o='<div class="hdstats">'+(h.type==='daily'?stat(FLAME+curStreak(h),'Current streak')+stat(STAR+bestStreak(h),'Best streak'):h.type==='weekly'?stat(FLAME+weeklyStats(h,y,m).cur,'Current streak'):'')+stat(n,'Check-ins')+'</div>';
+  if(h.type==='daily'){const W=26,start=wkStart(addDays(TODAY,-7*(W-1)));let cols='',months='';
+    for(let w=0;w<W;w++){let c='';const first=addDays(start,w*7);months+='<span>'+(first.getDate()<=7?MON3[first.getMonth()]:'')+'</span>';
+      for(let d=0;d<7;d++){const day=addDays(start,w*7+d),k=dk(day);c+=day>TODAY?'<i class="hz"></i>':'<i class="h'+(l[k]?3:0)+'"></i>'}
+      cols+='<div class="hcol">'+c+'</div>'}
+    o+='<div class="lbl" style="font-size:9px">Last 6 months</div><div class="hwrap hdh" style="--hw:'+W+'"><div class="hmon">'+months+'</div><div class="hgrid" role="img" aria-label="Days done in the last 6 months">'+cols+'</div></div>'}
+  o+='<div class="lbl" style="font-size:9px">Each month</div><div class="hdm">';
+  for(let i=5;i>=0;i--){const d=new Date(y,m-i,1),Y=d.getFullYear(),M=d.getMonth(),p=h.type==='daily'?dailyStats(h,Y,M).pct:h.type==='weekly'?weeklyStats(h,Y,M).pct:(l[mkey(Y,M)]?100:0);
+    o+='<span>'+MON3[M]+'</span><div class="tr"><i style="width:'+p+'%"></i></div><b>'+p+'%</b>'}
+  o+='</div>';
+  const nt=Object.entries(S.notes[h.id]||{}).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,5);
+  if(nt.length)o+='<div class="lbl" style="font-size:9px">Notes</div>'+nt.map(([k,v])=>'<p class="sub hdn" style="margin:0"><b>'+esc(k)+'</b> <span data-nt>'+esc(v)+'</span></p>').join('');
+  if(h.off&&h.off.length)o+='<div class="lbl" style="font-size:9px">Pauses</div>'+h.off.map(p=>'<p class="sub" style="margin:0">'+esc(p.f)+' – '+(p.t?esc(p.t):'<span>now</span>')+'</p>').join('');
+  return o}
 
 /* ---------- Today ---------- */
 // "never miss twice": an every-day habit missed yesterday (not a rest day) that already had history before then

@@ -158,7 +158,7 @@ function vInsights(){
   const lh=byType(ty).map(h=>{let p=0;
     if(ty==='daily')p=habitPct(h,30);
     else if(ty==='weekly')p=weeklyStats(h,TODAY.getFullYear(),TODAY.getMonth()).pct;
-    else{let c=0;for(let k=0;k<3;k++){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()-k,1);if(L(h)[mkey(d.getFullYear(),d.getMonth())])c++}p=Math.round(c/3*100)}
+    else{let c=0,n=0;for(let k=0;k<3;k++){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()-k,1),on=L(h)[mkey(d.getFullYear(),d.getMonth())];if(on)c++;if(on||!pausedM(h,d.getFullYear(),d.getMonth()))n++}p=n?Math.round(c/n*100):0}
     return {h,p}}).sort((a,b)=>b.p-a.p).slice(0,5);
   const MC=['#facc15','#cbd5e1','#d08a4a','#555','#555'];
   o+='<section class="card h" data-card="leader"><div class="ch"><span class="lbl">HABIT LEADERBOARD</span><div class="dwm">'+[['daily','D'],['weekly','W'],['monthly','M']].map(t=>'<button data-act="lb" data-v="'+t[0]+'" role="checkbox" aria-checked="'+(lbTab===t[0])+'" class="'+(lbTab===t[0]?'on':'')+'" aria-label="'+t[0]+'">'+t[1]+'</button>').join('')+'</div></div>'

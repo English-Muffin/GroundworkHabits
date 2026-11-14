@@ -28,8 +28,11 @@ const I18P=(I18.p||[]).map(x=>[new RegExp(x[0]),x[1]]);
 if(LANG!=='en'){const loc=LANG==='zh'?'zh-CN':LANG==='ar'?'ar-u-nu-latn':LANG,f=(o,i)=>new Intl.DateTimeFormat(loc,o).format(i),cap=x=>x.charAt(0).toUpperCase()+x.slice(1);
   for(let i=0;i<7;i++)DAYS[i]=cap(f({weekday:'long'},new Date(2023,0,1+i)));
   for(let i=0;i<12;i++){MONTHS[i]=cap(f({month:'long'},new Date(2023,i,15)));MON3[i]=cap(f({month:'short'},new Date(2023,i,15)).replace('.',''))}}
+// a pattern translation may hold plural forms "one=…‖few=…‖other=…"; the first number in the text picks one
+const PLR=new Intl.PluralRules(LANG==='ar'?'ar-u-nu-latn':LANG);
+function plural(rep,m){if(!rep.includes('‖'))return rep;const n=m.slice(1,-2).find(x=>/^\d+$/.test(x)),f={};rep.split('‖').forEach(x=>{const i=x.indexOf('=');f[x.slice(0,i)]=x.slice(i+1)});return (n!==undefined&&f[PLR.select(+n)])||f.other}
 function tx(s){if(LANG==='en'||!s)return s;const k=String(s).trim();if(!k)return s;const v=I18.t[k];if(v!==undefined)return String(s).replace(k,v);
-  for(const [re,rep] of I18P)if(re.test(k))return String(s).replace(k,k.replace(re,(...m)=>rep.replace(/\$(\d)/g,(_,n)=>tx(m[+n])||'')));return s}
+  for(const [re,rep] of I18P)if(re.test(k))return String(s).replace(k,k.replace(re,(...m)=>plural(rep,m).replace(/\$(\d)/g,(_,n)=>tx(m[+n])||'')));return s}
 const NOTR='[contenteditable],textarea,input,select,.nm,.nb,.hnote,.gstep span,.tk span,.g2h h3,.lrow .top span,[data-nt]';
 function trDom(root){if(LANG==='en'||!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
   while((n=w.nextNode())){const p=n.parentElement;if(p&&p.closest(NOTR))continue;const v=tx(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v}

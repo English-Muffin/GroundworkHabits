@@ -649,7 +649,7 @@ P7|$1/$2 nawyków zrobionych dziś
 P8|$1% vs zeszły tydzień
 P9|Średni postęp $1%
 P10|Regularność w ostatnich $1 dniach
-P11|Ostatnie $1 dni
+P11|one=Ostatni dzień‖few=Ostatnie $1 dni‖many=Ostatnie $1 dni‖other=Ostatnie $1 dnia
 P12|Działasz w $1 z $2 obszarów życia
 P13|Co miesiąc, dnia $1
 P14|Co tydzień: $1
@@ -660,9 +660,9 @@ P18|Przypnij: $1
 P19|Odepnij: $1
 P20|$1, pominięte. Dotknij, aby oznaczyć jako zrobione
 P21|Edytuj obszar $1
-P22|Zostało dni: $1
+P22|one=Został $1 dzień‖few=Zostały $1 dni‖many=Zostało $1 dni‖other=Zostało $1 dnia
 P23|Został 1 dzień
-P24|Po terminie (dni): $1
+P24|one=$1 dzień po terminie‖few=$1 dni po terminie‖many=$1 dni po terminie‖other=$1 dnia po terminie
 P25|Kroki: $1 z $2
 P26|Zadania zrobione: $1 z $2
 P27|Zadania zrobione: $1 z $2 · następne: $3
@@ -680,7 +680,7 @@ P38|Obszar o nazwie $1 już istnieje
 P39|Dodano $1 do: $2
 P40|$1 – zrobione
 P41|Przywrócono. Do cofnięcia zostało: $1
-P42|Usunięte zadania: $1
+P42|one=Usunięto $1 zadanie‖few=Usunięto $1 zadania‖many=Usunięto $1 zadań‖other=Usunięto $1 zadania
 P43|Zsynchronizowane wydarzenia: $1
 P44|Synchronizacja z twojego kalendarza, ostatnio $1
 P45|Automatyczna kopia co tydzień, ostatnio $1
@@ -697,14 +697,14 @@ P55|Przypomnienie o $1. Zmień
 P56|Termin celu $1 mija za tydzień
 P57|Termin celu $1 mija dziś
 P58|Usuń $1
-P59|Dni: $1
+P59|one=$1 dzień‖few=$1 dni‖many=$1 dni‖other=$1 dnia
 441|Automatyczna kopia
 442|Co tydzień
 443|Co miesiąc
 444|Auto
 445|Brak kopii
 446|Widoczne miesiące
-P60|Ostatnie miesiące: $1
+P60|one=Ostatni miesiąc‖few=Ostatnie $1 miesiące‖many=Ostatnie $1 miesięcy‖other=Ostatnie $1 miesiąca
 P61|Idealne dni: $1 (ostatnie miesiące: $2)
 P62|Automatyczna kopia, ostatnio $1
 P63|Wykonane codzienne nawyki (ostatnie miesiące: $1)
@@ -824,11 +824,11 @@ P70|Wydarzenia synchronizują się co 15 minut, ostatnio $1
 P71|$1 min
 P72|$1 DO TEJ PORY
 P73|$1 nawyków z $2 odhaczeniami
-P74|$1 zadań
+P74|one=$1 zadanie‖few=$1 zadania‖many=$1 zadań‖other=$1 zadania
 P75|$1 nawyków już tu jest i dostanie dodatkowe dni.
 P76|Importuj z $1
 P77|Zaimportowano: $1 nowych nawyków, $2 odhaczeń, $3 zadań
-P78|Za $1 dni
+P78|one=Za $1 dzień‖few=Za $1 dni‖many=Za $1 dni‖other=Za $1 dnia
 P79|Dostępna jest wersja $1
 754|Cofnięto
 755|Przywrócono
@@ -923,4 +923,12 @@ P89|Masz wersję $1.
 834|Przywrócić tę kopię?
 835|Przywrócenie zastępuje dane na tym urządzeniu. Możesz to cofnąć zaraz potem.
 P90|Wstrzymany od $1
-P91|Nawyki: $1, zadania: $2, cele: $3
+836|Obecna seria
+837|Odhaczenia
+838|Wykonane dni w ostatnich 6 miesiącach
+839|Każdy miesiąc
+840|Notatki
+841|Przerwy
+842|teraz
+843|Szczegóły
+P91|Szczegóły: $1

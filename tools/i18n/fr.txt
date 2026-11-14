@@ -642,14 +642,14 @@
 P1|$1 / $2 habitudes faites
 P2|$1 / $2 terminées
 P3|$1 objectifs · $2 atteints
-P4|$1 gels de série en réserve
-P5|$1 gels de série
+P4|one=$1 gel de série en réserve‖other=$1 gels de série en réserve
+P5|one=$1 gel de série‖other=$1 gels de série
 P6|$1 journées parfaites sur les 12 derniers mois
 P7|$1/$2 habitudes faites aujourd’hui
 P8|$1 % vs semaine dernière
 P9|Progression moyenne $1 %
 P10|Régularité sur les $1 derniers jours
-P11|$1 derniers jours
+P11|one=Dernier jour‖other=$1 derniers jours
 P12|Actif dans $1 des $2 domaines de vie
 P13|Chaque mois le $1
 P14|Chaque semaine : $1
@@ -660,9 +660,9 @@ P18|Épingler $1
 P19|Désépingler $1
 P20|$1, manquée. Touche pour la marquer comme faite
 P21|Modifier le domaine $1
-P22|Encore $1 jours
+P22|one=Encore $1 jour‖other=Encore $1 jours
 P23|Encore 1 jour
-P24|$1 jours de retard
+P24|one=$1 jour de retard‖other=$1 jours de retard
 P25|$1 étapes sur $2
 P26|$1 tâches sur $2 faites
 P27|$1 tâches sur $2 faites · ensuite : $3
@@ -680,8 +680,8 @@ P38|Il existe déjà un domaine appelé $1
 P39|$1 ajouté à $2
 P40|$1 fait
 P41|Restauré. Encore $1 à annuler
-P42|$1 tâches supprimées
-P43|$1 événements du calendrier synchronisés
+P42|one=$1 tâche supprimée‖other=$1 tâches supprimées
+P43|one=$1 événement du calendrier synchronisé‖other=$1 événements du calendrier synchronisés
 P44|Synchronisation depuis ton calendrier, dernière fois $1
 P45|Sauvegarde automatique chaque semaine, dernière $1
 P46|Couleur $1
@@ -697,14 +697,14 @@ P55|Rappel à $1. Modifier
 P56|$1 arrive à échéance dans une semaine
 P57|$1 arrive à échéance aujourd’hui
 P58|Supprimer $1
-P59|$1 jours
+P59|one=$1 jour‖other=$1 jours
 441|Sauvegarde automatique
 442|Chaque semaine
 443|Chaque mois
 444|Auto
 445|Pas encore de sauvegarde
 446|Mois affichés
-P60|$1 derniers mois
+P60|one=Dernier mois‖other=$1 derniers mois
 P61|$1 journées parfaites sur les $2 derniers mois
 P62|Sauvegarde automatique, dernière $1
 P63|Habitudes quotidiennes faites sur les $1 derniers mois
@@ -824,11 +824,11 @@ P70|Les événements se synchronisent toutes les 15 minutes, dernière fois $1
 P71|$1 min
 P72|$1 JUSQU’ICI
 P73|$1 habitudes avec $2 pointages
-P74|$1 tâches
+P74|one=$1 tâche‖other=$1 tâches
 P75|$1 des habitudes existent déjà ici et reçoivent les jours en plus.
 P76|Importer depuis $1
 P77|Importé : $1 nouvelles habitudes, $2 pointages, $3 tâches
-P78|Dans $1 jours
+P78|one=Dans $1 jour‖other=Dans $1 jours
 P79|La version $1 est disponible
 754|Annulé
 755|Rétabli
@@ -923,4 +923,12 @@ P89|Vous avez la version $1.
 834|Restaurer cette sauvegarde ?
 835|La restauration remplace les données de cet appareil. Vous pouvez l’annuler juste après.
 P90|En pause depuis le $1
-P91|$1 habitudes, $2 tâches, $3 objectifs
+836|Série actuelle
+837|Pointages
+838|Jours faits ces 6 derniers mois
+839|Chaque mois
+840|Notes
+841|Pauses
+842|maintenant
+843|Détails
+P91|Détails de $1

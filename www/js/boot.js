@@ -20,7 +20,7 @@ window.addEventListener('storage',e=>{
   if(e.key==='groundwork-locked'){lockNow(false);return}
   if(e.key===PKEY&&e.newValue){try{const was=P.lock&&P.lock.salt;Object.assign(P,JSON.parse(e.newValue));if(P.lock&&P.lock.salt!==was){locked=true;encKey=null}if(!P.lock){P.lock=null;encKey=null}const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');d.classList.toggle('notabnames',P.tabNames===false);if(!modal&&!drag)render()}catch(_){}}
 });
-if(TESTING)window.GroundworkTest={parseExternal,mergeExternal,tplAdd,parseIcs,applyCalendar,tasksToIcs,state:()=>S,remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
+if(TESTING)window.GroundworkTest={tx,parseExternal,mergeExternal,tplAdd,parseIcs,applyCalendar,tasksToIcs,state:()=>S,remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
 pullCalendar();let calTick=0;
 // daily reminder: a notification at the chosen time if daily habits are still open (only while Groundwork Habits is running)
 // Android app: a real daily notification scheduled with Capacitor Local Notifications (works when the app is closed)

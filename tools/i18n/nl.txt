@@ -642,14 +642,14 @@
 P1|$1 / $2 gewoonten gedaan
 P2|$1 / $2 voltooid
 P3|$1 doelen · $2 bereikt
-P4|$1 reeksbevriezingen bewaard
-P5|$1 reeksbevriezingen
+P4|one=$1 reeksbevriezing bewaard‖other=$1 reeksbevriezingen bewaard
+P5|one=$1 reeksbevriezing‖other=$1 reeksbevriezingen
 P6|$1 perfecte dagen in de laatste 12 maanden
 P7|$1/$2 gewoonten vandaag gedaan
 P8|$1% t.o.v. vorige week
 P9|Gemiddelde voortgang $1%
 P10|Consistentie over de laatste $1 dagen
-P11|Laatste $1 dagen
+P11|one=Laatste dag‖other=Laatste $1 dagen
 P12|Bezig in $1 van $2 levensgebieden
 P13|Elke maand op dag $1
 P14|Elke week: $1
@@ -660,9 +660,9 @@ P18|$1 vastzetten
 P19|$1 losmaken
 P20|$1, gemist. Tik om als gedaan te markeren
 P21|Gebied $1 bewerken
-P22|Nog $1 dagen
+P22|one=Nog $1 dag‖other=Nog $1 dagen
 P23|Nog 1 dag
-P24|$1 dagen te laat
+P24|one=$1 dag te laat‖other=$1 dagen te laat
 P25|$1 van $2 stappen
 P26|$1 van $2 taken gedaan
 P27|$1 van $2 taken gedaan · volgende: $3
@@ -680,8 +680,8 @@ P38|Er is al een gebied met de naam $1
 P39|$1 toegevoegd aan $2
 P40|$1 gedaan
 P41|Teruggezet. Nog $1 ongedaan te maken
-P42|$1 taken verwijderd
-P43|$1 agenda-afspraken gesynchroniseerd
+P42|one=$1 taak verwijderd‖other=$1 taken verwijderd
+P43|one=$1 agenda-afspraak gesynchroniseerd‖other=$1 agenda-afspraken gesynchroniseerd
 P44|Synchroniseert uit je agenda, laatst $1
 P45|Elke week een automatische back-up, laatst $1
 P46|Kleur $1
@@ -697,14 +697,14 @@ P55|Herinnering om $1. Wijzigen
 P56|$1 moet over een week klaar zijn
 P57|$1 moet vandaag klaar zijn
 P58|$1 verwijderen
-P59|$1 dagen
+P59|one=$1 dag‖other=$1 dagen
 441|Automatische back-up
 442|Elke week
 443|Elke maand
 444|Auto
 445|Nog geen back-up
 446|Getoonde maanden
-P60|Laatste $1 maanden
+P60|one=Laatste maand‖other=Laatste $1 maanden
 P61|$1 perfecte dagen in de laatste $2 maanden
 P62|Automatische back-up, laatst $1
 P63|Gedane dagelijkse gewoonten in de laatste $1 maanden
@@ -824,11 +824,11 @@ P70|Afspraken synchroniseren elke 15 minuten, laatst $1
 P71|$1 min
 P72|$1 TOT NU TOE
 P73|$1 gewoontes met $2 afvinkingen
-P74|$1 taken
+P74|one=$1 taak‖other=$1 taken
 P75|$1 van de gewoontes bestaan hier al en krijgen de extra dagen.
 P76|Importeren uit $1
 P77|Geïmporteerd: $1 nieuwe gewoontes, $2 afvinkingen, $3 taken
-P78|Over $1 dagen
+P78|one=Over $1 dag‖other=Over $1 dagen
 P79|Versie $1 is beschikbaar
 754|Ongedaan gemaakt
 755|Opnieuw gedaan
@@ -923,4 +923,12 @@ P89|Je hebt versie $1.
 834|Deze back-up terugzetten?
 835|Terugzetten vervangt de gegevens op dit apparaat. Je kunt het direct daarna ongedaan maken.
 P90|Gepauzeerd sinds $1
-P91|$1 gewoontes, $2 taken, $3 doelen
+836|Huidige reeks
+837|Afvinkingen
+838|Gedane dagen in de laatste 6 maanden
+839|Elke maand
+840|Notities
+841|Pauzes
+842|nu
+843|Details
+P91|Details van $1

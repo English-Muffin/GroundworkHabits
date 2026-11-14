@@ -16,7 +16,11 @@ for f in sorted(D.glob('*.txt')):
     for i, (rx, en) in enumerate(pat, 1):
         v = rows.get(f'P{i}')
         if v is None: print(f'{lang}: missing pattern P{i}'); bad += 1; continue
-        if sorted(re.findall(r'\$\d', v)) != sorted(re.findall(r'\$\d', en)): print(f'{lang}: P{i} placeholders differ'); bad += 1
+        # plural forms "one=…‖other=…": each form may drop the number ("Last day"), never add one; "other" is required
+        if '‖' in v:
+            fm = dict(x.split('=', 1) for x in v.split('‖'))
+            if 'other' not in fm or any(not set(re.findall(r'\$\d', t)) <= set(re.findall(r'\$\d', en)) for t in fm.values()): print(f'{lang}: P{i} plural forms wrong'); bad += 1
+        elif sorted(re.findall(r'\$\d', v)) != sorted(re.findall(r'\$\d', en)): print(f'{lang}: P{i} placeholders differ'); bad += 1
         p.append([rx, v])
     (OUT / f'{lang}.js').write_text('window.GROUNDWORK_I18N=' + json.dumps({'lang': lang, 't': t, 'p': p}, ensure_ascii=False, separators=(',', ':')) + ';\n', encoding='utf-8')
     print(f'{lang}: {len(t)} strings, {len(p)} patterns')

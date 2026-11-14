@@ -73,6 +73,12 @@ test('freezes: a rest day is skipped, not frozen', () => {
   const h = habit(days('2026-03-01', 18, ['2026-03-12'])); h.rest = [new Date('2026-03-12T00:00').getDay()]; const f = T.freezeOf(h);
   assert.ok(!f.frozen.has('2026-03-12'), 'rest days need no freeze'); assert.strictEqual(f.streak, 17);
 });
+test('pause: paused days are skipped, not frozen, and weeks in a pause keep the weekly run', () => {
+  const h = habit(days('2026-03-01', 18, ['2026-03-11', '2026-03-12'])); h.off = [{ f: '2026-03-11', t: '2026-03-12' }]; const f = T.freezeOf(h);
+  assert.ok(!f.frozen.has('2026-03-11') && !f.frozen.has('2026-03-12'), 'paused days need no freeze'); assert.strictEqual(f.streak, 16);
+  const w = habit({ '2026-03-W1': 1 }); w.type = 'weekly'; w.off = [{ f: '2026-03-08' }]; const st = sandbox.weeklyStats(w, 2026, 2);
+  assert.strictEqual(st.cur, 1); assert.strictEqual(st.pct, 100);
+});
 test('save writes the whole state with its save time in one pass', () => {
   habit({}); sandbox.save(); const saved = JSON.parse(store.get('groundwork-v2'));
   assert.ok(saved.at > 0); assert.strictEqual(saved.habits[0].name, T.getS().habits[0].name); assert.deepStrictEqual(Object.keys(saved).sort(), Object.keys(T.getS()).sort());

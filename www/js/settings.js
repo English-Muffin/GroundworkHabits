@@ -148,6 +148,8 @@ function openAmt(h,k){modal={kind:'amt',h:h.id,k};focusSel='#aVal'}
 function vModal(){
   if(!modal)return '';
   if(modal.kind==='tips')return tipsHtml();
+  if(modal.kind==='hdetail'){const h=findH(modal.h);if(!h)return '';return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="'+esc(h.name)+'"><h2 style="--c:'+h.color+'"><span class="tdot"></span> <span data-nt>'+esc(h.name)+'</span></h2>'+habitDetail(h)
+     +'<div class="row"><button class="btn ghost" data-act="modalclose">Close</button><button class="btn" data-act="edithabit" data-h="'+h.id+'">Edit</button></div></div></div>'}
   if(modal.kind==='habit'){
     return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="'+(modal.id?'Edit habit':'New habit')+'"><h2>'+(modal.id?'Edit habit':'New habit')+'</h2>'
      +'<input class="field" id="mName" maxlength="60" placeholder="Habit name" value="'+esc(modal.name||'')+'" aria-label="Habit name">'
@@ -167,7 +169,7 @@ function vModal(){
      +(modal.type==='daily'?'<label class="sub" style="margin:0" for="mTod">Time of day</label><select class="field" id="mTod">'+[['','Anytime']].concat(TODS).map(x=>'<option value="'+x[0]+'"'+((modal.tod||'')===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select>':'')
      +remPicker('habit')
      +(modal.id?(()=>{const h=findH(modal.id),p=h&&pausedNow(h)&&h.off.find(x=>!x.t||x.t>=dk(TODAY));return '<div class="lbl" style="font-size:9px">Pause</div>'+(p?'<p class="sub" style="margin:0">Paused since '+esc(new Intl.DateTimeFormat(LANG,{dateStyle:'medium'}).format(new Date(p.f+'T00:00')))+'</p><button class="btn ghost" data-act="mpause">Resume habit</button>':'<p class="sub" style="margin:0">For holidays or a sick week: hides it from Today and reminders. Paused days don’t break the streak.</p><button class="btn ghost" data-act="mpause">Pause habit</button>')})():'')
-     +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button>'+(modal.id?'<button class="btn ghost" data-act="sharecard" data-v="h" data-i="'+modal.id+'">Share</button>':'')+(modal.id?'<button class="btn danger" data-act="mdel">'+(modal.confirm?'Tap again to delete':'Delete')+'</button>':'')+'<button class="btn" data-act="msave">'+(modal.id?'Save':'Add habit')+'</button></div></div></div>';
+     +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button>'+(modal.id?'<button class="btn ghost" data-act="hdetail" data-h="'+modal.id+'">Details</button><button class="btn ghost" data-act="sharecard" data-v="h" data-i="'+modal.id+'">Share</button>':'')+(modal.id?'<button class="btn danger" data-act="mdel">'+(modal.confirm?'Tap again to delete':'Delete')+'</button>':'')+'<button class="btn" data-act="msave">'+(modal.id?'Save':'Add habit')+'</button></div></div></div>';
   }
   if(modal.kind==='ask')return '<div class="ov"><div class="mod" role="alertdialog" aria-modal="true" aria-label="Reminder">'+askHtml(modal.h,modal.k)+'</div></div>';
   if(modal.kind==='gval'){const g=S.goals.find(x=>x.id===modal.g);if(!g){modal=null;return ''}const num=gKind(g)==='num';
@@ -191,7 +193,7 @@ function vModal(){
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Not now</button><button class="btn" data-act="updinstall">'+(u.auto?'Update now':'Download')+'</button></div></div></div>'}
   if(modal.kind==='imprev'){const d=modal.d,n=(d.habits||[]).length,t=Object.values(d.tasks||{}).reduce((s,x)=>s+((x&&x.items)||[]).length,0),g=(d.goals||[]).length;
     return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Restore this backup?"><h2>Restore this backup?</h2>'+(d.at>0?'<p class="sub" style="margin:0">Saved '+esc(new Intl.DateTimeFormat(LANG,{dateStyle:'medium',timeStyle:'short'}).format(new Date(d.at)))+'</p>':'')
-     +'<p class="sub" style="margin:0"><b>'+n+' habits, '+t+' tasks, '+g+' goals</b></p><p class="sub" style="margin:0">Restoring replaces the data on this device. You can undo it right after.</p>'
+     +'<p class="sub" style="margin:0"><span>Habits</span> <b>'+n+'</b> · <span>Tasks</span> <b>'+t+'</b> · <span>Goals</span> <b>'+g+'</b></p><p class="sub" style="margin:0">Restoring replaces the data on this device. You can undo it right after.</p>'
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button><button class="btn" data-act="imprevok">Restore</button></div></div></div>'}
   if(modal.kind==='impin')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Encrypted backup"><h2>Encrypted backup</h2><p class="sub" style="margin:0">Enter the PIN that was set when this backup was made. Restoring replaces the data on this device.</p>'
      +'<input class="field" id="impPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" aria-label="PIN">'

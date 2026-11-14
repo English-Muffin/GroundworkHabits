@@ -134,6 +134,7 @@ document.addEventListener('click',e=>{
       if(pausedNow(h)){const p=h.off.find(x=>!x.t||x.t>=td);if(p.f>y)h.off.splice(h.off.indexOf(p),1);else p.t=y;if(!h.off.length)delete h.off;toast('Habit resumed')}
       else{(h.off=h.off||[]).push({f:td});toast('Habit paused')}modal=null;break}
     case 'imprevok':{persist=false;const d=modal.d;modal=null;applyImport(d);break}
+    case 'hdetail':modal={kind:'hdetail',h:t.dataset.h};persist=false;break;
     case 'mrest':{const i=+t.dataset.v,r=modal.rest=modal.rest||[];if(r.includes(i))r.splice(r.indexOf(i),1);else if(r.length<6)r.push(i);else toast('Keep at least one day to do the habit');persist=false;break}
     case 'mcolor':setColor('habit',t.dataset.v);persist=false;break;
     case 'cset':setColor(t.dataset.f,t.dataset.v);persist=t.dataset.f==='accent'?false:false;break;

@@ -642,14 +642,14 @@
 P1|$1 / $2 hábitos concluídos
 P2|$1 / $2 concluídos
 P3|$1 objetivos · $2 alcançados
-P4|$1 congelamentos de sequência guardados
-P5|$1 congelamentos de sequência
+P4|one=$1 congelamento de sequência guardado‖other=$1 congelamentos de sequência guardados
+P5|one=$1 congelamento de sequência‖other=$1 congelamentos de sequência
 P6|$1 dias perfeitos nos últimos 12 meses
 P7|$1/$2 hábitos feitos hoje
 P8|$1% vs semana passada
 P9|Progresso médio $1%
 P10|Consistência nos últimos $1 dias
-P11|Últimos $1 dias
+P11|one=Último dia‖other=Últimos $1 dias
 P12|A trabalhar em $1 de $2 áreas da vida
 P13|Todos os meses no dia $1
 P14|Todas as semanas: $1
@@ -660,9 +660,9 @@ P18|Fixar $1
 P19|Desafixar $1
 P20|$1, falhada. Toca para marcar como feita
 P21|Editar área $1
-P22|Faltam $1 dias
+P22|one=Falta $1 dia‖other=Faltam $1 dias
 P23|Falta 1 dia
-P24|$1 dias de atraso
+P24|one=$1 dia de atraso‖other=$1 dias de atraso
 P25|$1 de $2 passos
 P26|$1 de $2 tarefas feitas
 P27|$1 de $2 tarefas feitas · a seguir: $3
@@ -680,8 +680,8 @@ P38|Já existe uma área chamada $1
 P39|Adicionado $1 a $2
 P40|$1 feito
 P41|Restaurado. Mais $1 para anular
-P42|$1 tarefas eliminadas
-P43|$1 eventos do calendário sincronizados
+P42|one=$1 tarefa eliminada‖other=$1 tarefas eliminadas
+P43|one=$1 evento do calendário sincronizado‖other=$1 eventos do calendário sincronizados
 P44|A sincronizar do teu calendário, última vez $1
 P45|Cópia de segurança automática todas as semanas, última $1
 P46|Cor $1
@@ -697,14 +697,14 @@ P55|Lembrete às $1. Mudar
 P56|$1 termina daqui a uma semana
 P57|$1 termina hoje
 P58|Eliminar $1
-P59|$1 dias
+P59|one=$1 dia‖other=$1 dias
 441|Cópia automática
 442|Todas as semanas
 443|Todos os meses
 444|Auto
 445|Ainda sem cópia
 446|Meses visíveis
-P60|Últimos $1 meses
+P60|one=Último mês‖other=Últimos $1 meses
 P61|$1 dias perfeitos nos últimos $2 meses
 P62|Cópia automática, última $1
 P63|Hábitos diários concluídos nos últimos $1 meses
@@ -824,11 +824,11 @@ P70|Os eventos sincronizam a cada 15 minutos, última $1
 P71|$1 min
 P72|$1 ATÉ AGORA
 P73|$1 hábitos com $2 registos
-P74|$1 tarefas
+P74|one=$1 tarefa‖other=$1 tarefas
 P75|$1 dos hábitos já existem aqui e recebem os dias extra.
 P76|Importar de $1
 P77|Importado: $1 hábitos novos, $2 registos, $3 tarefas
-P78|Daqui a $1 dias
+P78|one=Daqui a $1 dia‖other=Daqui a $1 dias
 P79|A versão $1 está disponível
 754|Desfeito
 755|Refeito
@@ -923,4 +923,12 @@ P89|Tens a versão $1.
 834|Restaurar esta cópia?
 835|Restaurar substitui os dados neste dispositivo. Podes desfazer logo a seguir.
 P90|Em pausa desde $1
-P91|$1 hábitos, $2 tarefas, $3 objetivos
+836|Sequência atual
+837|Registos
+838|Dias feitos nos últimos 6 meses
+839|Cada mês
+840|Notas
+841|Pausas
+842|agora
+843|Detalhes
+P91|Detalhes de $1

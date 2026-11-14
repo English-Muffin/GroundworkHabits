@@ -642,14 +642,14 @@
 P1|$1 / $2 abitudini completate
 P2|$1 / $2 completati
 P3|$1 obiettivi · $2 raggiunti
-P4|$1 congelamenti della serie da parte
-P5|$1 congelamenti della serie
+P4|one=$1 congelamento della serie da parte‖other=$1 congelamenti della serie da parte
+P5|one=$1 congelamento della serie‖other=$1 congelamenti della serie
 P6|$1 giorni perfetti negli ultimi 12 mesi
 P7|$1/$2 abitudini fatte oggi
 P8|$1% rispetto alla scorsa settimana
 P9|Progresso medio $1%
 P10|Costanza negli ultimi $1 giorni
-P11|Ultimi $1 giorni
+P11|one=Ultimo giorno‖other=Ultimi $1 giorni
 P12|Attivo in $1 di $2 aree di vita
 P13|Ogni mese il giorno $1
 P14|Ogni settimana: $1
@@ -660,9 +660,9 @@ P18|Fissa $1
 P19|Sblocca $1
 P20|$1, mancata. Tocca per segnarla come fatta
 P21|Modifica l’area $1
-P22|Mancano $1 giorni
+P22|one=Manca $1 giorno‖other=Mancano $1 giorni
 P23|Manca 1 giorno
-P24|$1 giorni di ritardo
+P24|one=$1 giorno di ritardo‖other=$1 giorni di ritardo
 P25|$1 di $2 passi
 P26|$1 di $2 attività fatte
 P27|$1 di $2 attività fatte · prossima: $3
@@ -680,8 +680,8 @@ P38|Esiste già un’area chiamata $1
 P39|Aggiunto $1 a $2
 P40|$1 fatto
 P41|Ripristinato. Ancora $1 da annullare
-P42|$1 attività eliminate
-P43|$1 eventi del calendario sincronizzati
+P42|one=$1 attività eliminata‖other=$1 attività eliminate
+P43|one=$1 evento del calendario sincronizzato‖other=$1 eventi del calendario sincronizzati
 P44|Sincronizzazione dal tuo calendario, ultima $1
 P45|Backup automatico ogni settimana, ultimo $1
 P46|Colore $1
@@ -697,14 +697,14 @@ P55|Promemoria alle $1. Cambia
 P56|$1 scade tra una settimana
 P57|$1 scade oggi
 P58|Elimina $1
-P59|$1 giorni
+P59|one=$1 giorno‖other=$1 giorni
 441|Backup automatico
 442|Ogni settimana
 443|Ogni mese
 444|Auto
 445|Ancora nessun backup
 446|Mesi mostrati
-P60|Ultimi $1 mesi
+P60|one=Ultimo mese‖other=Ultimi $1 mesi
 P61|$1 giorni perfetti negli ultimi $2 mesi
 P62|Backup automatico, ultimo $1
 P63|Abitudini giornaliere completate negli ultimi $1 mesi
@@ -824,11 +824,11 @@ P70|Gli eventi si sincronizzano ogni 15 minuti, ultima $1
 P71|$1 min
 P72|$1 FINORA
 P73|$1 abitudini con $2 spunte
-P74|$1 attività
+P74|one=$1 attività‖other=$1 attività
 P75|$1 delle abitudini esistono già qui e ricevono i giorni in più.
 P76|Importa da $1
 P77|Importato: $1 nuove abitudini, $2 spunte, $3 attività
-P78|Tra $1 giorni
+P78|one=Tra $1 giorno‖other=Tra $1 giorni
 P79|È disponibile la versione $1
 754|Annullato
 755|Ripristinato
@@ -923,4 +923,12 @@ P89|Hai la versione $1.
 834|Ripristinare questo backup?
 835|Il ripristino sostituisce i dati su questo dispositivo. Puoi annullarlo subito dopo.
 P90|In pausa dal $1
-P91|$1 abitudini, $2 attività, $3 obiettivi
+836|Serie attuale
+837|Registrazioni
+838|Giorni fatti negli ultimi 6 mesi
+839|Ogni mese
+840|Note
+841|Pause
+842|ora
+843|Dettagli
+P91|Dettagli di $1

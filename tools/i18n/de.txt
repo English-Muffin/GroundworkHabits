@@ -642,14 +642,14 @@
 P1|$1 / $2 Gewohnheiten erledigt
 P2|$1 / $2 erledigt
 P3|$1 Ziele · $2 erreicht
-P4|$1 Serien-Freezes gesammelt
-P5|$1 Serien-Freezes
+P4|one=$1 Serien-Freeze gesammelt‖other=$1 Serien-Freezes gesammelt
+P5|one=$1 Serien-Freeze‖other=$1 Serien-Freezes
 P6|$1 perfekte Tage in den letzten 12 Monaten
 P7|$1/$2 Gewohnheiten heute erledigt
 P8|$1 % gegenüber letzter Woche
 P9|Durchschnittlicher Fortschritt $1 %
 P10|Beständigkeit der letzten $1 Tage
-P11|Letzte $1 Tage
+P11|one=Letzter Tag‖other=Letzte $1 Tage
 P12|Aktiv in $1 von $2 Lebensbereichen
 P13|Jeden Monat am $1.
 P14|Jede Woche: $1
@@ -660,9 +660,9 @@ P18|$1 anheften
 P19|$1 lösen
 P20|$1, verpasst. Tippen, um als erledigt zu markieren
 P21|Bereich $1 bearbeiten
-P22|Noch $1 Tage
+P22|one=Noch $1 Tag‖other=Noch $1 Tage
 P23|Noch 1 Tag
-P24|$1 Tage überfällig
+P24|one=$1 Tag überfällig‖other=$1 Tage überfällig
 P25|$1 von $2 Schritten
 P26|$1 von $2 Aufgaben erledigt
 P27|$1 von $2 Aufgaben erledigt · als Nächstes: $3
@@ -680,8 +680,8 @@ P38|Es gibt schon einen Bereich namens $1
 P39|$1 zu $2 hinzugefügt
 P40|$1 erledigt
 P41|Wiederhergestellt. Noch $1 rückgängig zu machen
-P42|$1 Aufgaben gelöscht
-P43|$1 Kalendertermine synchronisiert
+P42|one=$1 Aufgabe gelöscht‖other=$1 Aufgaben gelöscht
+P43|one=$1 Kalendertermin synchronisiert‖other=$1 Kalendertermine synchronisiert
 P44|Synchronisiert aus deinem Kalender, zuletzt $1
 P45|Automatische Sicherung jede Woche, zuletzt $1
 P46|Farbe $1
@@ -697,14 +697,14 @@ P55|Erinnerung um $1. Ändern
 P56|$1 ist in einer Woche fällig
 P57|$1 ist heute fällig
 P58|$1 löschen
-P59|$1 Tage
+P59|one=$1 Tag‖other=$1 Tage
 441|Automatische Sicherung
 442|Jede Woche
 443|Jeden Monat
 444|Auto
 445|Noch keine Sicherung
 446|Angezeigte Monate
-P60|Letzte $1 Monate
+P60|one=Letzter Monat‖other=Letzte $1 Monate
 P61|$1 perfekte Tage in den letzten $2 Monaten
 P62|Automatische Sicherung, zuletzt $1
 P63|Erledigte tägliche Gewohnheiten der letzten $1 Monate
@@ -824,11 +824,11 @@ P70|Termine werden alle 15 Minuten synchronisiert, zuletzt $1
 P71|$1 Min.
 P72|$1 BISHER
 P73|$1 Gewohnheiten mit $2 Häkchen
-P74|$1 Aufgaben
+P74|one=$1 Aufgabe‖other=$1 Aufgaben
 P75|$1 der Gewohnheiten gibt es hier schon; sie bekommen die zusätzlichen Tage.
 P76|Aus $1 importieren
 P77|Importiert: $1 neue Gewohnheiten, $2 Häkchen, $3 Aufgaben
-P78|In $1 Tagen
+P78|one=In $1 Tag‖other=In $1 Tagen
 P79|Version $1 ist verfügbar
 754|Rückgängig gemacht
 755|Wiederhergestellt
@@ -923,4 +923,12 @@ P89|Du hast Version $1.
 834|Dieses Backup wiederherstellen?
 835|Das Wiederherstellen ersetzt die Daten auf diesem Gerät. Du kannst es direkt danach rückgängig machen.
 P90|Pausiert seit $1
-P91|$1 Gewohnheiten, $2 Aufgaben, $3 Ziele
+836|Aktuelle Serie
+837|Einträge
+838|Erledigte Tage der letzten 6 Monate
+839|Jeder Monat
+840|Notizen
+841|Pausen
+842|jetzt
+843|Details
+P91|Details zu $1

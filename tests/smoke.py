@@ -261,7 +261,7 @@ async def desktop(b):
     await p2.fill('#impPin', '1111'); await p2.click('[data-act=impok]'); await p2.wait_for_timeout(1500); wrongk = await p2.locator('#impPin').count()
     await p2.fill('#impPin', '2468'); await p2.click('[data-act=impok]'); await p2.wait_for_timeout(1500)
     prev = await p2.locator('#modal [role=dialog]').inner_text(); await p2.click('[data-act=imprevok]'); await p2.wait_for_timeout(500)
-    check('a backup shows its date and contents before it replaces anything', 'habits' in prev and 'Saved' in prev, prev)
+    check('a backup shows its date and contents before it replaces anything', 'Habits' in prev and 'Saved' in prev, prev)
     check('with a PIN the exported backup is encrypted and imports only with that PIN', enct.startswith('enc1:') and 'Swim' not in enct and wrongk == 1 and await p2.evaluate("GroundworkTest.state().habits.some(h=>h.name==='Swim')"))
     await ctx2.close()
     await pg.evaluate("location.hash='today'"); await pg.reload(); await pg.wait_for_timeout(300)
@@ -511,6 +511,13 @@ async def languages(b):
     await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(200)
     r = await pg.evaluate("""async()=>{const o={dir:document.dir,nav:document.querySelector('#nav').innerText,gear:document.querySelector('#gearBtn').getBoundingClientRect().left<innerWidth/2,flip:getComputedStyle(document.querySelector('.ic.flip')||document.body).transform};
       for(const h of ['#habits','#tasks','#goals','#insights']){location.hash=h;await new Promise(r=>setTimeout(r,200));if(document.documentElement.scrollWidth>innerWidth+1)o.over=h}return o}""")
+    # plural forms: the number picks the right word form in each language
+    await pg.evaluate("localStorage.setItem('groundwork-prefs',JSON.stringify({lang:'ru'}))"); await pg.reload(); await pg.wait_for_timeout(300)
+    ru = await pg.evaluate("['1 day','3 days','5 days','21 days'].map(GroundworkTest.tx)")
+    await pg.evaluate("localStorage.setItem('groundwork-prefs',JSON.stringify({lang:'de'}))"); await pg.reload(); await pg.wait_for_timeout(300)
+    de = await pg.evaluate("['In 1 day','In 4 days'].map(GroundworkTest.tx)")
+    check('plural forms: Russian 1/3/5/21 days and German 1/4 days use the right word', ru == ['1 день', '3 дня', '5 дней', '21 день'] and de == ['In 1 Tag', 'In 4 Tagen'], [ru, de])
+    await pg.evaluate("localStorage.setItem('groundwork-prefs',JSON.stringify({lang:'he'}))"); await pg.reload(); await pg.wait_for_timeout(300)
     check('language: Hebrew lays the app out right to left without sideways overflow', r['dir'] == 'rtl' and 'היום' in r['nav'] and r['gear'] and 'over' not in r and not errs, [r, errs])
     await ctx.close()
 
@@ -621,13 +628,23 @@ async def pauseAndTimes(b):
     await pg.click(f'[data-act=edithabit][data-h="{hid}"]'); await pg.click('#modal [data-act=mpause]'); await pg.wait_for_timeout(200)
     await pg.click(f'[data-act=edithabit][data-h="{hid}"]'); await pg.click('#modal [data-act=mpause]'); await pg.wait_for_timeout(200)
     check('pausing and resuming on the same day leaves no pause behind', await pg.evaluate(f"!GroundworkTest.state().habits.find(h=>h.id==='{hid}').off"))
+    # habit details: tapping the stats opens streaks, months and pauses
+    await pg.evaluate(f"GroundworkTest.state().habits.find(h=>h.id==='{hid}').off=[{{f:'2026-01-01',t:'2026-01-05'}}]")
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(100); await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(300)
+    await pg.click(f'.hrow[data-id="{hid}"] [data-act=hdetail]'); await pg.wait_for_timeout(200)
+    det = await pg.locator('#modal [role=dialog]').inner_text()
+    n182 = await pg.locator('#modal .hgrid i').count()
+    check('habit details show streaks, each month and pauses', 'Current streak' in det and 'each month' in det.lower() and '2026-01-01' in det and n182 == 182, [n182, det])
+    await pg.click('#modal [data-act=edithabit]'); await pg.wait_for_timeout(200)
+    check('Edit in the details opens the habit dialog', await pg.locator('#mName').count() == 1)
+    await pg.click('#modal [data-act=modalclose]'); await pg.wait_for_timeout(200)
     # backup preview: Cancel leaves data alone
     before = await pg.evaluate("GroundworkTest.state().habits.length")
     f = os.path.join(tempfile.gettempdir(), 'gw-prev.json'); open(f, 'w', encoding='utf-8').write(json.dumps({'v': 1, 'at': 1767225600000, 'habits': [{'id': 'x1', 'name': 'Only one', 'type': 'daily'}], 'log': {}, 'tasks': {}, 'goals': []}))
     await pg.click('[data-act=gear]'); await pg.set_input_files('#impFile', f); await pg.wait_for_timeout(300)
     txt = await pg.locator('#modal [role=dialog]').inner_text()
     await pg.click('#modal [data-act=modalclose]'); await pg.wait_for_timeout(200)
-    check('backup preview shows 1 habit and Cancel changes nothing', '1 habits' in txt and await pg.evaluate("GroundworkTest.state().habits.length") == before, txt)
+    check('backup preview shows 1 habit and Cancel changes nothing', 'Habits 1' in txt and await pg.evaluate("GroundworkTest.state().habits.length") == before, txt)
     await ctx.close()
 
 async def highContrast(b):
