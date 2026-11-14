@@ -41,7 +41,7 @@ document.addEventListener('click',e=>{
     case 'import':menuOpen=false;persist=false;$('#impFile').click();break;
     case 'impext':{persist=false;const f=document.createElement('input');f.type='file';f.accept='.zip,.csv,.json,text/csv,application/json,application/zip';
       f.onchange=()=>{const file=f.files[0];if(!file)return;parseExternal(file).then(d=>{if(!d.habits.length&&!d.tasks.length){toast('Nothing to import in that file');return}modal={kind:'impext',d};render()}).catch(()=>toast('That file can’t be read. Use a Loop export, a Habitica export or a .csv'))};f.click();break}
-    case 'impextok':{const r=mergeExternal(modal.d);modal=null;toast('Imported: '+r.nh+' new habits, '+r.nc+' check-ins, '+r.nt+' tasks');break}
+    case 'impextok':{const r=mergeExternal(modal.d);modal=null;toast('Imported: '+r.nh+' new '+pl(r.nh,'habit').replace(/^\d+ /,'')+', '+pl(r.nc,'check-in')+', '+pl(r.nt,'task'));break}
     case 'fresh':
       if(confirmReset){S=empty();hist=[];redos=[];histJ=null;P.cal='';P.calAt=0;applyPrefs();confirmReset=false;menuOpen=false;toast('Everything erased');if(view==='settings'){save();location.hash=setBack;return}}else{confirmReset=true;persist=false}break;
     case 'goto':location.hash=t.dataset.v;persist=false;return;
@@ -134,6 +134,7 @@ document.addEventListener('click',e=>{
       if(pausedNow(h)){const p=h.off.find(x=>!x.t||x.t>=td);if(p.f>y)h.off.splice(h.off.indexOf(p),1);else p.t=y;if(!h.off.length)delete h.off;toast('Habit resumed')}
       else{(h.off=h.off||[]).push({f:td});toast('Habit paused')}modal=null;break}
     case 'imprevok':{persist=false;const d=modal.d;modal=null;applyImport(d);break}
+    case 'hskip':{const h=findH(t.dataset.h),k=dk(TODAY);if(!h)break;const s=h.skip=h.skip||[];if(s.includes(k))s.splice(s.indexOf(k),1);else s.push(k);if(!s.length)delete h.skip;break}
     case 'hdetail':modal={kind:'hdetail',h:t.dataset.h};persist=false;break;
     case 'mrest':{const i=+t.dataset.v,r=modal.rest=modal.rest||[];if(r.includes(i))r.splice(r.indexOf(i),1);else if(r.length<6)r.push(i);else toast('Keep at least one day to do the habit');persist=false;break}
     case 'mcolor':setColor('habit',t.dataset.v);persist=false;break;
@@ -331,6 +332,7 @@ document.addEventListener('change',e=>{
   if(e.target.dataset&&e.target.dataset.mind){render()}
   if(e.target.id==='lockSel'){P.lockIdle=+e.target.value;applyPrefs();render();return}
   if(e.target.id==='bakSel'){P.bakEvery=+e.target.value;applyPrefs();autoBackup();return}
+  if(e.target.id==='hSort'){P.hsort=e.target.value||undefined;applyPrefs();render();return}
   if(e.target.id==='heatSel'){P.heatM=e.target.value==='auto'?undefined:+e.target.value;applyPrefs();render();return}
   if(e.target.id==='langSel'){P.lang=e.target.value||undefined;if(!P.lang)delete P.lang;applyPrefs();location.reload();return}
   if(e.target.id==='gArea'&&modal&&modal.kind==='goal'){goalForm();if(!modal.id)render()}

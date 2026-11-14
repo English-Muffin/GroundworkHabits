@@ -641,10 +641,10 @@
 753|Ler 20 minutos
 P1|$1 / $2 hábitos concluídos
 P2|$1 / $2 concluídos
-P3|$1 objetivos · $2 alcançados
+P3|one=$1 objetivo · $2 alcançado‖other=$1 objetivos · $2 alcançados
 P4|one=$1 congelamento de sequência guardado‖other=$1 congelamentos de sequência guardados
 P5|one=$1 congelamento de sequência‖other=$1 congelamentos de sequência
-P6|$1 dias perfeitos nos últimos 12 meses
+P6|one=$1 dia perfeito nos últimos 12 meses‖other=$1 dias perfeitos nos últimos 12 meses
 P7|$1/$2 hábitos feitos hoje
 P8|$1% vs semana passada
 P9|Progresso médio $1%
@@ -663,8 +663,8 @@ P21|Editar área $1
 P22|one=Falta $1 dia‖other=Faltam $1 dias
 P23|Falta 1 dia
 P24|one=$1 dia de atraso‖other=$1 dias de atraso
-P25|$1 de $2 passos
-P26|$1 de $2 tarefas feitas
+P25|n2:one=$1 de $2 passo‖other=$1 de $2 passos
+P26|n2:one=$1 de $2 tarefa feita‖other=$1 de $2 tarefas feitas
 P27|$1 de $2 tarefas feitas · a seguir: $3
 P28|Próximo passo: $1
 P29|$1 de $2 vezes · $3
@@ -705,9 +705,9 @@ P59|one=$1 dia‖other=$1 dias
 445|Ainda sem cópia
 446|Meses visíveis
 P60|one=Último mês‖other=Últimos $1 meses
-P61|$1 dias perfeitos nos últimos $2 meses
+P61|one=$1 dia perfeito nos últimos $2 meses‖other=$1 dias perfeitos nos últimos $2 meses
 P62|Cópia automática, última $1
-P63|Hábitos diários concluídos nos últimos $1 meses
+P63|one=Hábitos diários concluídos no último mês‖other=Hábitos diários concluídos nos últimos $1 meses
 447|Um ficheiro com todos os teus dados
 448|Uma nota curta em qualquer dia de um hábito
 449|Um resumo da semana passada ao domingo
@@ -823,11 +823,11 @@ P69|Guarda as 8 cópias mais recentes em $1
 P70|Os eventos sincronizam a cada 15 minutos, última $1
 P71|$1 min
 P72|$1 ATÉ AGORA
-P73|$1 hábitos com $2 registos
+P73|one=$1 hábito com $2 registos‖other=$1 hábitos com $2 registos
 P74|one=$1 tarefa‖other=$1 tarefas
 P75|$1 dos hábitos já existem aqui e recebem os dias extra.
 P76|Importar de $1
-P77|Importado: $1 hábitos novos, $2 registos, $3 tarefas
+P77|one=Importado: $1 hábito novo, $2 registos, $3 tarefas‖other=Importado: $1 hábitos novos, $2 registos, $3 tarefas
 P78|one=Daqui a $1 dia‖other=Daqui a $1 dias
 P79|A versão $1 está disponível
 754|Desfeito
@@ -932,3 +932,11 @@ P90|Em pausa desde $1
 842|agora
 843|Detalhes
 P91|Detalhes de $1
+844|Saltado hoje
+845|A tua ordem
+846|Sequência mais longa
+847|A–Z
+848|Mais falhados este mês
+849|Ordenar hábitos
+P92|Saltar hoje: $1
+P93|Melhor mês: $1

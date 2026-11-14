@@ -641,10 +641,10 @@
 753|20 Minuten lesen
 P1|$1 / $2 Gewohnheiten erledigt
 P2|$1 / $2 erledigt
-P3|$1 Ziele · $2 erreicht
+P3|one=$1 Ziel · $2 erreicht‖other=$1 Ziele · $2 erreicht
 P4|one=$1 Serien-Freeze gesammelt‖other=$1 Serien-Freezes gesammelt
 P5|one=$1 Serien-Freeze‖other=$1 Serien-Freezes
-P6|$1 perfekte Tage in den letzten 12 Monaten
+P6|one=$1 perfekter Tag in den letzten 12 Monaten‖other=$1 perfekte Tage in den letzten 12 Monaten
 P7|$1/$2 Gewohnheiten heute erledigt
 P8|$1 % gegenüber letzter Woche
 P9|Durchschnittlicher Fortschritt $1 %
@@ -663,8 +663,8 @@ P21|Bereich $1 bearbeiten
 P22|one=Noch $1 Tag‖other=Noch $1 Tage
 P23|Noch 1 Tag
 P24|one=$1 Tag überfällig‖other=$1 Tage überfällig
-P25|$1 von $2 Schritten
-P26|$1 von $2 Aufgaben erledigt
+P25|n2:one=$1 von $2 Schritt‖other=$1 von $2 Schritten
+P26|n2:one=$1 von $2 Aufgabe erledigt‖other=$1 von $2 Aufgaben erledigt
 P27|$1 von $2 Aufgaben erledigt · als Nächstes: $3
 P28|Nächster Schritt: $1
 P29|$1 von $2 Mal · $3
@@ -672,7 +672,7 @@ P30|$1 von $2
 P31|$1 jetzt · Ziel $2 (von $3)
 P32|Fügt jede Woche $1 hinzu
 P33|Fügt jeden Monat $1 hinzu
-P34|An $1 Tagen hinzugefügt
+P34|one=An $1 Tag hinzugefügt‖other=An $1 Tagen hinzugefügt
 P35|Groundwork Habits speichert jetzt in $1
 P36|Ziel erreicht: $1
 P37|$1 gespeichert
@@ -705,9 +705,9 @@ P59|one=$1 Tag‖other=$1 Tage
 445|Noch keine Sicherung
 446|Angezeigte Monate
 P60|one=Letzter Monat‖other=Letzte $1 Monate
-P61|$1 perfekte Tage in den letzten $2 Monaten
+P61|one=$1 perfekter Tag in den letzten $2 Monaten‖other=$1 perfekte Tage in den letzten $2 Monaten
 P62|Automatische Sicherung, zuletzt $1
-P63|Erledigte tägliche Gewohnheiten der letzten $1 Monate
+P63|one=Erledigte tägliche Gewohnheiten im letzten Monat‖other=Erledigte tägliche Gewohnheiten der letzten $1 Monate
 447|Eine Datei mit all deinen Daten
 448|Eine kurze Notiz an jedem Tag einer Gewohnheit
 449|Ein Rückblick auf die letzte Woche am Sonntag
@@ -823,11 +823,11 @@ P69|Behält die 8 neuesten Kopien in $1
 P70|Termine werden alle 15 Minuten synchronisiert, zuletzt $1
 P71|$1 Min.
 P72|$1 BISHER
-P73|$1 Gewohnheiten mit $2 Häkchen
+P73|one=$1 Gewohnheit mit $2 Häkchen‖other=$1 Gewohnheiten mit $2 Häkchen
 P74|one=$1 Aufgabe‖other=$1 Aufgaben
 P75|$1 der Gewohnheiten gibt es hier schon; sie bekommen die zusätzlichen Tage.
 P76|Aus $1 importieren
-P77|Importiert: $1 neue Gewohnheiten, $2 Häkchen, $3 Aufgaben
+P77|one=Importiert: $1 neue Gewohnheit, $2 Häkchen, $3 Aufgaben‖other=Importiert: $1 neue Gewohnheiten, $2 Häkchen, $3 Aufgaben
 P78|one=In $1 Tag‖other=In $1 Tagen
 P79|Version $1 ist verfügbar
 754|Rückgängig gemacht
@@ -932,3 +932,11 @@ P90|Pausiert seit $1
 842|jetzt
 843|Details
 P91|Details zu $1
+844|Heute übersprungen
+845|Eigene Reihenfolge
+846|Längste Serie
+847|A–Z
+848|Diesen Monat am häufigsten verpasst
+849|Gewohnheiten sortieren
+P92|Heute überspringen: $1
+P93|Bester Monat: $1

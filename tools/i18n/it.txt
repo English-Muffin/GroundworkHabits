@@ -641,10 +641,10 @@
 753|Leggere 20 minuti
 P1|$1 / $2 abitudini completate
 P2|$1 / $2 completati
-P3|$1 obiettivi · $2 raggiunti
+P3|one=$1 obiettivo · $2 raggiunti‖other=$1 obiettivi · $2 raggiunti
 P4|one=$1 congelamento della serie da parte‖other=$1 congelamenti della serie da parte
 P5|one=$1 congelamento della serie‖other=$1 congelamenti della serie
-P6|$1 giorni perfetti negli ultimi 12 mesi
+P6|one=$1 giorno perfetto negli ultimi 12 mesi‖other=$1 giorni perfetti negli ultimi 12 mesi
 P7|$1/$2 abitudini fatte oggi
 P8|$1% rispetto alla scorsa settimana
 P9|Progresso medio $1%
@@ -663,7 +663,7 @@ P21|Modifica l’area $1
 P22|one=Manca $1 giorno‖other=Mancano $1 giorni
 P23|Manca 1 giorno
 P24|one=$1 giorno di ritardo‖other=$1 giorni di ritardo
-P25|$1 di $2 passi
+P25|n2:one=$1 di $2 passo‖other=$1 di $2 passi
 P26|$1 di $2 attività fatte
 P27|$1 di $2 attività fatte · prossima: $3
 P28|Prossimo passo: $1
@@ -705,9 +705,9 @@ P59|one=$1 giorno‖other=$1 giorni
 445|Ancora nessun backup
 446|Mesi mostrati
 P60|one=Ultimo mese‖other=Ultimi $1 mesi
-P61|$1 giorni perfetti negli ultimi $2 mesi
+P61|one=$1 giorno perfetto negli ultimi $2 mesi‖other=$1 giorni perfetti negli ultimi $2 mesi
 P62|Backup automatico, ultimo $1
-P63|Abitudini giornaliere completate negli ultimi $1 mesi
+P63|one=Abitudini giornaliere completate nell’ultimo mese‖other=Abitudini giornaliere completate negli ultimi $1 mesi
 447|Un file con tutti i tuoi dati
 448|Una breve nota in qualsiasi giorno di un’abitudine
 449|Un riepilogo della settimana scorsa la domenica
@@ -823,11 +823,11 @@ P69|Tiene le 8 copie più recenti in $1
 P70|Gli eventi si sincronizzano ogni 15 minuti, ultima $1
 P71|$1 min
 P72|$1 FINORA
-P73|$1 abitudini con $2 spunte
+P73|one=$1 abitudine con $2 spunte‖other=$1 abitudini con $2 spunte
 P74|one=$1 attività‖other=$1 attività
 P75|$1 delle abitudini esistono già qui e ricevono i giorni in più.
 P76|Importa da $1
-P77|Importato: $1 nuove abitudini, $2 spunte, $3 attività
+P77|one=Importato: $1 nuova abitudine, $2 spunte, $3 attività‖other=Importato: $1 nuove abitudini, $2 spunte, $3 attività
 P78|one=Tra $1 giorno‖other=Tra $1 giorni
 P79|È disponibile la versione $1
 754|Annullato
@@ -932,3 +932,11 @@ P90|In pausa dal $1
 842|ora
 843|Dettagli
 P91|Dettagli di $1
+844|Saltato oggi
+845|Il tuo ordine
+846|Serie più lunga
+847|A–Z
+848|Più mancate questo mese
+849|Ordina abitudini
+P92|Salta oggi: $1
+P93|Mese migliore: $1

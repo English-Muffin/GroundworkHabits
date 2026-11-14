@@ -40,7 +40,7 @@ function gLine(g){const k=gKind(g),u=g.unit||'';
   if(k==='num')return fmtU(gSum(g),u)+' of '+fmtU(g.target||0,u);
   if(k==='range'){const c=gLast(g);return c===undefined?'Starts at '+fmtU(g.start,u):fmtU(c,u)+' now · goal '+fmtU(g.target,u)+' (from '+fmtU(g.start,u)+')'}
   if(k==='habit'){const h=findH(g.habit);return h?gHabitN(g)+' of '+(g.target||0)+' times · '+esc(h.name):'The linked habit was deleted'}
-  if(k==='tasks'){const t=gTasks(g),nx=t.find(x=>!x.it.done);return t.filter(x=>x.it.done).length+' of '+t.length+' tasks done'+(nx?' · next: '+esc(nx.it.text)+' ('+dmy(new Date(nx.k+'T00:00'))+')':'')}
+  if(k==='tasks'){const t=gTasks(g),nx=t.find(x=>!x.it.done);return t.filter(x=>x.it.done).length+' of '+pl(t.length,'task')+' done'+(nx?' · next: '+esc(nx.it.text)+' ('+dmy(new Date(nx.k+'T00:00'))+')':'')}
   return ''}
 // forecast: when the goal is reached at the pace so far (amount, from-to, habit goals; needs a week of history)
 function gForecast(g){const k=gKind(g),p=gPct(g);if(p>=100||p<=0||g.arch||!['num','range','habit'].includes(k))return null;
@@ -68,7 +68,7 @@ const gState=g=>gPct(g)>=100?['Reached','ok']:gLeft(g)!==null&&gLeft(g)<0?['Over
 const ACOL={Health:'#22c55e',Fitness:'#f43f5e',Career:'#3b82f6',Money:'#f59e0b',Learning:'#8b5cf6',Relationships:'#ec4899',Family:'#fb7185',Fun:'#14b8a6',Home:'#a3a3a3',Mindset:'#6366f1'};
 function goalCard(g){const p=gPct(g),st=gState(g),l=gLeft(g),next=(g.steps||[]).find(x=>!x.done),sd=(g.steps||[]).filter(x=>x.done).length;
   return '<section class="card goal2" data-drag="goals" data-id="'+g.id+'">'+GRIP('goal','cg')+'<div class="g2h"><h3><button class="nb" data-act="gopen" data-g="'+g.id+'">'+esc(g.title)+'</button></h3><button class="g2pin'+(g.pin?' on':'')+'" data-act="gpin" data-g="'+g.id+'" role="checkbox" aria-checked="'+!!g.pin+'" aria-label="'+(g.pin?'Unpin':'Pin')+' '+esc(g.title)+'">'+ic('pin')+'</button></div>'
-   +'<div class="g2m"><span class="g2st '+st[1]+'">'+st[0]+'</span><span class="g2a"><i style="--c:'+areaCol(g.area)+'"></i>'+esc(g.area)+'</span>'+(l===null||p>=100?'':'<span class="g2d'+(l<0?' late':'')+'">'+(l<0?-l+(l===-1?' day over':' days over'):l===0?'Due today':l+(l===1?' day to go':' days to go'))+'</span>')+(g.steps&&g.steps.length?'<span>'+sd+' of '+g.steps.length+' steps</span>':'')+'</div>'
+   +'<div class="g2m"><span class="g2st '+st[1]+'">'+st[0]+'</span><span class="g2a"><i style="--c:'+areaCol(g.area)+'"></i>'+esc(g.area)+'</span>'+(l===null||p>=100?'':'<span class="g2d'+(l<0?' late':'')+'">'+(l<0?-l+(l===-1?' day over':' days over'):l===0?'Due today':l+(l===1?' day to go':' days to go'))+'</span>')+(g.steps&&g.steps.length?'<span>'+sd+' of '+pl(g.steps.length,'step')+'</span>':'')+'</div>'
    +(next?'<div class="g2n">Next step: '+esc(next.text)+(next.due?' · '+dmy(new Date(next.due+'T00:00')):'')+'</div>':'')
    +(gLine(g)?'<div class="g2n g2v"><span>'+gLine(g)+'</span>'+(gKind(g)==='num'||gKind(g)==='range'?'<button class="btn ghost g2add" data-act="gval" data-g="'+g.id+'">'+(gKind(g)==='num'?'+ Add':'Log value')+'</button>':'')+'</div>':'')
    +(()=>{const f=gForecast(g);return f?'<div class="g2n g2fc'+(f.late?' late':'')+'">'+f.txt+'</div>':''})()

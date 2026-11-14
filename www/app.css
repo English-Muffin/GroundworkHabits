@@ -740,3 +740,4 @@ body{overflow-wrap:anywhere}.pnav a,.tsi,.g2area,.g2aw,.lrow .top>*{min-width:0}
 .mod h2 .tdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);vertical-align:2px}
 .hdh .hmon,.hdh .hgrid{grid-template-columns:repeat(var(--hw),minmax(0,1fr));gap:2px}.hdh .hcol{gap:2px}
 .hdm .tr{height:6px;background:var(--track);border-radius:99px;overflow:hidden}.hdm .tr i{display:block;height:100%;background:var(--teal);border-radius:99px}
+.skb.on{color:var(--teal)}

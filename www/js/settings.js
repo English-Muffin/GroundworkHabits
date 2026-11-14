@@ -180,7 +180,7 @@ function vModal(){
   if(modal.kind==='tpl')return tplHtml();
   if(modal.kind==='impext'){const d=modal.d,c=d.habits.reduce((n,h)=>n+Object.keys(h.log).length,0),ex=d.habits.filter(h=>S.habits.some(y=>y.name.toLowerCase()===h.name.toLowerCase())).length;
     return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Import"><h2>Import from '+esc(d.src)+'</h2>'
-     +'<p class="sub" style="margin:0"><span>'+d.habits.length+' habits with '+c+' check-ins</span>'+(d.tasks.length?' · <span>'+d.tasks.length+' tasks</span>':'')+'</p>'+(ex?'<p class="sub" style="margin:0">'+ex+' of the habits already exist here and get the extra days.</p>':'')+'<p class="sub" style="margin:0">Nothing you have is removed.</p>'
+     +'<p class="sub" style="margin:0"><span>'+pl(d.habits.length,'habit')+' with '+pl(c,'check-in')+'</span>'+(d.tasks.length?' · <span>'+d.tasks.length+' tasks</span>':'')+'</p>'+(ex?'<p class="sub" style="margin:0">'+ex+' of the habits already exist here and get the extra days.</p>':'')+'<p class="sub" style="margin:0">Nothing you have is removed.</p>'
      +(d.habits.length?'<div class="tpl"><ul>'+d.habits.slice(0,30).map(h=>'<li>'+esc(h.name)+'</li>').join('')+(d.habits.length>30?'<li>+'+(d.habits.length-30)+'</li>':'')+'</ul></div>':'')
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Cancel</button><button class="btn" data-act="impextok">Import</button></div></div></div>'}
   if(modal.kind==='area')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="'+(modal.old?'Edit area':'New area')+'"><h2>'+(modal.old?'Edit area':'New life area')+'</h2>'

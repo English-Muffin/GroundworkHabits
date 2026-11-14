@@ -29,8 +29,10 @@ if(LANG!=='en'){const loc=LANG==='zh'?'zh-CN':LANG==='ar'?'ar-u-nu-latn':LANG,f=
   for(let i=0;i<7;i++)DAYS[i]=cap(f({weekday:'long'},new Date(2023,0,1+i)));
   for(let i=0;i<12;i++){MONTHS[i]=cap(f({month:'long'},new Date(2023,i,15)));MON3[i]=cap(f({month:'short'},new Date(2023,i,15)).replace('.',''))}}
 // a pattern translation may hold plural forms "one=…‖few=…‖other=…"; the first number in the text picks one
+// English counts: pl(1,'habit') = '1 habit', pl(3,'habit') = '3 habits'
+const pl=(n,w)=>n+' '+w+(n===1?'':'s');
 const PLR=new Intl.PluralRules(LANG==='ar'?'ar-u-nu-latn':LANG);
-function plural(rep,m){if(!rep.includes('‖'))return rep;const n=m.slice(1,-2).find(x=>/^\d+$/.test(x)),f={};rep.split('‖').forEach(x=>{const i=x.indexOf('=');f[x.slice(0,i)]=x.slice(i+1)});return (n!==undefined&&f[PLR.select(+n)])||f.other}
+function plural(rep,m){if(!rep.includes('‖'))return rep;let ix=0;rep=rep.replace(/^n(\d):/,(_,d)=>{ix=+d;return ''});const nums=m.slice(1,-2).filter(x=>/^\d+$/.test(x)),n=ix?nums[ix-1]:nums[0],f={};rep.split('‖').forEach(x=>{const i=x.indexOf('=');f[x.slice(0,i)]=x.slice(i+1)});return (n!==undefined&&f[PLR.select(+n)])||f.other}
 function tx(s){if(LANG==='en'||!s)return s;const k=String(s).trim();if(!k)return s;const v=I18.t[k];if(v!==undefined)return String(s).replace(k,v);
   for(const [re,rep] of I18P)if(re.test(k))return String(s).replace(k,k.replace(re,(...m)=>plural(rep,m).replace(/\$(\d)/g,(_,n)=>tx(m[+n])||'')));return s}
 const NOTR='[contenteditable],textarea,input,select,.nm,.nb,.hnote,.gstep span,.tk span,.g2h h3,.lrow .top span,[data-nt]';
@@ -70,9 +72,10 @@ const ICON={
   back:'<path d="m15 18-6-6 6-6"/>',
   trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  skip:'<path d="M6 6l8 6-8 6z"/><path d="M17 6v12"/>',
   prev:'<path d="M15 6l-6 6 6 6"/>',next:'<path d="M9 6l6 6-6 6"/>'
 };
-const ic=(n,c)=>'<svg class="ic'+(/^(prev|next|back)$/.test(n)?' flip':'')+(c?' '+c:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+ICON[n]+'</svg>';
+const ic=(n,c)=>'<svg class="ic'+(/^(prev|next|back|skip)$/.test(n)?' flip':'')+(c?' '+c:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+ICON[n]+'</svg>';
 const XMARK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
 const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const FLAME='<svg class="flame" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.6 5.2 5.6 5.2 10.3a5.2 5.2 0 0 1-10.4 0c0-2.1 1-3.4 2.1-4.3 0 2.1 1 3.1 2.1 3.1C11 8.5 10 5.5 12 2z"/></svg>';
@@ -249,7 +252,7 @@ function clean(d){
   if(!obj(d))return o;
   o.v=num(d.v,1,999,1);o.at=num(d.at,0,9e15,0); // last save time: the Android data folder keeps the newest copy
   (Array.isArray(d.habits)?d.habits:[]).forEach(h=>{if(!obj(h))return;const i=id(h.id);
-    o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0],target:num(h.target,1,99,1),per:num(h.per,1,7,7),track:['check','count','amount'].includes(h.track)?h.track:(num(h.target,1,99,1)>1?'count':'check'),unit:str(h.unit).replace(/[<>"'&`=]/g,'').slice(0,12),goal:Number.isFinite(+h.goal)&&+h.goal>0?Math.min(1e6,+h.goal):0,fz:obj(h.fz)?{off:!!h.fz.off,every:num(h.fz.every,3,30,7),max:num(h.fz.max,1,5,3)}:null,rem:obj(h.rem)&&/^([01]\d|2[0-3]):[0-5]\d$/.test(h.rem.t)&&['ask','alarm'].includes(h.rem.m)?{t:h.rem.t,m:h.rem.m}:null,rest:Array.isArray(h.rest)?[...new Set(h.rest.map(Number).filter(x=>Number.isInteger(x)&&x>=0&&x<7))].sort().slice(0,6):undefined,ch:obj(h.ch)&&/^\d{4}-\d{2}-\d{2}$/.test(h.ch.from)?{from:h.ch.from,days:num(h.ch.days,3,365,30)}:undefined,off:Array.isArray(h.off)?h.off.filter(p=>obj(p)&&DK.test(p.f)&&(p.t===undefined||DK.test(p.t))).slice(0,100).map(p=>p.t?{f:p.f,t:p.t}:{f:p.f}):undefined,tod:['m','a','e'].includes(h.tod)&&h.type==='daily'?h.tod:undefined});
+    o.habits.push({id:i,name:str(h.name),type:['daily','weekly','monthly'].includes(h.type)?h.type:'daily',color:/^#[0-9a-f]{6}$/i.test(h.color)?h.color.toLowerCase():COLORS[0],target:num(h.target,1,99,1),per:num(h.per,1,7,7),track:['check','count','amount'].includes(h.track)?h.track:(num(h.target,1,99,1)>1?'count':'check'),unit:str(h.unit).replace(/[<>"'&`=]/g,'').slice(0,12),goal:Number.isFinite(+h.goal)&&+h.goal>0?Math.min(1e6,+h.goal):0,fz:obj(h.fz)?{off:!!h.fz.off,every:num(h.fz.every,3,30,7),max:num(h.fz.max,1,5,3)}:null,rem:obj(h.rem)&&/^([01]\d|2[0-3]):[0-5]\d$/.test(h.rem.t)&&['ask','alarm'].includes(h.rem.m)?{t:h.rem.t,m:h.rem.m}:null,rest:Array.isArray(h.rest)?[...new Set(h.rest.map(Number).filter(x=>Number.isInteger(x)&&x>=0&&x<7))].sort().slice(0,6):undefined,ch:obj(h.ch)&&/^\d{4}-\d{2}-\d{2}$/.test(h.ch.from)?{from:h.ch.from,days:num(h.ch.days,3,365,30)}:undefined,off:Array.isArray(h.off)?h.off.filter(p=>obj(p)&&DK.test(p.f)&&(p.t===undefined||DK.test(p.t))).slice(0,100).map(p=>p.t?{f:p.f,t:p.t}:{f:p.f}):undefined,tod:['m','a','e'].includes(h.tod)&&h.type==='daily'?h.tod:undefined,skip:Array.isArray(h.skip)?h.skip.filter(k=>DK.test(k)).slice(-400):undefined});
     const LK=/^\d{4}-\d{2}(-\d{2}|-W\d)?$/,cn=obj(d.count)&&obj(d.count[h.id])?d.count[h.id]:{},nt=obj(d.notes)&&obj(d.notes[h.id])?d.notes[h.id]:{};
     o.count[i]={};Object.keys(cn).forEach(k=>{if(LK.test(k))o.count[i][k]=num(cn[k],1,99,1)});
     const am=obj(d.amt)&&obj(d.amt[h.id])?d.amt[h.id]:{};o.amt[i]={};Object.keys(am).forEach(k=>{const v=+am[k];if(LK.test(k)&&Number.isFinite(v)&&v>0)o.amt[i][k]=Math.min(1e6,Math.round(v*100)/100)});

@@ -641,10 +641,10 @@
 753|Lire 20 minutes
 P1|$1 / $2 habitudes faites
 P2|$1 / $2 terminées
-P3|$1 objectifs · $2 atteints
+P3|one=$1 objectif · $2 atteint‖other=$1 objectifs · $2 atteints
 P4|one=$1 gel de série en réserve‖other=$1 gels de série en réserve
 P5|one=$1 gel de série‖other=$1 gels de série
-P6|$1 journées parfaites sur les 12 derniers mois
+P6|one=$1 journée parfaite sur les 12 derniers mois‖other=$1 journées parfaites sur les 12 derniers mois
 P7|$1/$2 habitudes faites aujourd’hui
 P8|$1 % vs semaine dernière
 P9|Progression moyenne $1 %
@@ -663,8 +663,8 @@ P21|Modifier le domaine $1
 P22|one=Encore $1 jour‖other=Encore $1 jours
 P23|Encore 1 jour
 P24|one=$1 jour de retard‖other=$1 jours de retard
-P25|$1 étapes sur $2
-P26|$1 tâches sur $2 faites
+P25|one=$1 étape sur $2‖other=$1 étapes sur $2
+P26|one=$1 tâche sur $2 faite‖other=$1 tâches sur $2 faites
 P27|$1 tâches sur $2 faites · ensuite : $3
 P28|Prochaine étape : $1
 P29|$1 fois sur $2 · $3
@@ -705,9 +705,9 @@ P59|one=$1 jour‖other=$1 jours
 445|Pas encore de sauvegarde
 446|Mois affichés
 P60|one=Dernier mois‖other=$1 derniers mois
-P61|$1 journées parfaites sur les $2 derniers mois
+P61|one=$1 journée parfaite sur les $2 derniers mois‖other=$1 journées parfaites sur les $2 derniers mois
 P62|Sauvegarde automatique, dernière $1
-P63|Habitudes quotidiennes faites sur les $1 derniers mois
+P63|one=Habitudes quotidiennes faites le mois dernier‖other=Habitudes quotidiennes faites sur les $1 derniers mois
 447|Un fichier avec toutes tes données
 448|Une courte note sur n’importe quel jour d’une habitude
 449|Un résumé de la semaine passée le dimanche
@@ -823,11 +823,11 @@ P69|Garde les 8 copies les plus récentes dans $1
 P70|Les événements se synchronisent toutes les 15 minutes, dernière fois $1
 P71|$1 min
 P72|$1 JUSQU’ICI
-P73|$1 habitudes avec $2 pointages
+P73|one=$1 habitude avec $2 pointages‖other=$1 habitudes avec $2 pointages
 P74|one=$1 tâche‖other=$1 tâches
 P75|$1 des habitudes existent déjà ici et reçoivent les jours en plus.
 P76|Importer depuis $1
-P77|Importé : $1 nouvelles habitudes, $2 pointages, $3 tâches
+P77|one=Importé : $1 nouvelle habitude, $2 pointages, $3 tâches‖other=Importé : $1 nouvelles habitudes, $2 pointages, $3 tâches
 P78|one=Dans $1 jour‖other=Dans $1 jours
 P79|La version $1 est disponible
 754|Annulé
@@ -932,3 +932,11 @@ P90|En pause depuis le $1
 842|maintenant
 843|Détails
 P91|Détails de $1
+844|Sauté aujourd’hui
+845|Votre ordre
+846|Plus longue série
+847|A–Z
+848|Les plus manquées ce mois-ci
+849|Trier les habitudes
+P92|Sauter aujourd’hui : $1
+P93|Meilleur mois : $1

@@ -641,10 +641,10 @@
 753|20 minuten lezen
 P1|$1 / $2 gewoonten gedaan
 P2|$1 / $2 voltooid
-P3|$1 doelen · $2 bereikt
+P3|one=$1 doel · $2 bereikt‖other=$1 doelen · $2 bereikt
 P4|one=$1 reeksbevriezing bewaard‖other=$1 reeksbevriezingen bewaard
 P5|one=$1 reeksbevriezing‖other=$1 reeksbevriezingen
-P6|$1 perfecte dagen in de laatste 12 maanden
+P6|one=$1 perfecte dag in de laatste 12 maanden‖other=$1 perfecte dagen in de laatste 12 maanden
 P7|$1/$2 gewoonten vandaag gedaan
 P8|$1% t.o.v. vorige week
 P9|Gemiddelde voortgang $1%
@@ -663,8 +663,8 @@ P21|Gebied $1 bewerken
 P22|one=Nog $1 dag‖other=Nog $1 dagen
 P23|Nog 1 dag
 P24|one=$1 dag te laat‖other=$1 dagen te laat
-P25|$1 van $2 stappen
-P26|$1 van $2 taken gedaan
+P25|n2:one=$1 van $2 stap‖other=$1 van $2 stappen
+P26|n2:one=$1 van $2 taak gedaan‖other=$1 van $2 taken gedaan
 P27|$1 van $2 taken gedaan · volgende: $3
 P28|Volgende stap: $1
 P29|$1 van $2 keer · $3
@@ -672,7 +672,7 @@ P30|$1 van $2
 P31|$1 nu · doel $2 (vanaf $3)
 P32|Voegt elke week $1 toe
 P33|Voegt elke maand $1 toe
-P34|Toegevoegd op $1 dagen
+P34|one=Toegevoegd op $1 dag‖other=Toegevoegd op $1 dagen
 P35|Groundwork Habits slaat nu op in $1
 P36|Doel bereikt: $1
 P37|$1 opgeslagen
@@ -705,9 +705,9 @@ P59|one=$1 dag‖other=$1 dagen
 445|Nog geen back-up
 446|Getoonde maanden
 P60|one=Laatste maand‖other=Laatste $1 maanden
-P61|$1 perfecte dagen in de laatste $2 maanden
+P61|one=$1 perfecte dag in de laatste $2 maanden‖other=$1 perfecte dagen in de laatste $2 maanden
 P62|Automatische back-up, laatst $1
-P63|Gedane dagelijkse gewoonten in de laatste $1 maanden
+P63|one=Gedane dagelijkse gewoonten in de laatste maand‖other=Gedane dagelijkse gewoonten in de laatste $1 maanden
 447|Een bestand met al je gegevens
 448|Een korte notitie op elke dag van een gewoonte
 449|Een overzicht van vorige week op zondag
@@ -823,11 +823,11 @@ P69|Bewaart de 8 nieuwste kopieën in $1
 P70|Afspraken synchroniseren elke 15 minuten, laatst $1
 P71|$1 min
 P72|$1 TOT NU TOE
-P73|$1 gewoontes met $2 afvinkingen
+P73|one=$1 gewoonte met $2 afvinkingen‖other=$1 gewoontes met $2 afvinkingen
 P74|one=$1 taak‖other=$1 taken
 P75|$1 van de gewoontes bestaan hier al en krijgen de extra dagen.
 P76|Importeren uit $1
-P77|Geïmporteerd: $1 nieuwe gewoontes, $2 afvinkingen, $3 taken
+P77|one=Geïmporteerd: $1 nieuwe gewoonte, $2 afvinkingen, $3 taken‖other=Geïmporteerd: $1 nieuwe gewoontes, $2 afvinkingen, $3 taken
 P78|one=Over $1 dag‖other=Over $1 dagen
 P79|Versie $1 is beschikbaar
 754|Ongedaan gemaakt
@@ -932,3 +932,11 @@ P90|Gepauzeerd sinds $1
 842|nu
 843|Details
 P91|Details van $1
+844|Vandaag overgeslagen
+845|Eigen volgorde
+846|Langste reeks
+847|A–Z
+848|Deze maand het vaakst gemist
+849|Gewoontes sorteren
+P92|Vandaag overslaan: $1
+P93|Beste maand: $1

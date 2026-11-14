@@ -823,11 +823,11 @@ P69|Zachowuje 8 najnowszych kopii w $1
 P70|Wydarzenia synchronizują się co 15 minut, ostatnio $1
 P71|$1 min
 P72|$1 DO TEJ PORY
-P73|$1 nawyków z $2 odhaczeniami
+P73|one=$1 nawyk z $2 odhaczeniami‖few=$1 nawyki z $2 odhaczeniami‖many=$1 nawyków z $2 odhaczeniami‖other=$1 nawyku z $2 odhaczeniami
 P74|one=$1 zadanie‖few=$1 zadania‖many=$1 zadań‖other=$1 zadania
 P75|$1 nawyków już tu jest i dostanie dodatkowe dni.
 P76|Importuj z $1
-P77|Zaimportowano: $1 nowych nawyków, $2 odhaczeń, $3 zadań
+P77|one=Zaimportowano: $1 nowy nawyk, odhaczenia: $2, zadania: $3‖few=Zaimportowano: $1 nowe nawyki, odhaczenia: $2, zadania: $3‖many=Zaimportowano: $1 nowych nawyków, odhaczenia: $2, zadania: $3‖other=Zaimportowano: $1 nowego nawyku, odhaczenia: $2, zadania: $3
 P78|one=Za $1 dzień‖few=Za $1 dni‖many=Za $1 dni‖other=Za $1 dnia
 P79|Dostępna jest wersja $1
 754|Cofnięto
@@ -932,3 +932,11 @@ P90|Wstrzymany od $1
 842|teraz
 843|Szczegóły
 P91|Szczegóły: $1
+844|Pominięte dziś
+845|Twoja kolejność
+846|Najdłuższa seria
+847|A–Z
+848|Najczęściej pomijane w tym miesiącu
+849|Sortuj nawyki
+P92|Pomiń dziś: $1
+P93|Najlepszy miesiąc: $1

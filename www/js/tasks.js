@@ -38,7 +38,7 @@ function addTask(k){
   const v=(($('#taskInput')||{}).value||addingText).trim();if(!v){const i=$('#taskInput');if(i)i.focus();return false}
   const days=repSel.rep?repeatDates(k,repSel.rep,repSel.until):[k],sid=repSel.rep?uid():'';
   days.forEach(x=>(S.tasks[x]=S.tasks[x]||{items:[],mind:null}).items.push(Object.assign({id:uid(),text:v,done:false},sid?{rep:sid}:{})));
-  addingText='';repSel={rep:'',until:'m',open:''};save();focusSel='#taskInput';render();if(days.length>1)toast('Added on '+days.length+' days');return true;
+  addingText='';repSel={rep:'',until:'m',open:''};save();focusSel='#taskInput';render();if(days.length>1)toast('Added on '+pl(days.length,'day'));return true;
 }
 function taskAdder(k,copy){
   const items=vis((S.tasks[k]||{items:[]}).items);
