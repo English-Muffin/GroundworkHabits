@@ -107,6 +107,8 @@ async function syncReminders(){
 if(NB&&!WIDGET){NB.addListener('answer',takeAnswers);document.addEventListener('visibilitychange',()=>{if(!document.hidden)takeAnswers()})}
 if(applyRecurring())save();
 takeAnswers().then(syncReminders);
+// folder names saved by older versions could be a cloud provider's raw id: ask the phone for the current name
+if(NB&&!WIDGET&&P.andDir&&NB.folder)NB.folder().then(r=>{if(r&&r.name&&r.name!==P.andDir){P.andDir=r.name;applyPrefs()}}).catch(()=>{});
 setTimeout(()=>{autoBackup();andRead()},3000);
 checkReminder();checkHabitReminders();
 // desktop updates: "Check for updates" (manual) or once a day when switched on. The installed app downloads the new

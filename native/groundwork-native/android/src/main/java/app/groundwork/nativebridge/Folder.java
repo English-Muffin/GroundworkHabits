@@ -25,6 +25,13 @@ final class Folder {
 
     static String name(Context c, Uri tree) {
         String id = DocumentsContract.getTreeDocumentId(tree);
+        // phone storage ids are readable paths ("primary:Documents/Groundwork"); cloud providers (Drive) use opaque ids, so ask for the folder's name
+        if (!"com.android.externalstorage.documents".equals(tree.getAuthority())) {
+            try (Cursor cur = c.getContentResolver().query(DocumentsContract.buildDocumentUriUsingTree(tree, id), new String[] { DocumentsContract.Document.COLUMN_DISPLAY_NAME }, null, null, null)) {
+                if (cur != null && cur.moveToFirst() && cur.getString(0) != null && !cur.getString(0).isEmpty()) return cur.getString(0);
+            } catch (Exception e) { }
+            return "Shared folder";
+        }
         int i = id.lastIndexOf(':');
         return i >= 0 && i < id.length() - 1 ? id.substring(i + 1) : id;
     }
