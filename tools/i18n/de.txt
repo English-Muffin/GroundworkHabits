@@ -948,3 +948,13 @@ P93|Bester Monat: $1
 855|Fertig damit? Archivieren blendet sie überall aus und behält ihren Verlauf. Wiederherstellen unten auf der Gewohnheiten-Seite.
 P94|$1. $2: Aufgaben $3, erledigt $4
 P95|$1. $2: keine Aufgaben
+856|Meilensteine
+857|Seit über 2 Wochen nicht aktualisiert
+858|Ziele, die auf ein Update warten
+859|Ausblenden
+860|Tippe auf einen Tag, um seine Aufgaben zu sehen oder eine hinzuzufügen.
+861|Diese Woche öffnen
+862|Aufgabe hinzugefügt
+P96|$1-Tage-Serie: $2
+P97|$1 Tage, erreicht
+P98|$1 Tage, noch nicht erreicht

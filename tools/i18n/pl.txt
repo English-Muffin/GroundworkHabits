@@ -948,3 +948,13 @@ P93|Najlepszy miesiąc: $1
 855|Koniec z nim? Archiwizacja ukrywa go wszędzie i zachowuje historię. Przywrócisz go na dole strony Nawyki.
 P94|$1 $2: zadania $3, zrobione $4
 P95|$1 $2: brak zadań
+856|Kamienie milowe
+857|Brak aktualizacji od ponad 2 tygodni
+858|Cele czekające na aktualizację
+859|Odrzuć
+860|Dotknij dnia, aby zobaczyć jego zadania lub dodać nowe.
+861|Otwórz ten tydzień
+862|Dodano zadanie
+P96|Seria dni: $1 – $2
+P97|Dni: $1, osiągnięte
+P98|Dni: $1, jeszcze nie osiągnięte

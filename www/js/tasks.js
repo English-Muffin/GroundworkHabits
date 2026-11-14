@@ -54,11 +54,11 @@ function taskAdder(k,copy){
   if(copy&&!items.length)o+='<button class="cpy" data-act="tcopy" data-k="'+k+'">Copy yesterday’s list</button>';
   return o;
 }
-// month calendar (modal tmonth): tasks per day for a whole month; tapping a day opens its week
-function monthCal(first){const y=first.getFullYear(),m=first.getMonth(),n=dim(y,m),lead=first.getDay(),td=dk(TODAY);
+// month calendar (modal tmonth): tasks per day for a whole month; tapping a day shows its tasks, adds one there or opens its week
+function monthCal(first,sel){const y=first.getFullYear(),m=first.getMonth(),n=dim(y,m),lead=first.getDay(),td=dk(TODAY);
   let o='<div class="mcal">'+[0,1,2,3,4,5,6].map(i=>'<span class="mcw" aria-hidden="true">'+new Intl.DateTimeFormat(LANG,{weekday:'narrow'}).format(new Date(2026,2,1+i))+'</span>').join('')+'<span></span>'.repeat(lead);
   for(let d=1;d<=n;d++){const k=dkey(y,m,d),t=todo((S.tasks[k]||{items:[]}).items),dn=t.filter(x=>x.done).length;
-    o+='<button class="mcd'+(t.length?(dn===t.length?' all':' has'):'')+(k===td?' now':'')+'" data-act="tmday" data-k="'+k+'" aria-label="'+d+' '+MONTHS[m]+': '+pl(t.length,'task')+(t.length?', '+dn+' done':'')+'"><b>'+d+'</b>'+(t.length?'<small>'+dn+'/'+t.length+'</small>':'')+'</button>'}
+    o+='<button class="mcd'+(t.length?(dn===t.length?' all':' has'):'')+(k===td?' now':'')+(k===sel?' sel':'')+'" data-act="tmday" data-k="'+k+'" aria-pressed="'+(k===sel)+'" aria-label="'+d+' '+MONTHS[m]+': '+pl(t.length,'task')+(t.length?', '+dn+' done':'')+'"><b>'+d+'</b>'+(t.length?'<small>'+dn+'/'+t.length+'</small>':'')+'</button>'}
   return o+'</div>'}
 function vTasks(){
   const days=[];for(let i=0;i<7;i++)days.push(addDays(taskWeek,i));

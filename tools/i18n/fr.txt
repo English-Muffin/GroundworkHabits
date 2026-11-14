@@ -948,3 +948,13 @@ P93|Meilleur mois : $1
 855|Terminé ? L’archivage la masque partout et garde son historique. Restaurez-la en bas de Habitudes.
 P94|$1 $2 : tâches $3, faites $4
 P95|$1 $2 : aucune tâche
+856|Étapes
+857|Pas mis à jour depuis plus de 2 semaines
+858|Objectifs en attente de mise à jour
+859|Ignorer
+860|Touchez un jour pour voir ses tâches ou en ajouter une.
+861|Ouvrir cette semaine
+862|Tâche ajoutée
+P96|Série de $1 jours : $2
+P97|$1 jours, atteint
+P98|$1 jours, pas encore atteint

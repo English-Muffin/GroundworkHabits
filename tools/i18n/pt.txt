@@ -948,3 +948,13 @@ P93|Melhor mês: $1
 855|Já terminaste? Arquivar esconde-o em todo o lado e guarda o histórico. Restaura-o no fundo de Hábitos.
 P94|$1 de $2: tarefas $3, feitas $4
 P95|$1 de $2: sem tarefas
+856|Marcos
+857|Sem atualização há mais de 2 semanas
+858|Objetivos à espera de atualização
+859|Dispensar
+860|Toca num dia para ver as tarefas ou adicionar uma.
+861|Abrir esta semana
+862|Tarefa adicionada
+P96|Sequência de $1 dias: $2
+P97|$1 dias, alcançado
+P98|$1 dias, ainda não alcançado

@@ -120,7 +120,7 @@ function searchHits(q){
   q=q.trim().toLowerCase();if(q.length<2)return [];
   const out=[],has=t=>String(t).toLowerCase().includes(q),add=(text,sub,v,k)=>{if(out.length<60)out.push({text,sub,v,k})};
   Object.keys(S.tasks).sort().reverse().forEach(k=>vis(S.tasks[k].items).forEach(i=>{if(has(i.text))add(i.text,'Task · '+dmy(new Date(k+'T00:00'))+(i.done?' · done':''),'tasks',k)}));
-  S.habits.forEach(h=>{if(has(h.name))add(h.name,'Habit · '+h.type,'habits',h.type);
+  S.habits.forEach(h=>{if(has(h.name))add(h.name,'Habit · '+h.type+(h.arch?' · archived':''),'habits',h.arch?'arch':h.type);
     Object.entries(S.notes[h.id]||{}).sort().reverse().forEach(([k,v])=>{if(has(v))add(v,'Note · '+h.name+' · '+(k.length===10?dmy(new Date(k+'T00:00')):k),'habits',k)})});
   Object.entries(S.journal).sort().reverse().forEach(([k,v])=>{if(v&&has(v))add(v.slice(0,120),'Reflection · '+MONTHS[+k.slice(5)-1]+' '+k.slice(0,4),'insights','')});
   S.goals.forEach(g=>{if(has(g.title))add(g.title,'Goal · '+g.area+' · '+gPct(g)+'%','goals','')});
@@ -148,8 +148,11 @@ function openAmt(h,k){modal={kind:'amt',h:h.id,k};focusSel='#aVal'}
 function vModal(){
   if(!modal)return '';
   if(modal.kind==='tips')return tipsHtml();
-  if(modal.kind==='tmonth'){const f=modal.m;return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Month"><div class="mch"><button class="btn ghost sbtn" data-act="tmprev" aria-label="Previous month">'+ic('prev')+'</button><h2>'+MONTHS[f.getMonth()]+' '+f.getFullYear()+'</h2><button class="btn ghost sbtn" data-act="tmnext" aria-label="Next month">'+ic('next')+'</button></div>'+monthCal(f)
-     +'<p class="sub" style="margin:0">Tap a day to open its week.</p><div class="row"><button class="btn ghost" data-act="modalclose">Close</button></div></div></div>'}
+  if(modal.kind==='tmonth'){const f=modal.m;return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Month"><div class="mch"><button class="btn ghost sbtn" data-act="tmprev" aria-label="Previous month">'+ic('prev')+'</button><h2>'+MONTHS[f.getMonth()]+' '+f.getFullYear()+'</h2><button class="btn ghost sbtn" data-act="tmnext" aria-label="Next month">'+ic('next')+'</button></div>'+monthCal(f,modal.sel)
+     +(modal.sel?(()=>{const k=modal.sel,d=new Date(k+'T00:00'),it=todo((S.tasks[k]||{items:[]}).items);return '<div class="mcsel"><div class="lbl" style="font-size:9px">'+DAYS[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()]+'</div>'
+       +(it.length?it.map(x=>'<p class="sub mct'+(x.done?' done':'')+'" style="margin:0" data-nt>'+esc(x.text)+'</p>').join(''):'<p class="sub" style="margin:0">Nothing planned yet.</p>')
+       +'<div class="mcadd"><input class="field" id="mcTask" maxlength="100" placeholder="New task" aria-label="New task"><button class="btn" data-act="tmadd">Add</button></div><button class="btn ghost" data-act="tmweek">Open this week</button></div>'})():'<p class="sub" style="margin:0">Tap a day to see its tasks or add one.</p>')
+     +'<div class="row"><button class="btn ghost" data-act="modalclose">Close</button></div></div></div>'}
   if(modal.kind==='hdetail'){const h=findH(modal.h);if(!h)return '';return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="'+esc(h.name)+'"><h2 style="--c:'+h.color+'"><span class="tdot"></span> <span data-nt>'+esc(h.name)+'</span></h2>'+habitDetail(h)
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Close</button><button class="btn" data-act="edithabit" data-h="'+h.id+'">Edit</button></div></div></div>'}
   if(modal.kind==='habit'){

@@ -173,6 +173,9 @@ function monthlyList(){
 function bestStreak(h){if(feat('freeze')&&(h.per||7)===7&&!(h.fz&&h.fz.off))return freezeOf(h).best;
   const l=L(h),ks=Object.keys(l).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)).sort();if(!ks.length)return 0;const D=daysFrom(ks[0]);let run=0,best=0;
   for(let i=D.i;i<D.keys.length;i++){const k=D.keys[i];if(l[k]){run++;best=Math.max(best,run)}else if(!isRest(h,k)&&k!==D.keys[D.keys.length-1])run=0}return best}
+// streak milestones for every-day habits: a toast when a tap reaches one, badges in the habit details
+const HMILES=[7,30,100,365];
+function milestoneToast(h,before){if(h.type!=='daily')return;const n=curStreak(h),m=HMILES.find(x=>x>before&&x<=n);if(m)toast(m+'-day streak: '+h.name)}
 function habitDetail(h){
   const l=L(h),fmt=new RegExp(h.type==='daily'?'^\\d{4}-\\d{2}-\\d{2}$':h.type==='weekly'?'-W\\d$':'^\\d{4}-\\d{2}$'),n=Object.keys(l).filter(k=>fmt.test(k)).length;
   const y=TODAY.getFullYear(),m=TODAY.getMonth(),stat=(a,b)=>'<div class="hds"><b>'+a+'</b><span class="sub" style="margin:0">'+b+'</span></div>';
@@ -180,7 +183,9 @@ function habitDetail(h){
   const cnt=(h.target||1)>1&&!isAmt(h),tot=pre=>isAmt(h)?Object.entries(S.amt[h.id]||{}).reduce((s,[k,v])=>k.startsWith(pre)?s+v:s,0):cnt?Object.keys(l).filter(k=>k.startsWith(pre)).length*h.target+Object.entries(S.count[h.id]||{}).reduce((s,[k,v])=>k.startsWith(pre)&&!l[k]?s+v:s,0):0;
   const fmtT=v=>isAmt(h)?fmtN(v)+(unitOf(h)?' '+esc(unitOf(h)):''):'×'+v;
   let best=null;if(isAmt(h)||cnt)new Set(Object.keys(l).concat(Object.keys(S.amt[h.id]||{}),Object.keys(S.count[h.id]||{})).map(k=>k.slice(0,7))).forEach(pre=>{const v=tot(pre);if(v>0&&(!best||v>best.v))best={pre,v}});
-  let o='<div class="hdstats">'+(h.type==='daily'?stat(FLAME+curStreak(h),'Current streak')+stat(STAR+bestStreak(h),'Best streak'):h.type==='weekly'?stat(FLAME+weeklyStats(h,y,m).cur,'Current streak'):'')+stat(n,'Check-ins')+(best?stat(fmtT(best.v),'Best month: '+MON3[+best.pre.slice(5,7)-1]+' '+best.pre.slice(0,4)):'')+'</div>';
+  const bs=h.type==='daily'?bestStreak(h):0;
+  let o='<div class="hdstats">'+(h.type==='daily'?stat(FLAME+curStreak(h),'Current streak')+stat(STAR+bestStreak(h),'Best streak'):h.type==='weekly'?stat(FLAME+weeklyStats(h,y,m).cur,'Current streak'):'')+stat(n,'Check-ins')+(best?stat(fmtT(best.v),'Best month: '+MON3[+best.pre.slice(5,7)-1]+' '+best.pre.slice(0,4)):'')+'</div>'
+    +(h.type==='daily'?'<div class="lbl" style="font-size:9px">Milestones</div><div class="hdmiles">'+HMILES.map(m=>'<span class="hdmi'+(bs>=m?' on':'')+'" role="img" aria-label="'+m+' days'+(bs>=m?', reached':', not reached yet')+'">'+(bs>=m?STAR:'')+'<b>'+m+'</b></span>').join('')+'</div>':'');
   if(h.type==='daily'){const W=26,start=wkStart(addDays(TODAY,-7*(W-1)));let cols='',months='';
     for(let w=0;w<W;w++){let c='';const first=addDays(start,w*7);months+='<span>'+(first.getDate()<=7?MON3[first.getMonth()]:'')+'</span>';
       for(let d=0;d<7;d++){const day=addDays(start,w*7+d),k=dk(day);c+=day>TODAY?'<i class="hz"></i>':'<i class="h'+(l[k]?3:0)+'"></i>'}
@@ -220,6 +225,8 @@ function vToday(){
   if(feat('streaks')&&feat('ach')&&S.quits.length)o+='<section class="card tstreaks"><div class="ch"><span class="lbl">Streaks</span><button class="link" data-act="goto" data-v="achievements">Open</button></div><div class="tsg">'
     +S.quits.map(q=>{const d=qDays(q),nx=MILES.find(x=>x>d);return '<div class="tsi"><div class="lbl" style="font-size:9px">'+esc(q.name)+'</div><b>'+d+(d===1?' day':' days')+'</b><span class="sub" style="margin:0">'+(nx?'Next: '+dur(nx):'Every milestone reached')+'</span></div>'}).join('')+'</div></section>';
   if(feat('review')&&TODAY.getDay()===0)o+=reviewCard();
+  const sg=S.goals.filter(g=>gStale(g)&&(P.nudged||{})[g.id]!==g.upd).slice(0,3);
+  if(sg.length)o+='<section class="card tnudge" data-card="nudge"><div class="ch"><span class="lbl">Goals waiting for an update</span><button class="link" data-act="nudgeoff">Dismiss</button></div>'+sg.map(g=>'<button class="tng" data-act="gopen" data-g="'+g.id+'"><span data-nt>'+esc(g.title)+'</span><b>'+gPct(g)+'%</b></button>').join('')+'</section>';
   const sec=(title,rows)=>rows?'<section class="sec" data-card="'+title.toLowerCase()+'" data-drop="habits-'+title.toLowerCase()+'"><h2>'+title+'</h2>'+rows+'</section>':'';
   const drow=h=>{const on=!!L(h)[k],c=curStreak(h),fz=feat('freeze')?freezeOf(h).tokens:0;
     const rs=!on&&isRest(h,TODAY),sk=!!(h.skip&&h.skip.includes(k));

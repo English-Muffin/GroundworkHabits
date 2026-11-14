@@ -666,10 +666,35 @@ async def pauseAndTimes(b):
     await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200); ontoday = await pg.locator(f'#main .trow[data-id="{aid}"]').count()
     await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(200); await pg.click('.harch summary'); await pg.click(f'.harch [data-act=harch][data-h="{aid}"]'); await pg.wait_for_timeout(200)
     check('archive hides a habit from Today and the grid, Restore brings it back', ingrid == 0 and listed >= 1 and ontoday == 0 and await pg.locator(f'.hrow[data-id="{aid}"]').count() == 1 and await pg.locator('.harch').count() == 0, [ingrid, listed, ontoday])
+    # search marks an archived habit and opens the Archived list
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(200)
+    nm = await pg.evaluate(f"GroundworkTest.state().habits.find(h=>h.id==='{aid}').name")
+    await pg.click(f'[data-act=edithabit][data-h="{aid}"]'); await pg.click('#modal [data-act=harch]'); await pg.wait_for_timeout(200)
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200)
+    await pg.click('[data-act=search]'); await pg.fill('#sq', nm); await pg.wait_for_timeout(200)
+    hit = await pg.locator('.shit').first.inner_text(); await pg.locator('.shit').first.click(); await pg.wait_for_timeout(300)
+    check('search marks an archived habit and opens the Archived list', 'archived' in hit.lower() and await pg.locator('.harch[open]').count() == 1, hit)
+    await pg.click(f'.harch [data-act=harch][data-h="{aid}"]'); await pg.wait_for_timeout(200)
+    # milestone: the tap that makes a 7-day streak says so
+    mid = await pg.evaluate("""(()=>{const S=GroundworkTest.state(),h=S.habits.find(h=>h.type==='daily'&&!h.rest&&!h.off&&!h.skip),d=n=>{const x=new Date();x.setDate(x.getDate()-n);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+      S.log[h.id]={};S.count[h.id]={};h.track='check';h.target=1;for(let i=1;i<=6;i++)S.log[h.id][d(i)]=1;return h.id})()""")
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(100); await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(300)
+    await pg.click(f'#main .trow[data-id="{mid}"] [data-act=cell]'); await pg.wait_for_timeout(200)
+    check('reaching a 7-day streak shows a milestone toast', '7-day streak' in await pg.locator('#toast').inner_text())
+    # goal nudge: a goal untouched for 3 weeks is flagged on its card and on Today until dismissed
+    await pg.evaluate("""(()=>{const S=GroundworkTest.state(),g=S.goals.find(g=>!g.arch&&!['habit','tasks'].includes(g.kind||'pct'));g.kind='pct';g.pct=40;g.upd='2026-01-01'})()""")
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(100); await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(300)
+    on_today = await pg.locator('.tnudge').count()
+    await pg.evaluate("location.hash='goals'"); await pg.wait_for_timeout(300); on_card = await pg.locator('.g2stale').count()
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(300); await pg.click('.tnudge [data-act=nudgeoff]'); await pg.wait_for_timeout(200)
+    check('a goal not updated for 2 weeks is flagged on its card and on Today until dismissed', on_today == 1 and on_card >= 1 and await pg.locator('.tnudge').count() == 0, [on_today, on_card])
     # month calendar: shows the month, tapping a day opens its week
     await pg.evaluate("location.hash='tasks'"); await pg.wait_for_timeout(200)
     await pg.click('[data-act=tmonth]'); await pg.wait_for_timeout(200); cells = await pg.locator('#modal .mcd').count()
     await pg.click('#modal [data-act=tmnext]'); await pg.wait_for_timeout(200); await pg.locator('#modal .mcd').nth(14).click(); await pg.wait_for_timeout(200)
+    await pg.fill('#mcTask', 'Book dentist'); await pg.keyboard.press('Enter'); await pg.wait_for_timeout(200)
+    added = await pg.locator('#modal .mct').all_inner_texts(); await pg.click('#modal [data-act=tmweek]'); await pg.wait_for_timeout(200)
+    check('month calendar adds a task to the chosen day', 'Book dentist' in added and 'Book dentist' in await pg.locator('#main').inner_text(), added)
     wk = await pg.locator('.wkpill').inner_text()
     check('month calendar lists every day and a tap opens that week', cells >= 28 and await pg.locator('#modal [role=dialog]').count() == 0 and await pg.evaluate("(()=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+1);d.setDate(15);const s=new Date(d);s.setDate(15-d.getDay());return String(s.getDate()).padStart(2,'0')})()") in wk, [cells, wk])
     # backup preview: Cancel leaves data alone

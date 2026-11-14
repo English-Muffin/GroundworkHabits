@@ -948,3 +948,13 @@ P93|Mese migliore: $1
 855|Hai finito? Archiviare la nasconde ovunque e ne conserva la cronologia. Ripristinala in fondo ad Abitudini.
 P94|$1 $2: attività $3, fatte $4
 P95|$1 $2: nessuna attività
+856|Traguardi
+857|Non aggiornato da oltre 2 settimane
+858|Obiettivi in attesa di aggiornamento
+859|Ignora
+860|Tocca un giorno per vedere le attività o aggiungerne una.
+861|Apri questa settimana
+862|Attività aggiunta
+P96|Serie di $1 giorni: $2
+P97|$1 giorni, raggiunto
+P98|$1 giorni, non ancora raggiunto

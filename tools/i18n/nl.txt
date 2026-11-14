@@ -948,3 +948,13 @@ P93|Beste maand: $1
 855|Klaar ermee? Archiveren verbergt hem overal en bewaart de geschiedenis. Zet hem terug onderaan Gewoontes.
 P94|$1 $2: taken $3, gedaan $4
 P95|$1 $2: geen taken
+856|Mijlpalen
+857|Al meer dan 2 weken niet bijgewerkt
+858|Doelen die op een update wachten
+859|Verbergen
+860|Tik op een dag om de taken te zien of er een toe te voegen.
+861|Deze week openen
+862|Taak toegevoegd
+P96|Reeks van $1 dagen: $2
+P97|$1 dagen, bereikt
+P98|$1 dagen, nog niet bereikt

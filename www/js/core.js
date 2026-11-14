@@ -268,7 +268,7 @@ function clean(d){
     o.goals.push(Object.assign({id:id(g.id),title:str(g.title),area:areaOk.has(g.area)?g.area:AREAS[0],pct:num(g.pct,0,100,0)},DK.test(g.due)?{due:g.due}:{},g.pin?{pin:true}:{},
     Array.isArray(g.steps)?{steps:g.steps.filter(obj).slice(0,50).map(x=>Object.assign({id:id(x.id),text:str(x.text).slice(0,200),done:!!x.done},DK.test(x.due)?{due:x.due}:{}))}:{},
     kind?{kind}:{},typeof g.unit==='string'?{unit:g.unit.replace(/[<>"'&`=]/g,'').slice(0,12)}:{},fin(g.target)?{target:g.target}:{},fin(g.start)?{start:g.start}:{},
-    Array.isArray(g.log)?{log:g.log.filter(x=>obj(x)&&DK.test(x.d)&&fin(x.v)).slice(-2000).map(x=>Object.assign({d:x.d,v:x.v},x.a?{a:1}:{}))}:{},g.arch?{arch:true}:{},
+    {upd:DK.test(g.upd)?g.upd:dk(TODAY)},Array.isArray(g.log)?{log:g.log.filter(x=>obj(x)&&DK.test(x.d)&&fin(x.v)).slice(-2000).map(x=>Object.assign({d:x.d,v:x.v},x.a?{a:1}:{}))}:{},g.arch?{arch:true}:{},
     obj(g.recur)&&fin(g.recur.v)&&g.recur.v!==0&&['w','m'].includes(g.recur.every)&&DK.test(g.recur.from)?{recur:Object.assign({v:g.recur.v,every:g.recur.every,from:g.recur.from},DK.test(g.recur.last)?{last:g.recur.last}:{})}:{},
     typeof g.habit==='string'&&ID.test(g.habit)?{habit:g.habit}:{},DK.test(g.since)?{since:g.since}:{}))});
   (Array.isArray(d.quits)?d.quits:[]).forEach(q=>{if(obj(q)&&QT.test(q.since))o.quits.push({id:id(q.id),name:str(q.name),since:q.since,best:num(q.best,0,100000,0)})});

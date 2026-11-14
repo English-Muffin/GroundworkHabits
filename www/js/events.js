@@ -48,7 +48,7 @@ document.addEventListener('click',e=>{
     case 'mprev':{const d=new Date(vy,vm-1,1);vy=d.getFullYear();vm=d.getMonth();persist=false;break}
     case 'mnext':{const d=new Date(vy,vm+1,1);vy=d.getFullYear();vm=d.getMonth();persist=false;break}
     case 'tab':tab=t.dataset.v;persist=false;break;
-    case 'cell':{const h=findH(t.dataset.h);if(isAmt(h)){openAmt(h,t.dataset.d);persist=false;break}tap(h,t.dataset.d);break}
+    case 'cell':{const h=findH(t.dataset.h);if(isAmt(h)){openAmt(h,t.dataset.d);persist=false;break}const b4=curStreak(h);tap(h,t.dataset.d);fzCache.delete(h.id);milestoneToast(h,b4);break}
     case 'wcell':{const h=findH(t.dataset.h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=wkey(y,m,t.dataset.w);if(isAmt(h)){openAmt(h,k);persist=false;break}tap(h,k);break}
     case 'mcell':{const h=findH(t.dataset.h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=mkey(y,m);if(isAmt(h)){openAmt(h,k);persist=false;break}tap(h,k);break}
     case 'edithabit':{const h=findH(t.dataset.h);if(!h)break;modal={kind:'habit',rest:(h.rest||[]).slice(),tod:h.tod||'',id:h.id,type:h.type,origType:h.type,color:/^#[0-9a-f]{6}$/.test(h.color)?h.color:COLORS[0],name:h.name,target:h.target||1,per:h.per||7,track:h.track||((h.target||1)>1?'count':'check'),unit:h.unit||'',goal:h.goal||0,rem:h.rem?h.rem.m:'',remT:h.rem?h.rem.t:'09:00',fz:Object.assign({off:false,every:7,max:3},h.fz||{}),confirm:false};focusSel='#mName';persist=false;break}
@@ -72,7 +72,7 @@ document.addEventListener('click',e=>{
     case 'gval':modal={kind:'gval',g:t.dataset.g};focusSel='#gvAmt';persist=false;break;
     case 'gvalsave':{const g=S.goals.find(x=>x.id===modal.g),v=parseFloat(($('#gvAmt').value||'').replace(',','.')),d=$('#gvDate').value;
       if(!g||!Number.isFinite(v)||Math.abs(v)>1e12){$('#gvAmt').focus();persist=false;return}
-      (g.log=g.log||[]).push({d:/^\d{4}-\d{2}-\d{2}$/.test(d)?d:dk(TODAY),v});g.pct=gPct(g);modal=null;if(g.pct>=100)toast('Goal reached: '+g.title);break}
+      (g.log=g.log||[]).push({d:/^\d{4}-\d{2}-\d{2}$/.test(d)?d:dk(TODAY),v});gTouch(g);g.pct=gPct(g);modal=null;if(g.pct>=100)toast('Goal reached: '+g.title);break}
     case 'areanew':modal={kind:'area',name:'',color:COLORS[(S.areas||[]).length%COLORS.length]};focusSel='#arName';persist=false;break;
     case 'areaedit':{const a=(S.areas||[]).find(x=>x.name===t.dataset.v);if(!a)break;modal={kind:'area',old:a.name,name:a.name,color:a.color};persist=false;break}
     case 'arcolor':modal.name=$('#arName').value;modal.color=t.dataset.v;persist=false;break;
@@ -97,7 +97,7 @@ document.addEventListener('click',e=>{
       $('#qTask').value='';focusSel='#qTask';toast('Task added for today');break}
     case 'qhabit':{const h=findH(t.dataset.h);if(h){L(h)[dk(TODAY)]=1;if(S.count[h.id])delete S.count[h.id][dk(TODAY)];toast(h.name+' done')}break}
     case 'qgoal':{const g=S.goals.find(x=>x.id===$('#qGoal').value),v=parseFloat(($('#qAmt').value||'').replace(',','.'));if(!g||!Number.isFinite(v)){$('#qAmt').focus();persist=false;return}
-      (g.log=g.log||[]).push({d:dk(TODAY),v});g.pct=gPct(g);toast('Added '+fmtU(v,g.unit)+' to '+g.title);$('#qAmt').value='';break}
+      (g.log=g.log||[]).push({d:dk(TODAY),v});gTouch(g);g.pct=gPct(g);toast('Added '+fmtU(v,g.unit)+' to '+g.title);$('#qAmt').value='';break}
     case 'impok':{persist=false;const pin=$('#impPin').value,txt=modal.text;deriveKey(pin,encSalt(txt)).then(k=>decText(txt,k)).then(j=>{modal=null;previewImport(JSON.parse(j));render()}).catch(()=>{toast('Wrong PIN, or not a Groundwork Habits backup');const e=$('#impPin');if(e){e.value='';e.focus()}});return}
     case 'baknow':persist=false;menuOpen=false;autoBackup(true);break;
     case 'bakopen':persist=false;if(DFS&&DFS.openBackups)DFS.openBackups();break;
@@ -134,6 +134,7 @@ document.addEventListener('click',e=>{
       if(pausedNow(h)){const p=h.off.find(x=>!x.t||x.t>=td);if(p.f>y)h.off.splice(h.off.indexOf(p),1);else p.t=y;if(!h.off.length)delete h.off;toast('Habit resumed')}
       else{(h.off=h.off||[]).push({f:td});toast('Habit paused')}modal=null;break}
     case 'imprevok':{persist=false;const d=modal.d;modal=null;applyImport(d);break}
+    case 'nudgeoff':P.nudged=Object.assign({},P.nudged);S.goals.forEach(g=>{if(gStale(g))P.nudged[g.id]=g.upd});applyPrefs();persist=false;break;
     case 'harch':{const h=findH(t.dataset.h);if(!h)break;if(h.arch){delete h.arch;toast('Habit restored')}else{h.arch=dk(TODAY);toast('Habit archived')}modal=null;break}
     case 'archtog':e.preventDefault();archOpen=!archOpen;persist=false;break;
     case 'hskip':{const h=findH(t.dataset.h),k=dk(TODAY);if(!h)break;const s=h.skip=h.skip||[];if(s.includes(k))s.splice(s.indexOf(k),1);else s.push(k);if(!s.length)delete h.skip;break}
@@ -175,7 +176,7 @@ document.addEventListener('click',e=>{
       if(k==='num'&&modal.recur){o.recur={v:modal.recur.v,every:modal.recur.every,from:modal.recur.from};if(oldRec&&oldRec.last&&oldRec.from===o.recur.from&&oldRec.every===o.recur.every)o.recur.last=oldRec.last}
       if(k==='tasks')(modal.newTasks||[]).forEach(x=>(S.tasks[x.k]=S.tasks[x.k]||{items:[],mind:null}).items.push({id:uid(),text:x.text,done:false,goal:o.id}));
       o.pct=gPct(o);
-      if(!g)S.goals.push(o);applyRecurring();o.pct=gPct(o);modal=null;break}
+      gTouch(o);if(!g)S.goals.push(o);applyRecurring();o.pct=gPct(o);modal=null;break}
     case 'newquit':modal={kind:'quit',name:'',since:nowLocal()};focusSel='#qName';persist=false;break;
     case 'editquit':{const q=S.quits.find(x=>x.id===t.dataset.q);if(!q)break;modal={kind:'quit',id:q.id,name:q.name,since:q.since};focusSel='#qName';persist=false;break}
     case 'qsave':{
@@ -205,7 +206,7 @@ document.addEventListener('click',e=>{
     case 'search':modal={kind:'search',q:''};menuOpen=false;focusSel='#sq';persist=false;break;
     case 'sgo':{const v=t.dataset.v,k=t.dataset.k;modal=null;persist=false;
       if(v==='tasks'&&/^\d{4}-\d{2}-\d{2}$/.test(k))taskWeek=wkStart(new Date(k+'T00:00'));
-      if(v==='habits'){if(/^\d{4}-\d{2}/.test(k)){vy=+k.slice(0,4);vm=+k.slice(5,7)-1;tab=k.includes('W')?'weekly':k.length===7?'monthly':'daily'}else if(['daily','weekly','monthly'].includes(k))tab=k}
+      if(v==='habits'){if(/^\d{4}-\d{2}/.test(k)){vy=+k.slice(0,4);vm=+k.slice(5,7)-1;tab=k.includes('W')?'weekly':k.length===7?'monthly':'daily'}else if(['daily','weekly','monthly'].includes(k))tab=k;else if(k==='arch')archOpen=true}
       if(location.hash!=='#'+v){location.hash=v;return}break}
     case 'pinset':modal={kind:'pin'};menuOpen=false;focusSel='#pin1';persist=false;break;
     case 'pinsave':{const a=$('#pin1').value,b=$('#pin2').value;persist=false;
@@ -239,7 +240,9 @@ document.addEventListener('click',e=>{
       {const i=S.goals.findIndex(g=>g.id===t.dataset.g),g=S.goals[i];if(g)pushUndo(()=>putBack(S.goals,i,g))}S.goals=S.goals.filter(g=>g.id!==t.dataset.g);confirmGoal=null;if(modal&&modal.kind==='goal')modal=null;toastUndo('Goal deleted');break;
     case 'tmonth':modal={kind:'tmonth',m:new Date(taskWeek.getFullYear(),addDays(taskWeek,3).getMonth(),1)};persist=false;break;
     case 'tmprev':case 'tmnext':modal.m=new Date(modal.m.getFullYear(),modal.m.getMonth()+(act==='tmnext'?1:-1),1);persist=false;break;
-    case 'tmday':taskWeek=wkStart(new Date(t.dataset.k+'T00:00'));modal=null;persist=false;break;
+    case 'tmday':modal.sel=t.dataset.k;focusSel='#mcTask';persist=false;break;
+    case 'tmweek':taskWeek=wkStart(new Date(modal.sel+'T00:00'));modal=null;persist=false;break;
+    case 'tmadd':{const v=($('#mcTask').value||'').trim(),k=modal.sel;if(!v||!k){$('#mcTask').focus();persist=false;return}(S.tasks[k]=S.tasks[k]||{items:[],mind:null}).items.push({id:uid(),text:v.slice(0,100),done:false});focusSel='#mcTask';toast('Task added');break}
     case 'tprev':taskWeek=addDays(taskWeek,-7);persist=false;break;
     case 'tnext':taskWeek=addDays(taskWeek,7);persist=false;break;
     case 'tnow':taskWeek=wkStart(TODAY);persist=false;break;
@@ -282,6 +285,7 @@ document.addEventListener('keydown',e=>{
   if(modal&&e.key==='Escape'){if(modal.kind==='tips')try{localStorage.setItem('groundwork-tips','1')}catch(_){}modal=null;render()}
   if(modal&&e.key==='Enter'&&e.target.id==='gvAmt'){e.preventDefault();$('[data-act=gvalsave]').click();return}
   if(modal&&e.key==='Enter'&&['qTask','qAmt','bioPin'].includes(e.target.id)){e.preventDefault();$('[data-act='+({qTask:'qtask',qAmt:'qgoal',bioPin:'biook'})[e.target.id]+']').click();return}
+  if(modal&&e.key==='Enter'&&e.target.id==='mcTask'){e.preventDefault();$('[data-act=tmadd]').click();return}
   if(modal&&e.key==='Enter'&&e.target.id==='impPin'){e.preventDefault();$('[data-act=impok]').click();return}
   if(modal&&e.key==='Enter'&&e.target.id==='arName'){e.preventDefault();$('[data-act=areasave]').click();return}
   if(modal&&e.key==='Enter'&&e.target.id==='gStep'){e.preventDefault();const b=$('[data-act=gstepadd]')||$('[data-act=gtaskadd]');if(b)b.click();return}

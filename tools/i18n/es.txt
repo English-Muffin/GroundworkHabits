@@ -948,3 +948,13 @@ P93|Mejor mes: $1
 855|¿Ya terminaste? Archivar lo oculta en todas partes y guarda su historial. Restáuralo al final de Hábitos.
 P94|$1 de $2: tareas $3, hechas $4
 P95|$1 de $2: sin tareas
+856|Hitos
+857|Sin actualizar desde hace más de 2 semanas
+858|Objetivos que esperan una actualización
+859|Descartar
+860|Toca un día para ver sus tareas o añadir una.
+861|Abrir esta semana
+862|Tarea añadida
+P96|Racha de $1 días: $2
+P97|$1 días, logrado
+P98|$1 días, aún no logrado
