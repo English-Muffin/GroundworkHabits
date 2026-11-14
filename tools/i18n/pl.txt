@@ -908,3 +908,19 @@ P88|Brak celów w obszarze $1
 820|Aktualizuj teraz
 821|Zobacz
 P89|Masz wersję $1.
+822|Wstrzymany
+823|Pora dnia
+824|Rano
+825|Po południu
+826|Wieczorem
+827|O dowolnej porze
+828|Wstrzymaj
+829|Na urlop lub tydzień choroby: ukrywa go w Dziś i w przypomnieniach. Wstrzymane dni nie przerywają serii.
+830|Wstrzymaj nawyk
+831|Wznów nawyk
+832|Nawyk wstrzymany
+833|Nawyk wznowiony
+834|Przywrócić tę kopię?
+835|Przywrócenie zastępuje dane na tym urządzeniu. Możesz to cofnąć zaraz potem.
+P90|Wstrzymany od $1
+P91|Nawyki: $1, zadania: $2, cele: $3

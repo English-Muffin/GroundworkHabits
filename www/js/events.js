@@ -51,11 +51,11 @@ document.addEventListener('click',e=>{
     case 'cell':{const h=findH(t.dataset.h);if(isAmt(h)){openAmt(h,t.dataset.d);persist=false;break}tap(h,t.dataset.d);break}
     case 'wcell':{const h=findH(t.dataset.h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=wkey(y,m,t.dataset.w);if(isAmt(h)){openAmt(h,k);persist=false;break}tap(h,k);break}
     case 'mcell':{const h=findH(t.dataset.h),y=view==='today'?TODAY.getFullYear():vy,m=view==='today'?TODAY.getMonth():vm,k=mkey(y,m);if(isAmt(h)){openAmt(h,k);persist=false;break}tap(h,k);break}
-    case 'edithabit':{const h=findH(t.dataset.h);if(!h)break;modal={kind:'habit',rest:(h.rest||[]).slice(),id:h.id,type:h.type,origType:h.type,color:/^#[0-9a-f]{6}$/.test(h.color)?h.color:COLORS[0],name:h.name,target:h.target||1,per:h.per||7,track:h.track||((h.target||1)>1?'count':'check'),unit:h.unit||'',goal:h.goal||0,rem:h.rem?h.rem.m:'',remT:h.rem?h.rem.t:'09:00',fz:Object.assign({off:false,every:7,max:3},h.fz||{}),confirm:false};focusSel='#mName';persist=false;break}
+    case 'edithabit':{const h=findH(t.dataset.h);if(!h)break;modal={kind:'habit',rest:(h.rest||[]).slice(),tod:h.tod||'',id:h.id,type:h.type,origType:h.type,color:/^#[0-9a-f]{6}$/.test(h.color)?h.color:COLORS[0],name:h.name,target:h.target||1,per:h.per||7,track:h.track||((h.target||1)>1?'count':'check'),unit:h.unit||'',goal:h.goal||0,rem:h.rem?h.rem.m:'',remT:h.rem?h.rem.t:'09:00',fz:Object.assign({off:false,every:7,max:3},h.fz||{}),confirm:false};focusSel='#mName';persist=false;break}
     case 'mdel':
       if(modal&&modal.id){if(modal.confirm){const i=S.habits.findIndex(h=>h.id===modal.id),h=S.habits[i],bk={log:S.log[h.id],count:S.count[h.id],notes:S.notes[h.id],amt:S.amt[h.id]};
         pushUndo(()=>{putBack(S.habits,i,h);Object.keys(bk).forEach(x=>{if(bk[x])S[x][h.id]=bk[x]})});S.habits=S.habits.filter(h=>h.id!==modal.id);delete S.log[modal.id];delete S.count[modal.id];delete S.notes[modal.id];modal=null;toastUndo('Habit deleted')}else{modal.confirm=true;persist=false}}break;
-    case 'newhabit':modal={kind:'habit',rest:[],type:view==='habits'?tab:'daily',color:COLORS[0],name:'',target:1,per:7,track:'check',unit:'',goal:0,rem:'',remT:'09:00'};focusSel='#mName';persist=false;break;
+    case 'newhabit':modal={kind:'habit',rest:[],tod:'',type:view==='habits'?tab:'daily',color:COLORS[0],name:'',target:1,per:7,track:'check',unit:'',goal:0,rem:'',remT:'09:00'};focusSel='#mName';persist=false;break;
     case 'newgoal':modal={kind:'goal',area:goalArea||'Health',title:'',due:'',pin:false,steps:[],pct:0,gk:'pct',unit:'',log:[]};focusSel='#gTitle';persist=false;break;
     case 'gopen':{const g=S.goals.find(x=>x.id===t.dataset.g);if(!g)break;modal={kind:'goal',id:g.id,title:g.title,area:g.area,due:g.due||'',pin:!!g.pin,steps:(g.steps||[]).map(x=>Object.assign({},x)),pct:g.pct,
       gk:gKind(g),unit:g.unit||'',target:g.target,start:g.start,log:(g.log||[]).map(x=>Object.assign({},x)),habit:g.habit,since:g.since,recur:g.recur?Object.assign({},g.recur):null,arch:!!g.arch,newTasks:[]};persist=false;break}
@@ -98,7 +98,7 @@ document.addEventListener('click',e=>{
     case 'qhabit':{const h=findH(t.dataset.h);if(h){L(h)[dk(TODAY)]=1;if(S.count[h.id])delete S.count[h.id][dk(TODAY)];toast(h.name+' done')}break}
     case 'qgoal':{const g=S.goals.find(x=>x.id===$('#qGoal').value),v=parseFloat(($('#qAmt').value||'').replace(',','.'));if(!g||!Number.isFinite(v)){$('#qAmt').focus();persist=false;return}
       (g.log=g.log||[]).push({d:dk(TODAY),v});g.pct=gPct(g);toast('Added '+fmtU(v,g.unit)+' to '+g.title);$('#qAmt').value='';break}
-    case 'impok':{persist=false;const pin=$('#impPin').value,txt=modal.text;deriveKey(pin,encSalt(txt)).then(k=>decText(txt,k)).then(j=>{modal=null;applyImport(JSON.parse(j))}).catch(()=>{toast('Wrong PIN, or not a Groundwork Habits backup');const e=$('#impPin');if(e){e.value='';e.focus()}});return}
+    case 'impok':{persist=false;const pin=$('#impPin').value,txt=modal.text;deriveKey(pin,encSalt(txt)).then(k=>decText(txt,k)).then(j=>{modal=null;previewImport(JSON.parse(j));render()}).catch(()=>{toast('Wrong PIN, or not a Groundwork Habits backup');const e=$('#impPin');if(e){e.value='';e.focus()}});return}
     case 'baknow':persist=false;menuOpen=false;autoBackup(true);break;
     case 'bakopen':persist=false;if(DFS&&DFS.openBackups)DFS.openBackups();break;
     case 'apick':persist=false;menuOpen=false;FOLD.pickFolder().then(async r=>{if(!r||!r.picked)return;P.andDir=r.name;applyPrefs();
@@ -130,6 +130,10 @@ document.addEventListener('click',e=>{
     case 'updinstall':persist=false;modal=null;updInstall();break;
     case 'updshow':persist=false;if(updCheck.info)modal={kind:'upd'};break;
     case 'updnow':persist=false;updCheck(true,true);break;
+    case 'mpause':{const h=findH(modal.id);if(!h)break;const td=dk(TODAY),y=dk(addDays(TODAY,-1));
+      if(pausedNow(h)){const p=h.off.find(x=>!x.t||x.t>=td);if(p.f>y)h.off.splice(h.off.indexOf(p),1);else p.t=y;if(!h.off.length)delete h.off;toast('Habit resumed')}
+      else{(h.off=h.off||[]).push({f:td});toast('Habit paused')}modal=null;break}
+    case 'imprevok':{persist=false;const d=modal.d;modal=null;applyImport(d);break}
     case 'mrest':{const i=+t.dataset.v,r=modal.rest=modal.rest||[];if(r.includes(i))r.splice(r.indexOf(i),1);else if(r.length<6)r.push(i);else toast('Keep at least one day to do the habit');persist=false;break}
     case 'mcolor':setColor('habit',t.dataset.v);persist=false;break;
     case 'cset':setColor(t.dataset.f,t.dataset.v);persist=t.dataset.f==='accent'?false:false;break;
@@ -145,8 +149,8 @@ document.addEventListener('click',e=>{
       if(rem)remAsk();
       const chD=$('#mCh')?+$('#mCh').value||0:0,chSet=h=>{if(!chD||h.type!=='daily'){delete h.ch;return}if(!h.ch||h.ch.days!==chD)h.ch={from:dk(TODAY),days:chD}};
       if(modal.fz&&$('#mFzE')){modal.fz={off:!$('#mFzOn').checked,every:clamp(Math.round(+$('#mFzE').value)||7,3,30),max:clamp(Math.round(+$('#mFzM').value)||3,1,5)}}
-      if(modal.id){const h=findH(modal.id);if(h){chSet(h);h.name=nm;h.color=modal.color;h.target=tg;h.per=per;if(modal.type==='daily'&&modal.rest&&modal.rest.length)h.rest=modal.rest.slice().sort();else delete h.rest;h.track=tr;h.unit=un;h.goal=gl;if(JSON.stringify(h.rem||null)!==JSON.stringify(rem))remSkipToday(h.id,rem);h.rem=rem;if(modal.fz){const f=modal.fz;h.fz=f.off||f.every!==7||f.max!==3?{off:!!f.off,every:f.every,max:f.max}:null;if(!h.fz)delete h.fz}if(h.type!==modal.type){h.type=modal.type;if(view==='habits')tab=h.type}const c=S.count[h.id]||{};Object.keys(c).forEach(k=>{if(c[k]>=tg||tg<2){if(c[k]>=tg)L(h)[k]=1;delete c[k]}})}modal=null;break}
-      const id=uid();S.habits.push(Object.assign({id,name:nm,type:modal.type,color:modal.color,target:tg,per,track:tr,unit:un,goal:gl,rem},modal.type==='daily'&&modal.rest&&modal.rest.length?{rest:modal.rest.slice().sort()}:{}));chSet(findH(id));remSkipToday(id,rem);S.log[id]={};
+      if(modal.id){const h=findH(modal.id);if(h){chSet(h);h.name=nm;h.color=modal.color;h.target=tg;h.per=per;if(modal.type==='daily'&&modal.rest&&modal.rest.length)h.rest=modal.rest.slice().sort();else delete h.rest;const td=($('#mTod')||{}).value;if(modal.type==='daily'&&td)h.tod=td;else delete h.tod;h.track=tr;h.unit=un;h.goal=gl;if(JSON.stringify(h.rem||null)!==JSON.stringify(rem))remSkipToday(h.id,rem);h.rem=rem;if(modal.fz){const f=modal.fz;h.fz=f.off||f.every!==7||f.max!==3?{off:!!f.off,every:f.every,max:f.max}:null;if(!h.fz)delete h.fz}if(h.type!==modal.type){h.type=modal.type;if(view==='habits')tab=h.type}const c=S.count[h.id]||{};Object.keys(c).forEach(k=>{if(c[k]>=tg||tg<2){if(c[k]>=tg)L(h)[k]=1;delete c[k]}})}modal=null;break}
+      const id=uid();S.habits.push(Object.assign({id,name:nm,type:modal.type,color:modal.color,target:tg,per,track:tr,unit:un,goal:gl,rem},modal.type==='daily'&&modal.rest&&modal.rest.length?{rest:modal.rest.slice().sort()}:{},modal.type==='daily'&&($('#mTod')||{}).value?{tod:$('#mTod').value}:{}));chSet(findH(id));remSkipToday(id,rem);S.log[id]={};
       if(view==='habits')tab=modal.type;modal=null;break}
     case 'gsave':{
       const ti=($('#gTitle').value||'').trim();if(!ti){$('#gTitle').focus();return}
@@ -319,7 +323,7 @@ document.addEventListener('change',e=>{
     const r=new FileReader();
     r.onload=()=>{try{
       if(isEnc(r.result)){modal={kind:'impin',text:r.result};focusSel='#impPin';render();return}
-      applyImport(JSON.parse(r.result));
+      previewImport(JSON.parse(r.result));render();
     }catch(err){toast('That file is not a Groundwork Habits backup')}};
     r.readAsText(f);return;
   }

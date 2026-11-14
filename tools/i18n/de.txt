@@ -908,3 +908,19 @@ P88|Noch keine Ziele in $1
 820|Jetzt aktualisieren
 821|Ansehen
 P89|Du hast Version $1.
+822|Pausiert
+823|Tageszeit
+824|Morgens
+825|Nachmittags
+826|Abends
+827|Jederzeit
+828|Pause
+829|Für Urlaub oder eine kranke Woche: blendet sie in Heute und bei Erinnerungen aus. Pausierte Tage brechen die Serie nicht.
+830|Gewohnheit pausieren
+831|Gewohnheit fortsetzen
+832|Gewohnheit pausiert
+833|Gewohnheit fortgesetzt
+834|Dieses Backup wiederherstellen?
+835|Das Wiederherstellen ersetzt die Daten auf diesem Gerät. Du kannst es direkt danach rückgängig machen.
+P90|Pausiert seit $1
+P91|$1 Gewohnheiten, $2 Aufgaben, $3 Ziele

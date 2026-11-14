@@ -908,3 +908,19 @@ P88|Aucun objectif en $1 pour l’instant
 820|Mettre à jour
 821|Voir
 P89|Vous avez la version $1.
+822|En pause
+823|Moment de la journée
+824|Matin
+825|Après-midi
+826|Soir
+827|N’importe quand
+828|Pause
+829|Pour les vacances ou une semaine malade : le masque d’Aujourd’hui et des rappels. Les jours en pause ne cassent pas la série.
+830|Mettre en pause
+831|Reprendre l’habitude
+832|Habitude en pause
+833|Habitude reprise
+834|Restaurer cette sauvegarde ?
+835|La restauration remplace les données de cet appareil. Vous pouvez l’annuler juste après.
+P90|En pause depuis le $1
+P91|$1 habitudes, $2 tâches, $3 objectifs

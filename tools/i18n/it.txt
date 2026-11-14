@@ -908,3 +908,19 @@ P88|Ancora nessun obiettivo in $1
 820|Aggiorna ora
 821|Vedi
 P89|Hai la versione $1.
+822|In pausa
+823|Momento della giornata
+824|Mattina
+825|Pomeriggio
+826|Sera
+827|In qualsiasi momento
+828|Pausa
+829|Per le vacanze o una settimana di malattia: lo nasconde da Oggi e dai promemoria. I giorni in pausa non interrompono la serie.
+830|Metti in pausa
+831|Riprendi abitudine
+832|Abitudine in pausa
+833|Abitudine ripresa
+834|Ripristinare questo backup?
+835|Il ripristino sostituisce i dati su questo dispositivo. Puoi annullarlo subito dopo.
+P90|In pausa dal $1
+P91|$1 abitudini, $2 attività, $3 obiettivi

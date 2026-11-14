@@ -908,3 +908,19 @@ P88|Ainda sem objetivos em $1
 820|Atualizar agora
 821|Ver
 P89|Tens a versão $1.
+822|Em pausa
+823|Hora do dia
+824|Manhã
+825|Tarde
+826|Noite
+827|A qualquer hora
+828|Pausa
+829|Para férias ou uma semana doente: esconde-o de Hoje e dos lembretes. Os dias em pausa não quebram a sequência.
+830|Pausar hábito
+831|Retomar hábito
+832|Hábito em pausa
+833|Hábito retomado
+834|Restaurar esta cópia?
+835|Restaurar substitui os dados neste dispositivo. Podes desfazer logo a seguir.
+P90|Em pausa desde $1
+P91|$1 hábitos, $2 tarefas, $3 objetivos

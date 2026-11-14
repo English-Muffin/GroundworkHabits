@@ -169,6 +169,8 @@ function backupProblem(d){const o=x=>x===undefined||(x&&typeof x==='object'&&!Ar
   if(+d.v>DATA_V)return 'This backup is from a newer version of Groundwork Habits. Update the app, then import it';
   if(!o(d.log)||!o(d.tasks)||!a(d.goals)||!a(d.quits)||!o(d.journal)||!o(d.notes)||!o(d.count)||!o(d.amt))return 'That backup is damaged, so nothing was changed';
   return null}
+// a backup is shown first (date and what it holds); Restore in that dialog calls applyImport
+function previewImport(d){const bad=backupProblem(d);if(bad){toast(bad);return}modal={kind:'imprev',d}}
 function applyImport(d){const bad=backupProblem(d);if(bad){toast(bad);return}S=clean(d);save();if(restorePrefs(d.prefs)){location.reload();return}if(view==='settings')location.hash=setBack;render();toastAct('Backup restored','Undo','histundo')}
 
 /* ---------- Google Calendar (no login) ----------

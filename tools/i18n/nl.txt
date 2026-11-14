@@ -908,3 +908,19 @@ P88|Nog geen doelen in $1
 820|Nu bijwerken
 821|Bekijken
 P89|Je hebt versie $1.
+822|Gepauzeerd
+823|Moment van de dag
+824|Ochtend
+825|Middag
+826|Avond
+827|Wanneer dan ook
+828|Pauze
+829|Voor vakantie of een zieke week: verbergt hem in Vandaag en bij herinneringen. Gepauzeerde dagen breken de reeks niet.
+830|Gewoonte pauzeren
+831|Gewoonte hervatten
+832|Gewoonte gepauzeerd
+833|Gewoonte hervat
+834|Deze back-up terugzetten?
+835|Terugzetten vervangt de gegevens op dit apparaat. Je kunt het direct daarna ongedaan maken.
+P90|Gepauzeerd sinds $1
+P91|$1 gewoontes, $2 taken, $3 doelen

@@ -59,7 +59,7 @@ function freezeOf(h){
   if(keys.length&&(h.per||7)===7&&feat('freeze')&&!fs.off){let run=0;const end=dk(TODAY),D=daysFrom(keys[0]),rs=h.rest&&h.rest.length?h.rest:null;
     for(let i=D.i;i<D.keys.length;i++){const k=D.keys[i];
       if(l[k]){res.streak++;run++;if(run%fs.every===0&&res.tokens<fs.max){res.tokens++}}
-      else if(k===end||(rs&&rs.includes(D.dows[i]))){}
+      else if(k===end||(rs&&rs.includes(D.dows[i]))||(h.off&&pausedK(h,k))){}
       else if(res.streak&&res.tokens){res.tokens--;res.frozen.add(k)}
       else{res.streak=0;run=0}
       res.best=Math.max(res.best,res.streak)}}
@@ -69,8 +69,10 @@ const curStreak=h=>{if(feat('freeze')&&(h.per||7)===7&&!(h.fz&&h.fz.off))return 
 const dayPct=date=>{const k=dk(date),hs=byType('daily').filter(h=>L(h)[k]||!isRest(h,date));if(!hs.length)return 0;return Math.round(hs.filter(h=>L(h)[k]).length/hs.length*100)};
 const habitPct=(h,n)=>{const l=L(h);let c=0;for(let i=0;i<n;i++)if(l[dk(addDays(TODAY,-i))])c++;return Math.round(c/n*100)};
 // rest days: planned days off for an every-day habit; they neither count nor break a streak (a tick on one still counts)
-const isRest=(h,d)=>!!(h.rest&&h.rest.length&&(h.per||7)===7&&h.rest.includes((typeof d==='string'?new Date(d+'T00:00'):d).getDay()));
-const doneToday=()=>{const k=dk(TODAY),hs=byType('daily').filter(h=>L(h)[k]||!isRest(h,TODAY));return {done:hs.filter(h=>L(h)[k]).length,total:hs.length}};
+// paused habits: h.off=[{f,t?}] day ranges (t missing = still paused); paused days count like rest days
+const pausedK=(h,k)=>!!h.off&&h.off.some(p=>k>=p.f&&(!p.t||k<=p.t)),pausedNow=h=>pausedK(h,dk(TODAY));
+const isRest=(h,d)=>(!!h.off&&pausedK(h,typeof d==='string'?d:dk(d)))||!!(h.rest&&h.rest.length&&(h.per||7)===7&&h.rest.includes((typeof d==='string'?new Date(d+'T00:00'):d).getDay()));
+const doneToday=()=>{const k=dk(TODAY),hs=byType('daily').filter(h=>!pausedNow(h)&&(L(h)[k]||!isRest(h,TODAY)));return {done:hs.filter(h=>L(h)[k]).length,total:hs.length}};
 
 /* ---------- small renderers ---------- */
 function ring(p,size,sw,inner,cls){
@@ -81,7 +83,7 @@ function ring(p,size,sw,inner,cls){
 }
 const statCell=st=>'<span>'+st.pct+'%</span><span class="s f">'+FLAME+st.cur+'</span><span class="s t">'+STAR+st.best+'</span>';
 const GRIP=(what,cls)=>feat('drag')?'<button class="grip'+(cls?' '+cls:'')+'" type="button" aria-label="Move '+what+'. Drag, or use the arrow keys">'+ic('grip')+'</button>':'';
-const nameCell=h=>'<div class="gname" style="--c:'+h.color+'">'+GRIP('habit')+'<span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="'+esc(h.name)+'. Tap to edit">'+esc(h.name)+'</button></div>';
+const nameCell=h=>'<div class="gname" style="--c:'+h.color+'">'+GRIP('habit')+'<span class="tdot"></span><button class="nm nb" data-act="edithabit" data-h="'+h.id+'" title="'+esc(h.name)+'. Tap to edit">'+esc(h.name)+'</button>'+(pausedNow(h)?'<span class="pzb">Paused</span>':'')+'</div>';
 /* empty screens: a small drawing made from the logo's layers (follows the accent), a title, a line and the next step */
 const EART={'habits':'<rect x="38" y="14" width="56" height="20" rx="10" class="eo"/><rect x="24" y="44" width="84" height="20" rx="10" class="eo"/><rect x="10" y="74" width="112" height="20" rx="10" class="ef"/>', 'goals':'<rect x="10" y="78" width="44" height="18" rx="9" class="ef" opacity=".35"/><rect x="44" y="56" width="44" height="18" rx="9" class="ef" opacity=".65"/><rect x="78" y="34" width="44" height="18" rx="9" class="ef"/><path d="M100 30V8" class="ep"/><path d="M100 8h16l-4 5 4 5h-16z" class="et"/>', 'insights':'<path d="M8 98h116" class="ep2"/><rect x="18" y="80" width="18" height="14" rx="6" class="ef" opacity=".45"/><rect x="44" y="70" width="18" height="24" rx="6" class="ef" opacity=".65"/><rect x="70" y="56" width="18" height="38" rx="6" class="ef" opacity=".85"/><rect x="96" y="20" width="18" height="74" rx="6" class="eo"/>', 'streaks':'<rect x="24" y="72" width="84" height="22" rx="11" class="ef"/><path d="M66 14c10 12 18 20 18 32a18 18 0 0 1-36 0c0-8 5-13 9-18 1 6 3 9 6 10-2-8 0-16 3-24z" fill="var(--flame)"/><path d="M66 40c4 5 7 8 7 12a7 7 0 0 1-14 0c0-4 3-7 7-12z" fill="var(--star)"/>', 'timeline':'<rect x="10" y="20" width="60" height="16" rx="8" class="ef" opacity=".5"/><rect x="40" y="46" width="72" height="16" rx="8" class="ef" opacity=".8"/><rect x="24" y="72" width="56" height="16" rx="8" class="eo"/><path d="M10 100h112" class="ep2"/>'};
 const emptyBox=(art,title,text,btns)=>'<div class="empty eart"><svg viewBox="0 0 132 110" aria-hidden="true">'+EART[art]+'</svg><b>'+title+'</b><p>'+text+'</p>'+(btns?'<div class="erow">'+btns+'</div>':'')+'</div>';
@@ -160,6 +162,10 @@ const chDone=h=>{if(!h.ch)return 0;const l=L(h);let n=0;for(let i=0;i<h.ch.days;
 function chLine(h){const d=chDay(h),n=chDone(h);if(!h.ch)return '';if(n>=h.ch.days)return 'Challenge complete: '+h.ch.days+' of '+h.ch.days+' days';
   return d>h.ch.days?'Challenge ended: '+n+' of '+h.ch.days+' days':'Challenge: day '+Math.max(1,d)+' of '+h.ch.days+' · '+n+' done'}
 const missTwice=h=>{if(!feat('twice')||(h.per||7)<7)return false;const y=addDays(TODAY,-1),yk=dk(y),l=L(h);return !l[yk]&&!isRest(h,y)&&Object.keys(l).some(x=>x<yk)};
+// times of day on Today: the part of the day you are in comes first, then later ones, anytime, then earlier ones
+const TODS=[['m','Morning'],['a','Afternoon'],['e','Evening']];
+function todRows(hs,row){if(!hs.some(h=>h.tod))return hs.map(row).join('');const c=new Date().getHours()<12?0:new Date().getHours()<17?1:2;
+  return TODS.slice(c).concat([['','Anytime']],TODS.slice(0,c)).map(([t,n])=>{const r=hs.filter(h=>(h.tod||'')===t);return r.length?'<h3 class="todh">'+n+'</h3>'+r.map(row).join(''):''}).join('')}
 function vToday(){
   const t=doneToday(),pct=t.total?Math.round(t.done/t.total*100):0,k=dk(TODAY);
   const wn=Math.ceil(TODAY.getDate()/7),y=TODAY.getFullYear(),m=TODAY.getMonth();
@@ -174,12 +180,13 @@ function vToday(){
     +S.quits.map(q=>{const d=qDays(q),nx=MILES.find(x=>x>d);return '<div class="tsi"><div class="lbl" style="font-size:9px">'+esc(q.name)+'</div><b>'+d+(d===1?' day':' days')+'</b><span class="sub" style="margin:0">'+(nx?'Next: '+dur(nx):'Every milestone reached')+'</span></div>'}).join('')+'</div></section>';
   if(feat('review')&&TODAY.getDay()===0)o+=reviewCard();
   const sec=(title,rows)=>rows?'<section class="sec" data-card="'+title.toLowerCase()+'" data-drop="habits-'+title.toLowerCase()+'"><h2>'+title+'</h2>'+rows+'</section>':'';
-  o+=sec('Daily',byType('daily').map(h=>{const on=!!L(h)[k],c=curStreak(h),fz=feat('freeze')?freezeOf(h).tokens:0;
+  const drow=h=>{const on=!!L(h)[k],c=curStreak(h),fz=feat('freeze')?freezeOf(h).tokens:0;
     const rs=!on&&isRest(h,TODAY);
-    return '<div class="trow'+(on?' on':'')+(rs?' rest':'')+'" data-drag="habits-daily" data-id="'+h.id+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" role="checkbox" aria-checked="'+on+'" aria-label="'+esc(h.name)+tgt(h,k)+'">'+cellIn(h,k,on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+(feat('notes')&&(S.notes[h.id]||{})[k]?'<small class="hnote">'+esc(S.notes[h.id][k])+'</small>':'')+(h.ch&&chDay(h)<=h.ch.days+1?'<small class="hnote chal">'+chLine(h)+'</small>':'')+(rs?'<small class="hnote">Rest day</small>':!on&&missTwice(h)?'<small class="hnote twice">'+ic('alert')+'Missed yesterday. Don’t miss twice</small>':'')+'</span>'+(feat('notes')?'<button class="nbtn" data-act="note" data-h="'+h.id+'" data-k="'+k+'" aria-label="'+((S.notes[h.id]||{})[k]?'Edit':'Add')+' note for '+esc(h.name)+'">'+ic('note')+'</button>':'')+(isAmt(h)?'<span class="meta amt'+(on?' met':'')+'">'+(amtOf(h,k)?fmtN(amtOf(h,k))+(h.goal?' / '+fmtN(h.goal):'')+' '+esc(unitOf(h))+' today':'Tap to log '+esc(unitOf(h)||'amount'))+(monthAmt(h,y,m)?' · '+fmtN(monthAmt(h,y,m))+' this month':'')+'</span>':(h.per||7)<7?(n=>'<span class="meta wkp'+(n>=h.per?' met':'')+'">'+Math.min(n,h.per)+'/'+h.per+' this week</span>')(weekDone(h)):(fz?'<span class="fz" title="'+fz+(fz===1?' streak freeze':' streak freezes')+' saved up" aria-label="'+fz+(fz===1?' streak freeze':' streak freezes')+'">'+ic('snow')+fz+'</span>':'')+(c?'<span class="meta" style="color:var(--flame)">'+FLAME+c+'</span>':''))+'</div>'}).join(''));
-  o+=sec('Weekly',byType('weekly').map(h=>{const on=!!L(h)[wkey(y,m,wn)];
+    return '<div class="trow'+(on?' on':'')+(rs?' rest':'')+'" data-drag="habits-daily" data-id="'+h.id+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="cell" data-h="'+h.id+'" data-d="'+k+'" role="checkbox" aria-checked="'+on+'" aria-label="'+esc(h.name)+tgt(h,k)+'">'+cellIn(h,k,on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+(feat('notes')&&(S.notes[h.id]||{})[k]?'<small class="hnote">'+esc(S.notes[h.id][k])+'</small>':'')+(h.ch&&chDay(h)<=h.ch.days+1?'<small class="hnote chal">'+chLine(h)+'</small>':'')+(rs?'<small class="hnote">Rest day</small>':!on&&missTwice(h)?'<small class="hnote twice">'+ic('alert')+'Missed yesterday. Don’t miss twice</small>':'')+'</span>'+(feat('notes')?'<button class="nbtn" data-act="note" data-h="'+h.id+'" data-k="'+k+'" aria-label="'+((S.notes[h.id]||{})[k]?'Edit':'Add')+' note for '+esc(h.name)+'">'+ic('note')+'</button>':'')+(isAmt(h)?'<span class="meta amt'+(on?' met':'')+'">'+(amtOf(h,k)?fmtN(amtOf(h,k))+(h.goal?' / '+fmtN(h.goal):'')+' '+esc(unitOf(h))+' today':'Tap to log '+esc(unitOf(h)||'amount'))+(monthAmt(h,y,m)?' · '+fmtN(monthAmt(h,y,m))+' this month':'')+'</span>':(h.per||7)<7?(n=>'<span class="meta wkp'+(n>=h.per?' met':'')+'">'+Math.min(n,h.per)+'/'+h.per+' this week</span>')(weekDone(h)):(fz?'<span class="fz" title="'+fz+(fz===1?' streak freeze':' streak freezes')+' saved up" aria-label="'+fz+(fz===1?' streak freeze':' streak freezes')+'">'+ic('snow')+fz+'</span>':'')+(c?'<span class="meta" style="color:var(--flame)">'+FLAME+c+'</span>':''))+'</div>'};
+  o+=sec('Daily',todRows(byType('daily').filter(h=>!pausedNow(h)),drow));
+  o+=sec('Weekly',byType('weekly').filter(h=>!pausedNow(h)).map(h=>{const on=!!L(h)[wkey(y,m,wn)];
     return '<div class="trow'+(on?' on':'')+'" data-drag="habits-weekly" data-id="'+h.id+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="wcell" data-h="'+h.id+'" data-w="'+wn+'" role="checkbox" aria-checked="'+on+'" aria-label="'+esc(h.name)+tgt(h,wkey(y,m,wn))+'">'+cellIn(h,wkey(y,m,wn),on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This week</span></div>'}).join(''));
-  o+=sec('Monthly',byType('monthly').map(h=>{const on=!!L(h)[mkey(y,m)];
+  o+=sec('Monthly',byType('monthly').filter(h=>!pausedNow(h)).map(h=>{const on=!!L(h)[mkey(y,m)];
     return '<div class="trow'+(on?' on':'')+'" data-drag="habits-monthly" data-id="'+h.id+'">'+GRIP('habit')+'<button class="cell '+(on?'on':'')+'" data-act="mcell" data-h="'+h.id+'" role="checkbox" aria-checked="'+on+'" aria-label="'+esc(h.name)+tgt(h,mkey(y,m))+'">'+cellIn(h,mkey(y,m),on)+'</button><span class="tdot" style="--c:'+h.color+'"></span><span class="nm">'+esc(h.name)+'</span><span class="meta">This month</span></div>'}).join(''));
   if(!S.habits.length)o+=emptyBox('habits','Lay the first layer','Add your first habit to start your day. Pick one you can do in two minutes.',NEWH+demoBtn());
   return o;

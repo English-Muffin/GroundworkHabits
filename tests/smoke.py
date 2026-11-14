@@ -54,7 +54,7 @@ async def desktop(b):
     check('start fresh', await pg.locator('.hrow').count() == 0)
     await pg.click('#gearBtn')
     async with pg.expect_file_chooser() as fc: await pg.click('#main [data-act=import]')
-    await (await fc.value).set_files(str(path)); await pg.wait_for_timeout(200)
+    await (await fc.value).set_files(str(path)); await pg.wait_for_timeout(200); await pg.click('[data-act=imprevok]'); await pg.wait_for_timeout(200)
     check('import backup', await pg.locator('.hrow').count() == 9)
     for view in ['tasks', 'insights', 'goals', 'today']:
         await pg.evaluate(f"location.hash='{view}'"); await pg.wait_for_timeout(150)
@@ -260,6 +260,8 @@ async def desktop(b):
     await p2.click('[data-act=gear]'); await p2.set_input_files('#impFile', encf); await p2.wait_for_timeout(300)
     await p2.fill('#impPin', '1111'); await p2.click('[data-act=impok]'); await p2.wait_for_timeout(1500); wrongk = await p2.locator('#impPin').count()
     await p2.fill('#impPin', '2468'); await p2.click('[data-act=impok]'); await p2.wait_for_timeout(1500)
+    prev = await p2.locator('#modal [role=dialog]').inner_text(); await p2.click('[data-act=imprevok]'); await p2.wait_for_timeout(500)
+    check('a backup shows its date and contents before it replaces anything', 'habits' in prev and 'Saved' in prev, prev)
     check('with a PIN the exported backup is encrypted and imports only with that PIN', enct.startswith('enc1:') and 'Swim' not in enct and wrongk == 1 and await p2.evaluate("GroundworkTest.state().habits.some(h=>h.name==='Swim')"))
     await ctx2.close()
     await pg.evaluate("location.hash='today'"); await pg.reload(); await pg.wait_for_timeout(300)
@@ -586,6 +588,48 @@ async def updateAsk(b):
     check('the daily check asks instead of installing', await pg.locator('#modal [data-act=updinstall]').count() == 1 and await pg.evaluate('__inst') == 0)
     await ctx.close()
 
+async def pauseAndTimes(b):
+    # pausing hides a habit from Today without breaking its streak; time of day groups Today; a preview comes before a restore
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
+    await pg.goto(URL); await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(300)
+    hid = await pg.evaluate("GroundworkTest.state().habits.find(h=>h.type==='daily').id")
+    name = await pg.evaluate(f"GroundworkTest.state().habits.find(h=>h.id==='{hid}').name")
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(200)
+    await pg.click(f'[data-act=edithabit][data-h="{hid}"]'); await pg.click('#modal [data-act=mpause]'); await pg.wait_for_timeout(200)
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200)
+    names = await pg.locator('#main .trow .nm').all_inner_texts()
+    check('a paused habit is hidden from Today', not any(n.startswith(name) for n in names), names)
+    # yesterday falls inside a pause: no tick there must not break the streak or the freeze replay
+    r = await pg.evaluate(f"""()=>{{const S=GroundworkTest.state(),h=S.habits.find(h=>h.id==='{hid}'),d=n=>{{const x=new Date();x.setDate(x.getDate()-n);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}};
+      S.log[h.id]={{}};for(let i=3;i<10;i++)S.log[h.id][d(i)]=1;h.off=[{{f:d(2),t:d(1)}}];S.log[h.id][d(0)]=1;return [h.off.length]}}""")
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(200)
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200)
+    st = await pg.locator(f'#main .trow[data-id="{hid}"]').count()
+    check('after a pause the habit is back on Today', st == 1)
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(300)
+    streak = await pg.locator(f'.hrow[data-id="{hid}"] .gstat').inner_text()
+    check('days inside a pause keep the streak going', '8' in streak, streak)
+    # time of day
+    await pg.click(f'[data-act=edithabit][data-h="{hid}"]'); await pg.evaluate("document.getElementById('mTod').value='e'"); await pg.click('#modal [data-act=msave]'); await pg.wait_for_timeout(200)
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200)
+    heads = await pg.locator('#main .todh').all_inner_texts()
+    check('Today groups habits by time of day', 'EVENING' in [h.upper() for h in heads] and 'ANYTIME' in [h.upper() for h in heads], heads)
+    check('time of day is saved', await pg.evaluate(f"GroundworkTest.state().habits.find(h=>h.id==='{hid}').tod") == 'e')
+    # resume
+    await pg.evaluate("location.hash='habits'"); await pg.wait_for_timeout(200)
+    await pg.evaluate(f"GroundworkTest.state().habits.find(h=>h.id==='{hid}').off=undefined")
+    await pg.click(f'[data-act=edithabit][data-h="{hid}"]'); await pg.click('#modal [data-act=mpause]'); await pg.wait_for_timeout(200)
+    await pg.click(f'[data-act=edithabit][data-h="{hid}"]'); await pg.click('#modal [data-act=mpause]'); await pg.wait_for_timeout(200)
+    check('pausing and resuming on the same day leaves no pause behind', await pg.evaluate(f"!GroundworkTest.state().habits.find(h=>h.id==='{hid}').off"))
+    # backup preview: Cancel leaves data alone
+    before = await pg.evaluate("GroundworkTest.state().habits.length")
+    f = os.path.join(tempfile.gettempdir(), 'gw-prev.json'); open(f, 'w', encoding='utf-8').write(json.dumps({'v': 1, 'at': 1767225600000, 'habits': [{'id': 'x1', 'name': 'Only one', 'type': 'daily'}], 'log': {}, 'tasks': {}, 'goals': []}))
+    await pg.click('[data-act=gear]'); await pg.set_input_files('#impFile', f); await pg.wait_for_timeout(300)
+    txt = await pg.locator('#modal [role=dialog]').inner_text()
+    await pg.click('#modal [data-act=modalclose]'); await pg.wait_for_timeout(200)
+    check('backup preview shows 1 habit and Cancel changes nothing', '1 habits' in txt and await pg.evaluate("GroundworkTest.state().habits.length") == before, txt)
+    await ctx.close()
+
 async def highContrast(b):
     # Windows high contrast replaces colours: the current tab stays marked and data bars keep their colour
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}, forced_colors='active'); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
@@ -899,7 +943,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await unnamedControls(b); await reducedMotion(b); await highContrast(b); await updateAsk(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await unnamedControls(b); await reducedMotion(b); await highContrast(b); await updateAsk(b); await pauseAndTimes(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")
