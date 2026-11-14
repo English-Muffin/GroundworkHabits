@@ -296,10 +296,13 @@ the app.
 
 ## Code signing policy
 
-Windows releases are signed through [SignPath.io](https://about.signpath.io/), with a certificate from the
-[SignPath Foundation](https://signpath.org/) (free code signing for open-source projects). Only builds made by
-this repository's [GitHub Actions workflow](.github/workflows/build.yml) from a release tag are signed, and
-every signing request is approved by hand.
+Windows releases are not code-signed yet. I applied to the [SignPath Foundation](https://signpath.org/)
+(free code signing for open-source projects), but they turned the project down for now because the
+repository is still young and not widely used. I will keep applying until they accept it.
+
+The release workflow is already set up for it. Once signing is approved, only builds made by this
+repository's [GitHub Actions workflow](.github/workflows/build.yml) from a release tag will be signed
+through [SignPath.io](https://about.signpath.io/), and every signing request will be approved by hand.
 
 - Committers and reviewers: [English-Muffin](https://github.com/English-Muffin)
 - Approvers: [English-Muffin](https://github.com/English-Muffin)
