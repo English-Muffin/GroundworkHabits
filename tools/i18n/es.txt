@@ -1000,3 +1000,16 @@ P106|No se pudo conectar con $1
 894|Inicia sesión para cargar tus datos aquí.
 895|Todo se guarda en este dispositivo. Exporta una copia desde los ajustes o sincronízalo con Google Drive o Dropbox.
 P107|Datos cargados de $1
+896|Copias en la nube
+897|Cargando…
+898|No se pudieron cargar las copias
+899|Aún no hay copias allí
+900|Al restaurar verás primero su contenido; después reemplaza los datos de este dispositivo.
+901|No se pudo cargar esa copia
+902|Cierra la sesión y elimina allí los datos y las copias. Este dispositivo conserva sus datos
+P108|Restaurar una copia guardada en $1
+P109|Copias en $1
+P110|Toca de nuevo para borrarlo de $1
+P111|Borrar mis datos de $1
+P112|Datos borrados de $1. Siguen en este dispositivo
+P113|No se pudieron borrar los datos de $1

@@ -760,3 +760,4 @@ body{overflow-wrap:anywhere}.pnav a,.tsi,.g2area,.g2aw,.lrow .top>*{min-width:0}
 .tipsync{display:grid;gap:4px;margin-top:var(--sp-3);padding:var(--sp-3);border-radius:12px;background:var(--g1a)}
 .tipsync span{color:var(--g6a)}
 .tipsync .row{margin-top:var(--sp-2);flex-wrap:wrap}
+.cbl{display:grid;max-height:50vh;overflow:auto}

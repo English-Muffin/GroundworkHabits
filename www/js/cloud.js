@@ -70,6 +70,17 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     if(!r.ok)throw new Error('backup');
     for(const f of (await ls()).sort((a,c)=>a.name<c.name?1:-1).slice(8))await call(GD+'/'+f.id,{method:'DELETE'});
     return 'Google Drive (hidden app folder)'};
+  // the backups kept there (newest first), one backup's text, and deleting everything the app keeps there
+  const isBak=n=>/^groundwork-backup-[\w.-]+\.json$/.test(n);
+  DBX.list=async()=>{const r=await call('https://api.dropboxapi.com/2/files/list_folder',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:'/backups'})});
+    if(r.status===409)return [];if(!r.ok)throw new Error('list');return ((await r.json()).entries||[]).filter(e=>isBak(e.name)).map(e=>({n:e.name,size:e.size||0})).sort((a,b)=>a.n<b.n?1:-1)};
+  DBX.get=async n=>{if(!isBak(n))throw new Error('name');const r=await call('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{'Dropbox-API-Arg':JSON.stringify({path:'/backups/'+n})}});if(!r.ok)throw new Error('read');return r.text()};
+  DBX.wipe=async()=>{for(const path of ['/groundwork.json','/backups']){const r=await call('https://api.dropboxapi.com/2/files/delete_v2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path})});if(!r.ok&&r.status!==409)throw new Error('delete')}};
+  GDR.list=async()=>{const r=await call(GD+'?'+form({spaces:'appDataFolder',fields:'files(id,name,size)',pageSize:'100',q:"name contains 'groundwork-backup-' and trashed=false"}));if(!r.ok)throw new Error('list');
+    return ((await r.json()).files||[]).filter(f=>isBak(f.name)).map(f=>({n:f.name,id:f.id,size:+f.size||0})).sort((a,b)=>a.n<b.n?1:-1)};
+  GDR.get=async n=>{const f=(await GDR.list()).find(x=>x.n===n);if(!f)throw new Error('gone');const r=await call(GD+'/'+f.id+'?alt=media');if(!r.ok)throw new Error('read');return r.text()};
+  GDR.wipe=async()=>{const r=await call(GD+'?'+form({spaces:'appDataFolder',fields:'files(id)',pageSize:'1000'}));if(!r.ok)throw new Error('list');
+    for(const f of (await r.json()).files||[]){const d=await call(GD+'/'+f.id,{method:'DELETE'});if(!d.ok&&d.status!==404)throw new Error('delete')}st.fid='';keep()};
   const ops=()=>st&&st.p==='google'?GDR:DBX;
   async function finish(p,j){st={p,tok:j.access_token,exp:Date.now()+(j.expires_in||3600)*1e3,rt:j.refresh_token||'',who:''};keep();api.off=false;
     try{st.who=await ops().who();keep()}catch(e){}
@@ -85,6 +96,9 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     who:()=>st&&st.who||'',
     readFolder:()=>ops().read(),
     backup:(name,t)=>ops().backup(name,t),
+    backups:()=>ops().list(),
+    getBackup:n=>ops().get(n),
+    async wipe(){await ops().wipe();api.signOut()},
     writeFolder:o=>ops().write(o.text),
     async signIn(p){if(!can(p)){toast('Sign-in with '+PROV[p].name+' isn’t set up in this version');return}
       const ver=rnd(),s=rnd(),ch=await sha(ver);

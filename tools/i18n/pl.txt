@@ -1000,3 +1000,16 @@ P106|Brak połączenia z: $1
 894|Zaloguj się, aby wczytać tu swoje dane.
 895|Wszystko jest zapisane na tym urządzeniu. Wyeksportuj kopię w ustawieniach albo synchronizuj z Dyskiem Google lub Dropboksem.
 P107|Wczytano dane z: $1
+896|Kopie w chmurze
+897|Wczytywanie…
+898|Nie udało się wczytać kopii
+899|Nie ma tam jeszcze kopii
+900|Przywracanie najpierw pokazuje zawartość, a potem zastępuje dane na tym urządzeniu.
+901|Nie udało się wczytać tej kopii
+902|Wylogowuje i usuwa tam dane oraz kopie. To urządzenie zachowuje swoje dane
+P108|Przywróć kopię zapisaną w: $1
+P109|Kopie w: $1
+P110|Dotknij ponownie, aby usunąć z: $1
+P111|Usuń moje dane z: $1
+P112|Usunięto dane z: $1. Zostają na tym urządzeniu
+P113|Nie udało się usunąć danych z: $1

@@ -1000,3 +1000,16 @@ P106|$1 ist nicht erreichbar
 894|Melde dich an, um deine Daten hier zu laden.
 895|Alles wird auf diesem Gerät gespeichert. Exportiere eine Sicherung in den Einstellungen oder synchronisiere mit Google Drive oder Dropbox.
 P107|Daten aus $1 geladen
+896|Cloud-Sicherungen
+897|Wird geladen…
+898|Sicherungen konnten nicht geladen werden
+899|Dort gibt es noch keine Sicherungen
+900|Beim Wiederherstellen siehst du zuerst den Inhalt; dann ersetzt sie die Daten auf diesem Gerät.
+901|Diese Sicherung konnte nicht geladen werden
+902|Meldet dich ab und entfernt dort die Daten und Sicherungen. Dieses Gerät behält seine Daten
+P108|Eine Sicherung aus $1 wiederherstellen
+P109|Sicherungen in $1
+P110|Erneut tippen, um es aus $1 zu löschen
+P111|Meine Daten aus $1 löschen
+P112|Deine Daten aus $1 gelöscht. Auf diesem Gerät bleiben sie
+P113|Deine Daten aus $1 konnten nicht gelöscht werden

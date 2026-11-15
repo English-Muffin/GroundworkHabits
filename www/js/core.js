@@ -326,6 +326,6 @@ let setSec='',setQ='',setBack='today';
 const SETSECS=['appearance','language','features','reminders','calendar','data','security','about'].filter(s=>!LITE||s!=='calendar');
 function routeTo(v){const m=/^settings(?:\/([a-z]+))?$/.exec(v);if(m){view='settings';setSec=SETSECS.includes(m[1])?m[1]:'';return true}if(views().some(x=>x[0]===v)){view=v;return true}return false}
 if(!WIDGET&&!routeTo(view))view='habits';
-let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',featOpen=false,confirmDemo=false,confirmGoal=null,confirmPinOff=false,menuOpen=false,confirmReset=false,
+let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',featOpen=false,confirmDemo=false,confirmGoal=null,confirmPinOff=false,confirmWipe=false,menuOpen=false,confirmReset=false,
     taskWeek=wkStart(TODAY),addingTask=null,openMind={},insHabit='all',insRange=7,insMenu=null,lbTab='daily',modal=null,insSeries=[];
 

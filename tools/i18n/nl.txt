@@ -1000,3 +1000,16 @@ P106|Kan $1 niet bereiken
 894|Log in om je gegevens hier te laden.
 895|Alles wordt op dit apparaat bewaard. Exporteer een back-up via instellingen, of synchroniseer met Google Drive of Dropbox.
 P107|Gegevens geladen uit $1
+896|Back-ups in de cloud
+897|Laden…
+898|Kan de back-ups niet laden
+899|Daar staan nog geen back-ups
+900|Terugzetten toont eerst de inhoud en vervangt daarna de gegevens op dit apparaat.
+901|Kan die back-up niet laden
+902|Logt je uit en verwijdert daar de gegevens en back-ups. Dit apparaat houdt zijn gegevens
+P108|Een back-up uit $1 terugzetten
+P109|Back-ups in $1
+P110|Tik nogmaals om het uit $1 te verwijderen
+P111|Mijn gegevens uit $1 verwijderen
+P112|Je gegevens zijn uit $1 verwijderd. Ze blijven op dit apparaat
+P113|Kan je gegevens niet uit $1 verwijderen

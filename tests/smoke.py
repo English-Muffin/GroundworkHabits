@@ -572,12 +572,20 @@ async def cloudSync(b):
         if u.path == '/2/users/get_current_account': return await J({'email': 'me@example.com'})
         if u.path == '/oauth2/v3/userinfo': return await J({'email': 'g@example.com'})
         if u.path == '/2/auth/token/revoke': return await J({})
+        if u.path == '/2/files/download' and '/backups/' in (r.headers.get('dropbox-api-arg') or ''):
+            n = __import__('json').loads(r.headers['dropbox-api-arg'])['path'].split('/')[-1]
+            return await (route.fulfill(status=200, headers=CORS, body=store['dbxb'][n]) if n in store.get('dbxb', {}) else J({'error_summary': 'path/not_found/'}, 409))
         if u.path == '/2/files/download':
             return await (route.fulfill(status=200, headers=CORS, body=store['dbx']) if 'dbx' in store else J({'error_summary': 'path/not_found/'}, 409))
         if u.path == '/2/files/upload' and '/backups/' in (r.headers.get('dropbox-api-arg') or ''):
             store.setdefault('dbxb', {})[__import__('json').loads(r.headers['dropbox-api-arg'])['path'].split('/')[-1]] = r.post_data; return await J({})
         if u.path == '/2/files/list_folder': return await J({'entries': [{'name': n} for n in store.get('dbxb', {})]})
-        if u.path == '/2/files/delete_v2': store.get('dbxb', {}).pop(__import__('json').loads(r.post_data)['path'].split('/')[-1], None); return await J({})
+        if u.path == '/2/files/delete_v2':
+            path = __import__('json').loads(r.post_data)['path']
+            if path == '/groundwork.json': store.pop('dbx', None)
+            elif path == '/backups': store.pop('dbxb', None)
+            else: store.get('dbxb', {}).pop(path.split('/')[-1], None)
+            return await J({})
         if u.path == '/2/files/upload': store['dbx'] = r.post_data; store['dbx_auth'] = r.headers.get('authorization'); return await J({})
         if u.path == '/drive/v3/files' and 'groundwork-backup-' in q.get('q', [''])[0]: return await J({'files': [{'id': 'B' + n, 'name': n} for n in store.get('gdb', {})]})
         if u.path == '/drive/v3/files': return await J({'files': [{'id': 'F1'}] if 'gd' in store else []})
@@ -585,6 +593,7 @@ async def cloudSync(b):
             n = __import__('re').search(r'"name":"(groundwork-backup-[^"]+)"', r.post_data).group(1); store.setdefault('gdb', {})[n] = r.post_data; return await J({'id': 'B' + n})
         if u.path == '/upload/drive/v3/files': store['gd'] = (r.post_data or ''); return await J({'id': 'F1'})
         if u.path == '/upload/drive/v3/files/F1': store['gd'] = r.post_data; return await J({'id': 'F1'})
+        if u.path == '/drive/v3/files/F1' and r.method == 'DELETE': store.pop('gd', None); return await route.fulfill(status=204, headers=CORS)
         if u.path == '/drive/v3/files/F1': return await route.fulfill(status=200, headers=CORS, body=store['gd'])
         return await route.fulfill(status=404, headers=CORS)
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); errs = []
@@ -624,6 +633,12 @@ async def cloudSync(b):
     await pg.click('#main [data-act=baknow]'); await pg.wait_for_timeout(1500)
     icon = await pg.evaluate("[document.getElementById('syncBtn').hidden,document.getElementById('syncBtn').classList.contains('serr'),document.getElementById('syncBtn').getAttribute('aria-label')]")
     check('cloud sync: Back up now also keeps a backup in Dropbox; the header shows a green sync icon', list(store.get('dbxb', {})) and list(store['dbxb'])[0].startswith('groundwork-backup-') and icon == [False, False, 'Synced'], [list(store.get('dbxb', {})), icon])
+    await pg.click('#main [data-act=cbaks]'); await pg.wait_for_timeout(800)
+    rows = await pg.locator('#modal [data-act=cbakrestore]').count()
+    if rows: await pg.click('#modal [data-act=cbakrestore]'); await pg.wait_for_timeout(800)
+    prev = await pg.locator('#modal [data-act=imprevok]').count()
+    check('cloud sync: Cloud backups lists the backup in Dropbox and Restore opens the restore preview', rows == 1 and prev == 1, [rows, prev])
+    if prev: await pg.click('#modal [data-act=modalclose]'); await pg.wait_for_timeout(200)
     check('cloud sync: Settings shows when it last synced, and Sync now syncs', 'Last synced' in status and 'Not synced yet' not in status and store.get('dbx_auth') == 'Bearer T1', [status[-260:], store.get('dbx_auth')])
     await pg.click('#main [data-act=cout]'); await pg.wait_for_timeout(300)
     gone = await pg.evaluate("localStorage.getItem('groundwork-v2-cloud')")
@@ -632,8 +647,12 @@ async def cloudSync(b):
     gd = store.get('gd') or ''; txt = await pg.locator('#main').inner_text(); h = await pg.evaluate('location.hash')
     check('cloud sync: sign out forgets Dropbox; Google Drive sign-in saves to the app folder and returns to Settings',
           gone is None and 'appDataFolder' in gd and '"habits"' in gd and 'g@example.com' in txt and h == '#settings/data' and not errs, [gone, gd[:120], txt[-200:], h, errs])
+    # Delete my data from Google Drive (Danger zone, asks twice): the save there is removed and this device signs out, keeping its data
+    await pg.click('#main [data-act=cwipe]'); await pg.wait_for_timeout(200); first = 'gd' in store
+    await pg.click('#main [data-act=cwipe]'); await pg.wait_for_timeout(1500)
+    left = await pg.evaluate("[localStorage.getItem('groundwork-v2-cloud'),GroundworkTest.state().habits.length]")
+    check('cloud sync: Delete my data asks twice, removes the save from Drive and signs out; this device keeps its data', first and 'gd' not in store and left[0] is None and left[1] > 0, [first, 'gd' in store, left])
     # a save locked with a PIN on another device: signing in here asks for that PIN, then this device uses it too
-    await pg.click('#main [data-act=cout]'); await pg.wait_for_timeout(300)
     plain = _j.dumps(dict(up, habits=[dict(up['habits'][0], name='Locked elsewhere')] + up['habits'][1:], at=up['at'] + 900000))
     store['dbx'] = await pg.evaluate("t=>GroundworkTest.encFor(t,'2468')", plain)
     await pg.click('#main [data-act=csign][data-p=dropbox]'); await pg.wait_for_timeout(2500)

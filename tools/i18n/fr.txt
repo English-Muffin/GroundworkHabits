@@ -1000,3 +1000,16 @@ P106|Impossible de joindre $1
 894|Connectez-vous pour charger vos données ici.
 895|Tout est enregistré sur cet appareil. Exportez une sauvegarde depuis les réglages, ou synchronisez avec Google Drive ou Dropbox.
 P107|Données chargées depuis $1
+896|Sauvegardes dans le cloud
+897|Chargement…
+898|Impossible de charger les sauvegardes
+899|Pas encore de sauvegarde là-bas
+900|La restauration montre d’abord son contenu, puis remplace les données de cet appareil.
+901|Impossible de charger cette sauvegarde
+902|Vous déconnecte et supprime les données et les sauvegardes là-bas. Cet appareil garde ses données
+P108|Restaurer une sauvegarde gardée dans $1
+P109|Sauvegardes dans $1
+P110|Touchez encore pour supprimer de $1
+P111|Supprimer mes données de $1
+P112|Données supprimées de $1. Elles restent sur cet appareil
+P113|Impossible de supprimer vos données de $1

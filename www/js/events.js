@@ -110,6 +110,9 @@ document.addEventListener('click',e=>{
     case 'csign':persist=false;menuOpen=false;if(modal&&modal.kind==='tips'){try{localStorage.setItem('groundwork-tips','1')}catch(e){}modal=null}CLOUD.signIn(t.dataset.p).catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
     case 'creconnect':persist=false;reconnectToast.told=0;CLOUD.reconnect().catch(()=>toast('Could not sign in'));break;
     case 'syncgo':persist=false;location.hash='#settings/data';return;
+    case 'cbaks':persist=false;modal={kind:'cbaks',list:null};CLOUD.backups().then(l=>{if(modal&&modal.kind==='cbaks'){modal.list=l;render()}}).catch(()=>{if(modal&&modal.kind==='cbaks'){modal.list=[];modal.err=1;render()}});break;
+    case 'cbakrestore':persist=false;CLOUD.getBackup(t.dataset.n).then(x=>{if(isEnc(x)){modal={kind:'impin',text:x};focusSel='#impPin'}else{modal=null;previewImport(JSON.parse(x))}render()}).catch(()=>toast('Could not load that backup'));break;
+    case 'cwipe':persist=false;if(!confirmWipe){confirmWipe=true;break}confirmWipe=false;{const n=CLOUD.name();CLOUD.wipe().then(()=>{toast('Deleted your data from '+n+'. It stays on this device');render()}).catch(()=>toast('Could not delete your data from '+n))}break;
     case 'mergeundo':persist=false;if(histStep(true))toast('Merge undone');break;
     case 'syncpinok':{persist=false;const pin=$('#syncPin').value,txt=modal.text,salt=encSalt(txt);deriveKey(pin,salt).then(async key=>{await decText(txt,key);
         encKey=key;P.lock={salt,enc:1,check:await encText('groundwork',key,salt)};applyPrefs();modal=null;andText=null;await andApply(txt,false,true);save();render();toast('This device now uses the same PIN')})

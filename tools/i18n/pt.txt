@@ -1000,3 +1000,16 @@ P106|Não foi possível contactar $1
 894|Inicia sessão para carregar os teus dados aqui.
 895|Tudo fica guardado neste dispositivo. Exporta uma cópia nas definições ou sincroniza com o Google Drive ou a Dropbox.
 P107|Dados carregados de $1
+896|Cópias na nuvem
+897|A carregar…
+898|Não foi possível carregar as cópias
+899|Ainda não há cópias lá
+900|Restaurar mostra primeiro o conteúdo e depois substitui os dados deste dispositivo.
+901|Não foi possível carregar essa cópia
+902|Termina a sessão e remove lá os dados e as cópias. Este dispositivo mantém os dados
+P108|Restaurar uma cópia guardada em $1
+P109|Cópias em $1
+P110|Toca de novo para apagar de $1
+P111|Apagar os meus dados de $1
+P112|Dados apagados de $1. Continuam neste dispositivo
+P113|Não foi possível apagar os dados de $1

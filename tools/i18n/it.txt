@@ -1000,3 +1000,16 @@ P106|Impossibile raggiungere $1
 894|Accedi per caricare qui i tuoi dati.
 895|Tutto è salvato su questo dispositivo. Esporta un backup dalle impostazioni o sincronizza con Google Drive o Dropbox.
 P107|Dati caricati da $1
+896|Backup nel cloud
+897|Caricamento…
+898|Impossibile caricare i backup
+899|Ancora nessun backup lì
+900|Il ripristino mostra prima il contenuto, poi sostituisce i dati di questo dispositivo.
+901|Impossibile caricare quel backup
+902|Esce e rimuove lì i dati e i backup. Questo dispositivo mantiene i suoi dati
+P108|Ripristina un backup salvato in $1
+P109|Backup in $1
+P110|Tocca di nuovo per eliminarlo da $1
+P111|Elimina i miei dati da $1
+P112|Dati eliminati da $1. Restano su questo dispositivo
+P113|Impossibile eliminare i dati da $1
