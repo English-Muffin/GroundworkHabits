@@ -35,8 +35,8 @@ still be around next year. So this one lives on your own devices and nowhere els
 charts that show how it's all going.
 
 There's no account, no subscription, no ads and nothing tracking you. It backs itself up, and if you
-point it at a Google Drive, OneDrive or Dropbox folder, the same data follows you from your computer to
-your phone. The code is open, so if you'd do something differently, fork it.
+sign in with Google Drive or Dropbox (or point it at a synced folder), the same data follows you from your
+computer to your phone, kept in your own cloud, never on a server of ours. The code is open, so if you'd do something differently, fork it.
 
 Want to look around first? The [in-browser demo](https://english-muffin.github.io/GroundworkHabits/demo/)
 is the real app with some example data. It keeps its own separate storage in your browser, so it never
@@ -125,8 +125,12 @@ is the first proper one. What changed in the earlier versions is still in the [c
 
 - Everything is saved on your devices. Automatic backups (daily, weekly or monthly), export to JSON or
   a spreadsheet, and import on any device.
-- A data folder on desktop and Android: choose a Google Drive, OneDrive, Dropbox or other synced folder
-  to keep devices in step.
+- **Cloud sync with Google Drive or Dropbox:** sign in and your data is kept in your own account
+  (Drive's hidden app folder, or `Apps/Groundwork Habits` in Dropbox) and synced between your devices.
+  Changes made on two devices before they sync are merged, not overwritten. Settings shows when it last
+  synced, with a Sync now button. No server of ours sits in between.
+- Or a data folder on desktop and Android: choose a Google Drive, OneDrive, Dropbox or other synced
+  folder to keep devices in step.
 - **PIN lock with encryption:** with a PIN, your data, backups and exports are encrypted (AES-GCM).
   Fingerprint unlock on Android.
 
@@ -155,7 +159,7 @@ Open <http://localhost:8765> and add your first habit. Add `?demo` to the addres
 | **Windows** | Download `Groundwork-Habits-X.Y.Z-Windows-setup.exe` from the [latest release](https://github.com/English-Muffin/GroundworkHabits/releases/latest) and run it. Its own installer lets you pick the folder (or make a new one), shows the space needed and progress, needs no admin rights, and puts the old version back if an update fails. The uninstaller asks whether to keep or erase your data. Prefer no install? `…-Windows-portable.exe` runs from anywhere |
 | **macOS** | Download `Groundwork-Habits-X.Y.Z-mac-universal.zip`, unzip it and drag Groundwork Habits to Applications |
 | **Android** | Download `Groundwork-Habits-X.Y.Z-Android.apk` on the phone and open it. Updates install over it and keep your data |
-| **Lite** | Same app without any online part (no calendar, no update check, no data folder) and without the extras: `Groundwork-Habits-Lite-X.Y.Z-…` for every platform, or the [web version](https://english-muffin.github.io/GroundworkHabits/lite/) |
+| **Lite** | Same app without any online part (no calendar, no update check, no cloud sync or data folder) and without the extras: `Groundwork-Habits-Lite-X.Y.Z-…` for every platform, or the [web version](https://english-muffin.github.io/GroundworkHabits/lite/) |
 | **Any browser** | The [web app](https://english-muffin.github.io/GroundworkHabits/), or host the `www` folder on any HTTPS static host |
 
 Every download sits next to its `.sha256`. The desktop app can check for updates once a day (off by
@@ -191,19 +195,27 @@ The app logic (streaks and freezes, repeat rules, goal progress and forecasts, b
 covered by unit tests that run in plain Node, and the screens by browser tests at phone and desktop
 sizes.
 
-### How the data folder works
+### How sync works
 
-Each device keeps one data document. With a data folder chosen, every change is also written to
-`groundwork.json` in that folder (written to a temporary file, then renamed, so it's never half
-written), and the file is read again whenever you come back to the app, so a newer save from your
-other device wins. Picking a folder that already has a save asks whether to replace it (the old one is
-kept as a copy) or load it.
+Each device keeps one data document. With cloud sync or a data folder, every change is also written to
+`groundwork.json` there, and it's read again whenever you come back to the app.
+
+- **Cloud sync** (Settings → Data & backups → Cloud sync): sign in with Google Drive or Dropbox in your
+  browser. The app talks to Google or Dropbox directly and can only see the file it made. Your sign-in
+  stays on the device. On the web, Google asks you to sign in again after an hour.
+- **A data folder**: pick a folder that Google Drive, OneDrive, Dropbox or another app keeps in sync. On
+  desktop the file is written to a temporary file first, then renamed, so it's never half written.
+- **Two devices, both changed**: the app remembers the last copy both sides agreed on and merges: a habit
+  ticked on your phone and a task added on your computer both survive. Only when the same thing was changed
+  on both does the newer change win. A delete wins unless the other device changed that same thing.
+- Signing in or picking a folder that already has a save asks whether to replace it or load it.
 
 ### Your data
 
 | Where | What |
 |---|---|
 | App storage | The data itself, plus a copy in the browser database. With a PIN it is encrypted with a key made from your PIN |
+| `groundwork.json` in your Google Drive or Dropbox | When you sign in to cloud sync. In Drive's hidden app folder or Dropbox's `Apps/Groundwork Habits`. Encrypted when a PIN is set |
 | `groundwork.json` in your data folder | Desktop and Android, when you choose a folder. Written on every change, read when you come back |
 | `backups/groundwork-backup-<date>.json` | Automatic backups, the newest 8 kept (encrypted when a PIN is set) |
 | `groundwork-replaced-<time>.json` | A copy of a save you chose to replace when picking a folder (desktop) |
@@ -218,7 +230,7 @@ before it's used.
 |---|---|
 | Try it first | The [in-browser demo](https://english-muffin.github.io/GroundworkHabits/demo/) |
 | Install it | [Get it](#get-it) |
-| Keep my phone and computer in step | [How the data folder works](#how-the-data-folder-works) |
+| Keep my phone and computer in step | [How sync works](#how-sync-works) |
 | Know where my data is | [Your data](#your-data) |
 | See what changed | [Changelog](CHANGELOG.md) |
 | Build it or change it | [Build it yourself](#build-it-yourself) and [CONTRIBUTING.md](CONTRIBUTING.md) |
@@ -275,7 +287,7 @@ What that does and doesn't mean:
   stress test run on every push. That is the guard against plausible-looking code that is wrong,
   whoever or whatever wrote it.
 - **The app itself doesn't use AI.** Nothing in it calls an AI service, and nothing leaves your
-  device unless you choose a folder, a backup or a calendar.
+  device unless you choose cloud sync, a folder, a backup or a calendar.
 
 ## Support
 
@@ -308,8 +320,9 @@ through [SignPath.io](https://about.signpath.io/), and every signing request wil
 - Approvers: [English-Muffin](https://github.com/English-Muffin)
 
 Privacy: the app sends nothing anywhere on its own. It connects to the internet only for things you switch
-on yourself: a calendar link you add, or the update check, which asks GitHub for the latest release. See
-[Your data](#your-data).
+on yourself: cloud sync with your own Google Drive or Dropbox, a calendar link you add, or the update check,
+which asks GitHub for the latest release. See [Your data](#your-data) and the
+[privacy policy](https://english-muffin.github.io/GroundworkHabits/privacy.html).
 
 ## License
 
