@@ -139,7 +139,7 @@ function syncIn(d,baseJ){if(!baseJ)return {s:clean(d),out:false};const b=JSON.pa
   if((+d.at||0)<(+b.at||0))return {s:S,out:true}; // older than the copy we last agreed on: a stale write from somewhere, keep ours and write it back
   delete b.at;delete r.at;
   if(canon(l)===canon(b))return {s:clean(d),out:false};if(canon(r)===canon(b)||canon(r)===canon(l))return {s:S,out:canon(r)!==canon(l)};
-  return {s:clean(merge3(b,l,r,(S.at||0)>=(+d.at||0))),out:true}}
+  return {s:clean(merge3(b,l,r,(S.at||0)>=(+d.at||0))),out:true,merged:true}}
 // the last agreed copy for the folder or cloud in use, kept as written (encrypted when a PIN is set) so no plain copy is left behind
 const syncName=()=>typeof CLOUD!=='undefined'&&CLOUD&&CLOUD.on()?'cloud:'+CLOUD.name()+':'+CLOUD.who():'folder:'+(P.andDir||'');
 function setBase(t){idbKv(KEY+'-synced',{to:syncName(),t})}
@@ -150,9 +150,11 @@ const syncInfo=()=>{try{return JSON.parse(localStorage.getItem(KEY+'-syncinfo')|
 function andWrite(now){if(!syncTo()||encWait)return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{const to=syncTo();if(!to||t===andText)return;
   to.writeFolder({text:t}).then(()=>{andText=t;setBase(t);syncNote()}).catch(e=>{syncNote(to===FOLD?'Could not save to your data folder':'Could not reach '+CLOUD.name());if(to===FOLD&&!(WEBF&&WEBF.off))toast('Could not save to your data folder');else if(to!==FOLD&&to.off)reconnectToast()})}),now?0:800)}
 function reconnectToast(){if(reconnectToast.told)return;reconnectToast.told=1;if(syncTo()===null&&typeof CLOUD!=='undefined'&&CLOUD&&CLOUD.on())toastAct('Sign in to '+CLOUD.name()+' again to keep syncing','Sign in','creconnect');else toastAct('Reconnect your data folder','Reconnect','areconnect')}
-async function andApply(t,announce,newest){try{const j=isEnc(t)?(encKey?await decText(t,encKey):null):t;if(j===null)return;const d=JSON.parse(j);if(!d||!Array.isArray(d.habits))return;
+async function andApply(t,announce,newest){try{if(isEnc(t)&&!encKey){if(!P.lock&&!modal){modal={kind:'syncpin',text:t};focusSel='#syncPin';render()}return} // locked with a PIN set on another device
+  let j;try{j=isEnc(t)?await decText(t,encKey):t}catch(e){if(!andApply.told){andApply.told=1;toast('The synced save uses a different PIN')}return}const d=JSON.parse(j);if(!d||!Array.isArray(d.habits))return;
   if(newest){const bj=await baseJ();
-    if(bj){const r=syncIn(d,bj);S=r.s;andText=t;setBase(t);syncNote();if(r.out){andText=null;save()}else saveRaw(JSON.stringify(S),putData);if(!modal&&!drag)render();return}
+    if(bj){const r=syncIn(d,bj);S=r.s;andText=t;setBase(t);syncNote();if(r.out){andText=null;save()}else saveRaw(JSON.stringify(S),putData);if(!modal&&!drag)render();
+      if(r.merged)toastAct('Merged changes from your other device','Undo','mergeundo');return}
     if((+d.at||0)<(S.at||0)){andText=null;andWrite();return}} // no agreed copy yet: the newer save wins; this device is newer, so write it out
   S=clean(d);andText=t;setBase(t);syncNote();saveRaw(JSON.stringify(S),putData);if(!modal&&!drag)render();if(announce)toast('Loaded the save from that folder')}catch(e){}}
 async function andRead(){const to=syncTo();if(!to||encWait)return;try{const t=(await to.readFolder()).text;if(t&&t!==andText)await andApply(t,false,true);else syncNote()}catch(e){syncNote(to===FOLD?'Could not read your data folder':'Could not reach '+(CLOUD&&CLOUD.name()));if((WEBF&&WEBF.off)||(to!==FOLD&&to.off))reconnectToast()}}
@@ -188,7 +190,7 @@ function writeFile(){clearTimeout(save.t);save.t=0;if(!dataDir||encWait)return;c
 function readFile(){const t=DFS.read();if(!t||t===fileText)return false;
   if(isEnc(t)){if(!encKey){if(!encOn())encWait=true;return false}
     decText(t,encKey).then(j=>{const r=syncIn(JSON.parse(j),fileJson);S=r.s;fileText=t;fileJson=j;syncNote();if(r.out)save();else putData(t);if(!modal&&!drag)render()}).catch(()=>toast('The save in your data folder uses a different PIN'));return false}
-  try{const r=syncIn(JSON.parse(t),fileJson);S=r.s;fileText=t;fileJson=t;syncNote();if(r.out)save();else putData(t);return true}catch(e){return false}}
+  try{const r=syncIn(JSON.parse(t),fileJson);S=r.s;fileText=t;fileJson=t;syncNote();if(r.out)save();else putData(t);if(r.merged)setTimeout(()=>toastAct('Merged changes from your other device','Undo','mergeundo'));return true}catch(e){return false}}
 window.addEventListener('beforeunload',()=>{if(save.t)writeFile()});
 if(DFS&&DFS.onFlush)DFS.onFlush(async()=>{if(save.t)writeFile();await save.p}); // desktop: finish encrypted saves before the window closes
 const DATA_V=1; // bump and migrate in load-time block below when the saved shape changes

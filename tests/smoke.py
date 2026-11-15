@@ -607,6 +607,10 @@ async def cloudSync(b):
     names = await pg.evaluate("GroundworkTest.state().habits.slice(0,3).map(h=>h.name)"); up2 = _j.loads(store['dbx'])
     check('cloud sync: changes made on both devices before syncing are merged, and the merge is uploaded',
           names == ['From Dropbox', 'Changed here', 'Changed there'] and [h['name'] for h in up2['habits'][:3]] == names, [names, [h['name'] for h in up2['habits'][:3]]])
+    note = await pg.evaluate("document.getElementById('toast').hidden?'':document.getElementById('toast').textContent")
+    await pg.click('#toast [data-act=mergeundo]'); await pg.wait_for_timeout(1500)
+    undone = await pg.evaluate("GroundworkTest.state().habits.slice(0,3).map(h=>h.name)")
+    check('cloud sync: a merge says so, and Undo goes back to this device’s version', 'Merged changes' in note and undone[1] == 'Changed here' and undone[2] != 'Changed there', [note, undone])
     await pg.evaluate("location.hash='#settings/data'"); await pg.wait_for_timeout(300)
     status = await pg.locator('#main').inner_text(); store.pop('dbx_auth', None)
     await pg.click('#main [data-act=syncnow]'); await pg.wait_for_timeout(2200)
@@ -618,6 +622,19 @@ async def cloudSync(b):
     gd = store.get('gd') or ''; txt = await pg.locator('#main').inner_text(); h = await pg.evaluate('location.hash')
     check('cloud sync: sign out forgets Dropbox; Google Drive sign-in saves to the app folder and returns to Settings',
           gone is None and 'appDataFolder' in gd and '"habits"' in gd and 'g@example.com' in txt and h == '#settings/data' and not errs, [gone, gd[:120], txt[-200:], h, errs])
+    # a save locked with a PIN on another device: signing in here asks for that PIN, then this device uses it too
+    await pg.click('#main [data-act=cout]'); await pg.wait_for_timeout(300)
+    plain = _j.dumps(dict(up, habits=[dict(up['habits'][0], name='Locked elsewhere')] + up['habits'][1:], at=up['at'] + 900000))
+    store['dbx'] = await pg.evaluate("t=>GroundworkTest.encFor(t,'2468')", plain)
+    await pg.click('#main [data-act=csign][data-p=dropbox]'); await pg.wait_for_timeout(2500)
+    await pg.click('[data-act=afoldload]'); await pg.click('[data-act=afoldload]'); await pg.wait_for_timeout(800)
+    asked = await pg.locator('#syncPin').count()
+    if asked: await pg.fill('#syncPin', '1111'); await pg.click('[data-act=syncpinok]'); await pg.wait_for_timeout(800)
+    wrong = await pg.locator('#syncPin').count()
+    if wrong: await pg.fill('#syncPin', '2468'); await pg.click('[data-act=syncpinok]'); await pg.wait_for_timeout(2500)
+    got = await pg.evaluate("[GroundworkTest.state().habits[0].name,!!JSON.parse(localStorage.getItem('groundwork-prefs')||'{}').lock]")
+    check('cloud sync: a save locked with a PIN elsewhere asks for it, refuses a wrong one, then loads and keeps the PIN',
+          asked and wrong and got == ['Locked elsewhere', True] and store['dbx'].startswith('enc1:') and not errs, [asked, wrong, got, store['dbx'][:12], errs])
     await ctx.close()
     # no sign-in IDs (a build before the apps are registered): no Cloud sync group at all; Lite never has one
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={dropbox:'',google:'',googleWeb:''}")

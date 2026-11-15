@@ -989,3 +989,10 @@ P105|La connexion avec $1 n’est pas disponible dans cette version
 884|Synchronisé
 885|Impossible de lire votre dossier de données
 P106|Impossible de joindre $1
+886|Modifications de votre autre appareil fusionnées
+887|Fusion annulée
+888|Les données synchronisées utilisent un autre code PIN
+889|Cet appareil utilise maintenant le même code PIN
+890|Vos données synchronisées sont protégées par un code PIN
+891|Un autre appareil les protège avec un code PIN. Saisissez-le pour continuer la synchronisation ; cet appareil utilisera le même code PIN.
+892|Données synchronisées verrouillées

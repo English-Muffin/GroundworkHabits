@@ -989,3 +989,10 @@ P105|Inloggen met $1 is in deze versie niet ingesteld
 884|Gesynchroniseerd
 885|Kan je gegevensmap niet lezen
 P106|Kan $1 niet bereiken
+886|Wijzigingen van je andere apparaat samengevoegd
+887|Samenvoegen ongedaan gemaakt
+888|De gesynchroniseerde gegevens gebruiken een andere pincode
+889|Dit apparaat gebruikt nu dezelfde pincode
+890|Je gesynchroniseerde gegevens zijn beveiligd met een pincode
+891|Een ander apparaat beveiligt ze met een pincode. Voer die pincode in om te blijven synchroniseren; dit apparaat gebruikt dan dezelfde pincode.
+892|Gesynchroniseerde gegevens vergrendeld

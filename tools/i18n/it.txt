@@ -989,3 +989,10 @@ P105|L’accesso con $1 non è disponibile in questa versione
 884|Sincronizzato
 885|Impossibile leggere la cartella dei dati
 P106|Impossibile raggiungere $1
+886|Modifiche dall’altro dispositivo unite
+887|Unione annullata
+888|I dati sincronizzati usano un altro PIN
+889|Questo dispositivo ora usa lo stesso PIN
+890|I tuoi dati sincronizzati sono protetti da un PIN
+891|Un altro dispositivo li protegge con un PIN. Inseriscilo per continuare a sincronizzare; questo dispositivo userà lo stesso PIN.
+892|Dati sincronizzati bloccati

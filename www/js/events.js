@@ -109,6 +109,10 @@ document.addEventListener('click',e=>{
     case 'afoldno':persist=false;if(modal.cloud)CLOUD.signOut();else{FOLD.clearFolder();P.andDir='';applyPrefs()}modal=null;break;
     case 'csign':persist=false;menuOpen=false;CLOUD.signIn(t.dataset.p).catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
     case 'creconnect':persist=false;reconnectToast.told=0;CLOUD.reconnect().catch(()=>toast('Could not sign in'));break;
+    case 'mergeundo':persist=false;if(histStep(true))toast('Merge undone');break;
+    case 'syncpinok':{persist=false;const pin=$('#syncPin').value,txt=modal.text,salt=encSalt(txt);deriveKey(pin,salt).then(async key=>{await decText(txt,key);
+        encKey=key;P.lock={salt,enc:1,check:await encText('groundwork',key,salt)};applyPrefs();modal=null;andText=null;await andApply(txt,false,true);save();render();toast('This device now uses the same PIN')})
+      .catch(()=>{toast('Wrong PIN');const e=$('#syncPin');if(e){e.value='';e.focus()}});break}
     case 'syncnow':persist=false;if(dataDir){if(!readFile())writeFile();render();toast('Synced')}else andRead().then(()=>{andText=null;andWrite(true);setTimeout(()=>{render();const i=syncInfo();toast(i.err||'Synced')},1500)});break;
     case 'cout':persist=false;{const n=CLOUD.name();CLOUD.signOut();toast('Signed out of '+n+'. Your data stays on this device')}break;
     case 'aclear':persist=false;FOLD.clearFolder();P.andDir='';applyPrefs();toast(NB?'Saving on this phone only':'Saving in this browser only');break;
@@ -291,6 +295,7 @@ document.addEventListener('keydown',e=>{
   if(modal&&e.key==='Enter'&&['qTask','qAmt','bioPin'].includes(e.target.id)){e.preventDefault();$('[data-act='+({qTask:'qtask',qAmt:'qgoal',bioPin:'biook'})[e.target.id]+']').click();return}
   if(modal&&e.key==='Enter'&&e.target.id==='mcTask'){e.preventDefault();$('[data-act=tmadd]').click();return}
   if(modal&&e.key==='Enter'&&e.target.id==='impPin'){e.preventDefault();$('[data-act=impok]').click();return}
+  if(modal&&e.key==='Enter'&&e.target.id==='syncPin'){e.preventDefault();$('[data-act=syncpinok]').click();return}
   if(modal&&e.key==='Enter'&&e.target.id==='arName'){e.preventDefault();$('[data-act=areasave]').click();return}
   if(modal&&e.key==='Enter'&&e.target.id==='gStep'){e.preventDefault();const b=$('[data-act=gstepadd]')||$('[data-act=gtaskadd]');if(b)b.click();return}
   if(modal&&e.key==='Enter'&&(e.target.id==='mName'||e.target.id==='gTitle'||e.target.id==='qName'||e.target.id==='calUrl')){e.preventDefault();const b=$('[data-act="'+({habit:'msave',quit:'qsave',cal:'calsave'}[modal.kind]||'gsave')+'"]');if(b)b.click()}

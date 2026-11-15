@@ -989,3 +989,10 @@ P105|El inicio de sesión con $1 no está disponible en esta versión
 884|Sincronizado
 885|No se pudo leer tu carpeta de datos
 P106|No se pudo conectar con $1
+886|Cambios de tu otro dispositivo combinados
+887|Combinación deshecha
+888|Los datos sincronizados usan otro PIN
+889|Este dispositivo ahora usa el mismo PIN
+890|Tus datos sincronizados están protegidos con un PIN
+891|Otro dispositivo los protege con un PIN. Introdúcelo para seguir sincronizando; este dispositivo usará el mismo PIN.
+892|Datos sincronizados bloqueados

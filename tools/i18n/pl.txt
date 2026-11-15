@@ -989,3 +989,10 @@ P105|Logowanie przez $1 nie jest dostępne w tej wersji
 884|Zsynchronizowano
 885|Nie udało się odczytać folderu danych
 P106|Brak połączenia z: $1
+886|Połączono zmiany z innego urządzenia
+887|Cofnięto łączenie
+888|Zsynchronizowane dane używają innego PIN-u
+889|To urządzenie używa teraz tego samego PIN-u
+890|Twoje zsynchronizowane dane są chronione PIN-em
+891|Inne urządzenie chroni je PIN-em. Wpisz ten PIN, aby dalej synchronizować; to urządzenie będzie używać tego samego PIN-u.
+892|Zsynchronizowane dane są zablokowane

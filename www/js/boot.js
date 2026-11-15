@@ -20,7 +20,7 @@ window.addEventListener('storage',e=>{
   if(e.key==='groundwork-locked'){lockNow(false);return}
   if(e.key===PKEY&&e.newValue){try{const was=P.lock&&P.lock.salt;Object.assign(P,JSON.parse(e.newValue));if(P.lock&&P.lock.salt!==was){locked=true;encKey=null}if(!P.lock){P.lock=null;encKey=null}const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');d.classList.toggle('notabnames',P.tabNames===false);if(!modal&&!drag)render()}catch(_){}}
 });
-if(TESTING)window.GroundworkTest={tx,parseExternal,mergeExternal,tplAdd,parseIcs,applyCalendar,tasksToIcs,state:()=>S,save:()=>save(),remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
+if(TESTING)window.GroundworkTest={tx,parseExternal,mergeExternal,tplAdd,parseIcs,applyCalendar,tasksToIcs,state:()=>S,save:()=>save(),encFor:async(x,pin)=>{const salt='00ff00ff00ff00ff00ff00ff00ff00ff';return encText(x,await deriveKey(pin,salt),salt)},remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
 pullCalendar();let calTick=0;
 // daily reminder: a notification at the chosen time if daily habits are still open (only while Groundwork Habits is running)
 // Android app: a real daily notification scheduled with Capacitor Local Notifications (works when the app is closed)
@@ -110,6 +110,8 @@ takeAnswers().then(syncReminders);
 // folder names saved by older versions could be a cloud provider's raw id: ask the phone for the current name
 if(NB&&!WIDGET&&P.andDir&&NB.folder)NB.folder().then(r=>{if(r&&r.name&&r.name!==P.andDir){P.andDir=r.name;applyPrefs()}}).catch(()=>{});
 setTimeout(()=>{autoBackup();andRead()},3000);
+// while the app stays open on screen, look for changes from other devices every 3 minutes (not while typing or dragging)
+if(!WIDGET)setInterval(()=>{if(document.hidden||drag||locked||encWait||(document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)))return;if(dataDir){if(!save.t&&readFile())render()}else andRead()},180000);
 checkReminder();checkHabitReminders();
 // desktop updates: "Check for updates" (manual) or once a day when switched on. The installed app downloads the new
 // setup, checks it and installs over itself (the old version is removed once the new one works); the portable app and

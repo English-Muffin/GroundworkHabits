@@ -989,3 +989,10 @@ P105|Die Anmeldung mit $1 ist in dieser Version nicht eingerichtet
 884|Synchronisiert
 885|Dein Datenordner konnte nicht gelesen werden
 P106|$1 ist nicht erreichbar
+886|Änderungen von deinem anderen Gerät zusammengeführt
+887|Zusammenführung rückgängig gemacht
+888|Die synchronisierten Daten verwenden eine andere PIN
+889|Dieses Gerät verwendet jetzt dieselbe PIN
+890|Deine synchronisierten Daten sind mit einer PIN geschützt
+891|Ein anderes Gerät schützt sie mit einer PIN. Gib diese PIN ein, um weiter zu synchronisieren; dieses Gerät verwendet dann dieselbe PIN.
+892|Synchronisierte Daten gesperrt
