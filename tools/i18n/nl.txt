@@ -958,3 +958,27 @@ P95|$1 $2: geen taken
 P96|Reeks van $1 dagen: $2
 P97|$1 dagen, bereikt
 P98|$1 dagen, nog niet bereikt
+863|Cloudsynchronisatie
+864|Log in om je gegevens in je eigen Google Drive te bewaren en tussen apparaten te synchroniseren
+865|Log in om je gegevens in je eigen Dropbox te bewaren en tussen apparaten te synchroniseren
+866|Inloggen
+867|Uitloggen
+868|Je gegevens blijven op dit apparaat
+869|Synchroniseert
+870|Uitgelogd. Log opnieuw in om te blijven synchroniseren
+871|Rond het inloggen af in je browser
+872|Inloggen geannuleerd
+873|Inloggen mislukt
+874|Opgeslagen gegevens laden
+875|Tik nogmaals: opgeslagen gegevens laden
+876|Er staat nog een andere inlog open. Sluit die en probeer het opnieuw
+877|Inloggen duurde te lang
+878|Kan je browser niet openen
+879|Geen inlogpagina
+P99|Synchroniseert als $1
+P100|Groundwork Habits synchroniseert nu met $1
+P101|Er staat al een Groundwork Habits-opslag in je $1
+P102|Vervangen door de gegevens op dit apparaat, of de opslag uit $1 laden? Laden overschrijft wat op dit apparaat staat.
+P103|Uitgelogd bij $1. Je gegevens blijven op dit apparaat
+P104|Log opnieuw in bij $1 om te blijven synchroniseren
+P105|Inloggen met $1 is in deze versie niet ingesteld

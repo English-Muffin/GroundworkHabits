@@ -958,3 +958,27 @@ P95|$1 $2 : aucune tâche
 P96|Série de $1 jours : $2
 P97|$1 jours, atteint
 P98|$1 jours, pas encore atteint
+863|Synchronisation cloud
+864|Connectez-vous pour garder vos données dans votre propre Google Drive et les synchroniser entre vos appareils
+865|Connectez-vous pour garder vos données dans votre propre Dropbox et les synchroniser entre vos appareils
+866|Se connecter
+867|Se déconnecter
+868|Vos données restent sur cet appareil
+869|Synchronisation active
+870|Déconnecté. Reconnectez-vous pour continuer la synchronisation
+871|Terminez la connexion dans votre navigateur
+872|Connexion annulée
+873|Connexion impossible
+874|Charger les données enregistrées
+875|Touchez encore : charger les données enregistrées
+876|Une autre connexion est encore ouverte. Fermez-la et réessayez
+877|La connexion a expiré
+878|Impossible d’ouvrir votre navigateur
+879|Ce n’est pas une page de connexion
+P99|Synchronisé avec le compte $1
+P100|Groundwork Habits se synchronise maintenant avec $1
+P101|Il y a déjà une sauvegarde Groundwork Habits dans votre $1
+P102|La remplacer par les données de cet appareil, ou charger la sauvegarde de $1 ? Le chargement remplace ce qui est sur cet appareil.
+P103|Déconnecté de $1. Vos données restent sur cet appareil
+P104|Reconnectez-vous à $1 pour continuer la synchronisation
+P105|La connexion avec $1 n’est pas disponible dans cette version

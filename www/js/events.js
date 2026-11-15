@@ -26,7 +26,7 @@ document.addEventListener('click',e=>{
     case 'demo':if(!TESTING)break;
       if(hasData()&&!confirmDemo){confirmDemo=true;persist=false;break}
       S=seed();confirmDemo=false;menuOpen=false;toast('Demo data loaded');if(view==='settings'){save();location.hash=setBack;return}break;
-    case 'pickdir':persist=false;menuOpen=false;DFS.choose().then(res=>{if(!res)return;dataDir=res.folder;fileText=null;
+    case 'pickdir':persist=false;menuOpen=false;DFS.choose().then(res=>{if(!res)return;if(CLOUD&&CLOUD.on())CLOUD.signOut();dataDir=res.folder;fileText=null;
       if(res.mode==='load'&&readFile()){render();toast('Loaded the save from that folder')}else{writeFile();render();toast('Groundwork Habits now saves to that folder')}});break;
     case 'resetdir':DFS.reset();dataDir='';fileText=null;persist=false;toast('Saving to app storage only');break;
     case 'calexport':menuOpen=false;persist=false;shareFile(tasksToIcs(),'groundwork-tasks-'+dk(TODAY)+'.ics','text/calendar','Groundwork Habits tasks','Calendar file downloaded. Import it in Google Calendar: Settings, Import & export');break;
@@ -101,12 +101,15 @@ document.addEventListener('click',e=>{
     case 'impok':{persist=false;const pin=$('#impPin').value,txt=modal.text;deriveKey(pin,encSalt(txt)).then(k=>decText(txt,k)).then(j=>{modal=null;previewImport(JSON.parse(j));render()}).catch(()=>{toast('Wrong PIN, or not a Groundwork Habits backup');const e=$('#impPin');if(e){e.value='';e.focus()}});return}
     case 'baknow':persist=false;menuOpen=false;autoBackup(true);break;
     case 'bakopen':persist=false;if(DFS&&DFS.openBackups)DFS.openBackups();break;
-    case 'apick':persist=false;menuOpen=false;FOLD.pickFolder().then(async r=>{if(!r||!r.picked)return;P.andDir=r.name;applyPrefs();
+    case 'apick':persist=false;menuOpen=false;FOLD.pickFolder().then(async r=>{if(!r||!r.picked)return;if(CLOUD&&CLOUD.on())CLOUD.signOut();P.andDir=r.name;applyPrefs();
       let ex=null;try{ex=(await FOLD.readFolder()).text}catch(e){}
       if(ex&&ex!==fileText){modal={kind:'afold',text:ex};render()}else{andText=null;andWrite();render();toast('Groundwork Habits now saves to '+r.name)}}).catch(e=>toast(e&&e.message||'That folder can’t be used'));break;
-    case 'afoldkeep':modal=null;andText=null;andWrite();toast('Groundwork Habits now saves to '+P.andDir);break;
+    case 'afoldkeep':{const c=modal.cloud;modal=null;andText=null;andWrite();toast(c?'Groundwork Habits now syncs with '+c:'Groundwork Habits now saves to '+P.andDir);break}
     case 'afoldload':if(!modal.confirm){modal.confirm=true;persist=false;break}{const t=modal.text;modal=null;persist=false;andApply(t,true)}break;
-    case 'afoldno':modal=null;persist=false;FOLD.clearFolder();P.andDir='';applyPrefs();break;
+    case 'afoldno':persist=false;if(modal.cloud)CLOUD.signOut();else{FOLD.clearFolder();P.andDir='';applyPrefs()}modal=null;break;
+    case 'csign':persist=false;menuOpen=false;CLOUD.signIn(t.dataset.p).catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
+    case 'creconnect':persist=false;reconnectToast.told=0;CLOUD.reconnect().catch(()=>toast('Could not sign in'));break;
+    case 'cout':persist=false;{const n=CLOUD.name();CLOUD.signOut();toast('Signed out of '+n+'. Your data stays on this device')}break;
     case 'aclear':persist=false;FOLD.clearFolder();P.andDir='';applyPrefs();toast(NB?'Saving on this phone only':'Saving in this browser only');break;
     case 'areconnect':persist=false;WEBF.handle(true).then(()=>{andText=null;andRead();render()}).catch(()=>toast('That folder can’t be used'));break;
     case 'exactok':persist=false;$('#toast').hidden=true;if(NB&&NB.openExactSettings)NB.openExactSettings();break;

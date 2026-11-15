@@ -958,3 +958,27 @@ P95|$1 $2: brak zadań
 P96|Seria dni: $1 – $2
 P97|Dni: $1, osiągnięte
 P98|Dni: $1, jeszcze nie osiągnięte
+863|Synchronizacja w chmurze
+864|Zaloguj się, aby trzymać dane na własnym Dysku Google i synchronizować je między urządzeniami
+865|Zaloguj się, aby trzymać dane we własnym Dropboksie i synchronizować je między urządzeniami
+866|Zaloguj się
+867|Wyloguj się
+868|Twoje dane zostają na tym urządzeniu
+869|Synchronizacja włączona
+870|Wylogowano. Zaloguj się ponownie, aby dalej synchronizować
+871|Dokończ logowanie w przeglądarce
+872|Logowanie anulowane
+873|Nie udało się zalogować
+874|Wczytaj zapisane dane
+875|Dotknij ponownie: wczytaj zapisane dane
+876|Inne logowanie jest wciąż otwarte. Zamknij je i spróbuj ponownie
+877|Upłynął czas logowania
+878|Nie udało się otworzyć przeglądarki
+879|To nie jest strona logowania
+P99|Synchronizacja jako $1
+P100|Groundwork Habits synchronizuje się teraz z: $1
+P101|W usłudze $1 jest już zapis Groundwork Habits
+P102|Zastąpić go danymi z tego urządzenia czy wczytać zapis z: $1? Wczytanie nadpisze dane na tym urządzeniu.
+P103|Wylogowano z: $1. Twoje dane zostają na tym urządzeniu
+P104|Zaloguj się ponownie do: $1, aby dalej synchronizować
+P105|Logowanie przez $1 nie jest dostępne w tej wersji

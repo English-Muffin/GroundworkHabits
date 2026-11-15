@@ -8,3 +8,7 @@ out/
 # Tauri (Lite desktop shell) build output
 tauri/target/
 tauri/gen/
+
+# Google sign-in IDs (tools/keys.js): never in git
+keys.local.json
+www/js/keys.js

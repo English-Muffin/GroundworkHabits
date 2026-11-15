@@ -4,6 +4,7 @@
 # Used by CI and by the F-Droid build recipe (tools/fdroid/). Needs node_modules (npm ci) first.
 set -e
 cd "$(dirname "$0")/.."
+node tools/keys.js
 rm -rf android
 npx cap add android
 npx cap sync android

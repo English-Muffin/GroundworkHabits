@@ -32,6 +32,7 @@
       fetchCal: url => call('fetch_cal', { url: String(url) }).catch(() => ({ ok: false, error: 'Could not reach your calendar' })),
       updateCheck: () => call('update_check').catch(() => ({ ok: false })),
       updateInstall: () => call('update_install').catch(() => ({ ok: false, error: 'Download failed' })),
+      oauth: url => call('oauth', { url: String(url) }).catch(() => ({ ok: false, error: 'Could not sign in' })),
     });
     // first start after the move from Electron: put the saved data back before the app reads it
     try {

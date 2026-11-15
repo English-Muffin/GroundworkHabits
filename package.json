@@ -5,11 +5,11 @@
   "author": "English-Muffin",
   "license": "AGPL-3.0-or-later",
   "scripts": {
-    "dist:win": "node tools/build_tauri_win.js",
+    "dist:win": "node tools/keys.js && node tools/build_tauri_win.js",
     "android:add": "cap add android",
     "android:sync": "cap sync android",
     "android:open": "cap open android",
-    "dist:mac": "node tools/build_tauri_mac.js",
+    "dist:mac": "node tools/keys.js && node tools/build_tauri_mac.js",
     "lint": "eslint www/js",
     "test:unit": "node tests/unit.js",
     "start": "python -m http.server 8765 --directory www"

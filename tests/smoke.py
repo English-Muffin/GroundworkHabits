@@ -15,6 +15,11 @@ def check(name, ok, detail=''):
     print(('PASS ' if ok else 'FAIL ') + name + (f'  [{detail}]' if detail and not ok else ''))
     if not ok: failures.append(name)
 
+# www/js/keys.js is written at build time (tools/keys.js, git-ignored): make an empty one for a fresh checkout
+if not os.path.exists(os.path.join(ROOT_WWW := os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'www'), 'js', 'keys.js')):
+    open(os.path.join(ROOT_WWW, 'js', 'keys.js'), 'w').write('window.GW_KEYS={};
+')
+
 def serve():
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(ROOT / 'www'))
     handler.log_message = lambda *a, **k: None
@@ -549,6 +554,67 @@ async def webFolder(b):
     check('web without folder access: Data folder offers Export and Import', n[0] > 0 and n[1] > 0 and n[2] == 0, n)
     await ctx.close()
 
+async def cloudSync(b):
+    # cloud sync on the web: sign in to a fake Dropbox and a fake Google Drive (Playwright answers their addresses), then sync like the data folder
+    from urllib.parse import urlparse, parse_qs
+    CORS = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': 'GET,POST,PATCH,OPTIONS'}
+    store = {}
+    async def fake(route):
+        r = route.request; u = urlparse(r.url); q = parse_qs(u.query)
+        if r.method == 'OPTIONS': return await route.fulfill(status=204, headers=CORS)
+        if u.netloc == 'www.dropbox.com':
+            store['ver_ok'] = q['code_challenge_method'] == ['S256'] and q['token_access_type'] == ['offline']
+            return await route.fulfill(status=302, headers={'Location': q['redirect_uri'][0] + '?code=C1&state=' + q['state'][0]})
+        if u.netloc == 'accounts.google.com':
+            return await route.fulfill(status=302, headers={'Location': q['redirect_uri'][0] + '#access_token=G1&token_type=Bearer&expires_in=3600&state=' + q['state'][0]})
+        J = lambda o, st=200: route.fulfill(status=st, headers=dict(CORS, **{'Content-Type': 'application/json'}), body=__import__('json').dumps(o))
+        if u.path == '/oauth2/token':
+            store['token_body'] = r.post_data or ''; return await J({'access_token': 'T1', 'expires_in': 14400, 'refresh_token': 'R1'})
+        if u.path == '/2/users/get_current_account': return await J({'email': 'me@example.com'})
+        if u.path == '/oauth2/v3/userinfo': return await J({'email': 'g@example.com'})
+        if u.path == '/2/auth/token/revoke': return await J({})
+        if u.path == '/2/files/download':
+            return await (route.fulfill(status=200, headers=CORS, body=store['dbx']) if 'dbx' in store else J({'error_summary': 'path/not_found/'}, 409))
+        if u.path == '/2/files/upload': store['dbx'] = r.post_data; store['dbx_auth'] = r.headers.get('authorization'); return await J({})
+        if u.path == '/drive/v3/files': return await J({'files': [{'id': 'F1'}] if 'gd' in store else []})
+        if u.path == '/upload/drive/v3/files': store['gd'] = (r.post_data or ''); return await J({'id': 'F1'})
+        if u.path == '/upload/drive/v3/files/F1': store['gd'] = r.post_data; return await J({'id': 'F1'})
+        if u.path == '/drive/v3/files/F1': return await route.fulfill(status=200, headers=CORS, body=store['gd'])
+        return await route.fulfill(status=404, headers=CORS)
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); errs = []
+    await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={dropbox:'dbxkey',googleWeb:'gweb'}")
+    for host in ['www.dropbox.com', 'api.dropboxapi.com', 'content.dropboxapi.com', 'accounts.google.com', 'www.googleapis.com']:
+        await ctx.route('https://' + host + '/**', fake)
+    pg = await ctx.new_page(); pg.on('pageerror', lambda e: errs.append(str(e)))
+    await pg.goto(URL); await pg.click('.empty [data-act=demo]'); await pg.wait_for_timeout(150)
+    await pg.evaluate("location.hash='#settings/data'"); await pg.wait_for_timeout(200)
+    await pg.click('#main [data-act=csign][data-p=dropbox]'); await pg.wait_for_timeout(2500)
+    import json as _j
+    up = _j.loads(store.get('dbx') or 'null'); txt = await pg.locator('#main').inner_text()
+    check('cloud sync: Dropbox sign-in (PKCE, code swapped for tokens) uploads the data and shows the account',
+          store.get('ver_ok') and 'code_verifier=' in store.get('token_body', '') and up and len(up['habits']) > 0 and store.get('dbx_auth') == 'Bearer T1' and 'me@example.com' in txt and 'csign' not in await pg.content() and not errs,
+          [store.get('ver_ok'), store.get('token_body'), bool(up), txt[-300:], errs])
+    # another device uploads a newer copy: it is loaded when the app comes back
+    c = dict(up); c['habits'] = [dict(up['habits'][0], name='From Dropbox')] + up['habits'][1:]; c['at'] = up['at'] + 60000; store['dbx'] = _j.dumps(c)
+    await pg.evaluate("window.dispatchEvent(new Event('focus'))"); await pg.wait_for_timeout(800)
+    newer = await pg.evaluate("GroundworkTest.state().habits[0].name")
+    tok = await pg.evaluate("JSON.parse(localStorage.getItem('groundwork-v2-cloud')||'{}').rt")
+    exp = await pg.evaluate("JSON.stringify(Object.keys(JSON.parse(localStorage.getItem('groundwork-prefs')||'{}')))")
+    check('cloud sync: a newer copy in Dropbox replaces this device; the token stays out of settings', newer == 'From Dropbox' and tok == 'R1' and 'R1' not in exp, [newer, tok, exp])
+    await pg.click('#main [data-act=cout]'); await pg.wait_for_timeout(300)
+    gone = await pg.evaluate("localStorage.getItem('groundwork-v2-cloud')")
+    # Google Drive on the web: a one-hour token from the sign-in page, the save goes into the hidden app folder
+    await pg.click('#main [data-act=csign][data-p=google]'); await pg.wait_for_timeout(2500)
+    gd = store.get('gd') or ''; txt = await pg.locator('#main').inner_text(); h = await pg.evaluate('location.hash')
+    check('cloud sync: sign out forgets Dropbox; Google Drive sign-in saves to the app folder and returns to Settings',
+          gone is None and 'appDataFolder' in gd and '"habits"' in gd and 'g@example.com' in txt and h == '#settings/data' and not errs, [gone, gd[:120], txt[-200:], h, errs])
+    await ctx.close()
+    # no sign-in IDs (a build before the apps are registered): no Cloud sync group at all; Lite never has one
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={dropbox:'',google:'',googleWeb:''}")
+    pg = await ctx.new_page(); await pg.goto(URL + '#settings/data'); await pg.wait_for_timeout(300)
+    check('cloud sync: hidden while no sign-in is set up', await pg.locator('#main [data-act=csign]').count() == 0)
+    await ctx.close()
+
 async def unnamedControls(b):
     # every control must have a name a screen reader can read (Chromium's tree = WebView2's, which NVDA and Narrator read)
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')"); pg = await ctx.new_page()
@@ -1019,7 +1085,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await unnamedControls(b); await reducedMotion(b); await highContrast(b); await updateAsk(b); await pauseAndTimes(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await cloudSync(b); await unnamedControls(b); await reducedMotion(b); await highContrast(b); await updateAsk(b); await pauseAndTimes(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")

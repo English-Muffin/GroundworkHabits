@@ -958,3 +958,27 @@ P95|$1. $2: keine Aufgaben
 P96|$1-Tage-Serie: $2
 P97|$1 Tage, erreicht
 P98|$1 Tage, noch nicht erreicht
+863|Cloud-Synchronisierung
+864|Melde dich an, um deine Daten in deinem eigenen Google Drive zu speichern und zwischen Geräten zu synchronisieren
+865|Melde dich an, um deine Daten in deiner eigenen Dropbox zu speichern und zwischen Geräten zu synchronisieren
+866|Anmelden
+867|Abmelden
+868|Deine Daten bleiben auf diesem Gerät
+869|Wird synchronisiert
+870|Abgemeldet. Melde dich erneut an, um weiter zu synchronisieren
+871|Schließe die Anmeldung im Browser ab
+872|Anmeldung abgebrochen
+873|Anmeldung fehlgeschlagen
+874|Gespeicherte Daten laden
+875|Erneut tippen: gespeicherte Daten laden
+876|Eine andere Anmeldung ist noch offen. Schließe sie und versuche es erneut
+877|Zeitüberschreitung bei der Anmeldung
+878|Browser konnte nicht geöffnet werden
+879|Keine Anmeldeseite
+P99|Synchronisiert als $1
+P100|Groundwork Habits synchronisiert jetzt mit $1
+P101|In deinem $1 gibt es schon Groundwork-Habits-Daten
+P102|Durch die Daten auf diesem Gerät ersetzen oder die Daten aus $1 laden? Laden überschreibt, was auf diesem Gerät ist.
+P103|Von $1 abgemeldet. Deine Daten bleiben auf diesem Gerät
+P104|Melde dich erneut bei $1 an, um weiter zu synchronisieren
+P105|Die Anmeldung mit $1 ist in dieser Version nicht eingerichtet

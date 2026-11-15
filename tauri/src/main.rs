@@ -153,6 +153,10 @@ async fn update_check(app: AppHandle) -> serde_json::Value { full::update_check(
 #[tauri::command]
 async fn update_install(app: AppHandle) -> serde_json::Value { full::update_install(app).await }
 
+#[cfg(feature = "full")]
+#[tauri::command]
+async fn oauth(app: AppHandle, url: String) -> serde_json::Value { full::oauth(app, url).await }
+
 /* the full app's data folder is read and written synchronously by the page (a save on close must not be lost), which
    Tauri's commands can't do; the bridge uses a synchronous request to this local "gw" address instead. Only the app's
    own pages may use it (Origin checked). Paths: /folder /read /write /reset /electron /electron-done */
@@ -194,7 +198,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler({
-            #[cfg(feature = "full")] { tauri::generate_handler![backup, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, choose, fetch_cal, update_check, update_install] }
+            #[cfg(feature = "full")] { tauri::generate_handler![backup, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, choose, fetch_cal, update_check, update_install, oauth] }
             #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest] }
         })
         .on_window_event(|window, event| {

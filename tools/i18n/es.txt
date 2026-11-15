@@ -958,3 +958,27 @@ P95|$1 de $2: sin tareas
 P96|Racha de $1 días: $2
 P97|$1 días, logrado
 P98|$1 días, aún no logrado
+863|Sincronización en la nube
+864|Inicia sesión para guardar tus datos en tu propio Google Drive y sincronizarlos entre dispositivos
+865|Inicia sesión para guardar tus datos en tu propio Dropbox y sincronizarlos entre dispositivos
+866|Iniciar sesión
+867|Cerrar sesión
+868|Tus datos se quedan en este dispositivo
+869|Sincronizando
+870|Sesión cerrada. Vuelve a iniciar sesión para seguir sincronizando
+871|Termina de iniciar sesión en tu navegador
+872|Se canceló el inicio de sesión
+873|No se pudo iniciar sesión
+874|Cargar los datos guardados
+875|Toca de nuevo: cargar los datos guardados
+876|Hay otro inicio de sesión abierto. Ciérralo e inténtalo de nuevo
+877|El inicio de sesión caducó
+878|No se pudo abrir el navegador
+879|No es una página de inicio de sesión
+P99|Sincronizando como $1
+P100|Groundwork Habits ahora se sincroniza con $1
+P101|Ya hay datos de Groundwork Habits en tu $1
+P102|¿Reemplazarlos con los datos de este dispositivo o cargar los de $1? Cargar sobrescribe lo que hay en este dispositivo.
+P103|Sesión cerrada en $1. Tus datos se quedan en este dispositivo
+P104|Vuelve a iniciar sesión en $1 para seguir sincronizando
+P105|El inicio de sesión con $1 no está disponible en esta versión

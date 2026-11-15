@@ -39,6 +39,8 @@
 if(!l)l=(navigator.language||'en').slice(0,2).toLowerCase();if(L.indexOf(l)>=0){window.GROUNDWORK_LANG=l;document.documentElement.lang=l;if(l==='ar'||l==='he')document.documentElement.dir='rtl';document.write('<script src="i18n/'+l+'.js"><\/script>')}})()</script>
 <!-- the app: classic scripts in this order, sharing one scope (no build step) -->
 <script src="js/core.js"></script>
+<script src="js/keys.js"></script>
+<script src="js/cloud.js"></script>
 <script src="js/habits.js"></script>
 <script src="js/tasks.js"></script>
 <script src="js/goals.js"></script>

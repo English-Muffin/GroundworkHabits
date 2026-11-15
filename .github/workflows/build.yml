@@ -25,6 +25,7 @@ jobs:
         run: node tools/release_strip.js
       # Windows: both editions on Tauri (tauri/, on Windows' own WebView2)
       - run: npm run dist:win
+        env: { GROUNDWORK_GOOGLE_ID: '${{ secrets.GOOGLE_CLIENT_ID }}', GROUNDWORK_GOOGLE_SECRET: '${{ secrets.GOOGLE_CLIENT_SECRET }}', GROUNDWORK_GOOGLE_WEB_ID: '${{ secrets.GOOGLE_WEB_CLIENT_ID }}' }
       # the Tauri app needs the WebView2 runtime (every Windows 10/11 PC has it; the server images may not)
       - name: WebView2 runtime
         shell: pwsh
@@ -136,6 +137,7 @@ jobs:
       # macOS on Tauri too (Safari's engine, about 10 MB instead of 166): one universal binary for Apple Silicon and Intel
       - run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
       - run: npm run dist:mac
+        env: { GROUNDWORK_GOOGLE_ID: '${{ secrets.GOOGLE_CLIENT_ID }}', GROUNDWORK_GOOGLE_SECRET: '${{ secrets.GOOGLE_CLIENT_SECRET }}', GROUNDWORK_GOOGLE_WEB_ID: '${{ secrets.GOOGLE_WEB_CLIENT_ID }}' }
       - name: Check the built app starts (self-test report; the debugging port does not exist in Safari's engine)
         run: |
           p="$(node -p "require('./package.json').build.productName")"
@@ -162,6 +164,7 @@ jobs:
       # the Android project from www/ and native/ (icons and splash committed in native/android-res): the same script
       # F-Droid's build recipe runs (tools/fdroid/)
       - run: sh tools/android_prepare.sh
+        env: { GROUNDWORK_GOOGLE_ID: '${{ secrets.GOOGLE_CLIENT_ID }}', GROUNDWORK_GOOGLE_SECRET: '${{ secrets.GOOGLE_CLIENT_SECRET }}', GROUNDWORK_GOOGLE_WEB_ID: '${{ secrets.GOOGLE_WEB_CLIENT_ID }}' }
       # signed release APK when the ANDROID_KEYSTORE_* secrets exist, otherwise the debug-signed APK as before
       - name: Build APK
         working-directory: android

@@ -267,3 +267,67 @@ mod tests {
         assert!(super::newer("1.7.4", "1.7.3")); assert!(super::newer("2.0.0", "1.9.9")); assert!(!super::newer("1.7.3", "1.7.3")); assert!(!super::newer("1.7.2", "1.7.10"));
     }
 }
+
+// Cloud sync sign-in (Dropbox, Google Drive): open the provider's sign-in page in the browser and wait for its redirect to
+// http://127.0.0.1:53682/?code=…&state=… (PKCE; the page checks state and swaps the code for tokens itself). Only those two
+// sign-in pages may be opened, only 127.0.0.1 is listened on, and the wait ends after 5 minutes
+const OAUTH_PORT: u16 = 53682;
+static OAUTH_GEN: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+const OAUTH_DONE: &str = "<!doctype html><meta charset=utf-8><title>Groundwork Habits</title><body style=\"background:#080808;color:#eee;font:16px system-ui;display:grid;place-items:center;height:90vh;text-align:center\"><div><h2>You\u{2019}re signed in</h2><p>You can close this tab and go back to Groundwork Habits.</p></div>";
+pub fn oauth_url_ok(url: &str) -> bool {
+    url.starts_with("https://www.dropbox.com/oauth2/authorize?") || url.starts_with("https://accounts.google.com/o/oauth2/v2/auth?")
+}
+pub async fn oauth(app: AppHandle, url: String) -> serde_json::Value {
+    if !oauth_url_ok(&url) { return serde_json::json!({ "ok": false, "error": "Not a sign-in page" }); }
+    // a new sign-in replaces one still waiting (its browser tab may have been closed): the old wait sees the newer number and lets go of the port
+    let me = OAUTH_GEN.fetch_add(1, std::sync::atomic::Ordering::SeqCst) + 1;
+    let mut l = None;
+    for _ in 0..30 {
+        if let Ok(x) = std::net::TcpListener::bind(("127.0.0.1", OAUTH_PORT)) { l = Some(x); break; }
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    let Some(l) = l else { return serde_json::json!({ "ok": false, "error": "Another sign-in is still open. Close it and try again" }) };
+    if crate::open_external(url).is_err() { return serde_json::json!({ "ok": false, "error": "Could not open your browser" }); }
+    let got = tauri::async_runtime::spawn_blocking(move || {
+        use std::io::{Read, Write};
+        let _ = l.set_nonblocking(true);
+        let end = std::time::Instant::now() + Duration::from_secs(300);
+        while std::time::Instant::now() < end {
+            if OAUTH_GEN.load(std::sync::atomic::Ordering::SeqCst) != me { return Err("replaced"); }
+            match l.accept() {
+                Ok((mut s, _)) => {
+                    let _ = s.set_nonblocking(false);
+                    let _ = s.set_read_timeout(Some(Duration::from_secs(5)));
+                    let mut buf = [0u8; 8192];
+                    let n = s.read(&mut buf).unwrap_or(0);
+                    let req = String::from_utf8_lossy(&buf[..n]).to_string();
+                    let path = req.lines().next().unwrap_or("").split(' ').nth(1).unwrap_or("").to_string();
+                    if let Some(q) = path.strip_prefix("/?") {
+                        let _ = s.write_all(format!("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}", OAUTH_DONE.len(), OAUTH_DONE).as_bytes());
+                        return Ok(q.to_string());
+                    }
+                    let _ = s.write_all(b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+                }
+                Err(_) => std::thread::sleep(Duration::from_millis(100)),
+            }
+        }
+        Err("Sign-in timed out")
+    }).await.unwrap_or(Err("Sign-in timed out"));
+    match got {
+        Ok(q) => { crate::show_main(app); serde_json::json!({ "ok": true, "query": q }) }
+        Err("replaced") => serde_json::json!({ "ok": false, "error": "replaced" }),
+        Err(e) => serde_json::json!({ "ok": false, "error": e }),
+    }
+}
+
+#[cfg(test)]
+mod oauth_tests {
+    #[test]
+    fn only_sign_in_pages_open() {
+        assert!(super::oauth_url_ok("https://www.dropbox.com/oauth2/authorize?client_id=x"));
+        assert!(super::oauth_url_ok("https://accounts.google.com/o/oauth2/v2/auth?client_id=x"));
+        assert!(!super::oauth_url_ok("https://evil.example/?https://www.dropbox.com/oauth2/authorize?"));
+        assert!(!super::oauth_url_ok("file:///C:/Windows/system32/calc.exe"));
+        assert!(!super::oauth_url_ok("https://www.dropbox.com.evil.example/oauth2/authorize?"));
+    }
+}

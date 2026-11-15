@@ -123,6 +123,21 @@ public class GroundworkNativePlugin extends Plugin {
     }
 
     @PluginMethod
+    public void oauth(PluginCall call) {
+        String url = call.getString("url");
+        if (!OAuth.urlOk(url)) { call.reject("Not a sign-in page"); return; }
+        new Thread(() -> {
+            JSObject r = new JSObject();
+            try {
+                String q = OAuth.run(getContext(), url);
+                if (q == null) { r.put("ok", false); r.put("error", "Sign-in timed out"); } else if (OAuth.REPLACED.equals(q)) { r.put("ok", false); r.put("error", "replaced"); } else { r.put("ok", true); r.put("query", q); }
+            } catch (java.net.BindException e) { r.put("ok", false); r.put("error", "Another sign-in is still open. Close it and try again"); }
+            catch (Exception e) { r.put("ok", false); r.put("error", "Could not open your browser"); }
+            call.resolve(r);
+        }).start();
+    }
+
+    @PluginMethod
     public void folder(PluginCall call) {
         JSObject r = new JSObject();
         Uri t = Folder.tree(getContext());

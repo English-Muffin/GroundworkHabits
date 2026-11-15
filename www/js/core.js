@@ -119,11 +119,15 @@ function load(){try{const r=localStorage.getItem(KEY);if(isEnc(r)){encWait=true;
 function saveRaw(j,put){if(!encOn()){put(j);return}if(!encKey)return;const key=encKey,salt=P.lock.salt;save.p=(save.p||Promise.resolve()).then(()=>encText(j,key,salt)).then(put).catch(()=>{})}
 /* Android data folder (a synced folder gives cloud sync): groundwork.json is written a moment after each save and read when the app comes back */
 let andText=null;
-function andWrite(){if(!FOLD||!P.andDir||encWait||(WEBF&&WEBF.off))return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{if(t===andText)return;FOLD.writeFolder({text:t}).then(()=>{andText=t}).catch(e=>{if(!(WEBF&&WEBF.off))toast('Could not save to your data folder')})}),800)}
+// where the sync goes: the cloud (cloud.js, full app) when signed in, else the chosen folder; null while it needs reconnecting
+function syncTo(){if(typeof CLOUD!=='undefined'&&CLOUD&&CLOUD.on())return CLOUD.off?null:CLOUD;return FOLD&&P.andDir&&!(WEBF&&WEBF.off)?FOLD:null}
+function andWrite(){if(!syncTo()||encWait)return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{const to=syncTo();if(!to||t===andText)return;
+  to.writeFolder({text:t}).then(()=>{andText=t}).catch(e=>{if(to===FOLD&&!(WEBF&&WEBF.off))toast('Could not save to your data folder');else if(to!==FOLD&&to.off)reconnectToast()})}),800)}
+function reconnectToast(){if(reconnectToast.told)return;reconnectToast.told=1;if(syncTo()===null&&typeof CLOUD!=='undefined'&&CLOUD&&CLOUD.on())toastAct('Sign in to '+CLOUD.name()+' again to keep syncing','Sign in','creconnect');else toastAct('Reconnect your data folder','Reconnect','areconnect')}
 async function andApply(t,announce,newest){try{const j=isEnc(t)?(encKey?await decText(t,encKey):null):t;if(j===null)return;const d=JSON.parse(j);if(!d||!Array.isArray(d.habits))return;
   if(newest&&(+d.at||0)<(S.at||0)){andText=null;andWrite();return} // this phone has newer changes (a write failed or is pending): keep them and write them out
   S=clean(d);andText=t;saveRaw(JSON.stringify(S),putData);if(!modal&&!drag)render();if(announce)toast('Loaded the save from that folder')}catch(e){}}
-async function andRead(){if(!FOLD||!P.andDir||encWait||(WEBF&&WEBF.off))return;try{const t=(await FOLD.readFolder()).text;if(t&&t!==andText)andApply(t,false,true)}catch(e){if(WEBF&&WEBF.off&&!andRead.told){andRead.told=1;toastAct('Reconnect your data folder','Reconnect','areconnect')}}}
+async function andRead(){const to=syncTo();if(!to||encWait)return;try{const t=(await to.readFolder()).text;if(t&&t!==andText)andApply(t,false,true)}catch(e){if((WEBF&&WEBF.off)||(to!==FOLD&&to.off))reconnectToast()}}
 // Android home-screen widget: today's daily habits (names only while there's no PIN)
 function pushWidget(){if(!NB||!NB.widget||WIDGET||encWait)return;clearTimeout(pushWidget.t);pushWidget.t=setTimeout(()=>{const k=dk(TODAY);
   NB.widget({data:{locked:!!P.lock,lockedText:tx('Groundwork Habits is locked'),emptyText:tx('Add a daily habit in Groundwork Habits'),title:tx(DAYS[TODAY.getDay()]),

@@ -958,3 +958,27 @@ P95|$1 $2: nessuna attività
 P96|Serie di $1 giorni: $2
 P97|$1 giorni, raggiunto
 P98|$1 giorni, non ancora raggiunto
+863|Sincronizzazione cloud
+864|Accedi per tenere i tuoi dati nel tuo Google Drive e sincronizzarli tra i dispositivi
+865|Accedi per tenere i tuoi dati nel tuo Dropbox e sincronizzarli tra i dispositivi
+866|Accedi
+867|Esci
+868|I tuoi dati restano su questo dispositivo
+869|Sincronizzazione attiva
+870|Disconnesso. Accedi di nuovo per continuare a sincronizzare
+871|Completa l’accesso nel browser
+872|Accesso annullato
+873|Impossibile accedere
+874|Carica i dati salvati
+875|Tocca di nuovo: carica i dati salvati
+876|Un altro accesso è ancora aperto. Chiudilo e riprova
+877|Tempo scaduto per l’accesso
+878|Impossibile aprire il browser
+879|Non è una pagina di accesso
+P99|Sincronizzato come $1
+P100|Groundwork Habits ora si sincronizza con $1
+P101|C’è già un salvataggio di Groundwork Habits nel tuo $1
+P102|Sostituirlo con i dati di questo dispositivo o caricare il salvataggio da $1? Caricare sovrascrive ciò che c’è su questo dispositivo.
+P103|Disconnesso da $1. I tuoi dati restano su questo dispositivo
+P104|Accedi di nuovo a $1 per continuare a sincronizzare
+P105|L’accesso con $1 non è disponibile in questa versione

@@ -24,6 +24,9 @@ jobs:
         with: { node-version: 20 }
       - name: Turn off testing features
         run: node tools/release_strip.js
+      - name: Google sign-in IDs for cloud sync (repository secrets)
+        run: node tools/keys.js
+        env: { GROUNDWORK_GOOGLE_ID: '${{ secrets.GOOGLE_CLIENT_ID }}', GROUNDWORK_GOOGLE_SECRET: '${{ secrets.GOOGLE_CLIENT_SECRET }}', GROUNDWORK_GOOGLE_WEB_ID: '${{ secrets.GOOGLE_WEB_CLIENT_ID }}' }
       - name: The app at the root, the demo in /demo/
         run: |
           mkdir _site && cp -r www/. _site/ && mkdir _site/demo && cp -r www/. _site/demo/
