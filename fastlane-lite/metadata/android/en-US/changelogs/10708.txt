@@ -1,0 +1,4 @@
+- Pause, skip, archive and sort habits.
+- Habit details with streaks, a 26-week map and milestones.
+- Tasks month calendar; goal nudges.
+- Backups show a preview before restoring.

@@ -2,6 +2,24 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
+## 1.7.8
+
+- **Cloud sync with Google Drive or Dropbox:** sign in and your data lives in your own account and syncs
+  between your devices. No server of ours sits in between. Changes made on two devices are merged, not
+  overwritten, with an Undo. Settings shows when it last synced, with Sync now, and a cloud icon in the header
+  turns red if something needs attention. Backups go to your cloud too and can be restored from there.
+  "Delete my data" removes everything the app keeps in your cloud.
+- **New device, same data:** the welcome screen offers sign-in and loads your data straight away. A save
+  protected with a PIN on another device asks for that PIN.
+- **Habits:** pause a habit, skip today, archive habits you're done with, times of day on Today, sort the
+  habits list, and a details page per habit with streaks, a 26-week map, monthly totals and milestones
+  (7, 30, 100 and 365 days).
+- **Tasks:** a month calendar: see any day's tasks, add one there, or open its week.
+- **Goals:** goals you update yourself get a nudge after two weeks without a change.
+- **Updates ask first:** Check for updates and the daily check show what's new and wait for your yes.
+- Backups show a preview before restoring. Counts read naturally in every language (1 day, 2 days).
+- The Android data folder shows the folder's name instead of a long code for Google Drive folders.
+
 ## 1.7.7
 
 - **Arabic and Hebrew:** two new languages, with the whole layout mirrored right to left.

@@ -1,0 +1,5 @@
+- Cloud sync with your own Google Drive or Dropbox, merging changes from every device.
+- Cloud backups you can restore, and Delete my data.
+- Pause, skip, archive and sort habits; habit details with milestones.
+- Tasks month calendar; goal nudges.
+- Updates ask before installing.
