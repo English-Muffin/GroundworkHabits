@@ -140,11 +140,17 @@ async def run(D, sh):
             await pg.evaluate("document.querySelector('#main [data-act=csign][data-p=dropbox]').click()"); await b.close(); time.sleep(5)
             r = resumed(sh); check('cloud sync: Sign in opens the browser', 'com.groundwork.habits' not in r, r)
             sh('am', 'start', '-a', 'android.intent.action.VIEW', '-d', "'http://127.0.0.1:53682/?code=test&state=wrong'"); time.sleep(5)
-            sh('uiautomator', 'dump', '/sdcard/ui.xml'); xml = sh('cat', '/sdcard/ui.xml')
-            m = re.search(r'text="Back to the app"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml)
-            check('cloud sync: the app answers the browser with a Back to the app button', bool(m), xml[-300:])
-            if m: sh('input', 'tap', str((int(m.group(1)) + int(m.group(3))) // 2), str((int(m.group(2)) + int(m.group(4))) // 2)); time.sleep(4)
-            r = resumed(sh); check('cloud sync: Back to the app reopens the app', 'com.groundwork.habits' in r, r)
+            # the app comes back by itself (sign-in runs in a Custom Tab in its own task); if Android doesn't let it, the
+            # answer page's Back to the app button does it
+            r = resumed(sh); auto = 'com.groundwork.habits' in r
+            if not auto:
+                sh('uiautomator', 'dump', '/sdcard/ui.xml'); xml = sh('cat', '/sdcard/ui.xml')
+                m = re.search(r'text="Back to the app"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml)
+                check('cloud sync: the answer page has a Back to the app button', bool(m), xml[-300:])
+                if m: sh('input', 'tap', str((int(m.group(1)) + int(m.group(3))) // 2), str((int(m.group(2)) + int(m.group(4))) // 2)); time.sleep(4)
+                r = resumed(sh)
+            print('returned to the app by itself:', auto)
+            check('cloud sync: after the sign-in answer the app is back on screen', 'com.groundwork.habits' in r, r)
             b, pg = await page(p, D, sh); await pg.wait_for_timeout(500)
             signed = await pg.evaluate("!!localStorage.getItem('groundwork-v2-cloud')")
             check('cloud sync: an answer with the wrong state does not sign in', not signed)
