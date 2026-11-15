@@ -128,5 +128,26 @@ async def run(D, sh):
         await pg.evaluate("document.querySelector('[data-act=gear]').click()"); await pg.wait_for_timeout(300)
         await pg.evaluate("document.querySelector('#main [data-act=export]').click()"); await b.close(); time.sleep(3)
         r = resumed(sh); check('Export opens the Android Save to screen', 'documentsui' in r.lower(), r); sh('input', 'keyevent', '4')
+        # cloud sync sign-in: Sign in opens the browser and the app listens on 127.0.0.1:53682. A real account can't sign in
+        # from a test, so the browser is sent to the app's address with a made-up answer: the app's page must answer with a
+        # Back to the app button that reopens it, and the app must refuse the answer (wrong state) instead of signing in
+        # needs Chrome set up once on the device (its welcome screen asks you to accept its terms: do that by hand)
+        time.sleep(2); sh('am', 'start', '-n', 'com.groundwork.habits/.MainActivity'); time.sleep(3); b, pg = await page(p, D, sh)
+        await pg.evaluate("location.hash='#settings/data'"); await pg.wait_for_timeout(800)
+        has = await pg.evaluate("!!document.querySelector('#main [data-act=csign][data-p=dropbox]')")
+        check('cloud sync: Settings offers Dropbox sign-in', has)
+        if has:
+            await pg.evaluate("document.querySelector('#main [data-act=csign][data-p=dropbox]').click()"); await b.close(); time.sleep(5)
+            r = resumed(sh); check('cloud sync: Sign in opens the browser', 'com.groundwork.habits' not in r, r)
+            sh('am', 'start', '-a', 'android.intent.action.VIEW', '-d', "'http://127.0.0.1:53682/?code=test&state=wrong'"); time.sleep(5)
+            sh('uiautomator', 'dump', '/sdcard/ui.xml'); xml = sh('cat', '/sdcard/ui.xml')
+            m = re.search(r'text="Back to the app"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml)
+            check('cloud sync: the app answers the browser with a Back to the app button', bool(m), xml[-300:])
+            if m: sh('input', 'tap', str((int(m.group(1)) + int(m.group(3))) // 2), str((int(m.group(2)) + int(m.group(4))) // 2)); time.sleep(4)
+            r = resumed(sh); check('cloud sync: Back to the app reopens the app', 'com.groundwork.habits' in r, r)
+            b, pg = await page(p, D, sh); await pg.wait_for_timeout(500)
+            signed = await pg.evaluate("!!localStorage.getItem('groundwork-v2-cloud')")
+            check('cloud sync: an answer with the wrong state does not sign in', not signed)
+            await b.close()
 
 if __name__ == "__main__": main()
