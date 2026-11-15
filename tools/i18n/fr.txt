@@ -982,3 +982,10 @@ P102|La remplacer par les données de cet appareil, ou charger la sauvegarde de 
 P103|Déconnecté de $1. Vos données restent sur cet appareil
 P104|Reconnectez-vous à $1 pour continuer la synchronisation
 P105|La connexion avec $1 n’est pas disponible dans cette version
+880|Dernière synchronisation
+881|Problème de synchronisation
+882|Pas encore synchronisé
+883|Synchroniser maintenant
+884|Synchronisé
+885|Impossible de lire votre dossier de données
+P106|Impossible de joindre $1

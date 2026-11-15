@@ -109,6 +109,7 @@ document.addEventListener('click',e=>{
     case 'afoldno':persist=false;if(modal.cloud)CLOUD.signOut();else{FOLD.clearFolder();P.andDir='';applyPrefs()}modal=null;break;
     case 'csign':persist=false;menuOpen=false;CLOUD.signIn(t.dataset.p).catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
     case 'creconnect':persist=false;reconnectToast.told=0;CLOUD.reconnect().catch(()=>toast('Could not sign in'));break;
+    case 'syncnow':persist=false;if(dataDir){if(!readFile())writeFile();render();toast('Synced')}else andRead().then(()=>{andText=null;andWrite(true);setTimeout(()=>{render();const i=syncInfo();toast(i.err||'Synced')},1500)});break;
     case 'cout':persist=false;{const n=CLOUD.name();CLOUD.signOut();toast('Signed out of '+n+'. Your data stays on this device')}break;
     case 'aclear':persist=false;FOLD.clearFolder();P.andDir='';applyPrefs();toast(NB?'Saving on this phone only':'Saving in this browser only');break;
     case 'areconnect':persist=false;WEBF.handle(true).then(()=>{andText=null;andRead();render()}).catch(()=>toast('That folder can’t be used'));break;

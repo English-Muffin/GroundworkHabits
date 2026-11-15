@@ -121,13 +121,41 @@ function saveRaw(j,put){if(!encOn()){put(j);return}if(!encKey)return;const key=e
 let andText=null;
 // where the sync goes: the cloud (cloud.js, full app) when signed in, else the chosen folder; null while it needs reconnecting
 function syncTo(){if(typeof CLOUD!=='undefined'&&CLOUD&&CLOUD.on())return CLOUD.off?null:CLOUD;return FOLD&&P.andDir&&!(WEBF&&WEBF.off)?FOLD:null}
-function andWrite(){if(!syncTo()||encWait)return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{const to=syncTo();if(!to||t===andText)return;
-  to.writeFolder({text:t}).then(()=>{andText=t}).catch(e=>{if(to===FOLD&&!(WEBF&&WEBF.off))toast('Could not save to your data folder');else if(to!==FOLD&&to.off)reconnectToast()})}),800)}
+/* three-way merge: base is the copy this device and the sync target last agreed on, so a change made on either side survives.
+   Objects merge key by key, lists of things with an id merge by id (a delete wins only if the other side left that thing alone),
+   anything else: the side that changed wins; both changed it: the newer save (newer). */
+const canon=x=>x&&typeof x==='object'?Array.isArray(x)?'['+x.map(canon).join(',')+']':'{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canon(x[k])).join(',')+'}':JSON.stringify(x);
+function merge3(b,l,r,lNew){const eq=(x,y)=>canon(x)===canon(y);
+  if(eq(l,r))return l;if(b!==undefined&&eq(b,l))return r;if(b!==undefined&&eq(b,r))return l;
+  const obj=x=>!!x&&typeof x==='object'&&!Array.isArray(x),ids=x=>Array.isArray(x)&&x.length>0&&x.every(e=>obj(e)&&e.id!==undefined);
+  if(obj(l)&&obj(r)){const B=obj(b)?b:{},o={};new Set(Object.keys(l).concat(Object.keys(r))).forEach(k=>{const inL=k in l,inR=k in r,inB=k in B;
+      if(inL&&inR)o[k]=merge3(B[k],l[k],r[k],lNew);else if(inL){if(!inB||!eq(B[k],l[k]))o[k]=l[k]}else if(!inB||!eq(B[k],r[k]))o[k]=r[k]});return o}
+  if((ids(l)||!l.length)&&(ids(r)||!r.length)&&Array.isArray(l)&&Array.isArray(r)&&(ids(l)||ids(r))){const B=ids(b)?b:[],bm=new Map(B.map(e=>[e.id,e])),lm=new Map(l.map(e=>[e.id,e])),rm=new Map(r.map(e=>[e.id,e])),seen=new Set(),out=[];
+    (lNew?l.concat(r):r.concat(l)).forEach(e=>{if(seen.has(e.id))return;seen.add(e.id);const L=lm.get(e.id),R=rm.get(e.id),Bv=bm.get(e.id);
+      if(L&&R)out.push(merge3(Bv,L,R,lNew));else{const x=L||R;if(!Bv||!eq(Bv,x))out.push(x)}});return out}
+  return lNew?l:r}
+// incoming data d against the last agreed copy (plain JSON text): {s: the state to use, out: true when the target needs our result written back}
+function syncIn(d,baseJ){if(!baseJ)return {s:clean(d),out:false};const b=JSON.parse(baseJ),l=JSON.parse(histOf()),r=Object.assign({},d);
+  if((+d.at||0)<(+b.at||0))return {s:S,out:true}; // older than the copy we last agreed on: a stale write from somewhere, keep ours and write it back
+  delete b.at;delete r.at;
+  if(canon(l)===canon(b))return {s:clean(d),out:false};if(canon(r)===canon(b)||canon(r)===canon(l))return {s:S,out:canon(r)!==canon(l)};
+  return {s:clean(merge3(b,l,r,(S.at||0)>=(+d.at||0))),out:true}}
+// the last agreed copy for the folder or cloud in use, kept as written (encrypted when a PIN is set) so no plain copy is left behind
+const syncName=()=>typeof CLOUD!=='undefined'&&CLOUD&&CLOUD.on()?'cloud:'+CLOUD.name()+':'+CLOUD.who():'folder:'+(P.andDir||'');
+function setBase(t){idbKv(KEY+'-synced',{to:syncName(),t})}
+async function baseJ(){const r=await idbKv(KEY+'-synced');if(!r||r.to!==syncName()||!r.t)return null;try{return isEnc(r.t)?(encKey?await decText(r.t,encKey):null):r.t}catch(e){return null}}
+// sync status for Settings (this device only): when it last worked and the last problem
+function syncNote(err){try{const o=JSON.parse(localStorage.getItem(KEY+'-syncinfo')||'{}');if(err)o.err=err;else{o.ok=Date.now();delete o.err}localStorage.setItem(KEY+'-syncinfo',JSON.stringify(o))}catch(e){}}
+const syncInfo=()=>{try{return JSON.parse(localStorage.getItem(KEY+'-syncinfo')||'{}')}catch(e){return {}}};
+function andWrite(now){if(!syncTo()||encWait)return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{const to=syncTo();if(!to||t===andText)return;
+  to.writeFolder({text:t}).then(()=>{andText=t;setBase(t);syncNote()}).catch(e=>{syncNote(to===FOLD?'Could not save to your data folder':'Could not reach '+CLOUD.name());if(to===FOLD&&!(WEBF&&WEBF.off))toast('Could not save to your data folder');else if(to!==FOLD&&to.off)reconnectToast()})}),now?0:800)}
 function reconnectToast(){if(reconnectToast.told)return;reconnectToast.told=1;if(syncTo()===null&&typeof CLOUD!=='undefined'&&CLOUD&&CLOUD.on())toastAct('Sign in to '+CLOUD.name()+' again to keep syncing','Sign in','creconnect');else toastAct('Reconnect your data folder','Reconnect','areconnect')}
 async function andApply(t,announce,newest){try{const j=isEnc(t)?(encKey?await decText(t,encKey):null):t;if(j===null)return;const d=JSON.parse(j);if(!d||!Array.isArray(d.habits))return;
-  if(newest&&(+d.at||0)<(S.at||0)){andText=null;andWrite();return} // this phone has newer changes (a write failed or is pending): keep them and write them out
-  S=clean(d);andText=t;saveRaw(JSON.stringify(S),putData);if(!modal&&!drag)render();if(announce)toast('Loaded the save from that folder')}catch(e){}}
-async function andRead(){const to=syncTo();if(!to||encWait)return;try{const t=(await to.readFolder()).text;if(t&&t!==andText)andApply(t,false,true)}catch(e){if((WEBF&&WEBF.off)||(to!==FOLD&&to.off))reconnectToast()}}
+  if(newest){const bj=await baseJ();
+    if(bj){const r=syncIn(d,bj);S=r.s;andText=t;setBase(t);syncNote();if(r.out){andText=null;save()}else saveRaw(JSON.stringify(S),putData);if(!modal&&!drag)render();return}
+    if((+d.at||0)<(S.at||0)){andText=null;andWrite();return}} // no agreed copy yet: the newer save wins; this device is newer, so write it out
+  S=clean(d);andText=t;setBase(t);syncNote();saveRaw(JSON.stringify(S),putData);if(!modal&&!drag)render();if(announce)toast('Loaded the save from that folder')}catch(e){}}
+async function andRead(){const to=syncTo();if(!to||encWait)return;try{const t=(await to.readFolder()).text;if(t&&t!==andText)await andApply(t,false,true);else syncNote()}catch(e){syncNote(to===FOLD?'Could not read your data folder':'Could not reach '+(CLOUD&&CLOUD.name()));if((WEBF&&WEBF.off)||(to!==FOLD&&to.off))reconnectToast()}}
 // Android home-screen widget: today's daily habits (names only while there's no PIN)
 function pushWidget(){if(!NB||!NB.widget||WIDGET||encWait)return;clearTimeout(pushWidget.t);pushWidget.t=setTimeout(()=>{const k=dk(TODAY);
   NB.widget({data:{locked:!!P.lock,lockedText:tx('Groundwork Habits is locked'),emptyText:tx('Add a daily habit in Groundwork Habits'),title:tx(DAYS[TODAY.getDay()]),
@@ -155,12 +183,12 @@ const WEBF=!NB&&!DFS&&!LITE&&!DEMO&&typeof window.showDirectoryPicker==='functio
   async clearFolder(){this.h=null;this.off=false;await idbKv(KEY+'-dir',undefined,true)}}:null;
 const FOLD=NB&&NB.pickFolder&&!DFS?NB:WEBF; // Android plugin or the web folder: same calls
 function writeFile(){clearTimeout(save.t);save.t=0;if(!dataDir||encWait)return;const j=JSON.stringify(S);if(j===fileJson)return;
-  saveRaw(j,t=>{if(DFS.write(t)){fileJson=j;fileText=t}else toast('Could not save to your data folder')})}
+  saveRaw(j,t=>{if(DFS.write(t)){fileJson=j;fileText=t;syncNote()}else{syncNote('Could not save to your data folder');toast('Could not save to your data folder')}})}
 // the folder file wins over this device; an encrypted file is opened with the key once the PIN is in (async, renders itself)
 function readFile(){const t=DFS.read();if(!t||t===fileText)return false;
   if(isEnc(t)){if(!encKey){if(!encOn())encWait=true;return false}
-    decText(t,encKey).then(j=>{S=clean(JSON.parse(j));fileText=t;fileJson=j;putData(t);if(!modal&&!drag)render()}).catch(()=>toast('The save in your data folder uses a different PIN'));return false}
-  try{S=clean(JSON.parse(t));fileText=t;fileJson=t;putData(t);return true}catch(e){return false}}
+    decText(t,encKey).then(j=>{const r=syncIn(JSON.parse(j),fileJson);S=r.s;fileText=t;fileJson=j;syncNote();if(r.out)save();else putData(t);if(!modal&&!drag)render()}).catch(()=>toast('The save in your data folder uses a different PIN'));return false}
+  try{const r=syncIn(JSON.parse(t),fileJson);S=r.s;fileText=t;fileJson=t;syncNote();if(r.out)save();else putData(t);return true}catch(e){return false}}
 window.addEventListener('beforeunload',()=>{if(save.t)writeFile()});
 if(DFS&&DFS.onFlush)DFS.onFlush(async()=>{if(save.t)writeFile();await save.p}); // desktop: finish encrypted saves before the window closes
 const DATA_V=1; // bump and migrate in load-time block below when the saved shape changes

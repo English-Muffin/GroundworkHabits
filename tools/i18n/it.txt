@@ -982,3 +982,10 @@ P102|Sostituirlo con i dati di questo dispositivo o caricare il salvataggio da $
 P103|Disconnesso da $1. I tuoi dati restano su questo dispositivo
 P104|Accedi di nuovo a $1 per continuare a sincronizzare
 P105|L’accesso con $1 non è disponibile in questa versione
+880|Ultima sincronizzazione
+881|Problema di sincronizzazione
+882|Non ancora sincronizzato
+883|Sincronizza ora
+884|Sincronizzato
+885|Impossibile leggere la cartella dei dati
+P106|Impossibile raggiungere $1

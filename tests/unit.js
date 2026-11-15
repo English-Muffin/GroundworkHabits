@@ -25,7 +25,7 @@ const src = order.map(n => fs.readFileSync(path.join(www, 'js', n + '.js'), 'utf
 // the files share one scope; the tail hands the functions under test (and a way to set "today") to this script
 vm.runInContext("'use strict';\n" + src + `
 ;globalThis.__T={backupPrefs,restorePrefs,getP:()=>P,freezeOf,curStreak,repeatDates,gPct,gForecast,gLine,clean,backupProblem,missTwice,chDone,chLine,histStep,
-  setToday:d=>{TODAY=d},setS:x=>{S=x;fzCache.clear()},getS:()=>S,dk,addDays,empty,parseIcs:typeof parseIcs==='function'?parseIcs:null};`, sandbox, { filename: 'app' });
+  setToday:d=>{TODAY=d},setS:x=>{S=x;fzCache.clear()},getS:()=>S,dk,addDays,empty,merge3,syncIn,parseIcs:typeof parseIcs==='function'?parseIcs:null};`, sandbox, { filename: 'app' });
 const T = sandbox.__T;
 
 let fails = 0, n = 0;
@@ -128,6 +128,37 @@ test('restoring settings keeps only valid values and never touches the PIN', () 
   assert.strictEqual(P.hsort, 'name', 'habit sort order comes back'); T.restorePrefs({ hsort: '<b>' }); assert.strictEqual(P.hsort, 'name', 'bad sort ignored');
   assert.strictEqual(P.theme, 'amoled'); assert.strictEqual(P.accent, '#9cc96b', 'bad colour ignored');
   assert.strictEqual(P.lock, null, 'PIN from a file ignored'); assert.strictEqual(P.feat.twice, false); assert.notStrictEqual(P.remTime, '25:99');
+});
+
+
+// sync merge: base = the copy both devices last agreed on
+test('sync merge: ticks, new habits and tasks from both devices are all kept', () => {
+  const base = { habits: [{ id: 'a', name: 'Read' }], log: { a: { '2026-03-01': 1 } }, tasks: { '2026-03-02': { items: [{ id: 't1', text: 'Milk', done: false }] } } };
+  const phone = JSON.parse(JSON.stringify(base)); phone.log.a['2026-03-02'] = 1; phone.habits.push({ id: 'b', name: 'Run' }); phone.tasks['2026-03-02'].items[0].done = true;
+  const pc = JSON.parse(JSON.stringify(base)); pc.log.a['2026-03-03'] = 1; pc.habits.push({ id: 'c', name: 'Write' }); pc.tasks['2026-03-02'].items.push({ id: 't2', text: 'Bread', done: false });
+  const m = JSON.parse(JSON.stringify(T.merge3(base, phone, pc, true)));
+  assert.deepStrictEqual(Object.keys(m.log.a).sort(), ['2026-03-01', '2026-03-02', '2026-03-03']);
+  assert.deepStrictEqual(m.habits.map(h => h.id), ['a', 'b', 'c']);
+  assert.deepStrictEqual(m.tasks['2026-03-02'].items.map(t => t.id + t.done), ['t1true', 't2false']);
+});
+test('sync merge: a delete on one device wins unless the other changed that thing', () => {
+  const base = { habits: [{ id: 'a', name: 'Read' }, { id: 'b', name: 'Run' }], log: { a: { d1: 1, d2: 1 } } };
+  const l = { habits: [{ id: 'b', name: 'Run' }], log: { a: { d1: 1 } } };
+  const r = { habits: [{ id: 'a', name: 'Read' }, { id: 'b', name: 'Run fast' }], log: { a: { d1: 1, d2: 1 } } };
+  const m = JSON.parse(JSON.stringify(T.merge3(base, l, r, false)));
+  assert.deepStrictEqual(m.habits, [{ id: 'b', name: 'Run fast' }]); assert.deepStrictEqual(m.log.a, { d1: 1 });
+  const r2 = { habits: [{ id: 'a', name: 'Read more' }, { id: 'b', name: 'Run' }] };
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(T.merge3({ habits: base.habits }, { habits: l.habits }, r2, false))).habits.map(h => h.name), ['Read more', 'Run']);
+});
+test('sync merge: the same field changed on both devices keeps the newer save', () => {
+  const b = { habits: [{ id: 'a', name: 'Read' }] }, l = { habits: [{ id: 'a', name: 'Read 10' }] }, r = { habits: [{ id: 'a', name: 'Read 20' }] };
+  assert.strictEqual(T.merge3(b, l, r, true).habits[0].name, 'Read 10'); assert.strictEqual(T.merge3(b, l, r, false).habits[0].name, 'Read 20');
+});
+test('sync in: no agreed copy takes the incoming save; a change only here is kept and written out', () => {
+  const S0 = T.empty(); S0.habits.push({ id: 'a', name: 'Read', type: 'daily', color: '#9cc96b' }); T.setS(S0);
+  const base = JSON.stringify(T.getS()), inc = JSON.parse(base); inc.at = 5;
+  assert.strictEqual(T.syncIn(inc, null).out, false);
+  T.getS().habits[0].name = 'Read more'; const r = T.syncIn(inc, base); assert.strictEqual(r.out, true); assert.strictEqual(r.s.habits[0].name, 'Read more');
 });
 
 console.log(`\n${n - fails} of ${n} unit tests passed`);

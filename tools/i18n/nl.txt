@@ -982,3 +982,10 @@ P102|Vervangen door de gegevens op dit apparaat, of de opslag uit $1 laden? Lade
 P103|Uitgelogd bij $1. Je gegevens blijven op dit apparaat
 P104|Log opnieuw in bij $1 om te blijven synchroniseren
 P105|Inloggen met $1 is in deze versie niet ingesteld
+880|Laatst gesynchroniseerd
+881|Synchronisatieprobleem
+882|Nog niet gesynchroniseerd
+883|Nu synchroniseren
+884|Gesynchroniseerd
+885|Kan je gegevensmap niet lezen
+P106|Kan $1 niet bereiken

@@ -17,8 +17,7 @@ def check(name, ok, detail=''):
 
 # www/js/keys.js is written at build time (tools/keys.js, git-ignored): make an empty one for a fresh checkout
 if not os.path.exists(os.path.join(ROOT_WWW := os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'www'), 'js', 'keys.js')):
-    open(os.path.join(ROOT_WWW, 'js', 'keys.js'), 'w').write('window.GW_KEYS={};
-')
+    open(os.path.join(ROOT_WWW, 'js', 'keys.js'), 'w').write('window.GW_KEYS={};\n')
 
 def serve():
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(ROOT / 'www'))
@@ -601,6 +600,17 @@ async def cloudSync(b):
     tok = await pg.evaluate("JSON.parse(localStorage.getItem('groundwork-v2-cloud')||'{}').rt")
     exp = await pg.evaluate("JSON.stringify(Object.keys(JSON.parse(localStorage.getItem('groundwork-prefs')||'{}')))")
     check('cloud sync: a newer copy in Dropbox replaces this device; the token stays out of settings', newer == 'From Dropbox' and tok == 'R1' and 'R1' not in exp, [newer, tok, exp])
+    # both devices change something before syncing: a change here and one from the other device are both kept (three-way merge)
+    await pg.evaluate("(()=>{const S=GroundworkTest.state();S.habits[1].name='Changed here';GroundworkTest.save()})()"); await pg.wait_for_timeout(100)
+    cur = _j.loads(store['dbx']); c2 = dict(cur); c2['habits'] = [dict(h) for h in cur['habits']]; c2['habits'][2]['name'] = 'Changed there'; c2['at'] = cur['at'] + 1; store['dbx'] = _j.dumps(c2)
+    await pg.evaluate("window.dispatchEvent(new Event('focus'))"); await pg.wait_for_timeout(2000)
+    names = await pg.evaluate("GroundworkTest.state().habits.slice(0,3).map(h=>h.name)"); up2 = _j.loads(store['dbx'])
+    check('cloud sync: changes made on both devices before syncing are merged, and the merge is uploaded',
+          names == ['From Dropbox', 'Changed here', 'Changed there'] and [h['name'] for h in up2['habits'][:3]] == names, [names, [h['name'] for h in up2['habits'][:3]]])
+    await pg.evaluate("location.hash='#settings/data'"); await pg.wait_for_timeout(300)
+    status = await pg.locator('#main').inner_text(); store.pop('dbx_auth', None)
+    await pg.click('#main [data-act=syncnow]'); await pg.wait_for_timeout(2200)
+    check('cloud sync: Settings shows when it last synced, and Sync now syncs', 'Last synced' in status and 'Not synced yet' not in status and store.get('dbx_auth') == 'Bearer T1', [status[-260:], store.get('dbx_auth')])
     await pg.click('#main [data-act=cout]'); await pg.wait_for_timeout(300)
     gone = await pg.evaluate("localStorage.getItem('groundwork-v2-cloud')")
     # Google Drive on the web: a one-hour token from the sign-in page, the save goes into the hidden app folder

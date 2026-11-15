@@ -982,3 +982,10 @@ P102|Substituí-los pelos dados deste dispositivo ou carregar os dados de $1? Ca
 P103|Sessão terminada em $1. Os teus dados ficam neste dispositivo
 P104|Inicia sessão em $1 de novo para continuar a sincronizar
 P105|O início de sessão com $1 não está disponível nesta versão
+880|Última sincronização
+881|Problema de sincronização
+882|Ainda não sincronizado
+883|Sincronizar agora
+884|Sincronizado
+885|Não foi possível ler a pasta de dados
+P106|Não foi possível contactar $1

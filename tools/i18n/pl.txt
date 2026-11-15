@@ -982,3 +982,10 @@ P102|Zastąpić go danymi z tego urządzenia czy wczytać zapis z: $1? Wczytanie
 P103|Wylogowano z: $1. Twoje dane zostają na tym urządzeniu
 P104|Zaloguj się ponownie do: $1, aby dalej synchronizować
 P105|Logowanie przez $1 nie jest dostępne w tej wersji
+880|Ostatnia synchronizacja
+881|Problem z synchronizacją
+882|Jeszcze nie zsynchronizowano
+883|Synchronizuj teraz
+884|Zsynchronizowano
+885|Nie udało się odczytać folderu danych
+P106|Brak połączenia z: $1

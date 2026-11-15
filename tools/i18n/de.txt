@@ -982,3 +982,10 @@ P102|Durch die Daten auf diesem Gerät ersetzen oder die Daten aus $1 laden? Lad
 P103|Von $1 abgemeldet. Deine Daten bleiben auf diesem Gerät
 P104|Melde dich erneut bei $1 an, um weiter zu synchronisieren
 P105|Die Anmeldung mit $1 ist in dieser Version nicht eingerichtet
+880|Zuletzt synchronisiert
+881|Synchronisierungsproblem
+882|Noch nicht synchronisiert
+883|Jetzt synchronisieren
+884|Synchronisiert
+885|Dein Datenordner konnte nicht gelesen werden
+P106|$1 ist nicht erreichbar
