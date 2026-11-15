@@ -24,7 +24,7 @@
 </div>
 
 <p align="center">
-<img src="assets/readme/intro.webp" alt="Groundwork Habits from a fresh start: adding habits and filling the month grid, planning a week of tasks, adding a goal, Insights, a quit streak, then accent colours and themes" width="100%">
+<img src="assets/readme/intro.webp" alt="Groundwork Habits from a fresh start: adding habits and filling the month grid, planning a week of tasks, adding a goal, Insights, a quit streak, cloud sync, then accent colours and themes" width="100%">
 </p>
 
 ## Why Groundwork Habits
@@ -196,6 +196,10 @@ covered by unit tests that run in plain Node, and the screens by browser tests a
 sizes.
 
 ### How sync works
+
+<p align="center">
+  <img src="assets/readme/sync.png" alt="Settings, Data and backups: cloud sync with Dropbox, last synced time, Sync now, cloud backups and sign out" width="720">
+</p>
 
 Each device keeps one data document. With cloud sync or a data folder, every change is also written to
 `groundwork.json` there, and it's read again whenever you come back to the app.

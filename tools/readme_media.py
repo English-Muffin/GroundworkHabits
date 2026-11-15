@@ -35,9 +35,25 @@ def caption_font(size):
     return ImageFont.load_default()
 
 
-async def page(b, w, h, theme='dark', accent='#9cc96b', lang=None):
+CLOUD_INIT = ("localStorage.getItem('groundwork-v2-cloud')||localStorage.setItem('groundwork-v2-cloud',JSON.stringify({p:'dropbox',tok:'x',exp:4e12,rt:'x',who:'you@example.com'}));"
+              "localStorage.setItem('groundwork-v2-syncinfo',JSON.stringify({ok:Date.now()-120000}))")
+
+
+async def fake_dropbox(ctx):
+    async def answer(route):
+        u = route.request.url
+        if route.request.method == 'OPTIONS': return await route.fulfill(status=204, headers={'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'})
+        h = {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+        if '/files/download' in u: return await route.fulfill(status=409, headers=h, body='{"error_summary":"path/not_found/"}')
+        if '/list_folder' in u: return await route.fulfill(status=200, headers=h, body='{"entries":[]}')
+        return await route.fulfill(status=200, headers=h, body='{}')
+    for host in ['api.dropboxapi.com', 'content.dropboxapi.com']: await ctx.route('https://' + host + '/**', answer)
+
+
+async def page(b, w, h, theme='dark', accent='#9cc96b', lang=None, cloud=False):
     ctx = await b.new_context(viewport={'width': w, 'height': h}, device_scale_factor=1, reduced_motion='no-preference')
     await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')")
+    if cloud: await ctx.add_init_script(CLOUD_INIT); await fake_dropbox(ctx)
     pg = await ctx.new_page()
     await pg.clock.set_fixed_time('2026-03-18T10:30:00')
     base = f'http://127.0.0.1:{PORT}/www/index.html'
@@ -60,9 +76,12 @@ async def go(pg, base, view):
 async def screenshots(b):
     # different accents and themes on purpose, so the README shows the range
     desk = [('today-light', 'today', 'light', '#f472b6'), ('habits', 'habits', 'amoled', '#a78bfa'),
-            ('goals', 'goals', 'dark', '#fbbf24'), ('insights', 'insights', 'dark', '#60a5fa'), ('settings', 'settings/appearance', 'light', '#22d3be')]
+            ('goals', 'goals', 'dark', '#fbbf24'), ('insights', 'insights', 'dark', '#60a5fa'), ('settings', 'settings/appearance', 'light', '#22d3be'),
+            ('sync', 'settings/data', 'dark', '#9cc96b')]
     for name, view, th, ac in desk:
-        ctx, pg, base = await page(b, 1440, 900, th, ac); await go(pg, base, view)
+        ctx, pg, base = await page(b, 1440, 900, th, ac, cloud=name == 'sync'); await go(pg, base, view)
+        if name == 'sync':  # desktop Settings is one long page: start at Data & backups
+            await pg.evaluate("()=>{const e=document.getElementById('set-data');scrollTo(0,e.getBoundingClientRect().top+scrollY-90)}"); await pg.wait_for_timeout(300)
         await pg.screenshot(path=str(OUT / f'{name}.png')); await ctx.close()
     phone = [('phone-today', 'today', 'dark', '#f472b6', None), ('phone-habits', 'habits', 'light', '#9cc96b', None),
              ('phone-tasks', 'tasks', 'amoled', '#fbbf24', None), ('phone-goals', 'goals', 'dark', '#9cc96b', None),
@@ -101,6 +120,7 @@ async def gif(b):
     # no first-run tips, and no test-only buttons in the video
     await ctx.add_init_script("""localStorage.setItem('groundwork-tips','1');document.addEventListener('DOMContentLoaded',()=>{
         const s=document.createElement('style');s.textContent='[data-act=demo]{display:none!important}';document.head.appendChild(s)})""")
+    await ctx.add_init_script(CLOUD_INIT); await fake_dropbox(ctx)
     # Sunday 29 March: the whole task week is today or later (nothing shows as missed), and March has 29 days to fill
     pg = await ctx.new_page(); await pg.clock.set_fixed_time('2026-03-29T10:30:00')
     await pg.goto(f'http://127.0.0.1:{PORT}/www/index.html#habits'); await pg.evaluate('document.fonts.ready'); await pg.wait_for_timeout(400)
@@ -204,7 +224,11 @@ async def gif(b):
     await click('#main [data-act=newquit]', 2); await typ('No sugar')
     await act(lambda: pg.evaluate("()=>{const i=document.getElementById('qSince');i.value='2026-03-15T08:00';i.dispatchEvent(new Event('input',{bubbles:true}))}"), 1)
     await click('[data-act=qsave]', 3); await hold(1100); mark('Streaks')
-    # 6 Make it yours: accents (the glow follows), then the themes
+    # 6 Sync: your own Google Drive or Dropbox, changes from both devices merged
+    await go('settings/data'); await pg.evaluate("()=>{const e=document.getElementById('set-data');scrollTo(0,e.getBoundingClientRect().top+scrollY-90)}"); S['dirty'] = True
+    scene('Synced to <b>your cloud</b><small>Google Drive or Dropbox · changes from every device merged</small>', (-160, 30, -140, 22, 8, -4), (120, 0, -40, 16, -6, -2), 2.6)
+    await hold(2600); mark('Sync')
+    # 7 Make it yours: accents (the glow follows), then the themes
     await go('settings/appearance')
     scene('Make it <b>yours</b>', (180, 40, -120, 20, -10, -4), (-160, 0, -60, 24, 10, -2), 4.7)
     await hold(300)
@@ -213,7 +237,7 @@ async def gif(b):
     for t in ['light', 'amoled', 'dark']:
         await pg.locator(f'[data-act=ptheme][data-v={t}]').click(); await pg.wait_for_timeout(150); S['dirty'] = True; await hold(600)
     mark('Make it yours')
-    # 7 the window pulls back and sinks away, like the first draft
+    # 8 the window pulls back and sinks away, like the first draft
     await go('habits')
     scene('Groundwork Habits<small>Private and offline · Windows, macOS, Android, web</small>', (0, 40, -260, 26, 0, -8), (0, 140, -1100, 42, 0, -16), 3.2)
     await hold(3200); mark('ending')
