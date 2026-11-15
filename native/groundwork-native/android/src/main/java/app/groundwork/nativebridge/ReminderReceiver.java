@@ -7,17 +7,25 @@ import androidx.core.app.NotificationManagerCompat;
 import org.json.JSONObject;
 
 // FIRE: show a habit reminder (unless it was already answered Yes). ANSWER: record Yes/No without opening the app.
+// SNOOZE (Later): close it and show it again in 15 minutes.
 public class ReminderReceiver extends BroadcastReceiver {
-    static final String FIRE = "app.groundwork.REMINDER_FIRE", ANSWER = "app.groundwork.REMINDER_ANSWER";
+    static final String FIRE = "app.groundwork.REMINDER_FIRE", ANSWER = "app.groundwork.REMINDER_ANSWER", SNOOZE = "app.groundwork.REMINDER_SNOOZE";
 
     @Override
     public void onReceive(Context c, Intent i) {
         int id = i.getIntExtra("id", 0);
         if (FIRE.equals(i.getAction())) {
-            JSONObject it = Reminders.find(c, id);
+            JSONObject it = null;
+            String carried = i.getStringExtra("item"); // a snoozed reminder brings its own item
+            if (carried != null) try { it = new JSONObject(carried); } catch (Exception e) {}
+            if (it == null) it = Reminders.find(c, id);
             if (it != null && !Reminders.answeredYes(c, it.optString("h"), it.optString("k"))) Reminders.post(c, it);
             Reminders.extend(c);
             Reminders.armAll(c);
+        } else if (SNOOZE.equals(i.getAction())) {
+            NotificationManagerCompat.from(c).cancel(id);
+            String item = i.getStringExtra("item");
+            if (item != null) Reminders.snooze(c, id, item);
         } else if (ANSWER.equals(i.getAction())) {
             String h = i.getStringExtra("h"), k = i.getStringExtra("k"), a = i.getStringExtra("a");
             if (h != null && k != null && a != null) Reminders.addAnswer(c, h, k, a);

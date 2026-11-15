@@ -40,9 +40,7 @@ fn backup_dir(app: &AppHandle) -> Result<PathBuf, String> {
 #[tauri::command]
 fn backup(app: AppHandle, name: String, text: String, keep: Option<u32>) -> Result<String, String> {
     let keep = keep.unwrap_or(8).clamp(1, 8) as usize;
-    let ok = name.starts_with("groundwork-backup-") && name.ends_with(".json") && name.len() <= 70
-        && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '.');
-    if !ok { return Err("bad name".into()); }
+    if !bak_name_ok(&name) { return Err("bad name".into()); }
     let dir = backup_dir(&app)?;
     fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     let tmp = dir.join(format!("{name}.tmp"));
@@ -54,6 +52,27 @@ fn backup(app: AppHandle, name: String, text: String, keep: Option<u32>) -> Resu
     all.sort(); all.reverse();
     for old in all.iter().skip(keep) { let _ = fs::remove_file(dir.join(old)); }
     Ok(dir.to_string_lossy().into_owned())
+}
+
+// the backups on this PC (newest first) and one backup's text, for Settings > Restore a backup
+fn bak_name_ok(name: &str) -> bool {
+    name.starts_with("groundwork-backup-") && name.ends_with(".json") && name.len() <= 70
+        && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '.')
+}
+
+#[tauri::command]
+fn backups_list(app: AppHandle) -> Result<Vec<serde_json::Value>, String> {
+    let dir = backup_dir(&app)?;
+    let mut l: Vec<(String, u64)> = match fs::read_dir(&dir) { Ok(r) => r.filter_map(|e| e.ok())
+        .filter_map(|e| { let n = e.file_name().to_string_lossy().into_owned(); if bak_name_ok(&n) { Some((n, e.metadata().map(|m| m.len()).unwrap_or(0))) } else { None } }).collect(), Err(_) => vec![] };
+    l.sort(); l.reverse();
+    Ok(l.into_iter().map(|(n, size)| serde_json::json!({ "n": n, "size": size })).collect())
+}
+
+#[tauri::command]
+fn backup_read(app: AppHandle, name: String) -> Result<String, String> {
+    if !bak_name_ok(&name) { return Err("bad name".into()); }
+    fs::read_to_string(backup_dir(&app)?.join(name)).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -199,8 +218,8 @@ fn main() {
             Ok(())
         })
         .invoke_handler({
-            #[cfg(feature = "full")] { tauri::generate_handler![backup, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, choose, fetch_cal, update_check, update_install, oauth] }
-            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest] }
+            #[cfg(feature = "full")] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, choose, fetch_cal, update_check, update_install, oauth] }
+            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest] }
         })
         .on_window_event(|window, event| {
             // closing the main window: let the page finish saving first (at most 3 s), like the Electron app

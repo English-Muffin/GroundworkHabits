@@ -85,6 +85,44 @@ final class Folder {
         if (old != null) try { DocumentsContract.deleteDocument(r, DocumentsContract.buildDocumentUriUsingTree(tree, old)); } catch (Exception e) { }
     }
 
+    // the backups (in the chosen folder's backups, or the app's own storage), newest first: [name, size]
+    static List<String[]> backups(Context c) throws Exception {
+        List<String[]> out = new ArrayList<>();
+        Uri tree = tree(c);
+        if (tree != null) {
+            ContentResolver r = c.getContentResolver();
+            String dir = find(r, tree, DocumentsContract.getTreeDocumentId(tree), "backups");
+            if (dir != null) {
+                Uri q = DocumentsContract.buildChildDocumentsUriUsingTree(tree, dir);
+                try (Cursor cur = r.query(q, new String[] { DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_SIZE }, null, null, null)) {
+                    while (cur != null && cur.moveToNext()) { String n = cur.getString(0); if (n != null && n.startsWith("groundwork-backup-") && n.endsWith(".json")) out.add(new String[] { n, String.valueOf(cur.getLong(1)) }); }
+                }
+            }
+        } else {
+            File[] fs = new File(c.getFilesDir(), "backups").listFiles((d, n) -> n.startsWith("groundwork-backup-") && n.endsWith(".json"));
+            if (fs != null) for (File f : fs) out.add(new String[] { f.getName(), String.valueOf(f.length()) });
+        }
+        out.sort((a, b) -> b[0].compareTo(a[0]));
+        return out;
+    }
+
+    static String backupText(Context c, String name) throws Exception {
+        Uri tree = tree(c);
+        if (tree != null) {
+            ContentResolver r = c.getContentResolver();
+            String dir = find(r, tree, DocumentsContract.getTreeDocumentId(tree), "backups"), id = dir == null ? null : find(r, tree, dir, name);
+            if (id == null) throw new Exception("gone");
+            try (InputStream in = r.openInputStream(DocumentsContract.buildDocumentUriUsingTree(tree, id))) { return new String(readAll(in), StandardCharsets.UTF_8); }
+        }
+        try (InputStream in = new java.io.FileInputStream(new File(new File(c.getFilesDir(), "backups"), name))) { return new String(readAll(in), StandardCharsets.UTF_8); }
+    }
+
+    private static byte[] readAll(InputStream in) throws java.io.IOException {
+        java.io.ByteArrayOutputStream o = new java.io.ByteArrayOutputStream(); byte[] b = new byte[65536]; int n;
+        while ((n = in.read(b)) > 0) o.write(b, 0, n);
+        return o.toByteArray();
+    }
+
     // keeps the newest `keep` backups (1 to 8, the user's choice)
     static String backup(Context c, String name, String text, int keep) throws Exception {
         Uri tree = tree(c);

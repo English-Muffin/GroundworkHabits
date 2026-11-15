@@ -46,6 +46,40 @@ public class GroundworkNativePlugin extends Plugin {
         call.resolve(r);
     }
 
+    // the backups on this phone, newest first, for Settings > Restore a backup
+    @PluginMethod
+    public void backupList(PluginCall call) {
+        new Thread(() -> { try { JSArray a = new JSArray(); for (String[] b : Folder.backups(getContext())) { JSObject o = new JSObject(); o.put("n", b[0]); o.put("size", Long.parseLong(b[1])); a.put(o); }
+            JSObject r = new JSObject(); r.put("list", a); call.resolve(r); } catch (Exception e) { call.reject("Could not list backups"); } }).start();
+    }
+
+    @PluginMethod
+    public void backupRead(PluginCall call) {
+        String name = call.getString("name", "");
+        if (!name.matches("groundwork-backup-[0-9A-Za-z-]{1,40}[.]json")) { call.reject("Bad backup"); return; }
+        new Thread(() -> { try { JSObject r = new JSObject(); r.put("text", Folder.backupText(getContext(), name)); call.resolve(r); } catch (Exception e) { call.reject("Could not read that backup"); } }).start();
+    }
+
+    // what Android currently allows: notifications at all, and exact alarm timing (Settings > Reminders shows both)
+    @PluginMethod
+    public void permStatus(PluginCall call) {
+        JSObject r = new JSObject();
+        r.put("notify", androidx.core.app.NotificationManagerCompat.from(getContext()).areNotificationsEnabled());
+        r.put("exact", Reminders.canExact(getContext()));
+        call.resolve(r);
+    }
+
+    // this app's notification page in Android's settings, for when notifications are blocked
+    @PluginMethod
+    public void openNotifySettings(PluginCall call) {
+        Intent i = new Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try { getContext().startActivity(i); } catch (Exception e) {
+            try { getContext().startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getContext().getPackageName())).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); } catch (Exception e2) {}
+        }
+        call.resolve();
+    }
+
     // Android 14+: exact timing needs the user's OK; this opens that settings page
     @PluginMethod
     public void openExactSettings(PluginCall call) {

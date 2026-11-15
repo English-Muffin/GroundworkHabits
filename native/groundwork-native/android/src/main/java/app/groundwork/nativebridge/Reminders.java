@@ -164,13 +164,32 @@ final class Reminders {
             .setPriority(alarm ? NotificationCompat.PRIORITY_HIGH : NotificationCompat.PRIORITY_LOW)
 ;
         // info reminders (goal deadlines) have no Yes/No; action labels come from the app so they follow its language
-        if (!it.optBoolean("info")) b.addAction(0, it.optString("yes", "Yes, done"), answerIntent(c, id, h, k, "yes")).addAction(0, it.optString("no", "No"), answerIntent(c, id, h, k, "no"));
+        if (!it.optBoolean("info")) b.addAction(0, it.optString("yes", "Yes, done"), answerIntent(c, id, h, k, "yes")).addAction(0, it.optString("later", "Later"), snoozeIntent(c, id, it))
+            .addAction(0, it.optString("no", "No"), answerIntent(c, id, h, k, "no"));
         if (tap != null) b.setContentIntent(tap);
         b.setVisibility(NotificationCompat.VISIBILITY_PRIVATE).setPublicVersion(new NotificationCompat.Builder(c, alarm ? ALARM : ASK)
             .setSmallIcon(R.drawable.dbk_stat).setContentTitle("Groundwork Habits").setContentText("A reminder is waiting for your answer").build());
         Notification n = b.build();
         if (alarm) n.flags |= Notification.FLAG_INSISTENT; // keeps ringing until answered or swiped away
         try { NotificationManagerCompat.from(c).notify(id, n); } catch (SecurityException e) {}
+    }
+
+    // Later: the same reminder again in 15 minutes. The item travels with the alarm, because the app may have
+    // rescheduled its list in between (past reminders drop out of it)
+    static final long SNOOZE_MS = 15 * 60 * 1000L;
+    private static PendingIntent snoozeIntent(Context c, int id, JSONObject it) {
+        Intent i = new Intent(c, ReminderReceiver.class).setAction(ReminderReceiver.SNOOZE).putExtra("id", id).putExtra("item", it.toString());
+        return PendingIntent.getBroadcast(c, id + 300000, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    static void snooze(Context c, int id, String item) {
+        AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(c, ReminderReceiver.class).setAction(ReminderReceiver.FIRE).putExtra("id", id).putExtra("item", item);
+        PendingIntent pi = PendingIntent.getBroadcast(c, id + 400000, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        long at = System.currentTimeMillis() + SNOOZE_MS;
+        if (Build.VERSION.SDK_INT < 23) am.setExact(AlarmManager.RTC_WAKEUP, at, pi);
+        else if (canExact(c)) am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+        else am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
     }
 
     private static PendingIntent answerIntent(Context c, int id, String h, String k, String ans) {
