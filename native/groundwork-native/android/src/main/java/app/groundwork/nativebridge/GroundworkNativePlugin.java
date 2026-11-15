@@ -129,7 +129,8 @@ public class GroundworkNativePlugin extends Plugin {
         new Thread(() -> {
             JSObject r = new JSObject();
             try {
-                String q = OAuth.run(getContext(), url);
+                if (getActivity() == null) throw new IllegalStateException("no activity");
+                String q = OAuth.run(getActivity(), url);
                 if (q == null) { r.put("ok", false); r.put("error", "Sign-in timed out"); } else if (OAuth.REPLACED.equals(q)) { r.put("ok", false); r.put("error", "replaced"); } else { r.put("ok", true); r.put("query", q); }
             } catch (java.net.BindException e) { r.put("ok", false); r.put("error", "Another sign-in is still open. Close it and try again"); }
             catch (Exception e) { r.put("ok", false); r.put("error", "Could not open your browser"); }

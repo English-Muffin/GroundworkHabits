@@ -27,7 +27,7 @@ final class OAuth {
     }
 
     // the query string of the redirect, or null after 5 minutes
-    static String run(Context c, String url) throws Exception {
+    static String run(android.app.Activity c, String url) throws Exception {
         int me = GEN.incrementAndGet();
         ServerSocket old = current;
         if (old != null) try { old.close(); } catch (Exception e) { }
@@ -38,8 +38,8 @@ final class OAuth {
         if (bound == null) throw new java.net.BindException("busy");
         current = bound;
         try (ServerSocket server = bound) {
-            Intent open = new Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            c.startActivity(open);
+            // a Custom Tab in this app's task (no browser with Custom Tabs: Android opens the normal browser instead)
+            c.runOnUiThread(() -> new androidx.browser.customtabs.CustomTabsIntent.Builder().build().launchUrl(c, Uri.parse(url)));
             long end = System.currentTimeMillis() + 300_000;
             while (System.currentTimeMillis() < end) {
                 if (GEN.get() != me) return REPLACED;
@@ -63,6 +63,9 @@ final class OAuth {
                         out.write(("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: " + b.length + "\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.UTF_8));
                         out.write(b);
                         out.flush();
+                        // back to the app: MainActivity is singleTask, so starting it closes the Custom Tab above it in the same task
+                        Intent home = new Intent(c, c.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        c.runOnUiThread(() -> { try { c.startActivity(home); } catch (Exception e) { } });
                         return path.substring(2);
                     }
                     out.write("HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n".getBytes(StandardCharsets.UTF_8));

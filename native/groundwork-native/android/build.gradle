@@ -24,4 +24,6 @@ dependencies {
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation "androidx.biometric:biometric:1.1.0"
+    // cloud sync sign-in opens in a Custom Tab inside the app's own task, so the app can come back by itself afterwards
+    implementation "androidx.browser:browser:1.8.0"
 }
