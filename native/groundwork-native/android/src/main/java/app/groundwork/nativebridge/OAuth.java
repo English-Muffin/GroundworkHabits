@@ -54,7 +54,7 @@ final class OAuth {
                     String path = line.length > 1 ? line[1] : "";
                     OutputStream out = s.getOutputStream();
                     if (path.startsWith("/?")) {
-                        String back = "intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=" + c.getPackageName() + ";end";
+                        String back = "intent://back#Intent;scheme=groundworkhabits;package=" + c.getPackageName() + ";end"; // ReturnActivity
                         String html = "<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Groundwork Habits</title>"
                             + "<body style='background:#080808;color:#eee;font:17px system-ui;display:grid;place-items:center;height:85vh;text-align:center;margin:0'><div>"
                             + "<h2>You\u2019re signed in</h2><p>Go back to Groundwork Habits to finish.</p>"

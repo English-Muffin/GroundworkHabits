@@ -24,6 +24,16 @@
             <intent-filter><action android:name="android.service.quicksettings.action.QS_TILE" /></intent-filter>
             <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="false" />
         </service>
+        <!-- the cloud sign-in answer page's Back to the app button (groundworkhabits://back): brings the app forward, nothing else -->
+        <activity android:name="app.groundwork.nativebridge.ReturnActivity" android:exported="true" android:noHistory="true"
+            android:excludeFromRecents="true" android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="groundworkhabits" android:host="back" />
+            </intent-filter>
+        </activity>
         <!-- in-app update: hands the downloaded, checksum-checked APK to Android's installer -->
         <provider android:name="app.groundwork.nativebridge.UpdateFiles" android:authorities="${applicationId}.gwupdate"
             android:exported="false" android:grantUriPermissions="true">
