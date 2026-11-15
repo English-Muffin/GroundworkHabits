@@ -2,6 +2,12 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
+## 1.7.9
+
+- **Google Drive sync works on Android:** the first sync from the Android app could never create its file in
+  Drive, so every sync failed with "Could not reach Google Drive". Desktop and web were not affected.
+- Sync errors now say why, with the reason Google or Dropbox gave.
+
 ## 1.7.8
 
 - **Cloud sync with Google Drive or Dropbox:** sign in and your data lives in your own account and syncs
