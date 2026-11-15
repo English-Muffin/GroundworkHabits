@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm install --no-audit --no-fund
+      - name: Empty sign-in IDs file (www/js/keys.js is written at build time, never in git)
+        run: node tools/keys.js
       - name: Lint (undefined names across the app files, likely bugs)
         run: npm run lint
       - name: Unit tests (pure logic, no browser)

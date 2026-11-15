@@ -128,8 +128,11 @@ def main():
     left = [d.with_name(d.name + '.test-bak') for d in DIRS if d.with_name(d.name + '.test-bak').exists()]
     if left: sys.exit('A folder set aside by an earlier, interrupted run is still there. Check it holds your data, rename it back, then rerun: ' + ', '.join(map(str, left)))
     # the app must be closed: its open files can't be moved, and a half-moved set must never be cleaned up
-    running = subprocess.run(['tasklist', '/FI', 'IMAGENAME eq ' + os.path.basename(EXE), '/NH'], capture_output=True, text=True).stdout
-    if os.path.basename(EXE).lower() in running.lower(): sys.exit('Close ' + os.path.basename(EXE) + ' first (it is running), then rerun')
+    # CSV output: the table format cuts names at 25 characters, which hid a running "Groundwork Habits-…-test-…exe".
+    # Any Groundwork Habits exe counts (installed, portable or test build: they share the same data folders)
+    running = [l.split('","')[0].strip('"') for l in subprocess.run(['tasklist', '/FO', 'CSV', '/NH'], capture_output=True, text=True).stdout.splitlines()]
+    busy = sorted({n for n in running if n.lower().startswith('groundwork') and n.lower().endswith('.exe')})
+    if busy: sys.exit('Close ' + ', '.join(busy) + ' first (running), then rerun')
     kept, existed = [], [d for d in DIRS if d.exists()]
     try:
         for d in DIRS:
