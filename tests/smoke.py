@@ -587,6 +587,11 @@ async def cloudSync(b):
             else: store.get('dbxb', {}).pop(path.split('/')[-1], None)
             return await J({})
         if u.path == '/2/files/upload': store['dbx'] = r.post_data; store['dbx_auth'] = r.headers.get('authorization'); return await J({})
+        if u.path == '/drive/v3/files' and r.method == 'POST':
+            meta = __import__('json').loads(r.post_data); store['gd_meta'] = r.post_data
+            if meta['name'].startswith('groundwork-backup-'): store.setdefault('gdb', {})[meta['name']] = ''; return await J({'id': 'B' + meta['name']})
+            store['gd'] = ''; return await J({'id': 'F1'})
+        if u.path.startswith('/upload/drive/v3/files/B'): store.setdefault('gdb', {})[u.path.split('/files/B', 1)[1]] = r.post_data; return await J({})
         if u.path == '/drive/v3/files' and 'groundwork-backup-' in q.get('q', [''])[0]: return await J({'files': [{'id': 'B' + n, 'name': n} for n in store.get('gdb', {})]})
         if u.path == '/drive/v3/files': return await J({'files': [{'id': 'F1'}] if 'gd' in store else []})
         if u.path == '/upload/drive/v3/files' and '"groundwork-backup-' in (r.post_data or ''):
@@ -646,7 +651,7 @@ async def cloudSync(b):
     await pg.click('#main [data-act=csign][data-p=google]'); await pg.wait_for_timeout(2500)
     gd = store.get('gd') or ''; txt = await pg.locator('#main').inner_text(); h = await pg.evaluate('location.hash')
     check('cloud sync: sign out forgets Dropbox; Google Drive sign-in saves to the app folder and returns to Settings',
-          gone is None and 'appDataFolder' in gd and '"habits"' in gd and 'g@example.com' in txt and h == '#settings/data' and not errs, [gone, gd[:120], txt[-200:], h, errs])
+          gone is None and 'appDataFolder' in store.get('gd_meta', '') and '"habits"' in gd and 'g@example.com' in txt and h == '#settings/data' and not errs, [gone, gd[:120], txt[-200:], h, errs])
     # Delete my data from Google Drive (Danger zone, asks twice): the save there is removed and this device signs out, keeping its data
     await pg.click('#main [data-act=cwipe]'); await pg.wait_for_timeout(200); first = 'gd' in store
     await pg.click('#main [data-act=cwipe]'); await pg.wait_for_timeout(1500)

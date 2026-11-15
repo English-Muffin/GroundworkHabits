@@ -161,5 +161,10 @@ test('sync in: no agreed copy takes the incoming save; a change only here is kep
   T.getS().habits[0].name = 'Read more'; const r = T.syncIn(inc, base); assert.strictEqual(r.out, true); assert.strictEqual(r.s.habits[0].name, 'Read more');
 });
 
+
+test('Google Drive uploads avoid multipart (the Android WebView fails those before they reach Google)', () => {
+  assert.ok(!/uploadType=multipart/.test(fs.readFileSync(path.join(www, 'js', 'cloud.js'), 'utf8')));
+});
+
 console.log(`\n${n - fails} of ${n} unit tests passed`);
 process.exit(fails ? 1 : 0);

@@ -42,20 +42,24 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     try{const j=await tokenCall(st.p,{grant_type:'refresh_token',refresh_token:st.rt});st.tok=j.access_token;st.exp=Date.now()+(j.expires_in||3600)*1e3;if(j.refresh_token)st.rt=j.refresh_token;keep();api.off=false;return st.tok}
     catch(e){if(navigator.onLine!==false){api.off=true}throw e}}
   // fetch with the token; one retry with a fresh token after a 401
-  async function call(url,o){o=o||{};for(let i=0;i<2;i++){const t=await token(i>0);const r=await fetch(url,Object.assign({},o,{headers:Object.assign({Authorization:'Bearer '+t},o.headers||{})}));
+  // the provider's own reason for a refusal ("Google Drive API has not been used in project…"), shown in Settings and the error
+  async function why(r){let m='';try{const j=await r.clone().json();m=j.error&&(j.error.message||j.error_summary)||j.error_summary||''}catch(e){}api.why=(r.status+' '+String(m)).trim().slice(0,200)}
+  async function call(url,o){o=o||{};for(let i=0;i<2;i++){const t=await token(i>0);let r;try{r=await fetch(url,Object.assign({},o,{headers:Object.assign({Authorization:'Bearer '+t},o.headers||{})}))}catch(e){api.why='No connection';throw e}
+      if(!r.ok&&r.status!==401&&r.status!==404&&r.status!==409)await why(r);else if(r.ok)api.why='';
       if(r.status===401&&i===0){st.tok='';continue}if(r.status===401){api.off=true;throw new Error('reconnect')}return r}}
   const DBX={read:async()=>{const r=await call('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{'Dropbox-API-Arg':JSON.stringify({path:'/groundwork.json'})}});
       if(r.status===409)return {};if(!r.ok)throw new Error('read');return {text:await r.text()}},
     write:async t=>{const r=await call('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{'Dropbox-API-Arg':JSON.stringify({path:'/groundwork.json',mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:new Blob([t])});if(!r.ok)throw new Error('write')},
     who:async()=>{const r=await call('https://api.dropboxapi.com/2/users/get_current_account',{method:'POST'});return r.ok?((await r.json()).email||''):''}};
   const GD='https://www.googleapis.com/drive/v3/files',GU='https://www.googleapis.com/upload/drive/v3/files';
+  const gNew=async name=>{const r=await call(GD+'?fields=id',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,parents:['appDataFolder']})});if(!r.ok)throw new Error('create');return (await r.json()).id};
+  const gPut=(id,t)=>call(GU+'/'+id+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body:new Blob([t])});
   const GDR={fid:async()=>{if(st.fid)return st.fid;const r=await call(GD+'?'+form({spaces:'appDataFolder',fields:'files(id)',q:"name='groundwork.json' and trashed=false"}));
       if(!r.ok)throw new Error('read');const f=((await r.json()).files||[])[0];if(f){st.fid=f.id;keep()}return f?f.id:''},
     read:async()=>{const id=await GDR.fid();if(!id)return {};const r=await call(GD+'/'+id+'?alt=media');if(r.status===404){st.fid='';keep();return {}}if(!r.ok)throw new Error('read');return {text:await r.text()}},
     write:async t=>{const id=await GDR.fid();
-      if(id){const r=await call(GU+'/'+id+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body:new Blob([t])});if(r.ok)return;if(r.status!==404)throw new Error('write');st.fid=''}
-      const b='gw'+rnd(),body=new Blob(['--'+b+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify({name:'groundwork.json',parents:['appDataFolder']})+'\r\n--'+b+'\r\nContent-Type: application/json\r\n\r\n',t,'\r\n--'+b+'--']);
-      const r=await call(GU+'?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+b},body});if(!r.ok)throw new Error('write');st.fid=(await r.json()).id;keep()},
+      if(id){const r=await gPut(id,t);if(r.ok)return;if(r.status!==404)throw new Error('write');st.fid=''}
+      const nid=await gNew('groundwork.json');st.fid=nid;keep();const r=await gPut(nid,t);if(!r.ok)throw new Error('write')},
     who:async()=>{const r=await call('https://www.googleapis.com/oauth2/v3/userinfo');return r.ok?((await r.json()).email||''):''}};
   // backups in the cloud too (newest 8): Dropbox Apps/Groundwork Habits/backups, Drive's hidden app folder
   DBX.backup=async(name,t)=>{let r=await call('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{'Dropbox-API-Arg':JSON.stringify({path:'/backups/'+name,mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:new Blob([t])});if(!r.ok)throw new Error('backup');
@@ -65,8 +69,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     return 'Dropbox: Apps/Groundwork Habits/backups'};
   GDR.backup=async(name,t)=>{const ls=async()=>{const r=await call(GD+'?'+form({spaces:'appDataFolder',fields:'files(id,name)',pageSize:'100',q:"name contains 'groundwork-backup-' and trashed=false"}));return r.ok?((await r.json()).files||[]).filter(f=>/^groundwork-backup-/.test(f.name)):[]};
     const same=(await ls()).find(f=>f.name===name);let r;
-    if(same)r=await call(GU+'/'+same.id+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body:new Blob([t])});
-    else{const b='gw'+rnd();r=await call(GU+'?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+b},body:new Blob(['--'+b+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify({name,parents:['appDataFolder']})+'\r\n--'+b+'\r\nContent-Type: application/json\r\n\r\n',t,'\r\n--'+b+'--'])})}
+    r=await gPut(same?same.id:await gNew(name),t);
     if(!r.ok)throw new Error('backup');
     for(const f of (await ls()).sort((a,c)=>a.name<c.name?1:-1).slice(8))await call(GD+'/'+f.id,{method:'DELETE'});
     return 'Google Drive (hidden app folder)'};
@@ -89,7 +92,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     let ex=null;try{ex=(await ops().read()).text}catch(e){}
     if(ex&&!hasData()){modal=null;await andApply(ex,false);toast('Loaded your data from '+PROV[p].name);return}
     if(ex){modal={kind:'afold',text:ex,cloud:PROV[p].name};render()}else{andText=null;andWrite();render();toast('Groundwork Habits now syncs with '+PROV[p].name)}}
-  const api={off:false,
+  const api={off:false,why:'',
     can,PROV,
     on:()=>!!st,
     name:()=>st?PROV[st.p].name:'',
