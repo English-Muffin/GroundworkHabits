@@ -30,8 +30,8 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     dropbox:{name:'Dropbox',id:()=>CLOUD_IDS.dropbox,secret:()=>'',redirect:()=>WEB?here():'http://127.0.0.1:'+OAUTH_PORT+'/',tokenUrl:'https://api.dropboxapi.com/oauth2/token',
       auth:(ch,s)=>'https://www.dropbox.com/oauth2/authorize?'+form({client_id:CLOUD_IDS.dropbox,response_type:'code',code_challenge:ch,code_challenge_method:'S256',token_access_type:'offline',redirect_uri:PROV.dropbox.redirect(),state:s})},
     google:{name:'Google Drive',id:()=>WEB?CLOUD_IDS.googleWeb:CLOUD_IDS.google,secret:()=>CLOUD_IDS.googleSecret,redirect:()=>WEB?here():'http://127.0.0.1:'+OAUTH_PORT+'/',tokenUrl:'https://oauth2.googleapis.com/token',
-      auth:(ch,s)=>'https://accounts.google.com/o/oauth2/v2/auth?'+form(WEB?{client_id:CLOUD_IDS.googleWeb,response_type:'token',scope:GSCOPE,redirect_uri:here(),state:s,include_granted_scopes:'true'}
-        :{client_id:CLOUD_IDS.google,response_type:'code',scope:GSCOPE,code_challenge:ch,code_challenge_method:'S256',access_type:'offline',prompt:'consent',redirect_uri:PROV.google.redirect(),state:s})}};
+      auth:(ch,s,scope)=>'https://accounts.google.com/o/oauth2/v2/auth?'+form(WEB?{client_id:CLOUD_IDS.googleWeb,response_type:'token',scope:scope||GSCOPE,redirect_uri:here(),state:s,include_granted_scopes:'true'}
+        :{client_id:CLOUD_IDS.google,response_type:'code',scope:scope||GSCOPE,code_challenge:ch,code_challenge_method:'S256',access_type:'offline',prompt:'consent',redirect_uri:PROV.google.redirect(),state:s})}};
   const can=p=>!!PROV[p].id()&&(WEB||!!NAT)&&!!(window.crypto&&crypto.subtle);
   async function tokenCall(p,o){const pr=PROV[p],sec=pr.secret();
     const r=await fetch(pr.tokenUrl,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:form(Object.assign({client_id:pr.id()},sec?{client_secret:sec}:{},o))});
@@ -92,7 +92,37 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     let ex=null;try{ex=(await ops().read()).text}catch(e){}
     if(ex&&!hasData()){modal=null;await andApply(ex,false);toast('Loaded your data from '+PROV[p].name);return}
     if(ex){modal={kind:'afold',text:ex,cloud:PROV[p].name};render()}else{andText=null;andWrite();render();toast('Groundwork Habits now syncs with '+PROV[p].name)}}
+  /* Google Calendar by sign-in (read-only): its own Google sign-in, kept apart from Drive sync in KEY-gcal. Events from the main
+     calendar become tasks through applyCalendar(), like a calendar link */
+  const CSCOPE='https://www.googleapis.com/auth/calendar.readonly email',GK=KEY+'-gcal';
+  let gc=null;try{gc=JSON.parse(localStorage.getItem(GK)||'null')}catch(e){}
+  const gkeep=()=>{try{gc?localStorage.setItem(GK,JSON.stringify(gc)):localStorage.removeItem(GK)}catch(e){}};
+  async function gcFinish(j){gc={tok:j.access_token,exp:Date.now()+(j.expires_in||3600)*1e3,rt:j.refresh_token||'',who:''};gkeep();
+    try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+gc.tok}});if(r.ok){gc.who=(await r.json()).email||'';gkeep()}}catch(e){}
+    P.cal='google';P.calAt=0;applyPrefs();pullCalendar(true)}
+  async function gcToken(){if(!gc)throw new Error('signed out');if(gc.tok&&gc.exp>Date.now()+60e3)return gc.tok;if(!gc.rt)throw new Error('Sign in to Google Calendar again');
+    const j=await tokenCall('google',{grant_type:'refresh_token',refresh_token:gc.rt});gc.tok=j.access_token;gc.exp=Date.now()+(j.expires_in||3600)*1e3;gkeep();return gc.tok}
+  const pad=n=>String(n).padStart(2,'0'),dayOf=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
   const api={off:false,why:'',
+    calOn:()=>!!gc,calWho:()=>gc&&gc.who||'',
+    async calSignIn(){if(!can('google')){toast('Sign-in with Google isn’t set up in this version');return}
+      const ver=rnd(),s=rnd(),ch=await sha(ver);
+      if(WEB){try{sessionStorage.setItem(OK,JSON.stringify({p:'google',ver,s,cal:1}))}catch(e){}location.href=PROV.google.auth(ch,s,CSCOPE);return}
+      toast('Finish signing in in your browser');
+      const r=await NAT(PROV.google.auth(ch,s,CSCOPE));if(r&&r.error==='replaced')return;
+      if(!r||!r.ok)throw new Error(r&&r.error||'Sign-in was cancelled');
+      const q=new URLSearchParams(r.query||'');if(q.get('state')!==s||!q.get('code'))throw new Error('Sign-in was cancelled');
+      await gcFinish(await tokenCall('google',{grant_type:'authorization_code',code:q.get('code'),code_verifier:ver,redirect_uri:PROV.google.redirect()}))},
+    calSignOut(){gc=null;gkeep()},
+    // events of the main calendar between two day keys, as applyCalendar wants them: {uid, day, time, text}
+    async calEvents(lo,hi){const t=await gcToken(),out=[];let page='';
+      for(let i=0;i<10;i++){const r=await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events?'+form(Object.assign({singleEvents:'true',orderBy:'startTime',maxResults:'2500',
+          timeMin:new Date(lo+'T00:00').toISOString(),timeMax:new Date(hi+'T23:59:59').toISOString()},page?{pageToken:page}:{})),{headers:{Authorization:'Bearer '+t}});
+        if(!r.ok){let m='';try{m=((await r.json()).error||{}).message||''}catch(e){}throw new Error(('Google Calendar: '+r.status+' '+m).trim())}
+        const j=await r.json();(j.items||[]).forEach(e=>{if(e.status==='cancelled'||!e.start)return;const all=!!e.start.date,d=all?null:new Date(e.start.dateTime);
+          out.push({uid:'g:'+e.id,day:all?e.start.date:dayOf(d),time:all?'':pad(d.getHours())+':'+pad(d.getMinutes()),text:e.summary||''})});
+        if(!j.nextPageToken)break;page=j.nextPageToken}
+      return out},
     can,PROV,
     on:()=>!!st,
     name:()=>st?PROV[st.p].name:'',
@@ -119,6 +149,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
       const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.slice(1)),s=q.get('state')||h.get('state');if(!s)return;
       try{sessionStorage.removeItem(OK)}catch(e){}history.replaceState(null,'',here());addEventListener('load',()=>{location.hash='settings/data'}); // the route was read before this ran: go there once every script has loaded (a timer could fire between script loads)
       if(s!==pend.s){toast('Sign-in was cancelled');return}
+      if(pend.cal){addEventListener('load',()=>{location.hash='settings/calendar'});try{if(h.get('access_token'))await gcFinish({access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600});else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}return}
       try{if(h.get('access_token'))await finish(pend.p,{access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600});
         else if(q.get('code'))await finish(pend.p,await tokenCall(pend.p,{grant_type:'authorization_code',code:q.get('code'),code_verifier:pend.ver,redirect_uri:here()}));
         else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}}};

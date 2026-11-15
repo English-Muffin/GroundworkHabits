@@ -133,6 +133,13 @@ async def run(D, sh):
         # Back to the app button that reopens it, and the app must refuse the answer (wrong state) instead of signing in
         # needs Chrome set up once on the device (its welcome screen asks you to accept its terms: do that by hand)
         time.sleep(2); sh('am', 'start', '-n', 'com.groundwork.habits/.MainActivity'); time.sleep(3); b, pg = await page(p, D, sh)
+        await pg.evaluate("location.hash='#settings/reminders'"); await pg.wait_for_timeout(1200)
+        perm = await pg.evaluate("[...document.querySelectorAll('#main .srow')].map(r=>r.textContent).filter(x=>/^(Notifications|Exact alarms)/.test(x))")
+        check('Reminders shows whether notifications and exact alarms are allowed', len(perm) == 2 and 'Checking' not in ' '.join(perm), perm)
+        sh('uiautomator', 'dump', '/sdcard/ui.xml'); ux = sh('cat', '/sdcard/ui.xml') or ''
+        # empty text fields are left out: their name reaches TalkBack as the hint, which uiautomator's dump doesn't show (so it marks them NAF)
+        naf = [n for n in re.findall(r'<node[^>]*NAF="true"[^>]*>', ux) if 'android.widget.EditText' not in n]
+        check('TalkBack: every control in Settings has a name (no NAF nodes)', not naf, [n[:120] for n in naf[:3]])
         await pg.evaluate("location.hash='#settings/data'"); await pg.wait_for_timeout(800)
         has = await pg.evaluate("!!document.querySelector('#main [data-act=csign][data-p=dropbox]')")
         check('cloud sync: Settings offers Dropbox sign-in', has)

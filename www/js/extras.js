@@ -161,6 +161,9 @@ async function autoBackup(force){
   try{const t=await backupText(),name='groundwork-backup-'+dk(TODAY)+'.json';const keep=bakKeep();let where=!can?null:DFS&&DFS.backup?await DFS.backup(name,t,keep):(await NB.backup({name,text:t,keep})).where;
     if(cloud){try{const c=await CLOUD.backup(name,t,keep);where=where?where+' and '+c:c}catch(e){}} // the cloud copy is extra: a failure there doesn't fail the local backup
     if(where){P.bakAt=Date.now();P.bakWhere=String(where).slice(0,300);applyPrefs();if(force)toast('Backup saved')}else if(force)toast('Backup failed')}catch(e){if(force)toast('Backup failed')}}
+// backups kept on this device (desktop folder or Android), newest first, and one backup's text
+const localBackups=async()=>DFS&&DFS.listBackups?await DFS.listBackups():NB&&NB.backupList?(await NB.backupList()).list||[]:[];
+const localBackup=async n=>DFS&&DFS.readBackup?DFS.readBackup(n):(await NB.backupRead({name:n})).text;
 // a plain-text report for bug reports: version, platform, sizes and recent errors; never names, notes or other content
 function diagText(){const n=o=>Object.keys(o||{}).length;
   return ['Groundwork Habits '+(LITE?'Lite ':'')+APPV+(TESTING?' (test build)':''),'Platform: '+(DFS?'desktop':NB?'android':'web')+' · '+navigator.userAgent,'Language: '+LANG+' · theme '+P.theme+' · screen '+innerWidth+'x'+innerHeight,
@@ -283,6 +286,9 @@ function applyCalendar(evs){
   return n;
 }
 async function pullCalendar(manual){
+  if(P.cal==='google'){if(!CLOUD||!CLOUD.calOn()||encWait)return;let evs;
+    try{evs=await CLOUD.calEvents(dk(addDays(TODAY,-30)),dk(addDays(TODAY,90)))}catch(e){if(manual)toast(e&&e.message||'Could not reach your calendar');return}
+    const n=applyCalendar(evs);P.calAt=Date.now();applyPrefs();save();if(!modal&&!addingTask)render();if(manual)toast(n+' calendar events synced');return}
   if(!calFetch||!P.cal||encWait)return;
   let r;try{r=await calFetch(P.cal)}catch(e){}
   if(!r||!r.ok){if(manual)toast(r&&r.error?r.error:'Could not reach your calendar');return}

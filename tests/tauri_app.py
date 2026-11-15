@@ -77,6 +77,9 @@ async def run(had_electron):
             where = await pg.evaluate("groundworkFS.backup('groundwork-backup-test.json',JSON.stringify({habits:[]}))")
             check('a backup is written to disk', bool(where) and (pathlib.Path(where) / 'groundwork-backup-test.json').exists(), where)
             check('a bad backup name is refused', await pg.evaluate("groundworkFS.backup('../evil.json','x')") is None)
+            lst = await pg.evaluate("groundworkFS.listBackups()"); txt = await pg.evaluate("groundworkFS.readBackup('groundwork-backup-test.json')")
+            bad = await pg.evaluate("groundworkFS.readBackup('../config.json').then(()=>'read',()=>'refused')")
+            check('backups on this PC are listed and read back for Restore; other files are refused', any(b['n'] == 'groundwork-backup-test.json' for b in lst) and '"habits"' in txt and bad == 'refused', [lst, txt[:40], bad])
             check('notifications do not fail', await pg.evaluate("(()=>{try{new Notification('Groundwork Habits',{body:'test'});return true}catch(e){return false}})()"))
             if LITE:
                 check('Lite has no online parts in its bridge', await pg.evaluate("!groundworkFS.fetchCal&&!groundworkFS.updateCheck&&groundworkFS.folder()===''"))

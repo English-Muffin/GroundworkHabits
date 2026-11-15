@@ -1025,3 +1025,29 @@ P113|Impossible de supprimer vos données de $1
 912|Les sauvegardes plus anciennes sont supprimées au-delà
 P114|one=Garde la copie la plus récente‖other=Garde les $1 copies les plus récentes
 P115|one=Garde la copie la plus récente dans $2‖other=Garde les $1 copies les plus récentes dans $2
+913|Sur cet appareil
+914|Notifications
+915|Alarmes exactes
+916|Vérification…
+917|Autorisées
+918|Bloquées : les rappels ne peuvent pas s’afficher
+919|Autorisées : les rappels arrivent à l’heure
+920|Non autorisées : les rappels peuvent arriver quelques minutes en retard
+921|Autoriser
+922|Notifications bloquées
+923|Réinitialiser l’apparence et les fonctions
+924|Touchez encore pour réinitialiser
+925|Thème, couleur, fonctions et disposition des cartes reviennent par défaut. Vos données restent
+926|Apparence et fonctions réinitialisées
+P116|one=$1 habitude‖other=$1 habitudes
+P117|one=$1 objectif‖other=$1 objectifs
+927|Plus tard
+928|Je vous le rappelle dans 15 minutes
+929|Restaurer une sauvegarde
+930|Parmi les sauvegardes de cet appareil
+931|Sauvegardes sur cet appareil
+932|Se connecter avec Google
+933|Affiche les événements de votre agenda Google principal comme tâches. Lecture seule
+934|Connecté à Google Agenda
+935|Reconnectez-vous à Google Agenda
+P118|Connecté à Google Agenda en tant que $1

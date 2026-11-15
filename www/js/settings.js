@@ -7,6 +7,9 @@ const wideSet=()=>innerWidth>760;
 const srow=(label,sub,ctl,extra)=>'<div class="srow"'+(extra?' data-s="'+esc(extra)+'"':'')+'><div class="sl"><span>'+label+'</span>'+(sub?'<small>'+sub+'</small>':'')+'</div><div class="sc">'+(ctl||'')+'</div></div>';
 const sgrp=(title,rows,cls)=>rows?'<div class="sgrp'+(cls?' '+cls:'')+'">'+(title?'<div class="sgh">'+title+'</div>':'')+rows+'</div>':'';
 const sw=(act,v,on,label)=>'<button class="sw2'+(on?' on':'')+'" data-act="'+act+'"'+(v!==undefined?' data-v="'+v+'"':'')+' role="switch" aria-checked="'+!!on+'" aria-label="'+esc(label)+'"><i></i></button>';
+// Settings > Data & backups: how much this device stores, and what
+function storageLine(){let b=0;try{b=(localStorage.getItem(KEY)||'').length*2}catch(e){}const n=Object.values(S.tasks).reduce((a,d)=>a+((d&&d.items)||[]).length,0);
+  return (b<1048576?Math.max(1,Math.round(b/1024))+' KB':(b/1048576).toFixed(1)+' MB')+' · <span>'+pl(S.habits.length,'habit')+'</span>, <span>'+pl(S.goals.length,'goal')+'</span>, <span>'+pl(n,'task')+'</span>'} // each count its own text, so each translates
 // sync status (folder or cloud): when this device last synced, the last problem, and Sync now
 const syncRow=()=>{const i=syncInfo();return srow(i.err?'Sync problem':'Last synced',i.err?esc(i.err):i.ok?new Date(i.ok).toLocaleString([],{dateStyle:'medium',timeStyle:'short'}):'Not synced yet',sbtn('syncnow','Sync now'))};
 const sbtn=(act,label,cls)=>'<button class="btn ghost sbtn'+(cls?' '+cls:'')+'" data-act="'+act+'">'+label+'</button>';
@@ -16,8 +19,8 @@ function setStatus(k){
   if(k==='appearance')return ({system:'System',dark:'Dark',amoled:'AMOLED',light:'Light'})[P.theme||'dark']+' · '+((ACCENTS.find(a=>a[1]===P.accent)||['Custom'])[0])+' accent';
   if(k==='language')return P.lang?(LANGS.find(l=>l[0]===P.lang)||['','English'])[1]:'Same as this device';
   if(k==='features')return FEAT.filter(f=>f[0]!=='remnames'&&f[0]!=='reminder'&&feat(f[0])).length+' of '+(FEAT.length-2)+' on';
-  if(k==='reminders')return feat('reminder')?'Daily at '+(P.remTime||'21:00'):'Daily reminder off';
-  if(k==='calendar')return P.cal?'Connected':'Not connected';
+  if(k==='reminders')return permS&&!permS.notify?'Notifications blocked':feat('reminder')?'Daily at '+(P.remTime||'21:00'):'Daily reminder off';
+  if(k==='calendar')return P.cal==='google'?'Google Calendar':P.cal?'Connected':'Not connected';
   if(k==='data'){const e=P.bakEvery===undefined?7:P.bakEvery;return (e?({1:'Backs up every day',7:'Backs up every week',30:'Backs up every month'})[e]:'Automatic backup off')+(P.bakAt?' · last '+new Date(P.bakAt).toLocaleDateString():'')}
   if(k==='security')return P.lock?'PIN on'+(P.bio?' · fingerprint on':''):'No PIN'
   return 'Groundwork Habits '+APPV}
@@ -35,23 +38,28 @@ function setSection(k){
       +(feat('reminder')?(LN||'Notification' in window?srow('Time',LN?'A notification every day, even when Groundwork Habits is closed':'Only while Groundwork Habits is open or in the background','<input type="time" class="field stime" id="remTime" value="'+esc(P.remTime||'21:00')+'" aria-label="Reminder time">'):srow('Reminders aren’t supported here yet','')):''))
     +sgrp('Habit and task reminders',srow('Show names in reminders',FEATD.remnames,sw('feat','remnames',feat('remnames'),'Show names in reminders'))
       +srow('Set a reminder','Open a habit (tap its name) or tap the bell on a task','')
-      +(NB&&NB.openExactSettings?sgo('exactok','Allow exact alarms','Android 14 and later: lets alarms ring on time instead of a few minutes late'):'')
+      +(NB&&NB.permStatus?srow('Notifications',!permS?'Checking…':permS.notify?'Allowed':'Blocked: reminders can’t appear',permS&&!permS.notify?sbtn('notifyopen','Open settings'):'')
+        +srow('Exact alarms',!permS?'Checking…':permS.exact?'Allowed: reminders come on time':'Not allowed: reminders may come a few minutes late',permS&&!permS.exact?sbtn('exactok','Allow'):'')
+        :NB&&NB.openExactSettings?sgo('exactok','Allow exact alarms','Android 14 and later: lets alarms ring on time instead of a few minutes late'):'')
       +sgo('testnote','Send a test notification','Checks that notifications reach you'));
-  if(k==='calendar')b=sgrp('Google Calendar',calFetch?(P.cal?srow('Connected','Events sync every 15 minutes'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''),sbtn('calsync','Sync now'))+sgo('caloff','Stop calendar sync','Removes the calendar events from your tasks','red')
-      :sgo('calset','Connect a calendar…','Paste your calendar’s secret iCal address; no Google login needed')):srow('Calendar sync works in the desktop and Android apps',''))
+  const gcan=CLOUD&&CLOUD.can('google');
+  if(k==='calendar')b=sgrp('Google Calendar',calFetch||gcan?(P.cal?srow(P.cal==='google'?'Connected to Google Calendar'+(CLOUD&&CLOUD.calWho()?' as '+esc(CLOUD.calWho()):''):'Connected','Events sync every 15 minutes'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''),sbtn('calsync','Sync now'))+sgo('caloff','Stop calendar sync','Removes the calendar events from your tasks','red')
+      :(gcan?sgo('gcalsign','Sign in with Google','Shows the events of your main Google Calendar as tasks. Read-only'):'')+(calFetch?sgo('calset','Connect a calendar…','Paste your calendar’s secret iCal address; no Google login needed'):'')):srow('Calendar sync works in the desktop and Android apps',''))
     +sgrp('Export',sgo('calexport','Export tasks to calendar (.ics)','Import the file in Google Calendar: Settings, Import & export'));
   if(k==='data'){const can=(DFS&&DFS.backup)||(NB&&NB.backup)||(CLOUD&&CLOUD.on()),e=P.bakEvery===undefined?7:P.bakEvery;
     b=(can?sgrp('Automatic backup',srow('Back up','Keeps the newest '+bakKeep()+(bakKeep()===1?' copy':' copies')+(P.bakWhere?' in '+esc(P.bakWhere):''),'<select class="field ssel" id="bakSel" aria-label="Automatic backup">'+[[0,'Off'],[1,'Every day'],[7,'Every week'],[30,'Every month']].map(x=>'<option value="'+x[0]+'"'+(e===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select>','automatic backup often')
         +srow('Copies to keep','Older backups are deleted once there are more','<select class="field ssel" id="bakKeepSel" aria-label="Copies to keep">'+[1,2,3,4,5,6,7,8].map(n=>'<option value="'+n+'"'+(bakKeep()===n?' selected':'')+'>'+n+'</option>').join('')+'</select>','backup copies keep')
-        +sgo('baknow','Back up now',P.bakAt?'Last backup '+new Date(P.bakAt).toLocaleString([],{dateStyle:'medium',timeStyle:'short'}):'No backup yet')+(DFS&&DFS.openBackups?sgo('bakopen','Open backups folder',''):'')):'')
+        +sgo('baknow','Back up now',P.bakAt?'Last backup '+new Date(P.bakAt).toLocaleString([],{dateStyle:'medium',timeStyle:'short'}):'No backup yet')+((DFS&&DFS.listBackups)||(NB&&NB.backupList)?sgo('lbaks','Restore a backup','From the backups on this device'):'')+(DFS&&DFS.openBackups?sgo('bakopen','Open backups folder',''):'')):'')
       +(CLOUD&&(CLOUD.on()||CLOUD.can('google')||CLOUD.can('dropbox'))?sgrp('Cloud sync',CLOUD.on()?srow(CLOUD.name(),CLOUD.off?'Signed out. Sign in again to keep syncing':'Syncing'+(CLOUD.who()?' as '+esc(CLOUD.who()):''),CLOUD.off?sbtn('creconnect','Sign in'):'')+(CLOUD.off?'':syncRow()+sgo('cbaks','Cloud backups','Restore a backup kept in '+CLOUD.name()))+sgo('cout','Sign out','Your data stays on this device')
         :(CLOUD.can('google')?srow('Google Drive','Sign in to keep your data in your own Google Drive and sync it between devices','<button class="btn ghost sbtn" data-act="csign" data-p="google">Sign in</button>'):'')
         +(CLOUD.can('dropbox')?srow('Dropbox','Sign in to keep your data in your own Dropbox and sync it between devices','<button class="btn ghost sbtn" data-act="csign" data-p="dropbox">Sign in</button>'):'')):'')
       +(DFS&&!LITE&&!(CLOUD&&CLOUD.on())?sgrp('Data folder',srow('Folder',dataDir?esc(dataDir):'App storage (this PC only). Pick a Google Drive, OneDrive or Dropbox folder to sync between computers',sbtn('pickdir',dataDir?'Change':'Choose…'))+(dataDir?syncRow()+sgo('resetdir','Stop using this folder',''):'')):'')
       +(FOLD&&!LITE&&!(CLOUD&&CLOUD.on())?sgrp('Data folder',srow('Folder',P.andDir?esc(P.andDir):NB?'This phone only. Pick a folder another app keeps in sync to share data between devices':'This browser only. Pick a Google Drive, OneDrive or Dropbox folder to sync between devices',WEBF&&WEBF.off&&P.andDir?sbtn('areconnect','Reconnect'):sbtn('apick',P.andDir?'Change':'Choose…'))+(P.andDir&&!(WEBF&&WEBF.off)?syncRow():'')+(P.andDir?sgo('aclear','Stop using this folder',''):'')):'')
       +(!FOLD&&!DFS&&!NB&&!LITE&&!DEMO?sgrp('Data folder',srow('Folder','This browser can’t sync through a folder. Use Export and Import to move your data',sbtn('export','Export')+sbtn('import','Import'))):'')
+      +sgrp('Storage',srow('On this device',storageLine(),''))
       +sgrp('Export and import',sgo('export','Export backup',P.lock?'Encrypted with your PIN':'A file with all your data')+sgo('csv','Export as spreadsheet (.csv)','For Excel, Numbers or Google Sheets')+sgo('impext','Import from another app','Loop Habit Tracker, Habitica or a spreadsheet (.csv). Adds to your data')+sgo('import','Import backup','Replaces the data on this device'))
-      +sgrp('Danger zone',(TESTING?sgo('demo',confirmDemo?'Tap again: replace my data with demo':'Load demo data','Example habits, tasks and goals'):'')+sgo('fresh',confirmReset?'Tap again to erase everything':'Start fresh','Erases everything on this device','red')
+      +sgrp('Danger zone',(TESTING?sgo('demo',confirmDemo?'Tap again: replace my data with demo':'Load demo data','Example habits, tasks and goals'):'')+sgo('lookreset',confirmLook?'Tap again to reset':'Reset appearance and features','Theme, accent, feature switches and card layout back to their defaults. Your data stays','red')
+        +sgo('fresh',confirmReset?'Tap again to erase everything':'Start fresh','Erases everything on this device','red')
         +(CLOUD&&CLOUD.on()&&!CLOUD.off?sgo('cwipe',confirmWipe?'Tap again to delete it from '+CLOUD.name():'Delete my data from '+CLOUD.name(),'Signs out and removes the save and backups there. This device keeps its data','red'):''),'danger')}
   if(k==='security')b=sgrp('App lock',!canLock?srow('Not available here',''):P.lock?
       sgo('pinset','Change PIN…','')+(bioOk?srow('Fingerprint unlock','Unlock with your fingerprint instead of typing the PIN',sw(P.bio?'biooff':'bioask',undefined,P.bio,'Fingerprint unlock')):'')
@@ -216,7 +224,7 @@ function vModal(){
   if(modal.kind==='syncpin')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Synced data is locked"><h2>Your synced data is locked with a PIN</h2><p class="sub" style="margin:0">Another device protects it with a PIN. Enter that PIN to keep syncing; this device will use the same PIN.</p>'
      +'<input class="field" id="syncPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" aria-label="PIN">'
      +'<div class="row"><button class="btn ghost" data-act="modalclose">Not now</button><button class="btn" data-act="syncpinok">Unlock</button></div></div></div>';
-  if(modal.kind==='cbaks')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="Cloud backups"><h2>Backups in '+esc(CLOUD?CLOUD.name():'')+'</h2>'
+  if(modal.kind==='cbaks')return '<div class="ov" data-act="ovclose"><div class="mod" role="dialog" aria-modal="true" aria-label="'+(modal.here?'Backups on this device':'Cloud backups')+'"><h2>'+(modal.here?'Backups on this device':'Backups in '+esc(CLOUD?CLOUD.name():''))+'</h2>'
      +(modal.list===null?'<p class="sub" style="margin:0">Loading…</p>':modal.err?'<p class="sub" style="margin:0">Could not load your backups</p>':!modal.list.length?'<p class="sub" style="margin:0">No backups there yet</p>'
       :'<p class="sub" style="margin:0">Restoring shows what’s in it first, then replaces the data on this device.</p><div class="cbl">'+modal.list.map(b=>{const d=(b.n.match(/(\d{4}-\d{2}-\d{2})/)||[])[1];
         return srow(d?new Date(d+'T00:00').toLocaleDateString([],{dateStyle:'medium'}):esc(b.n),Math.max(1,Math.round(b.size/1024))+' KB','<button class="btn ghost sbtn" data-act="cbakrestore" data-n="'+esc(b.n)+'">Restore</button>')}).join('')+'</div>')

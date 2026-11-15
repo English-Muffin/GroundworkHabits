@@ -1025,3 +1025,29 @@ P113|Impossibile eliminare i dati da $1
 912|I backup più vecchi vengono eliminati quando sono di più
 P114|one=Conserva la copia più recente‖other=Conserva le $1 copie più recenti
 P115|one=Conserva la copia più recente in $2‖other=Conserva le $1 copie più recenti in $2
+913|Su questo dispositivo
+914|Notifiche
+915|Sveglie esatte
+916|Verifica…
+917|Consentite
+918|Bloccate: i promemoria non possono apparire
+919|Consentite: i promemoria arrivano in orario
+920|Non consentite: i promemoria possono arrivare qualche minuto dopo
+921|Consenti
+922|Notifiche bloccate
+923|Ripristina aspetto e funzioni
+924|Tocca di nuovo per ripristinare
+925|Tema, colore, funzioni e disposizione delle schede tornano predefiniti. I tuoi dati restano
+926|Aspetto e funzioni ripristinati
+P116|one=$1 abitudine‖other=$1 abitudini
+P117|one=$1 obiettivo‖other=$1 obiettivi
+927|Più tardi
+928|Te lo ricordo di nuovo tra 15 minuti
+929|Ripristina un backup
+930|Dai backup su questo dispositivo
+931|Backup su questo dispositivo
+932|Accedi con Google
+933|Mostra gli eventi del tuo Google Calendar principale come attività. Sola lettura
+934|Collegato a Google Calendar
+935|Accedi di nuovo a Google Calendar
+P118|Collegato a Google Calendar come $1

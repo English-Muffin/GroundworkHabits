@@ -56,28 +56,30 @@ function remSkipToday(id,rem){if(!rem)return;const n=new Date(),[hh,mm]=rem.t.sp
 function remSkip(id,k,rem){const n=new Date(),[hh,mm]=rem.t.split(':').map(Number);if(k===dk(TODAY)&&n.getHours()*60+n.getMinutes()>=hh*60+mm){P.remFired=Object.assign({},P.remFired,{[id]:k});applyPrefs()}}
 function remAsk(){if(!LN&&'Notification' in window&&Notification.permission==='default')Notification.requestPermission()}
 function askHtml(id,k){const t=findT(id,k);if(t)return '<div class="ask"><div class="lbl">Task reminder</div><b>'+esc(t.text)+'</b><p class="sub">'+(t.done?'Already done. Nice work.':'Have you done it?')+'</p>'
-    +'<div class="row"><button class="btn ghost" data-act="askno">'+(t.done?'Close':'No')+'</button>'+(t.done?'':'<button class="btn" data-act="askyes" data-h="'+t.id+'" data-k="'+k+'">Yes, done</button>')+'</div></div>';
+    +'<div class="row"><button class="btn ghost" data-act="askno">'+(t.done?'Close':'No')+'</button>'+(t.done?'':'<button class="btn ghost" data-act="asklater" data-id="'+t.id+'">Later</button><button class="btn" data-act="askyes" data-h="'+t.id+'" data-k="'+k+'">Yes, done</button>')+'</div></div>';
   const h=findH(id);if(!h)return '<div class="ask"><p class="sub">This habit no longer exists.</p><div class="row"><button class="btn" data-act="askno">Close</button></div></div>';
   const done=!!L(h)[k];
   return '<div class="ask"><div class="lbl">Reminder</div><b>'+esc(h.name)+'</b><p class="sub">'+(done?'Already done '+perWord(h)+'. Nice work.':'Have you done it '+perWord(h)+'?')+'</p>'
-    +'<div class="row"><button class="btn ghost" data-act="askno">'+(done?'Close':'No')+'</button>'+(done?'':'<button class="btn" data-act="askyes" data-h="'+h.id+'" data-k="'+k+'">Yes, done</button>')+'</div></div>'}
+    +'<div class="row"><button class="btn ghost" data-act="askno">'+(done?'Close':'No')+'</button>'+(done?'':'<button class="btn ghost" data-act="asklater" data-id="'+h.id+'">Later</button><button class="btn" data-act="askyes" data-h="'+h.id+'" data-k="'+k+'">Yes, done</button>')+'</div></div>'}
 const goalDue=()=>{const o=[];S.goals.forEach(g=>{if(!g.due||g.arch||gPct(g)>=100)return;[[7,'is due in a week'],[0,'is due today']].forEach(([n,txt])=>{const d=addDays(new Date(g.due+'T00:00'),-n);d.setHours(9,0,0,0);o.push([g,'gd'+n+'-'+g.id,d,g.title+' '+txt])})});return o};
 let alarmT=null;
 function alarmStop(){clearInterval(alarmT);alarmT=null}
 function alarmStart(){ // short beeps every 1.5 s for up to a minute
   alarmStop();let n=0;const beep=()=>{try{const A=alarmStart.a||(alarmStart.a=new (window.AudioContext||window.webkitAudioContext)()),o=A.createOscillator(),g=A.createGain();o.frequency.value=880;o.connect(g);g.connect(A.destination);g.gain.setValueAtTime(.2,A.currentTime);g.gain.exponentialRampToValueAtTime(.001,A.currentTime+.5);o.start();o.stop(A.currentTime+.5)}catch(e){}if(++n>=40)alarmStop()};
   beep();alarmT=setInterval(beep,1500)}
+// Later: this reminder waits until P.remSnooze[id] (per device)
+const snoozed=id=>((P.remSnooze||{})[id]||0)>Date.now();
 function checkHabitReminders(){
   if(LN||WIDGET||encWait)return;const n=new Date(),now=n.getHours()*60+n.getMinutes(),d=dk(TODAY);
   S.habits.forEach(h=>{if(!h.rem||h.arch)return;const [hh,mm]=h.rem.t.split(':').map(Number),k=pKey(h,TODAY);
-    if(isRest(h,TODAY)||(P.remFired||{})[h.id]===d||now<hh*60+mm)return;P.remFired=Object.assign({},P.remFired,{[h.id]:d});applyPrefs();if(L(h)[k])return;
+    if(isRest(h,TODAY)||(P.remFired||{})[h.id]===d||now<hh*60+mm||snoozed(h.id))return;P.remFired=Object.assign({},P.remFired,{[h.id]:d});applyPrefs();if(L(h)[k])return;
     if(DFS&&DFS.ask){DFS.ask(h.id,k);return}
     try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(h.name),{body:remBody('Have you done it '+perWord(h)+'?','habit'),tag:'groundwork-h-'+h.id,requireInteraction:true,silent:h.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
     if(!modal&&!locked){modal={kind:'ask',h:h.id,k};render()}if(h.rem.m==='alarm')alarmStart()});
   goalDue().forEach(([g,key,at,txt])=>{if(dk(at)!==d||n<at||(P.remFired||{})[key]===d)return;P.remFired=Object.assign({},P.remFired,{[key]:d});applyPrefs();
     try{if('Notification' in window&&Notification.permission==='granted')new Notification('Groundwork Habits',{body:feat('remnames')?txt:'A goal deadline is coming up',tag:'groundwork-'+key})}catch(e){}toast(txt)});
   ((S.tasks[d]||{}).items||[]).forEach(it=>{if(!it.rem||it.done||it.hidden||it.cal)return;const [hh,mm]=it.rem.t.split(':').map(Number);
-    if((P.remFired||{})[it.id]===d||now<hh*60+mm)return;P.remFired=Object.assign({},P.remFired,{[it.id]:d});applyPrefs();
+    if((P.remFired||{})[it.id]===d||now<hh*60+mm||snoozed(it.id))return;P.remFired=Object.assign({},P.remFired,{[it.id]:d});applyPrefs();
     if(DFS&&DFS.ask){DFS.ask(it.id,d);return}
     try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(it.text),{body:remBody('Have you done it?','task'),tag:'groundwork-t-'+it.id,requireInteraction:true,silent:it.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
     if(!modal&&!locked){modal={kind:'ask',h:it.id,k:d};render()}if(it.rem.m==='alarm')alarmStart()})}
@@ -96,8 +98,8 @@ async function syncReminders(){
     const now=new Date(),items=[];
     hs.slice(0,25).forEach((h,i)=>{const [hh,mm]=h.rem.t.split(':').map(Number);
       for(let d=0;d<14;d++){const at=new Date(now.getFullYear(),now.getMonth(),now.getDate()+d,hh,mm),k=pKey(h,at);if(at<=now||L(h)[k]||isRest(h,at))continue;
-        items.push({id:1000+i*20+d,at:at.getTime(),title:remTitle(h.name),body:remBody('Have you done it '+perWord(h)+'?','habit'),h:h.id,k,alarm:h.rem.m==='alarm',rep:h.type,yes:tx('Yes, done'),no:tx('No')})}});
-    ts.slice(0,200).forEach(([k,it],n)=>{const [hh,mm]=it.rem.t.split(':').map(Number),at=new Date(k+'T00:00');at.setHours(hh,mm);if(at>now)items.push({id:2000+n,at:at.getTime(),title:remTitle(it.text),body:remBody('Have you done it?','task'),h:it.id,k,alarm:it.rem.m==='alarm',yes:tx('Yes, done'),no:tx('No')})});
+        items.push({id:1000+i*20+d,at:at.getTime(),title:remTitle(h.name),body:remBody('Have you done it '+perWord(h)+'?','habit'),h:h.id,k,alarm:h.rem.m==='alarm',rep:h.type,yes:tx('Yes, done'),no:tx('No'),later:tx('Later')})}});
+    ts.slice(0,200).forEach(([k,it],n)=>{const [hh,mm]=it.rem.t.split(':').map(Number),at=new Date(k+'T00:00');at.setHours(hh,mm);if(at>now)items.push({id:2000+n,at:at.getTime(),title:remTitle(it.text),body:remBody('Have you done it?','task'),h:it.id,k,alarm:it.rem.m==='alarm',yes:tx('Yes, done'),no:tx('No'),later:tx('Later')})});
     goalDue().forEach(([g,key,at,txt],n)=>{if(at>now&&at-now<60*864e5)items.push({id:4000+n,at:at.getTime(),title:'Groundwork Habits',body:tx(feat('remnames')?txt:'A goal deadline is coming up'),h:g.id,k:key,info:true})});
     const res=await NB.schedule({items});
     // Android 14+: alarms ring on time only with the user's OK, otherwise they can be a few minutes late
@@ -110,6 +112,9 @@ takeAnswers().then(syncReminders);
 // folder names saved by older versions could be a cloud provider's raw id: ask the phone for the current name
 if(NB&&!WIDGET&&P.andDir&&NB.folder)NB.folder().then(r=>{if(r&&r.name&&r.name!==P.andDir){P.andDir=r.name;applyPrefs()}}).catch(()=>{});
 setTimeout(()=>{autoBackup();andRead()},3000);
+// Android permissions for Settings > Reminders, checked at start and whenever the app comes back (the user may have changed them)
+async function permRefresh(){if(!NB||!NB.permStatus||WIDGET)return;try{const r=await NB.permStatus(),ch=!permS||permS.notify!==r.notify||permS.exact!==r.exact;permS=r;if(ch&&view==='settings'&&!modal)render()}catch(e){}}
+permRefresh();document.addEventListener('visibilitychange',()=>{if(!document.hidden)permRefresh()});
 // while the app stays open on screen, look for changes from other devices every 3 minutes (not while typing or dragging)
 if(!WIDGET)setInterval(()=>{if(document.hidden||drag||locked||encWait||(document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)))return;if(dataDir){if(!save.t&&readFile())render()}else andRead()},180000);
 checkReminder();checkHabitReminders();

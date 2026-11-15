@@ -325,10 +325,10 @@ const WIDGET=view==='widget'||!!ASK; // the desktop mini window (#widget) and re
 const VIEWS=[['today','Today','home'],['habits','Habits','habits'],['tasks','Tasks','tasks'],['goals','Goals','goals'],['insights','Insights','insights'],['achievements','Streaks','trophy']];
 const views=()=>VIEWS.filter(v=>v[0]!=='achievements'||feat('ach'));
 // settings is a page of its own: #settings (all sections; on phones the section list) and #settings/<section>
-let setSec='',setQ='',setBack='today';
+let setSec='',setQ='',setBack='today',permS=null; // permS: Android's notification and exact-alarm permissions (permRefresh)
 const SETSECS=['appearance','language','features','reminders','calendar','data','security','about'].filter(s=>!LITE||s!=='calendar');
-function routeTo(v){const m=/^settings(?:\/([a-z]+))?$/.exec(v);if(m){view='settings';setSec=SETSECS.includes(m[1])?m[1]:'';return true}if(views().some(x=>x[0]===v)){view=v;return true}return false}
+function routeTo(v){const m=/^settings(?:\/([a-z]+))?$/.exec(v);if(m){view='settings';setSec=SETSECS.includes(m[1])?m[1]:'';try{localStorage.setItem(KEY+'-setlast',setSec)}catch(e){}return true}if(views().some(x=>x[0]===v)){view=v;return true}return false}
 if(!WIDGET&&!routeTo(view))view='habits';
-let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',featOpen=false,confirmDemo=false,confirmGoal=null,confirmPinOff=false,confirmWipe=false,menuOpen=false,confirmReset=false,
+let vy=TODAY.getFullYear(),vm=TODAY.getMonth(),tab='daily',featOpen=false,confirmDemo=false,confirmGoal=null,confirmPinOff=false,confirmWipe=false,confirmLook=false,menuOpen=false,confirmReset=false,
     taskWeek=wkStart(TODAY),addingTask=null,openMind={},insHabit='all',insRange=7,insMenu=null,lbTab='daily',modal=null,insSeries=[];
 

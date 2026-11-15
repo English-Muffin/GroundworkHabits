@@ -569,6 +569,11 @@ async def cloudSync(b):
         J = lambda o, st=200: route.fulfill(status=st, headers=dict(CORS, **{'Content-Type': 'application/json'}), body=__import__('json').dumps(o))
         if u.path == '/oauth2/token':
             store['token_body'] = r.post_data or ''; return await J({'access_token': 'T1', 'expires_in': 14400, 'refresh_token': 'R1'})
+        if u.path == '/calendar/v3/calendars/primary/events':
+            store['gcal_auth'] = r.headers.get('authorization')
+            return await J({'items': [{'id': 'e1', 'status': 'confirmed', 'summary': 'Dentist', 'start': {'dateTime': __import__('datetime').datetime.now().replace(hour=9, minute=30, second=0, microsecond=0).astimezone().isoformat()}},
+                                      {'id': 'e2', 'status': 'confirmed', 'summary': 'Holiday', 'start': {'date': __import__('datetime').date.today().isoformat()}},
+                                      {'id': 'e3', 'status': 'cancelled', 'summary': 'Gone', 'start': {'date': __import__('datetime').date.today().isoformat()}}]})
         if u.path == '/2/users/get_current_account': return await J({'email': 'me@example.com'})
         if u.path == '/oauth2/v3/userinfo': return await J({'email': 'g@example.com'})
         if u.path == '/2/auth/token/revoke': return await J({})
@@ -688,6 +693,16 @@ async def cloudSync(b):
     got = await pg.evaluate("[GroundworkTest.state().habits.length,!!document.querySelector('#modal [role=dialog]'),localStorage.getItem('groundwork-tips')]")
     check('cloud sync: on a new device the welcome dialog signs in and loads the data with no questions', offer and got[0] == len(up['habits']) and not got[1] and got[2] == '1' and not errs2, [offer, got, errs2])
     await ctx.close()
+    # Google Calendar by sign-in (web): the events of the main calendar become tasks, cancelled ones don't
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={googleWeb:'gweb'}")
+    for host in ['accounts.google.com', 'www.googleapis.com']: await ctx.route('https://' + host + '/**', fake)
+    pg = await ctx.new_page(); errs3 = []; pg.on('pageerror', lambda e: errs3.append(str(e))); await pg.goto(URL + '#settings/calendar'); await pg.wait_for_timeout(400)
+    await pg.click('#main [data-act=gcalsign]'); await pg.wait_for_timeout(2500)
+    cal = await pg.evaluate("Object.values(GroundworkTest.state().tasks).flatMap(d=>d.items).filter(t=>t.cal).map(t=>t.text).sort()")
+    txt = await pg.locator('#main').inner_text()
+    check('calendar: Sign in with Google turns the main calendar\'s events into tasks (cancelled ones left out)',
+          cal == ['09:30 Dentist', 'Holiday'] and store.get('gcal_auth') == 'Bearer G1' and 'Connected to Google Calendar' in txt and not errs3, [cal, store.get('gcal_auth'), txt[-300:], errs3])
+    await ctx.close()
     # no sign-in IDs (a build before the apps are registered): no Cloud sync group at all; Lite never has one
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={dropbox:'',google:'',googleWeb:''}")
     pg = await ctx.new_page(); await pg.goto(URL + '#settings/data'); await pg.wait_for_timeout(300)
@@ -708,6 +723,25 @@ async def settingsBest(b):
     check('settings: Features are grouped (Habits, Today and Insights, Tasks, Everywhere)', [h.lower() for h in heads] == ['habits', 'today and insights', 'tasks', 'everywhere'], heads)
     await pg.goto(URL + '#today'); await pg.wait_for_timeout(300); await pg.keyboard.press('Control+Comma'); await pg.wait_for_timeout(300)
     check('settings: Ctrl+, opens Settings', (await pg.evaluate('location.hash')).startswith('#settings') and not errs, errs)
+    await ctx.close()
+    # Storage line, Reset appearance and features (asks twice; reminders and data stay), phones reopen the last section
+    ctx = await b.new_context(viewport={'width': 390, 'height': 844}, has_touch=True, is_mobile=True); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')")
+    pg = await ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
+    await pg.goto(URL + '#settings/data'); await pg.wait_for_timeout(300); await pg.click('#main [data-act=demo]'); await pg.wait_for_timeout(300)
+    await pg.goto(URL + '#settings/data'); await pg.wait_for_timeout(400)
+    store_txt = await pg.evaluate("[...document.querySelectorAll('#main .srow')].find(r=>r.textContent.includes('On this device')).textContent")
+    nh = await pg.evaluate("GroundworkTest.state().habits.length")
+    check('settings: Storage shows the data size and how many habits, goals and tasks', 'KB' in store_txt and f'{nh} habits' in store_txt and 'tasks' in store_txt, store_txt)
+    await pg.evaluate("()=>{const p=JSON.parse(localStorage.getItem('groundwork-prefs'));p.theme='light';p.accent='#f472b6';p.feat=Object.assign(p.feat||{},{heatmap:false,reminder:true});localStorage.setItem('groundwork-prefs',JSON.stringify(p))}")
+    await pg.reload(); await pg.wait_for_timeout(400)
+    await pg.click('#main [data-act=lookreset]'); await pg.wait_for_timeout(150); half = await pg.evaluate("JSON.parse(localStorage.getItem('groundwork-prefs')).theme")
+    await pg.click('#main [data-act=lookreset]'); await pg.wait_for_timeout(300)
+    pr = await pg.evaluate("JSON.parse(localStorage.getItem('groundwork-prefs'))"); hab = await pg.evaluate("GroundworkTest.state().habits.length")
+    check('settings: Reset appearance and features asks twice, resets theme, accent and switches, keeps reminders and data',
+          half == 'light' and pr['theme'] == 'dark' and pr['accent'] == '#9cc96b' and pr['feat'].get('heatmap') is None and pr['feat'].get('reminder') is True and hab == nh, [half, pr.get('theme'), pr.get('accent'), pr.get('feat'), hab])
+    await pg.goto(URL + '#settings/features'); await pg.wait_for_timeout(300); await pg.goto(URL + '#today'); await pg.wait_for_timeout(300)
+    await pg.click('[data-act=gear]'); await pg.wait_for_timeout(300)
+    check('settings: on a phone the gear reopens the last Settings section', await pg.evaluate('location.hash') == '#settings/features' and not errs, [await pg.evaluate('location.hash'), errs])
     await ctx.close()
 
 async def unnamedControls(b):
@@ -1038,6 +1072,13 @@ async def reminders(b):
     await pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('groundwork-prefs'));p.remFired={};localStorage.setItem('groundwork-prefs',JSON.stringify(p))})()")
     await pg.reload(); await pg.wait_for_timeout(300)
     asked = await pg.locator('#modal .ask', has_text='Stretch').count()
+    await pg.click('#modal [data-act=asklater]'); await pg.wait_for_timeout(200)
+    gone = await pg.locator('#modal .ask').count() == 0
+    await pg.evaluate("GroundworkTest.remCheck()"); waits = await pg.locator('#modal .ask').count() == 0
+    await pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('groundwork-prefs'));for(const k in p.remSnooze)p.remSnooze[k]=Date.now()-1000;localStorage.setItem('groundwork-prefs',JSON.stringify(p))})()")
+    await pg.reload(); await pg.wait_for_timeout(300); await pg.evaluate("GroundworkTest.remCheck()")
+    back = await pg.locator('#modal .ask', has_text='Stretch').count() == 1
+    check('reminder Later: closes it, waits 15 minutes, then asks again', gone and waits and back, [gone, waits, back])
     await pg.click('#modal [data-act=askyes]')
     done = await pg.evaluate(f"(()=>{{const s=JSON.parse(localStorage.getItem('groundwork-v2'));return !!s.log[s.habits[0].id][{TK}]}})()")
     check('habit reminder saves, skips a time already passed, asks Yes/No and marks done', rem == {'t': '00:00', 'm': 'ask'} and early == 0 and asked == 1 and done)

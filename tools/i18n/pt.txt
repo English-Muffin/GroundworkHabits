@@ -1025,3 +1025,29 @@ P113|Não foi possível apagar os dados de $1
 912|As cópias mais antigas são apagadas quando há mais
 P114|one=Guarda a cópia mais recente‖other=Guarda as $1 cópias mais recentes
 P115|one=Guarda a cópia mais recente em $2‖other=Guarda as $1 cópias mais recentes em $2
+913|Neste dispositivo
+914|Notificações
+915|Alarmes exatos
+916|A verificar…
+917|Permitidas
+918|Bloqueadas: os lembretes não podem aparecer
+919|Permitidos: os lembretes chegam a horas
+920|Não permitidos: os lembretes podem chegar uns minutos atrasados
+921|Permitir
+922|Notificações bloqueadas
+923|Repor aparência e funcionalidades
+924|Toca de novo para repor
+925|Tema, cor, funcionalidades e disposição dos cartões voltam ao padrão. Os teus dados ficam
+926|Aparência e funcionalidades repostas
+P116|one=$1 hábito‖other=$1 hábitos
+P117|one=$1 objetivo‖other=$1 objetivos
+927|Mais tarde
+928|Lembro-te de novo daqui a 15 minutos
+929|Restaurar uma cópia
+930|Das cópias guardadas neste dispositivo
+931|Cópias neste dispositivo
+932|Iniciar sessão com o Google
+933|Mostra os eventos do teu Google Calendar principal como tarefas. Só leitura
+934|Ligado ao Google Calendar
+935|Inicia sessão no Google Calendar de novo
+P118|Ligado ao Google Calendar como $1

@@ -1025,3 +1025,29 @@ P113|Kan je gegevens niet uit $1 verwijderen
 912|Oudere back-ups worden verwijderd zodra er meer zijn
 P114|one=Bewaart de nieuwste kopie‖other=Bewaart de $1 nieuwste kopieën
 P115|one=Bewaart de nieuwste kopie in $2‖other=Bewaart de $1 nieuwste kopieën in $2
+913|Op dit apparaat
+914|Meldingen
+915|Exacte alarmen
+916|Controleren…
+917|Toegestaan
+918|Geblokkeerd: herinneringen kunnen niet verschijnen
+919|Toegestaan: herinneringen komen op tijd
+920|Niet toegestaan: herinneringen kunnen een paar minuten later komen
+921|Toestaan
+922|Meldingen geblokkeerd
+923|Weergave en functies terugzetten
+924|Tik nogmaals om terug te zetten
+925|Thema, kleur, functies en kaartvolgorde terug naar standaard. Je gegevens blijven
+926|Weergave en functies teruggezet
+P116|one=$1 gewoonte‖other=$1 gewoontes
+P117|one=$1 doel‖other=$1 doelen
+927|Later
+928|Ik herinner je over 15 minuten opnieuw
+929|Een back-up terugzetten
+930|Uit de back-ups op dit apparaat
+931|Back-ups op dit apparaat
+932|Inloggen met Google
+933|Toont de afspraken van je hoofd-Google Agenda als taken. Alleen lezen
+934|Verbonden met Google Agenda
+935|Log opnieuw in bij Google Agenda
+P118|Verbonden met Google Agenda als $1

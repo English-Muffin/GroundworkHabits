@@ -19,7 +19,7 @@ document.addEventListener('click',e=>{
   if(!t){if(changed)render();return}
   let persist=true;
   switch(act){
-    case 'gear':persist=false;if(view!=='settings')location.hash='settings';return;
+    case 'gear':persist=false;if(view!=='settings'){let l='';try{l=localStorage.getItem(KEY+'-setlast')||''}catch(e){}location.hash=!wideSet()&&SETSECS.includes(l)?'settings/'+l:'settings'}return;
     case 'setback':persist=false;location.hash=setSec&&!wideSet()?'settings':setBack;return;
     case 'ptheme':P.theme=t.dataset.v;applyPrefs();persist=false;break;
     case 'paccent':setColor('accent',t.dataset.v);persist=false;break;
@@ -34,8 +34,9 @@ document.addEventListener('click',e=>{
     case 'calsave':{const u=($('#calUrl').value||'').trim().replace(/^webcal:/i,'https:');
       if(!/^https:\/\/\S+$/i.test(u)){$('#calUrl').focus();toast('Paste the calendar’s secret iCal address (starts with https://)');return}
       P.cal=u;applyPrefs();modal=null;persist=false;pullCalendar(true);break}
+    case 'gcalsign':persist=false;CLOUD.calSignIn().catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
     case 'calsync':menuOpen=false;persist=false;pullCalendar(true);break;
-    case 'caloff':{P.cal='';P.calAt=0;applyPrefs();Object.keys(S.tasks).forEach(k=>{S.tasks[k].items=S.tasks[k].items.filter(it=>!it.cal)});toast('Calendar sync stopped');break}
+    case 'caloff':{if(P.cal==='google'&&CLOUD)CLOUD.calSignOut();P.cal='';P.calAt=0;applyPrefs();Object.keys(S.tasks).forEach(k=>{S.tasks[k].items=S.tasks[k].items.filter(it=>!it.cal)});toast('Calendar sync stopped');break}
     case 'csv':menuOpen=false;persist=false;shareFile(toCsv(),'groundwork-'+dk(TODAY)+'.csv','text/csv','Groundwork Habits spreadsheet','Spreadsheet downloaded');break;
     case 'export':menuOpen=false;persist=false;exportData();break;
     case 'import':menuOpen=false;persist=false;$('#impFile').click();break;
@@ -43,7 +44,7 @@ document.addEventListener('click',e=>{
       f.onchange=()=>{const file=f.files[0];if(!file)return;parseExternal(file).then(d=>{if(!d.habits.length&&!d.tasks.length){toast('Nothing to import in that file');return}modal={kind:'impext',d};render()}).catch(()=>toast('That file can’t be read. Use a Loop export, a Habitica export or a .csv'))};f.click();break}
     case 'impextok':{const r=mergeExternal(modal.d);modal=null;toast('Imported: '+r.nh+' new '+pl(r.nh,'habit').replace(/^\d+ /,'')+', '+pl(r.nc,'check-in')+', '+pl(r.nt,'task'));break}
     case 'fresh':
-      if(confirmReset){S=empty();hist=[];redos=[];histJ=null;P.cal='';P.calAt=0;applyPrefs();confirmReset=false;menuOpen=false;toast('Everything erased');if(view==='settings'){save();location.hash=setBack;return}}else{confirmReset=true;persist=false}break;
+      if(confirmReset){S=empty();hist=[];redos=[];histJ=null;if(CLOUD)CLOUD.calSignOut();P.cal='';P.calAt=0;applyPrefs();confirmReset=false;menuOpen=false;toast('Everything erased');if(view==='settings'){save();location.hash=setBack;return}}else{confirmReset=true;persist=false}break;
     case 'goto':location.hash=t.dataset.v;persist=false;return;
     case 'mprev':{const d=new Date(vy,vm-1,1);vy=d.getFullYear();vm=d.getMonth();persist=false;break}
     case 'mnext':{const d=new Date(vy,vm+1,1);vy=d.getFullYear();vm=d.getMonth();persist=false;break}
@@ -110,8 +111,8 @@ document.addEventListener('click',e=>{
     case 'csign':persist=false;menuOpen=false;if(modal&&modal.kind==='tips'){try{localStorage.setItem('groundwork-tips','1')}catch(e){}modal=null}CLOUD.signIn(t.dataset.p).catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
     case 'creconnect':persist=false;reconnectToast.told=0;CLOUD.reconnect().catch(()=>toast('Could not sign in'));break;
     case 'syncgo':persist=false;location.hash='#settings/data';return;
-    case 'cbaks':persist=false;modal={kind:'cbaks',list:null};CLOUD.backups().then(l=>{if(modal&&modal.kind==='cbaks'){modal.list=l;render()}}).catch(()=>{if(modal&&modal.kind==='cbaks'){modal.list=[];modal.err=1;render()}});break;
-    case 'cbakrestore':persist=false;CLOUD.getBackup(t.dataset.n).then(x=>{if(isEnc(x)){modal={kind:'impin',text:x};focusSel='#impPin'}else{modal=null;previewImport(JSON.parse(x))}render()}).catch(()=>toast('Could not load that backup'));break;
+    case 'lbaks':case 'cbaks':{persist=false;const here=act==='lbaks';modal={kind:'cbaks',here,list:null};(here?localBackups():CLOUD.backups()).then(l=>{if(modal&&modal.kind==='cbaks'){modal.list=l;render()}}).catch(()=>{if(modal&&modal.kind==='cbaks'){modal.list=[];modal.err=1;render()}});break}
+    case 'cbakrestore':persist=false;(modal&&modal.here?localBackup(t.dataset.n):CLOUD.getBackup(t.dataset.n)).then(x=>{if(isEnc(x)){modal={kind:'impin',text:x};focusSel='#impPin'}else{modal=null;previewImport(JSON.parse(x))}render()}).catch(()=>toast('Could not load that backup'));break;
     case 'cwipe':persist=false;if(!confirmWipe){confirmWipe=true;break}confirmWipe=false;{const n=CLOUD.name();CLOUD.wipe().then(()=>{toast('Deleted your data from '+n+'. It stays on this device');render()}).catch(()=>toast('Could not delete your data from '+n))}break;
     case 'mergeundo':persist=false;if(histStep(true))toast('Merge undone');break;
     case 'syncpinok':{persist=false;const pin=$('#syncPin').value,txt=modal.text,salt=encSalt(txt);deriveKey(pin,salt).then(async key=>{await decText(txt,key);
@@ -121,8 +122,13 @@ document.addEventListener('click',e=>{
     case 'cout':persist=false;{const n=CLOUD.name();CLOUD.signOut();toast('Signed out of '+n+'. Your data stays on this device')}break;
     case 'aclear':persist=false;FOLD.clearFolder();P.andDir='';applyPrefs();toast(NB?'Saving on this phone only':'Saving in this browser only');break;
     case 'areconnect':persist=false;WEBF.handle(true).then(()=>{andText=null;andRead();render()}).catch(()=>toast('That folder can’t be used'));break;
+    case 'lookreset':persist=false;if(!confirmLook){confirmLook=true;break}confirmLook=false;
+      {const keep={reminder:feat('reminder'),remnames:feat('remnames')};P.theme='dark';P.accent=ACCENTS[0][1];P.feat=keep;P.layout={};delete P.tabNames;applyPrefs();toast('Appearance and features reset')}break;
+    case 'notifyopen':persist=false;if(NB&&NB.openNotifySettings)NB.openNotifySettings();break;
     case 'exactok':persist=false;$('#toast').hidden=true;if(NB&&NB.openExactSettings)NB.openExactSettings();break;
     case 'askyes':alarmStop();remYes(t.dataset.h,t.dataset.k);if(ASK){window.close();return}modal=null;break;
+    case 'asklater':alarmStop();{const id=t.dataset.id,f=Object.assign({},P.remFired);delete f[id];P.remFired=f;P.remSnooze=Object.assign({},P.remSnooze,{[id]:Date.now()+15*6e4});applyPrefs()}
+      if(ASK){window.close();return}modal=null;persist=false;toast('Reminding you again in 15 minutes');break;
     case 'askno':alarmStop();if(ASK){window.close();return}modal=null;persist=false;break;
     case 'mtrack':{const g=x=>{const e=$(x);return e?e.value:null};if(g('#mUnit')!==null)modal.unit=g('#mUnit');if(g('#mGoal')!==null)modal.goal=g('#mGoal');if(g('#mTarget')!==null)modal.target=g('#mTarget');modal.track=t.dataset.v;persist=false;break}
     case 'mrem':modal.rem=t.dataset.v;persist=false;break;

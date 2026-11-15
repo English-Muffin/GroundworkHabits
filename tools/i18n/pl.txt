@@ -1025,3 +1025,29 @@ P113|Nie udało się usunąć danych z: $1
 912|Starsze kopie są usuwane, gdy jest ich więcej
 P114|one=Zachowuje najnowszą kopię‖few=Zachowuje $1 najnowsze kopie‖many=Zachowuje $1 najnowszych kopii‖other=Zachowuje $1 najnowszych kopii
 P115|one=Zachowuje najnowszą kopię w: $2‖few=Zachowuje $1 najnowsze kopie w: $2‖many=Zachowuje $1 najnowszych kopii w: $2‖other=Zachowuje $1 najnowszych kopii w: $2
+913|Na tym urządzeniu
+914|Powiadomienia
+915|Dokładne alarmy
+916|Sprawdzanie…
+917|Dozwolone
+918|Zablokowane: przypomnienia nie mogą się pojawić
+919|Dozwolone: przypomnienia przychodzą na czas
+920|Niedozwolone: przypomnienia mogą przyjść kilka minut później
+921|Zezwól
+922|Powiadomienia zablokowane
+923|Przywróć wygląd i funkcje
+924|Dotknij ponownie, aby przywrócić
+925|Motyw, kolor, funkcje i układ kart wracają do domyślnych. Twoje dane zostają
+926|Przywrócono wygląd i funkcje
+P116|one=$1 nawyk‖few=$1 nawyki‖many=$1 nawyków‖other=$1 nawyku
+P117|one=$1 cel‖few=$1 cele‖many=$1 celów‖other=$1 celu
+927|Później
+928|Przypomnę ponownie za 15 minut
+929|Przywróć kopię
+930|Z kopii zapisanych na tym urządzeniu
+931|Kopie na tym urządzeniu
+932|Zaloguj się przez Google
+933|Pokazuje wydarzenia z głównego Kalendarza Google jako zadania. Tylko odczyt
+934|Połączono z Kalendarzem Google
+935|Zaloguj się ponownie do Kalendarza Google
+P118|Połączono z Kalendarzem Google jako $1

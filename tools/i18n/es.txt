@@ -1025,3 +1025,29 @@ P113|No se pudieron borrar los datos de $1
 912|Las copias más antiguas se borran cuando hay más
 P114|one=Guarda la copia más reciente‖other=Guarda las $1 copias más recientes
 P115|one=Guarda la copia más reciente en $2‖other=Guarda las $1 copias más recientes en $2
+913|En este dispositivo
+914|Notificaciones
+915|Alarmas exactas
+916|Comprobando…
+917|Permitidas
+918|Bloqueadas: los recordatorios no pueden aparecer
+919|Permitidas: los recordatorios llegan a tiempo
+920|No permitidas: los recordatorios pueden llegar unos minutos tarde
+921|Permitir
+922|Notificaciones bloqueadas
+923|Restablecer apariencia y funciones
+924|Toca de nuevo para restablecer
+925|Tema, color, funciones y orden de las tarjetas vuelven a lo predeterminado. Tus datos se quedan
+926|Apariencia y funciones restablecidas
+P116|one=$1 hábito‖other=$1 hábitos
+P117|one=$1 objetivo‖other=$1 objetivos
+927|Más tarde
+928|Te lo recuerdo de nuevo en 15 minutos
+929|Restaurar una copia
+930|De las copias guardadas en este dispositivo
+931|Copias en este dispositivo
+932|Iniciar sesión con Google
+933|Muestra los eventos de tu Google Calendar principal como tareas. Solo lectura
+934|Conectado a Google Calendar
+935|Vuelve a iniciar sesión en Google Calendar
+P118|Conectado a Google Calendar como $1

@@ -1025,3 +1025,29 @@ P113|Deine Daten aus $1 konnten nicht gelöscht werden
 912|Ältere Sicherungen werden gelöscht, sobald es mehr sind
 P114|one=Behält die neueste Kopie‖other=Behält die $1 neuesten Kopien
 P115|one=Behält die neueste Kopie in $2‖other=Behält die $1 neuesten Kopien in $2
+913|Auf diesem Gerät
+914|Benachrichtigungen
+915|Exakte Wecker
+916|Wird geprüft…
+917|Erlaubt
+918|Blockiert: Erinnerungen können nicht erscheinen
+919|Erlaubt: Erinnerungen kommen pünktlich
+920|Nicht erlaubt: Erinnerungen kommen evtl. ein paar Minuten später
+921|Erlauben
+922|Benachrichtigungen blockiert
+923|Aussehen und Funktionen zurücksetzen
+924|Erneut tippen zum Zurücksetzen
+925|Design, Farbe, Funktionen und Kartenanordnung auf Standard. Deine Daten bleiben
+926|Aussehen und Funktionen zurückgesetzt
+P116|one=$1 Gewohnheit‖other=$1 Gewohnheiten
+P117|one=$1 Ziel‖other=$1 Ziele
+927|Später
+928|Erinnere dich in 15 Minuten erneut
+929|Eine Sicherung wiederherstellen
+930|Aus den Sicherungen auf diesem Gerät
+931|Sicherungen auf diesem Gerät
+932|Mit Google anmelden
+933|Zeigt die Termine deines Google-Hauptkalenders als Aufgaben. Nur lesen
+934|Mit Google Kalender verbunden
+935|Melde dich erneut bei Google Kalender an
+P118|Mit Google Kalender verbunden als $1
