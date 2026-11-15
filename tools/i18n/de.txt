@@ -1013,3 +1013,15 @@ P110|Erneut tippen, um es aus $1 zu löschen
 P111|Meine Daten aus $1 löschen
 P112|Deine Daten aus $1 gelöscht. Auf diesem Gerät bleiben sie
 P113|Deine Daten aus $1 konnten nicht gelöscht werden
+903|System
+904|Heute und Statistik
+905|Überall
+906|Kein Konto, keine Werbung, kein Tracking. Alles wird auf diesem Gerät gespeichert und verlässt es nie.
+907|Kein Konto, keine Werbung, kein Tracking. Alles wird auf deinen Geräten gespeichert und geht nur dorthin, wohin du es schickst: deine Sicherungen, dein Datenordner oder die Cloud-Synchronisierung, dein Kalenderlink.
+908|Datenschutzerklärung
+909|Was die App mit deinen Daten macht, ausführlich
+910|Einstellungen öffnen
+911|Aufzubewahrende Kopien
+912|Ältere Sicherungen werden gelöscht, sobald es mehr sind
+P114|one=Behält die neueste Kopie‖other=Behält die $1 neuesten Kopien
+P115|one=Behält die neueste Kopie in $2‖other=Behält die $1 neuesten Kopien in $2

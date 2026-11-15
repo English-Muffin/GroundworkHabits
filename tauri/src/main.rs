@@ -36,9 +36,10 @@ fn backup_dir(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(app.path().app_data_dir().map_err(|e| e.to_string())?.join("backups"))
 }
 
-// weekly backup: <backups>/<name>, newest 8 kept. The name is checked: it becomes a file name
+// weekly backup: <backups>/<name>, the newest `keep` kept (1 to 8, the user's choice). The name is checked: it becomes a file name
 #[tauri::command]
-fn backup(app: AppHandle, name: String, text: String) -> Result<String, String> {
+fn backup(app: AppHandle, name: String, text: String, keep: Option<u32>) -> Result<String, String> {
+    let keep = keep.unwrap_or(8).clamp(1, 8) as usize;
     let ok = name.starts_with("groundwork-backup-") && name.ends_with(".json") && name.len() <= 70
         && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '.');
     if !ok { return Err("bad name".into()); }
@@ -51,7 +52,7 @@ fn backup(app: AppHandle, name: String, text: String) -> Result<String, String> 
         .map(|e| e.file_name().to_string_lossy().into_owned())
         .filter(|n| n.starts_with("groundwork-backup-") && n.ends_with(".json")).collect();
     all.sort(); all.reverse();
-    for old in all.iter().skip(8) { let _ = fs::remove_file(dir.join(old)); }
+    for old in all.iter().skip(keep) { let _ = fs::remove_file(dir.join(old)); }
     Ok(dir.to_string_lossy().into_owned())
 }
 

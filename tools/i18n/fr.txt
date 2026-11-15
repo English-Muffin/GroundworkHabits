@@ -1013,3 +1013,15 @@ P110|Touchez encore pour supprimer de $1
 P111|Supprimer mes données de $1
 P112|Données supprimées de $1. Elles restent sur cet appareil
 P113|Impossible de supprimer vos données de $1
+903|Système
+904|Aujourd’hui et Statistiques
+905|Partout
+906|Pas de compte, pas de pub, pas de pistage. Tout est enregistré sur cet appareil et n’en sort jamais.
+907|Pas de compte, pas de pub, pas de pistage. Tout est enregistré sur vos appareils et ne va que là où vous l’envoyez : vos sauvegardes, votre dossier de données ou la synchronisation cloud, votre lien d’agenda.
+908|Politique de confidentialité
+909|Ce que l’app fait de vos données, en détail
+910|Ouvrir les réglages
+911|Copies à garder
+912|Les sauvegardes plus anciennes sont supprimées au-delà
+P114|one=Garde la copie la plus récente‖other=Garde les $1 copies les plus récentes
+P115|one=Garde la copie la plus récente dans $2‖other=Garde les $1 copies les plus récentes dans $2

@@ -140,10 +140,10 @@ function toCsv(){
 // the backup file: encrypted with the PIN's key when a PIN is set (import asks for that PIN)
 /* settings travel with backups: look, features, layout and reminder time. Never the PIN, fingerprint, calendar link,
    folders or per-device state: a backup can be shared, and those belong to one device or are secret */
-const PREF_KEYS={theme:v=>['dark','light','amoled'].includes(v),accent:v=>/^#[0-9a-f]{6}$/i.test(v),
+const PREF_KEYS={theme:v=>['system','dark','light','amoled'].includes(v),accent:v=>/^#[0-9a-f]{6}$/i.test(v),
   feat:v=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(x=>typeof x==='boolean'),
   lang:v=>LANGS.some(l=>l[0]===v),tabNames:v=>typeof v==='boolean',remTime:v=>/^([01]\d|2[0-3]):[0-5]\d$/.test(v),
-  heatM:v=>[3,6,12].includes(v),hsort:v=>['streak','name','missed'].includes(v),bakEvery:v=>[0,1,7,30].includes(v),lockIdle:v=>[1,5,15,30].includes(v),focusMin:v=>Number.isInteger(v)&&v>0&&v<=240,
+  heatM:v=>[3,6,12].includes(v),hsort:v=>['streak','name','missed'].includes(v),bakEvery:v=>[0,1,7,30].includes(v),bakKeep:v=>Number.isInteger(v)&&v>=1&&v<=8,lockIdle:v=>[1,5,15,30].includes(v),focusMin:v=>Number.isInteger(v)&&v>0&&v<=240,
   layout:v=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(a=>Array.isArray(a)&&a.every(x=>typeof x==='string'&&x.length<40))};
 const backupPrefs=()=>Object.fromEntries(Object.keys(PREF_KEYS).filter(k=>P[k]!==undefined).map(k=>[k,P[k]]));
 // puts back the checked settings from a backup; anything unknown or malformed is skipped. True when the language changed
@@ -152,12 +152,14 @@ function restorePrefs(p){if(!p||typeof p!=='object')return false;const lang=P.la
   applyPrefs();return P.lang!==lang}
 async function backupText(){const j=JSON.stringify(Object.assign({},S,{prefs:backupPrefs()}),null,1);return encOn()&&encKey?encText(j,encKey,P.lock.salt):j}
 async function exportData(){const t=await backupText();shareFile(t,'groundwork-backup-'+dk(TODAY)+(isEnc(t)?'-encrypted':'')+'.json','application/json','Groundwork Habits backup',isEnc(t)?'Encrypted backup downloaded. Importing it asks for your PIN':'Backup downloaded')}
-// weekly automatic backup: desktop to <data folder or app data>/backups, Android to the chosen folder's backups or app storage; newest 8 kept
+// how many backups to keep (Settings, 1 to 8, default 8)
+const bakKeep=()=>Math.min(8,Math.max(1,Math.round(+P.bakKeep||8)));
+// weekly automatic backup: desktop to <data folder or app data>/backups, Android to the chosen folder's backups or app storage; the newest bakKeep() kept
 async function autoBackup(force){
   if(encWait||locked&&!encKey||WIDGET||!hasData())return;const can=DFS&&DFS.backup||NB&&NB.backup,cloud=CLOUD&&CLOUD.on()&&!CLOUD.off;if(!can&&!cloud)return;
   const every=P.bakEvery===undefined?7:P.bakEvery;if(!force&&(!every||Date.now()-(P.bakAt||0)<every*864e5))return;
-  try{const t=await backupText(),name='groundwork-backup-'+dk(TODAY)+'.json';let where=!can?null:DFS&&DFS.backup?await DFS.backup(name,t):(await NB.backup({name,text:t})).where;
-    if(cloud){try{const c=await CLOUD.backup(name,t);where=where?where+' and '+c:c}catch(e){}} // the cloud copy is extra: a failure there doesn't fail the local backup
+  try{const t=await backupText(),name='groundwork-backup-'+dk(TODAY)+'.json';const keep=bakKeep();let where=!can?null:DFS&&DFS.backup?await DFS.backup(name,t,keep):(await NB.backup({name,text:t,keep})).where;
+    if(cloud){try{const c=await CLOUD.backup(name,t,keep);where=where?where+' and '+c:c}catch(e){}} // the cloud copy is extra: a failure there doesn't fail the local backup
     if(where){P.bakAt=Date.now();P.bakWhere=String(where).slice(0,300);applyPrefs();if(force)toast('Backup saved')}else if(force)toast('Backup failed')}catch(e){if(force)toast('Backup failed')}}
 // a plain-text report for bug reports: version, platform, sizes and recent errors; never names, notes or other content
 function diagText(){const n=o=>Object.keys(o||{}).length;

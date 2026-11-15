@@ -1013,3 +1013,15 @@ P110|Toca de novo para apagar de $1
 P111|Apagar os meus dados de $1
 P112|Dados apagados de $1. Continuam neste dispositivo
 P113|Não foi possível apagar os dados de $1
+903|Sistema
+904|Hoje e Estatísticas
+905|Em todo o lado
+906|Sem conta, sem anúncios, sem rastreio. Tudo fica guardado neste dispositivo e nunca sai dele.
+907|Sem conta, sem anúncios, sem rastreio. Tudo fica guardado nos teus dispositivos e só vai para onde o enviares: as tuas cópias, a tua pasta de dados ou a sincronização na nuvem, o teu link de calendário.
+908|Política de privacidade
+909|O que a app faz com os teus dados, em detalhe
+910|Abrir definições
+911|Cópias a guardar
+912|As cópias mais antigas são apagadas quando há mais
+P114|one=Guarda a cópia mais recente‖other=Guarda as $1 cópias mais recentes
+P115|one=Guarda a cópia mais recente em $2‖other=Guarda as $1 cópias mais recentes em $2

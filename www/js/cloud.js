@@ -61,17 +61,17 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
       if(id){const r=await gPut(id,t);if(r.ok)return;if(r.status!==404)throw new Error('write');st.fid=''}
       const nid=await gNew('groundwork.json');st.fid=nid;keep();const r=await gPut(nid,t);if(!r.ok)throw new Error('write')},
     who:async()=>{const r=await call('https://www.googleapis.com/oauth2/v3/userinfo');return r.ok?((await r.json()).email||''):''}};
-  // backups in the cloud too (newest 8): Dropbox Apps/Groundwork Habits/backups, Drive's hidden app folder
-  DBX.backup=async(name,t)=>{let r=await call('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{'Dropbox-API-Arg':JSON.stringify({path:'/backups/'+name,mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:new Blob([t])});if(!r.ok)throw new Error('backup');
+  // backups in the cloud too (the newest `keep`, 1 to 8): Dropbox Apps/Groundwork Habits/backups, Drive's hidden app folder
+  DBX.backup=async(name,t,keep)=>{let r=await call('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{'Dropbox-API-Arg':JSON.stringify({path:'/backups/'+name,mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:new Blob([t])});if(!r.ok)throw new Error('backup');
     r=await call('https://api.dropboxapi.com/2/files/list_folder',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:'/backups'})});
-    const old=r.ok?((await r.json()).entries||[]).map(e=>e.name).filter(n=>/^groundwork-backup-/.test(n)).sort().reverse().slice(8):[];
+    const old=r.ok?((await r.json()).entries||[]).map(e=>e.name).filter(n=>/^groundwork-backup-/.test(n)).sort().reverse().slice(keep||8):[];
     for(const n of old)await call('https://api.dropboxapi.com/2/files/delete_v2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:'/backups/'+n})});
     return 'Dropbox: Apps/Groundwork Habits/backups'};
-  GDR.backup=async(name,t)=>{const ls=async()=>{const r=await call(GD+'?'+form({spaces:'appDataFolder',fields:'files(id,name)',pageSize:'100',q:"name contains 'groundwork-backup-' and trashed=false"}));return r.ok?((await r.json()).files||[]).filter(f=>/^groundwork-backup-/.test(f.name)):[]};
+  GDR.backup=async(name,t,keep)=>{const ls=async()=>{const r=await call(GD+'?'+form({spaces:'appDataFolder',fields:'files(id,name)',pageSize:'100',q:"name contains 'groundwork-backup-' and trashed=false"}));return r.ok?((await r.json()).files||[]).filter(f=>/^groundwork-backup-/.test(f.name)):[]};
     const same=(await ls()).find(f=>f.name===name);let r;
     r=await gPut(same?same.id:await gNew(name),t);
     if(!r.ok)throw new Error('backup');
-    for(const f of (await ls()).sort((a,c)=>a.name<c.name?1:-1).slice(8))await call(GD+'/'+f.id,{method:'DELETE'});
+    for(const f of (await ls()).sort((a,c)=>a.name<c.name?1:-1).slice(keep||8))await call(GD+'/'+f.id,{method:'DELETE'});
     return 'Google Drive (hidden app folder)'};
   // the backups kept there (newest first), one backup's text, and deleting everything the app keeps there
   const isBak=n=>/^groundwork-backup-[\w.-]+\.json$/.test(n);
@@ -98,7 +98,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     name:()=>st?PROV[st.p].name:'',
     who:()=>st&&st.who||'',
     readFolder:()=>ops().read(),
-    backup:(name,t)=>ops().backup(name,t),
+    backup:(name,t,keep)=>ops().backup(name,t,Math.min(8,Math.max(1,keep||8))),
     backups:()=>ops().list(),
     getBackup:n=>ops().get(n),
     async wipe(){await ops().wipe();api.signOut()},

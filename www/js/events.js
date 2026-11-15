@@ -279,6 +279,7 @@ document.addEventListener('click',e=>{
 });
 
 document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key===','&&!locked&&!WIDGET){e.preventDefault();if(view!=='settings')location.hash='#settings';return}
   // Ctrl/Cmd+Z outside text fields undoes the latest delete
   // Ctrl+Z undoes deletes, then the last change of any kind, Ctrl+Shift+Z / Ctrl+Y redoes it (text fields keep their own undo)
   const zk=e.key.toLowerCase();if((e.ctrlKey||e.metaKey)&&(zk==='z'||zk==='y')&&!isField(e.target)&&!locked){const back=zk==='z'&&!e.shiftKey;e.preventDefault();
@@ -354,6 +355,7 @@ document.addEventListener('change',e=>{
   if(e.target.dataset&&e.target.dataset.mind){render()}
   if(e.target.id==='lockSel'){P.lockIdle=+e.target.value;applyPrefs();render();return}
   if(e.target.id==='bakSel'){P.bakEvery=+e.target.value;applyPrefs();autoBackup();return}
+  if(e.target.id==='bakKeepSel'){P.bakKeep=+e.target.value;applyPrefs();render();return} // fewer copies take effect at the next backup
   if(e.target.id==='hSort'){P.hsort=e.target.value||undefined;applyPrefs();render();return}
   if(e.target.id==='heatSel'){P.heatM=e.target.value==='auto'?undefined:+e.target.value;applyPrefs();render();return}
   if(e.target.id==='langSel'){P.lang=e.target.value||undefined;if(!P.lang)delete P.lang;applyPrefs();location.reload();return}

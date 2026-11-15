@@ -9,7 +9,7 @@
   let flushCb = null;
   window.groundworkFS = {
     folder: () => '', read: () => null, write: () => false, choose: () => Promise.resolve(null), reset: () => true,
-    backup: (name, text) => call('backup', { name, text }).catch(() => null),
+    backup: (name, text, keep) => call('backup', { name, text, keep: Number(keep) || 8 }).catch(() => null),
     openBackups: () => { call('open_backups').catch(() => {}); },
     widget: () => { call('widget').catch(() => {}); },
     showMain: () => { call('show_main').catch(() => {}); },

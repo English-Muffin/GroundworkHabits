@@ -1013,3 +1013,15 @@ P110|Tocca di nuovo per eliminarlo da $1
 P111|Elimina i miei dati da $1
 P112|Dati eliminati da $1. Restano su questo dispositivo
 P113|Impossibile eliminare i dati da $1
+903|Sistema
+904|Oggi e Statistiche
+905|Ovunque
+906|Nessun account, nessuna pubblicità, nessun tracciamento. Tutto è salvato su questo dispositivo e non lo lascia mai.
+907|Nessun account, nessuna pubblicità, nessun tracciamento. Tutto è salvato sui tuoi dispositivi e va solo dove lo mandi tu: i tuoi backup, la tua cartella dati o la sincronizzazione cloud, il tuo link del calendario.
+908|Informativa sulla privacy
+909|Cosa fa l’app con i tuoi dati, nel dettaglio
+910|Apri impostazioni
+911|Copie da conservare
+912|I backup più vecchi vengono eliminati quando sono di più
+P114|one=Conserva la copia più recente‖other=Conserva le $1 copie più recenti
+P115|one=Conserva la copia più recente in $2‖other=Conserva le $1 copie più recenti in $2

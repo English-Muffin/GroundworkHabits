@@ -1013,3 +1013,15 @@ P110|Toca de nuevo para borrarlo de $1
 P111|Borrar mis datos de $1
 P112|Datos borrados de $1. Siguen en este dispositivo
 P113|No se pudieron borrar los datos de $1
+903|Sistema
+904|Hoy y Estadísticas
+905|En todas partes
+906|Sin cuenta, sin anuncios, sin rastreo. Todo se guarda en este dispositivo y nunca sale de él.
+907|Sin cuenta, sin anuncios, sin rastreo. Todo se guarda en tus dispositivos y solo va adonde lo envíes: tus copias, tu carpeta de datos o la sincronización en la nube, tu enlace de calendario.
+908|Política de privacidad
+909|Qué hace la app con tus datos, en detalle
+910|Abrir ajustes
+911|Copias que guardar
+912|Las copias más antiguas se borran cuando hay más
+P114|one=Guarda la copia más reciente‖other=Guarda las $1 copias más recientes
+P115|one=Guarda la copia más reciente en $2‖other=Guarda las $1 copias más recientes en $2

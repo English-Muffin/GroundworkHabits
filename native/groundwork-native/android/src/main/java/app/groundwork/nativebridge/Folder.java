@@ -85,8 +85,8 @@ final class Folder {
         if (old != null) try { DocumentsContract.deleteDocument(r, DocumentsContract.buildDocumentUriUsingTree(tree, old)); } catch (Exception e) { }
     }
 
-    // keeps the newest 8 backups
-    static String backup(Context c, String name, String text) throws Exception {
+    // keeps the newest `keep` backups (1 to 8, the user's choice)
+    static String backup(Context c, String name, String text, int keep) throws Exception {
         Uri tree = tree(c);
         if (tree != null) {
             ContentResolver r = c.getContentResolver();
@@ -96,17 +96,17 @@ final class Folder {
             List<String[]> all = new ArrayList<>();
             for (String[] ch : children(r, tree, dir)) if (ch[1] != null && ch[1].startsWith("groundwork-backup-")) all.add(ch);
             all.sort((a, b) -> b[1].compareTo(a[1]));
-            for (int i = 8; i < all.size(); i++) DocumentsContract.deleteDocument(r, DocumentsContract.buildDocumentUriUsingTree(tree, all.get(i)[0]));
+            for (int i = keep; i < all.size(); i++) DocumentsContract.deleteDocument(r, DocumentsContract.buildDocumentUriUsingTree(tree, all.get(i)[0]));
             return name(c, tree) + "/backups";
         }
         File dir = new File(c.getFilesDir(), "backups");
         dir.mkdirs();
         try (OutputStream out = new FileOutputStream(new File(dir, name))) { out.write(text.getBytes(StandardCharsets.UTF_8)); }
         File[] fs = dir.listFiles((d, n) -> n.startsWith("groundwork-backup-"));
-        if (fs != null && fs.length > 8) {
+        if (fs != null && fs.length > keep) {
             List<File> l = new ArrayList<>(); Collections.addAll(l, fs);
             l.sort((a, b) -> b.getName().compareTo(a.getName()));
-            for (int i = 8; i < l.size(); i++) l.get(i).delete();
+            for (int i = keep; i < l.size(); i++) l.get(i).delete();
         }
         return "app storage";
     }

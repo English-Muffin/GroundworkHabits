@@ -638,11 +638,18 @@ async def cloudSync(b):
     await pg.click('#main [data-act=baknow]'); await pg.wait_for_timeout(1500)
     icon = await pg.evaluate("[document.getElementById('syncBtn').hidden,document.getElementById('syncBtn').classList.contains('serr'),document.getElementById('syncBtn').getAttribute('aria-label')]")
     check('cloud sync: Back up now also keeps a backup in Dropbox; the header shows a green sync icon', list(store.get('dbxb', {})) and list(store['dbxb'])[0].startswith('groundwork-backup-') and icon == [False, False, 'Synced'], [list(store.get('dbxb', {})), icon])
+    # Copies to keep: 2 leaves only the two newest backups there after the next backup
+    for d in ['2020-01-01', '2020-01-02', '2020-01-03']: store['dbxb']['groundwork-backup-' + d + '.json'] = '{}'
+    await pg.evaluate("()=>{const s=document.getElementById('bakKeepSel');s.value='2';s.dispatchEvent(new Event('change',{bubbles:true}))}"); await pg.wait_for_timeout(300)
+    kept_txt = await pg.locator('#main').inner_text()
+    await pg.click('#main [data-act=baknow]'); await pg.wait_for_timeout(1500)
+    names = sorted(store.get('dbxb', {}))
+    check('backups: Copies to keep 2 leaves only the two newest backups, and the text says so', len(names) == 2 and names[0] == 'groundwork-backup-2020-01-03.json' and 'newest 2 copies' in kept_txt, [names, kept_txt[:0]])
     await pg.click('#main [data-act=cbaks]'); await pg.wait_for_timeout(800)
     rows = await pg.locator('#modal [data-act=cbakrestore]').count()
-    if rows: await pg.click('#modal [data-act=cbakrestore]'); await pg.wait_for_timeout(800)
+    if rows: await pg.locator('#modal [data-act=cbakrestore]').first.click(); await pg.wait_for_timeout(800)
     prev = await pg.locator('#modal [data-act=imprevok]').count()
-    check('cloud sync: Cloud backups lists the backup in Dropbox and Restore opens the restore preview', rows == 1 and prev == 1, [rows, prev])
+    check('cloud sync: Cloud backups lists the backups in Dropbox and Restore opens the restore preview', rows == 2 and prev == 1, [rows, prev])
     if prev: await pg.click('#modal [data-act=modalclose]'); await pg.wait_for_timeout(200)
     check('cloud sync: Settings shows when it last synced, and Sync now syncs', 'Last synced' in status and 'Not synced yet' not in status and store.get('dbx_auth') == 'Bearer T1', [status[-260:], store.get('dbx_auth')])
     await pg.click('#main [data-act=cout]'); await pg.wait_for_timeout(300)
@@ -685,6 +692,22 @@ async def cloudSync(b):
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={dropbox:'',google:'',googleWeb:''}")
     pg = await ctx.new_page(); await pg.goto(URL + '#settings/data'); await pg.wait_for_timeout(300)
     check('cloud sync: hidden while no sign-in is set up', await pg.locator('#main [data-act=csign]').count() == 0)
+    await ctx.close()
+
+async def settingsBest(b):
+    # System theme follows the device's light/dark setting, live; Features is grouped; Ctrl+, opens Settings
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}, color_scheme='light'); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')")
+    pg = await ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
+    await pg.goto(URL + '#settings/appearance'); await pg.wait_for_timeout(300)
+    await pg.click('#main [data-act=ptheme][data-v=system]'); await pg.wait_for_timeout(200)
+    light = await pg.evaluate("document.documentElement.classList.contains('light')")
+    await pg.emulate_media(color_scheme='dark'); await pg.wait_for_timeout(200)
+    dark = await pg.evaluate("!document.documentElement.classList.contains('light')")
+    check('settings: System theme follows the device, and changes with it', light and dark, [light, dark])
+    heads = await pg.evaluate("[...document.querySelectorAll('#set-features .sgh')].map(h=>h.textContent.trim())")
+    check('settings: Features are grouped (Habits, Today and Insights, Tasks, Everywhere)', [h.lower() for h in heads] == ['habits', 'today and insights', 'tasks', 'everywhere'], heads)
+    await pg.goto(URL + '#today'); await pg.wait_for_timeout(300); await pg.keyboard.press('Control+Comma'); await pg.wait_for_timeout(300)
+    check('settings: Ctrl+, opens Settings', (await pg.evaluate('location.hash')).startswith('#settings') and not errs, errs)
     await ctx.close()
 
 async def unnamedControls(b):
@@ -1157,7 +1180,7 @@ async def main():
     srv = serve()
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await cloudSync(b); await unnamedControls(b); await reducedMotion(b); await highContrast(b); await updateAsk(b); await pauseAndTimes(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
+        await desktop(b); await bigwindow(b); await gridDrag(b); await settingsPage(b); await tasksAndSettings(b); await newFeatures(b); await heatAndBackup(b); await languages(b); await webFolder(b); await cloudSync(b); await settingsBest(b); await unnamedControls(b); await reducedMotion(b); await highContrast(b); await updateAsk(b); await pauseAndTimes(b); await dialogFocus(b); await insightsBoxes(b); await goalsAndFreezes(b); await undoHistory(b); await recurring(b); await reminders(b); await mobile(b)
         await b.close()
     srv.shutdown()
     print(f"\n{len(failures)} failure(s)" if failures else "\nAll checks passed")

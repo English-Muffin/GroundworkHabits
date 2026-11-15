@@ -169,8 +169,9 @@ public class GroundworkNativePlugin extends Plugin {
     @PluginMethod
     public void backup(PluginCall call) {
         String name = call.getString("name", ""), text = call.getString("text", null);
+        int keep = Math.max(1, Math.min(8, call.getInt("keep", 8)));
         if (text == null || !name.matches("groundwork-backup-[0-9A-Za-z-]{1,40}[.]json")) { call.reject("Bad backup"); return; }
-        new Thread(() -> { try { JSObject r = new JSObject(); r.put("where", Folder.backup(getContext(), name, text)); call.resolve(r); } catch (Exception e) { call.reject("Backup failed"); } }).start();
+        new Thread(() -> { try { JSObject r = new JSObject(); r.put("where", Folder.backup(getContext(), name, text, keep)); call.resolve(r); } catch (Exception e) { call.reject("Backup failed"); } }).start();
     }
 
     // home-screen widget: what to show ({title, items:[{h,k,name,done}], locked, lockedText, emptyText})

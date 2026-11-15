@@ -13,7 +13,7 @@ const sbtn=(act,label,cls)=>'<button class="btn ghost sbtn'+(cls?' '+cls:'')+'" 
 const sgo=(act,label,sub,cls,extra)=>'<button class="srow sgo'+(cls?' '+cls:'')+'" data-act="'+act+'"'+(extra?' data-s="'+esc(extra)+'"':'')+'><div class="sl"><span>'+label+'</span>'+(sub?'<small>'+sub+'</small>':'')+'</div>'+ic('next')+'</button>';
 const SETMETA={appearance:['pal','Appearance'],language:['globe','Language'],features:['sliders','Features'],reminders:['bell','Reminders'],calendar:['cal','Calendar'],data:['db','Data & backups'],security:['lock','Security'],about:['info','About']};
 function setStatus(k){
-  if(k==='appearance')return ({dark:'Dark',amoled:'AMOLED',light:'Light'})[P.theme||'dark']+' · '+((ACCENTS.find(a=>a[1]===P.accent)||['Custom'])[0])+' accent';
+  if(k==='appearance')return ({system:'System',dark:'Dark',amoled:'AMOLED',light:'Light'})[P.theme||'dark']+' · '+((ACCENTS.find(a=>a[1]===P.accent)||['Custom'])[0])+' accent';
   if(k==='language')return P.lang?(LANGS.find(l=>l[0]===P.lang)||['','English'])[1]:'Same as this device';
   if(k==='features')return FEAT.filter(f=>f[0]!=='remnames'&&f[0]!=='reminder'&&feat(f[0])).length+' of '+(FEAT.length-2)+' on';
   if(k==='reminders')return feat('reminder')?'Daily at '+(P.remTime||'21:00'):'Daily reminder off';
@@ -23,12 +23,13 @@ function setStatus(k){
   return 'Groundwork Habits '+APPV}
 function setSection(k){
   let b='';
-  if(k==='appearance')b=sgrp('Theme','<div class="sseg">'+[['dark','Dark'],['amoled','AMOLED'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+((P.theme||'dark')===t[0])+'" class="'+((P.theme||'dark')===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</div>')
+  if(k==='appearance')b=sgrp('Theme','<div class="sseg">'+[['system','System'],['dark','Dark'],['amoled','AMOLED'],['light','Light']].map(t=>'<button data-act="ptheme" data-v="'+t[0]+'" aria-pressed="'+((P.theme||'dark')===t[0])+'" class="'+((P.theme||'dark')===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</div>')
     +sgrp('Accent colour',colorPicker('accent',P.accent,ACCENTS,'Accent colour'))
     +sgrp('Navigation',srow('Tab names','Show the name under each tab icon',sw('tabnames',undefined,P.tabNames!==false,'Tab names')))
     +sgrp('Layout',srow('Reset card layout','Puts the Today and Insights cards back in their original order',sbtn('resetlayout','Reset')));
   if(k==='language')b=sgrp('',srow('Language','Groundwork Habits follows this device’s language unless you pick one. Your own habits and tasks are never translated.','<select class="field ssel" id="langSel" aria-label="Language"><option value="">Same as this device</option>'+LANGS.map(l=>'<option value="'+l[0]+'"'+(l[0]===P.lang?' selected':'')+'>'+l[1]+'</option>').join('')+'</select>','translate'));
-  if(k==='features')b=sgrp('',FEAT.filter(f=>f[0]!=='remnames'&&f[0]!=='reminder').map(f=>srow(f[1],FEATD[f[0]],sw('feat',f[0],feat(f[0]),f[1]))).join(''))
+  if(k==='features')b=[['Habits',['freeze','twice','notes']],['Today and Insights',['streaks','review','heatmap']],['Tasks',['missed','focus','mind']],['Everywhere',['drag']]]
+    .map(g=>sgrp(g[0],g[1].map(id=>FEAT.find(f=>f[0]===id)).filter(Boolean).map(f=>srow(f[1],FEATD[f[0]],sw('feat',f[0],feat(f[0]),f[1]))).join(''))).join('')
     +(DFS&&DFS.widget&&!WIDGET?sgrp('Desktop',sgo('widget','Open the mini widget','A small always-on-top window with today’s habits and tasks')):'');
   if(k==='reminders')b=sgrp('Daily reminder',srow('Daily reminder',FEATD.reminder,sw('feat','reminder',feat('reminder'),'Daily reminder'))
       +(feat('reminder')?(LN||'Notification' in window?srow('Time',LN?'A notification every day, even when Groundwork Habits is closed':'Only while Groundwork Habits is open or in the background','<input type="time" class="field stime" id="remTime" value="'+esc(P.remTime||'21:00')+'" aria-label="Reminder time">'):srow('Reminders aren’t supported here yet','')):''))
@@ -40,7 +41,8 @@ function setSection(k){
       :sgo('calset','Connect a calendar…','Paste your calendar’s secret iCal address; no Google login needed')):srow('Calendar sync works in the desktop and Android apps',''))
     +sgrp('Export',sgo('calexport','Export tasks to calendar (.ics)','Import the file in Google Calendar: Settings, Import & export'));
   if(k==='data'){const can=(DFS&&DFS.backup)||(NB&&NB.backup)||(CLOUD&&CLOUD.on()),e=P.bakEvery===undefined?7:P.bakEvery;
-    b=(can?sgrp('Automatic backup',srow('Back up','Keeps the newest 8 copies'+(P.bakWhere?' in '+esc(P.bakWhere):''),'<select class="field ssel" id="bakSel" aria-label="Automatic backup">'+[[0,'Off'],[1,'Every day'],[7,'Every week'],[30,'Every month']].map(x=>'<option value="'+x[0]+'"'+(e===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select>','automatic backup often')
+    b=(can?sgrp('Automatic backup',srow('Back up','Keeps the newest '+bakKeep()+(bakKeep()===1?' copy':' copies')+(P.bakWhere?' in '+esc(P.bakWhere):''),'<select class="field ssel" id="bakSel" aria-label="Automatic backup">'+[[0,'Off'],[1,'Every day'],[7,'Every week'],[30,'Every month']].map(x=>'<option value="'+x[0]+'"'+(e===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select>','automatic backup often')
+        +srow('Copies to keep','Older backups are deleted once there are more','<select class="field ssel" id="bakKeepSel" aria-label="Copies to keep">'+[1,2,3,4,5,6,7,8].map(n=>'<option value="'+n+'"'+(bakKeep()===n?' selected':'')+'>'+n+'</option>').join('')+'</select>','backup copies keep')
         +sgo('baknow','Back up now',P.bakAt?'Last backup '+new Date(P.bakAt).toLocaleString([],{dateStyle:'medium',timeStyle:'short'}):'No backup yet')+(DFS&&DFS.openBackups?sgo('bakopen','Open backups folder',''):'')):'')
       +(CLOUD&&(CLOUD.on()||CLOUD.can('google')||CLOUD.can('dropbox'))?sgrp('Cloud sync',CLOUD.on()?srow(CLOUD.name(),CLOUD.off?'Signed out. Sign in again to keep syncing':'Syncing'+(CLOUD.who()?' as '+esc(CLOUD.who()):''),CLOUD.off?sbtn('creconnect','Sign in'):'')+(CLOUD.off?'':syncRow()+sgo('cbaks','Cloud backups','Restore a backup kept in '+CLOUD.name()))+sgo('cout','Sign out','Your data stays on this device')
         :(CLOUD.can('google')?srow('Google Drive','Sign in to keep your data in your own Google Drive and sync it between devices','<button class="btn ghost sbtn" data-act="csign" data-p="google">Sign in</button>'):'')
@@ -58,8 +60,9 @@ function setSection(k){
     :sgo('pinset','Set a PIN…','Locks Groundwork Habits and encrypts your data on this device and in backups'))
     +sgrp('',srow('How the lock works','Locks when Groundwork Habits opens, after a minute in the background or the time above without use. It hides your data on screen and encrypts what’s saved on this device and in backups.',''));
   if(k==='about')b=sgrp('',srow('Groundwork Habits '+(LITE?'Lite ':'')+APPV,'Habits, tasks and goals in one calm place',(UPD?'<button class="btn ghost sbtn" data-act="updnow">Check for updates</button>':'<a class="btn ghost sbtn" href="'+RELEASES+'" target="_blank" rel="noopener">Check for updates</a>'))+(UPD?srow('Check for updates automatically','Once a day, asks GitHub if a new version is out and asks you before installing it. Off by default: nothing is sent unless you turn it on.',sw('updauto',undefined,!!P.updAuto,'Check for updates automatically')):'')+sgo('tipsshow','Show tips','The short introduction from the first start')+sgo('diag','Copy diagnostics','Version, device and recent errors for a bug report. No habits, tasks or other data'))
-    +sgrp('Privacy',srow('Your data stays with you','No account, no ads, no tracking. Everything is saved on your devices, and only goes where you send it: your backups, your data folder, your calendar link.',''))
-    +(wideSet()?sgrp('Keyboard shortcuts',[['Ctrl+Z','Undo the latest delete'],['Esc','Close a dialog or leave settings'],['Enter','Add the task or save the dialog'],['Arrow keys','Move the focused card, habit, goal or task']].map(x=>srow(x[1],'','<kbd>'+x[0]+'</kbd>','shortcut')).join('')):'')
+    +sgrp('Privacy',srow('Your data stays with you',LITE?'No account, no ads, no tracking. Everything is saved on this device and never leaves it.':'No account, no ads, no tracking. Everything is saved on your devices, and only goes where you send it: your backups, your data folder or cloud sync, your calendar link.','')
+      +srow('Privacy policy','What the app does with your data, in full','<a class="btn ghost sbtn" href="https://english-muffin.github.io/GroundworkHabits/privacy.html" target="_blank" rel="noopener">Open</a>'))
+    +(wideSet()?sgrp('Keyboard shortcuts',[['Ctrl+,','Open settings'],['Ctrl+Z','Undo the latest delete'],['Esc','Close a dialog or leave settings'],['Enter','Add the task or save the dialog'],['Arrow keys','Move the focused card, habit, goal or task']].map(x=>srow(x[1],'','<kbd>'+x[0]+'</kbd>','shortcut')).join('')):'')
     +sgrp('Licences',srow('Groundwork Habits','GNU AGPL-3.0 licence','','license open source')+srow('Space Grotesk font','SIL Open Font License',''));
   return b}
 function vSettings(){

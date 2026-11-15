@@ -1013,3 +1013,15 @@ P110|Tik nogmaals om het uit $1 te verwijderen
 P111|Mijn gegevens uit $1 verwijderen
 P112|Je gegevens zijn uit $1 verwijderd. Ze blijven op dit apparaat
 P113|Kan je gegevens niet uit $1 verwijderen
+903|Systeem
+904|Vandaag en Inzichten
+905|Overal
+906|Geen account, geen advertenties, geen tracking. Alles wordt op dit apparaat bewaard en verlaat het nooit.
+907|Geen account, geen advertenties, geen tracking. Alles wordt op je apparaten bewaard en gaat alleen waar jij het heen stuurt: je back-ups, je gegevensmap of cloudsynchronisatie, je agendalink.
+908|Privacybeleid
+909|Wat de app met je gegevens doet, volledig
+910|Instellingen openen
+911|Te bewaren kopieën
+912|Oudere back-ups worden verwijderd zodra er meer zijn
+P114|one=Bewaart de nieuwste kopie‖other=Bewaart de $1 nieuwste kopieën
+P115|one=Bewaart de nieuwste kopie in $2‖other=Bewaart de $1 nieuwste kopieën in $2
