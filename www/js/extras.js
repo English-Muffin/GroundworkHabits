@@ -154,9 +154,10 @@ async function backupText(){const j=JSON.stringify(Object.assign({},S,{prefs:bac
 async function exportData(){const t=await backupText();shareFile(t,'groundwork-backup-'+dk(TODAY)+(isEnc(t)?'-encrypted':'')+'.json','application/json','Groundwork Habits backup',isEnc(t)?'Encrypted backup downloaded. Importing it asks for your PIN':'Backup downloaded')}
 // weekly automatic backup: desktop to <data folder or app data>/backups, Android to the chosen folder's backups or app storage; newest 8 kept
 async function autoBackup(force){
-  if(encWait||locked&&!encKey||WIDGET||!hasData())return;const can=DFS&&DFS.backup||NB&&NB.backup;if(!can)return;
+  if(encWait||locked&&!encKey||WIDGET||!hasData())return;const can=DFS&&DFS.backup||NB&&NB.backup,cloud=CLOUD&&CLOUD.on()&&!CLOUD.off;if(!can&&!cloud)return;
   const every=P.bakEvery===undefined?7:P.bakEvery;if(!force&&(!every||Date.now()-(P.bakAt||0)<every*864e5))return;
-  try{const t=await backupText(),name='groundwork-backup-'+dk(TODAY)+'.json',where=DFS&&DFS.backup?await DFS.backup(name,t):(await NB.backup({name,text:t})).where;
+  try{const t=await backupText(),name='groundwork-backup-'+dk(TODAY)+'.json';let where=!can?null:DFS&&DFS.backup?await DFS.backup(name,t):(await NB.backup({name,text:t})).where;
+    if(cloud){try{const c=await CLOUD.backup(name,t);where=where?where+' and '+c:c}catch(e){}} // the cloud copy is extra: a failure there doesn't fail the local backup
     if(where){P.bakAt=Date.now();P.bakWhere=String(where).slice(0,300);applyPrefs();if(force)toast('Backup saved')}else if(force)toast('Backup failed')}catch(e){if(force)toast('Backup failed')}}
 // a plain-text report for bug reports: version, platform, sizes and recent errors; never names, notes or other content
 function diagText(){const n=o=>Object.keys(o||{}).length;

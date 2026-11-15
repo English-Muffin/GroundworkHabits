@@ -996,3 +996,7 @@ P106|Kan $1 niet bereiken
 890|Je gesynchroniseerde gegevens zijn beveiligd met een pincode
 891|Een ander apparaat beveiligt ze met een pincode. Voer die pincode in om te blijven synchroniseren; dit apparaat gebruikt dan dezelfde pincode.
 892|Gesynchroniseerde gegevens vergrendeld
+893|Gebruik je Groundwork Habits al op een ander apparaat?
+894|Log in om je gegevens hier te laden.
+895|Alles wordt op dit apparaat bewaard. Exporteer een back-up via instellingen, of synchroniseer met Google Drive of Dropbox.
+P107|Gegevens geladen uit $1

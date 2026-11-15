@@ -996,3 +996,7 @@ P106|Impossible de joindre $1
 890|Vos données synchronisées sont protégées par un code PIN
 891|Un autre appareil les protège avec un code PIN. Saisissez-le pour continuer la synchronisation ; cet appareil utilisera le même code PIN.
 892|Données synchronisées verrouillées
+893|Vous utilisez déjà Groundwork Habits sur un autre appareil ?
+894|Connectez-vous pour charger vos données ici.
+895|Tout est enregistré sur cet appareil. Exportez une sauvegarde depuis les réglages, ou synchronisez avec Google Drive ou Dropbox.
+P107|Données chargées depuis $1

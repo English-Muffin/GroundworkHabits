@@ -107,8 +107,9 @@ document.addEventListener('click',e=>{
     case 'afoldkeep':{const c=modal.cloud;modal=null;andText=null;andWrite();toast(c?'Groundwork Habits now syncs with '+c:'Groundwork Habits now saves to '+P.andDir);break}
     case 'afoldload':if(!modal.confirm){modal.confirm=true;persist=false;break}{const t=modal.text;modal=null;persist=false;andApply(t,true)}break;
     case 'afoldno':persist=false;if(modal.cloud)CLOUD.signOut();else{FOLD.clearFolder();P.andDir='';applyPrefs()}modal=null;break;
-    case 'csign':persist=false;menuOpen=false;CLOUD.signIn(t.dataset.p).catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
+    case 'csign':persist=false;menuOpen=false;if(modal&&modal.kind==='tips'){try{localStorage.setItem('groundwork-tips','1')}catch(e){}modal=null}CLOUD.signIn(t.dataset.p).catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
     case 'creconnect':persist=false;reconnectToast.told=0;CLOUD.reconnect().catch(()=>toast('Could not sign in'));break;
+    case 'syncgo':persist=false;location.hash='#settings/data';return;
     case 'mergeundo':persist=false;if(histStep(true))toast('Merge undone');break;
     case 'syncpinok':{persist=false;const pin=$('#syncPin').value,txt=modal.text,salt=encSalt(txt);deriveKey(pin,salt).then(async key=>{await decText(txt,key);
         encKey=key;P.lock={salt,enc:1,check:await encText('groundwork',key,salt)};applyPrefs();modal=null;andText=null;await andApply(txt,false,true);save();render();toast('This device now uses the same PIN')})

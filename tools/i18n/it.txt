@@ -996,3 +996,7 @@ P106|Impossibile raggiungere $1
 890|I tuoi dati sincronizzati sono protetti da un PIN
 891|Un altro dispositivo li protegge con un PIN. Inseriscilo per continuare a sincronizzare; questo dispositivo userà lo stesso PIN.
 892|Dati sincronizzati bloccati
+893|Usi già Groundwork Habits su un altro dispositivo?
+894|Accedi per caricare qui i tuoi dati.
+895|Tutto è salvato su questo dispositivo. Esporta un backup dalle impostazioni o sincronizza con Google Drive o Dropbox.
+P107|Dati caricati da $1

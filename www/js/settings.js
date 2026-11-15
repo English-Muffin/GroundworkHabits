@@ -39,7 +39,7 @@ function setSection(k){
   if(k==='calendar')b=sgrp('Google Calendar',calFetch?(P.cal?srow('Connected','Events sync every 15 minutes'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''),sbtn('calsync','Sync now'))+sgo('caloff','Stop calendar sync','Removes the calendar events from your tasks','red')
       :sgo('calset','Connect a calendar…','Paste your calendar’s secret iCal address; no Google login needed')):srow('Calendar sync works in the desktop and Android apps',''))
     +sgrp('Export',sgo('calexport','Export tasks to calendar (.ics)','Import the file in Google Calendar: Settings, Import & export'));
-  if(k==='data'){const can=(DFS&&DFS.backup)||(NB&&NB.backup),e=P.bakEvery===undefined?7:P.bakEvery;
+  if(k==='data'){const can=(DFS&&DFS.backup)||(NB&&NB.backup)||(CLOUD&&CLOUD.on()),e=P.bakEvery===undefined?7:P.bakEvery;
     b=(can?sgrp('Automatic backup',srow('Back up','Keeps the newest 8 copies'+(P.bakWhere?' in '+esc(P.bakWhere):''),'<select class="field ssel" id="bakSel" aria-label="Automatic backup">'+[[0,'Off'],[1,'Every day'],[7,'Every week'],[30,'Every month']].map(x=>'<option value="'+x[0]+'"'+(e===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select>','automatic backup often')
         +sgo('baknow','Back up now',P.bakAt?'Last backup '+new Date(P.bakAt).toLocaleString([],{dateStyle:'medium',timeStyle:'short'}):'No backup yet')+(DFS&&DFS.openBackups?sgo('bakopen','Open backups folder',''):'')):'')
       +(CLOUD&&(CLOUD.on()||CLOUD.can('google')||CLOUD.can('dropbox'))?sgrp('Cloud sync',CLOUD.on()?srow(CLOUD.name(),CLOUD.off?'Signed out. Sign in again to keep syncing':'Syncing'+(CLOUD.who()?' as '+esc(CLOUD.who()):''),CLOUD.off?sbtn('creconnect','Sign in'):'')+(CLOUD.off?'':syncRow())+sgo('cout','Sign out','Your data stays on this device')
@@ -145,9 +145,12 @@ function tipsHtml(){
     ['Tick and fix','Tap a box to tick it. Unticked tasks on past days show a red X; tap it if you just forgot.'],
     ['Repeat a task','When adding a task, use the dropdown under it to repeat it every day, weekday, week or month.'],
     ['Search and settings','The magnifier searches everything. The gear has themes, colours, features, backups and the app lock.'],
-    ['Your data stays here',LITE?'Everything is saved on this device and never leaves it. Export a backup from settings.':'Everything is saved on this device. Export a backup from settings, or choose a synced folder on desktop.']];
+    ['Your data stays here',LITE?'Everything is saved on this device and never leaves it. Export a backup from settings.':'Everything is saved on this device. Export a backup from settings, or sync it with Google Drive or Dropbox.']];
   return '<div class="ov" data-act="ovclose"><div class="mod tips" role="dialog" aria-modal="true" aria-label="Welcome to Groundwork Habits"><h2>Welcome to Groundwork Habits</h2><p class="sub" style="margin:0">A few things worth knowing:</p><ol class="tipl">'
-   +tips.map(t=>'<li><b>'+t[0]+'</b><span>'+t[1]+'</span></li>').join('')+'</ol><div class="row"><button class="btn" data-act="tipsok">Got it</button></div></div></div>';
+   +tips.map(t=>'<li><b>'+t[0]+'</b><span>'+t[1]+'</span></li>').join('')+'</ol>'
+   +(CLOUD&&!CLOUD.on()&&(CLOUD.can('google')||CLOUD.can('dropbox'))?'<div class="tipsync"><b>Already use Groundwork Habits on another device?</b><span>Sign in to load your data here.</span><div class="row">'
+     +(CLOUD.can('google')?'<button class="btn ghost" data-act="csign" data-p="google">Google Drive</button>':'')+(CLOUD.can('dropbox')?'<button class="btn ghost" data-act="csign" data-p="dropbox">Dropbox</button>':'')+'</div></div>':'')
+   +'<div class="row"><button class="btn" data-act="tipsok">Got it</button></div></div></div>';
 }
 function openAmt(h,k){modal={kind:'amt',h:h.id,k};focusSel='#aVal'}
 function vModal(){

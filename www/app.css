@@ -753,3 +753,10 @@ body{overflow-wrap:anywhere}.pnav a,.tsi,.g2area,.g2aw,.lrow .top>*{min-width:0}
 .mcd.sel{outline:2px solid var(--text);outline-offset:1px}.mcsel{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:10px}.mct.done{text-decoration:line-through;opacity:.6}
 .mcadd{display:flex;gap:8px}.mcadd .field{flex:1;min-width:0}
 #main.idash>*{min-width:0}.stat .lbl{overflow-wrap:anywhere}
+
+/* header sync status (render.js syncBtn) and the welcome dialog's sign-in offer */
+#syncBtn.serr{color:var(--red)}
+#syncBtn.serr svg{forced-color-adjust:auto}
+.tipsync{display:grid;gap:4px;margin-top:var(--sp-3);padding:var(--sp-3);border-radius:12px;background:var(--g1a)}
+.tipsync span{color:var(--g6a)}
+.tipsync .row{margin-top:var(--sp-2);flex-wrap:wrap}

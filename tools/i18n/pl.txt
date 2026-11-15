@@ -996,3 +996,7 @@ P106|Brak połączenia z: $1
 890|Twoje zsynchronizowane dane są chronione PIN-em
 891|Inne urządzenie chroni je PIN-em. Wpisz ten PIN, aby dalej synchronizować; to urządzenie będzie używać tego samego PIN-u.
 892|Zsynchronizowane dane są zablokowane
+893|Używasz już Groundwork Habits na innym urządzeniu?
+894|Zaloguj się, aby wczytać tu swoje dane.
+895|Wszystko jest zapisane na tym urządzeniu. Wyeksportuj kopię w ustawieniach albo synchronizuj z Dyskiem Google lub Dropboksem.
+P107|Wczytano dane z: $1

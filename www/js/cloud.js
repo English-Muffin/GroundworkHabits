@@ -57,12 +57,26 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
       const b='gw'+rnd(),body=new Blob(['--'+b+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify({name:'groundwork.json',parents:['appDataFolder']})+'\r\n--'+b+'\r\nContent-Type: application/json\r\n\r\n',t,'\r\n--'+b+'--']);
       const r=await call(GU+'?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+b},body});if(!r.ok)throw new Error('write');st.fid=(await r.json()).id;keep()},
     who:async()=>{const r=await call('https://www.googleapis.com/oauth2/v3/userinfo');return r.ok?((await r.json()).email||''):''}};
+  // backups in the cloud too (newest 8): Dropbox Apps/Groundwork Habits/backups, Drive's hidden app folder
+  DBX.backup=async(name,t)=>{let r=await call('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{'Dropbox-API-Arg':JSON.stringify({path:'/backups/'+name,mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:new Blob([t])});if(!r.ok)throw new Error('backup');
+    r=await call('https://api.dropboxapi.com/2/files/list_folder',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:'/backups'})});
+    const old=r.ok?((await r.json()).entries||[]).map(e=>e.name).filter(n=>/^groundwork-backup-/.test(n)).sort().reverse().slice(8):[];
+    for(const n of old)await call('https://api.dropboxapi.com/2/files/delete_v2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:'/backups/'+n})});
+    return 'Dropbox: Apps/Groundwork Habits/backups'};
+  GDR.backup=async(name,t)=>{const ls=async()=>{const r=await call(GD+'?'+form({spaces:'appDataFolder',fields:'files(id,name)',pageSize:'100',q:"name contains 'groundwork-backup-' and trashed=false"}));return r.ok?((await r.json()).files||[]).filter(f=>/^groundwork-backup-/.test(f.name)):[]};
+    const same=(await ls()).find(f=>f.name===name);let r;
+    if(same)r=await call(GU+'/'+same.id+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body:new Blob([t])});
+    else{const b='gw'+rnd();r=await call(GU+'?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+b},body:new Blob(['--'+b+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify({name,parents:['appDataFolder']})+'\r\n--'+b+'\r\nContent-Type: application/json\r\n\r\n',t,'\r\n--'+b+'--'])})}
+    if(!r.ok)throw new Error('backup');
+    for(const f of (await ls()).sort((a,c)=>a.name<c.name?1:-1).slice(8))await call(GD+'/'+f.id,{method:'DELETE'});
+    return 'Google Drive (hidden app folder)'};
   const ops=()=>st&&st.p==='google'?GDR:DBX;
   async function finish(p,j){st={p,tok:j.access_token,exp:Date.now()+(j.expires_in||3600)*1e3,rt:j.refresh_token||'',who:''};keep();api.off=false;
     try{st.who=await ops().who();keep()}catch(e){}
     // one place for data: the cloud replaces a data folder
     if(FOLD&&P.andDir){FOLD.clearFolder();P.andDir=''}if(DFS&&dataDir){DFS.reset();dataDir='';fileText=null}applyPrefs();
     let ex=null;try{ex=(await ops().read()).text}catch(e){}
+    if(ex&&!hasData()){modal=null;await andApply(ex,false);toast('Loaded your data from '+PROV[p].name);return}
     if(ex){modal={kind:'afold',text:ex,cloud:PROV[p].name};render()}else{andText=null;andWrite();render();toast('Groundwork Habits now syncs with '+PROV[p].name)}}
   const api={off:false,
     can,PROV,
@@ -70,6 +84,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     name:()=>st?PROV[st.p].name:'',
     who:()=>st&&st.who||'',
     readFolder:()=>ops().read(),
+    backup:(name,t)=>ops().backup(name,t),
     writeFolder:o=>ops().write(o.text),
     async signIn(p){if(!can(p)){toast('Sign-in with '+PROV[p].name+' isn’t set up in this version');return}
       const ver=rnd(),s=rnd(),ch=await sha(ver);

@@ -45,6 +45,7 @@ const dmy=d=>p2(d.getDate())+'/'+p2(d.getMonth()+1)+'/'+d.getFullYear();
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 const ICON={
+  cloud:'<path d="M7 18.5h10.5a4 4 0 0 0 .6-7.95A6.2 6.2 0 0 0 6.2 9.6 4.5 4.5 0 0 0 7 18.5z"/>',
   alert:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/>',
   home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
   habits:'<rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
@@ -145,7 +146,7 @@ const syncName=()=>typeof CLOUD!=='undefined'&&CLOUD&&CLOUD.on()?'cloud:'+CLOUD.
 function setBase(t){idbKv(KEY+'-synced',{to:syncName(),t})}
 async function baseJ(){const r=await idbKv(KEY+'-synced');if(!r||r.to!==syncName()||!r.t)return null;try{return isEnc(r.t)?(encKey?await decText(r.t,encKey):null):r.t}catch(e){return null}}
 // sync status for Settings (this device only): when it last worked and the last problem
-function syncNote(err){try{const o=JSON.parse(localStorage.getItem(KEY+'-syncinfo')||'{}');if(err)o.err=err;else{o.ok=Date.now();delete o.err}localStorage.setItem(KEY+'-syncinfo',JSON.stringify(o))}catch(e){}}
+function syncNote(err){try{const o=JSON.parse(localStorage.getItem(KEY+'-syncinfo')||'{}');if(err)o.err=err;else{o.ok=Date.now();delete o.err}localStorage.setItem(KEY+'-syncinfo',JSON.stringify(o))}catch(e){}if(typeof syncBtn==='function')syncBtn()}
 const syncInfo=()=>{try{return JSON.parse(localStorage.getItem(KEY+'-syncinfo')||'{}')}catch(e){return {}}};
 function andWrite(now){if(!syncTo()||encWait)return;clearTimeout(andWrite.t);andWrite.t=setTimeout(()=>saveRaw(JSON.stringify(S),t=>{const to=syncTo();if(!to||t===andText)return;
   to.writeFolder({text:t}).then(()=>{andText=t;setBase(t);syncNote()}).catch(e=>{syncNote(to===FOLD?'Could not save to your data folder':'Could not reach '+CLOUD.name());if(to===FOLD&&!(WEBF&&WEBF.off))toast('Could not save to your data folder');else if(to!==FOLD&&to.off)reconnectToast()})}),now?0:800)}

@@ -11,7 +11,7 @@ function render(){
   const vi=VIEWS.find(v=>v[0]===view)||(view==='settings'?['settings','Settings','gear']:ASK?['ask','Reminder','home']:['widget','Widget','home']);
   $('#nav').innerHTML=views().map(v=>'<a href="#'+v[0]+'" aria-label="'+v[1]+'" title="'+v[1]+'" class="'+(v[0]===view?'on':'')+'"'+(v[0]===view?' aria-current="page"':'')+'>'+ic(v[2])+'<span>'+v[1]+'</span>'+'</a>').join('').replace('<a href="#goals"','<button class="navq" data-act="quick" aria-label="Quick add" title="Quick add">'+ic('plus')+'</button><a href="#goals"'); // quick add sits in the middle, between Tasks and Goals
   $('#ttl').textContent=view==='tasks'?'Task Tracker':vi[1];
-  $('#gearBtn').innerHTML=ic('gear');$('#gearBtn').classList.toggle('on',view==='settings');$('#gearBtn').setAttribute('aria-current',view==='settings'?'page':'false');$('#searchBtn').innerHTML=ic('search');
+  $('#gearBtn').innerHTML=ic('gear');$('#gearBtn').classList.toggle('on',view==='settings');$('#gearBtn').setAttribute('aria-current',view==='settings'?'page':'false');$('#searchBtn').innerHTML=ic('search');syncBtn();
   document.title=vi[1]+' | Groundwork Habits';
   const lk=$('#lock');lk.hidden=!locked;document.body.classList.toggle('locked',locked);
   if(locked){$('#main').innerHTML='';$('#menu').hidden=true;$('#modal').innerHTML='';if(!lk.firstChild){lk.innerHTML=lockHtml();trDom(lk)}else lk.querySelector('[data-act=pinforgot]').textContent=lockForgot?'Tap again: remove the PIN and erase the data on this device':'Forgot your PIN?';
@@ -138,6 +138,9 @@ function pushUndo(fn){undos.push(fn);if(undos.length>20)undos.shift()}
 function undoLast(){const f=undos.pop();if(!f)return false;f();return true}
 const putBack=(arr,i,x)=>{if(!arr.some(y=>y.id===x.id))arr.splice(Math.min(i,arr.length),0,x)};
 let toastAction=null;
+// header sync status: shown while cloud sync or a data folder is on; red when it needs attention
+function syncBtn(){const b=$('#syncBtn');if(!b)return;const on=(CLOUD&&CLOUD.on())||P.andDir||dataDir;b.hidden=!on||WIDGET;if(!on)return;
+  const bad=(CLOUD&&CLOUD.on()&&CLOUD.off)||(WEBF&&WEBF.off&&P.andDir)||!!syncInfo().err,l=tx(bad?'Sync problem':'Synced');if(b.dataset.s!==String(bad)){b.innerHTML=ic('cloud');b.dataset.s=String(bad)}b.classList.toggle('serr',bad);b.setAttribute('aria-label',l);b.title=l}
 function toastAct(msg,label,act){const t=$('#toast');t.innerHTML=esc(tx(msg))+'<button class="tundo" data-act="'+act+'">'+esc(tx(label))+'</button>';t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{t.hidden=true;toastAction=null},10000)}
 function notify(title,body){try{if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body,tag:'groundwork-'+title})}catch(e){}}
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.35].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;g.gain.setValueAtTime(.0001,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.2,a.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+t+.25);o.connect(g).connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+.3)})}catch(e){}}
