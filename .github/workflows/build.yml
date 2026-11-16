@@ -24,6 +24,11 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: node tools/release_strip.js
       # Windows: both editions on Tauri (tauri/, on Windows' own WebView2)
+      # keeps Cargo's downloads and build output between runs (keyed on Cargo.lock), so builds are faster and a busy crates.io matters less
+      # pinned to a commit; release tags build from scratch so no cached output ends up in a release
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+        if: "!startsWith(github.ref, 'refs/tags/v')"
+        with: { workspaces: tauri, key: '${{ matrix.edition }}' }
       - run: npm run dist:win
         env: { GROUNDWORK_GOOGLE_ID: '${{ secrets.GOOGLE_CLIENT_ID }}', GROUNDWORK_GOOGLE_SECRET: '${{ secrets.GOOGLE_CLIENT_SECRET }}', GROUNDWORK_GOOGLE_WEB_ID: '${{ secrets.GOOGLE_WEB_CLIENT_ID }}' }
       # the Tauri app needs the WebView2 runtime (every Windows 10/11 PC has it; the server images may not)
@@ -136,6 +141,11 @@ jobs:
         run: node tools/release_strip.js
       # macOS on Tauri too (Safari's engine, about 10 MB instead of 166): one universal binary for Apple Silicon and Intel
       - run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      # keeps Cargo's downloads and build output between runs (keyed on Cargo.lock), so builds are faster and a busy crates.io matters less
+      # pinned to a commit; release tags build from scratch so no cached output ends up in a release
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+        if: "!startsWith(github.ref, 'refs/tags/v')"
+        with: { workspaces: tauri, key: '${{ matrix.edition }}' }
       - run: npm run dist:mac
         env: { GROUNDWORK_GOOGLE_ID: '${{ secrets.GOOGLE_CLIENT_ID }}', GROUNDWORK_GOOGLE_SECRET: '${{ secrets.GOOGLE_CLIENT_SECRET }}', GROUNDWORK_GOOGLE_WEB_ID: '${{ secrets.GOOGLE_WEB_CLIENT_ID }}' }
       - name: Check the built app starts (self-test report; the debugging port does not exist in Safari's engine)
@@ -165,6 +175,9 @@ jobs:
       # F-Droid's build recipe runs (tools/fdroid/)
       - run: sh tools/android_prepare.sh
         env: { GROUNDWORK_GOOGLE_ID: '${{ secrets.GOOGLE_CLIENT_ID }}', GROUNDWORK_GOOGLE_SECRET: '${{ secrets.GOOGLE_CLIENT_SECRET }}', GROUNDWORK_GOOGLE_WEB_ID: '${{ secrets.GOOGLE_WEB_CLIENT_ID }}' }
+      # caches Gradle's downloads between runs (after the prepare step, which makes android/)
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+        with: { cache-disabled: "${{ startsWith(github.ref, 'refs/tags/v') }}" }
       # signed release APK when the ANDROID_KEYSTORE_* secrets exist, otherwise the debug-signed APK as before
       - name: Build APK
         working-directory: android
@@ -175,10 +188,11 @@ jobs:
         run: |
           if [ -n "$KS_B64" ]; then
             echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
-            GROUNDWORK_KEYSTORE="$RUNNER_TEMP/release.jks" ./gradlew assembleRelease
+            # one retry: Maven Central sometimes answers 429 (too many requests)
+            GROUNDWORK_KEYSTORE="$RUNNER_TEMP/release.jks" ./gradlew assembleRelease || { sleep 60; GROUNDWORK_KEYSTORE="$RUNNER_TEMP/release.jks" ./gradlew assembleRelease; }
             cp app/build/outputs/apk/release/app-release.apk ../app.apk
           else
-            ./gradlew assembleDebug
+            ./gradlew assembleDebug || { sleep 60; ./gradlew assembleDebug; }
             cp app/build/outputs/apk/debug/app-debug.apk ../app.apk
           fi
       - run: mkdir out && cp app.apk "out/$(node -p "require('./package.json').build.productName.replace(/ /g,'-')")-$(node -p "require('./package.json').version")-Android.apk"
