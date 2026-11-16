@@ -80,6 +80,8 @@ async def run(had_electron):
             lst = await pg.evaluate("groundworkFS.listBackups()"); txt = await pg.evaluate("groundworkFS.readBackup('groundwork-backup-test.json')")
             bad = await pg.evaluate("groundworkFS.readBackup('../config.json').then(()=>'read',()=>'refused')")
             check('backups on this PC are listed and read back for Restore; other files are refused', any(b['n'] == 'groundwork-backup-test.json' for b in lst) and '"habits"' in txt and bad == 'refused', [lst, txt[:40], bad])
+            # tray on and off again (start with the computer stays off: it would write the Run key)
+            check('the tray can be turned on and off', await pg.evaluate("groundworkFS.tray(true,false).then(a=>groundworkFS.tray(false,false).then(b=>a===null&&b===null))"))
             check('notifications do not fail', await pg.evaluate("(()=>{try{new Notification('Groundwork Habits',{body:'test'});return true}catch(e){return false}})()"))
             if LITE:
                 check('Lite has no online parts in its bridge', await pg.evaluate("!groundworkFS.fetchCal&&!groundworkFS.updateCheck&&groundworkFS.folder()===''"))

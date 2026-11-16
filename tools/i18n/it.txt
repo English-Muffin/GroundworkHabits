@@ -1059,3 +1059,7 @@ P119|Te lo ricordo di nuovo tra $1 minuti
 940|Porta il tuo calendario
 941|Gli appuntamenti appaiono come attività accanto ai tuoi piani.
 942|Impostazioni calendario
+943|Resta nell’area di notifica
+944|Chiudendo la finestra Groundwork Habits resta nell’area di notifica, così i promemoria arrivano comunque
+945|Avvia con il computer
+946|Si apre nell’area di notifica all’accesso

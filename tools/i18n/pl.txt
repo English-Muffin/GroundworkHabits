@@ -1059,3 +1059,7 @@ P119|one=Przypomnę ponownie za $1 minutę‖few=Przypomnę ponownie za $1 minut
 940|Dodaj swój kalendarz
 941|Spotkania pojawią się jako zadania obok twoich planów.
 942|Ustawienia kalendarza
+943|Działaj w zasobniku systemowym
+944|Zamknięcie okna zostawia Groundwork Habits w zasobniku, więc przypomnienia nadal przychodzą
+945|Uruchamiaj z komputerem
+946|Otwiera się w zasobniku po zalogowaniu

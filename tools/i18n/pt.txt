@@ -1059,3 +1059,7 @@ P119|Lembro-te de novo daqui a $1 minutos
 940|Traz o teu calendário
 941|Os compromissos aparecem como tarefas ao lado dos teus planos.
 942|Definições do calendário
+943|Manter na área de notificação
+944|Fechar a janela deixa o Groundwork Habits na área de notificação, para os lembretes continuarem a chegar
+945|Iniciar com o computador
+946|Abre na área de notificação quando inicias sessão

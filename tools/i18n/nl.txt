@@ -1059,3 +1059,7 @@ P119|Ik herinner je over $1 minuten opnieuw
 940|Haal je agenda erbij
 941|Afspraken verschijnen als taken naast je plannen.
 942|Agenda-instellingen
+943|Blijf draaien in het systeemvak
+944|Als je het venster sluit, blijft Groundwork Habits in het systeemvak, zodat herinneringen blijven komen
+945|Starten met je computer
+946|Opent in het systeemvak als je inlogt

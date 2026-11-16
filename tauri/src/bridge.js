@@ -16,6 +16,7 @@
     widget: () => { call('widget').catch(() => {}); },
     showMain: () => { call('show_main').catch(() => {}); },
     ask: (h, k) => { call('ask', { h, k }).catch(() => {}); },
+    tray: (on, login) => call('tray', { on: !!on, login: !!login }).catch(() => null),
     onFlush: cb => { flushCb = cb; },
   };
   // the full app (built with --features full) answers on a local "gw" address with its data folder; Lite has none.

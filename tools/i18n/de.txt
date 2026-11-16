@@ -1059,3 +1059,7 @@ P119|Erinnere dich in $1 Minuten erneut
 940|Hol deinen Kalender dazu
 941|Termine erscheinen als Aufgaben neben deinen Plänen.
 942|Kalendereinstellungen
+943|Im Infobereich weiterlaufen
+944|Beim Schließen des Fensters bleibt Groundwork Habits im Infobereich, damit Erinnerungen weiter ankommen
+945|Mit dem Computer starten
+946|Öffnet sich beim Anmelden im Infobereich

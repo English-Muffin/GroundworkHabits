@@ -42,7 +42,9 @@ function setSection(k){
       +(NB&&NB.permStatus?srow('Notifications',!permS?'Checking…':permS.notify?'Allowed':'Blocked: reminders can’t appear',permS&&!permS.notify?sbtn('notifyopen','Open settings'):'')
         +srow('Exact alarms',!permS?'Checking…':permS.exact?'Allowed: reminders come on time':'Not allowed: reminders may come a few minutes late',permS&&!permS.exact?sbtn('exactok','Allow'):'')
         :NB&&NB.openExactSettings?sgo('exactok','Allow exact alarms','Android 14 and later: lets alarms ring on time instead of a few minutes late'):'')
-      +sgo('testnote','Send a test notification','Checks that notifications reach you'));
+      +sgo('testnote','Send a test notification','Checks that notifications reach you'))
+    +(DFS&&DFS.tray&&!WIDGET?sgrp('Desktop',srow('Keep running in the tray','Closing the window leaves Groundwork Habits in the system tray, so reminders still arrive',sw('tray',undefined,P.tray,'Keep running in the tray'))
+      +(P.tray?srow('Start with your computer','Opens in the tray when you sign in',sw('traylogin',undefined,P.trayLogin,'Start with your computer')):'')):'');
   const gcan=CLOUD&&CLOUD.can('google');
   if(k==='calendar')b=sgrp('Google Calendar',calFetch||gcan?(P.cal?srow(P.cal==='google'?'Connected to Google Calendar'+(CLOUD&&CLOUD.calWho()?' as '+esc(CLOUD.calWho()):''):'Connected',P.cal==='google'&&CLOUD&&CLOUD.calOff?'Signed out. Sign in again to keep syncing':'Events sync every 15 minutes'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''),P.cal==='google'&&CLOUD&&CLOUD.calOff?sbtn('gcalsign','Sign in'):sbtn('calsync','Sync now'))+sgo('caloff','Stop calendar sync','Removes the calendar events from your tasks','red')
       :(gcan?sgo('gcalsign','Sign in with Google','Shows the events of your main Google Calendar as tasks. Read-only'):'')+(calFetch?sgo('calset','Connect a calendar…','Paste your calendar’s secret iCal address; no Google login needed'):'')):srow('Calendar sync works in the desktop and Android apps',''))

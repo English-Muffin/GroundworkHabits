@@ -140,4 +140,6 @@ if(IOS&&!navigator.standalone&&!WIDGET&&!window.Capacitor)try{if(!localStorage.g
 // the IndexedDB copy is newer than localStorage's (localStorage was full): use it
 idbGet().then(r=>{if(!r||WIDGET)return;let at=0;try{at=+localStorage.getItem(KEY+'-at')||0;if(r.t===localStorage.getItem(KEY))return}catch(e){}if(r.at<=at)return;
   if(isEnc(r.t)){idbLate=r.t;return}try{S=clean(JSON.parse(r.t));histJ=histOf();if(!modal)render()}catch(e){}});
+// desktop: keep running in the tray and start with the computer (Settings > Reminders); the shell forgets it on exit
+if(DFS&&DFS.tray&&!WIDGET)DFS.tray(!!P.tray,!!P.trayLogin);
 render();

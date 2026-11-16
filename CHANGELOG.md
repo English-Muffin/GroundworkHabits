@@ -2,6 +2,12 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
+## Unreleased
+
+- **Desktop reminders with the window closed:** Settings > Reminders > Keep running in the tray. Closing the window
+  leaves Groundwork Habits in the system tray (Open / Quit), and Start with your computer opens it there at sign-in.
+- Large text: Insights' week review no longer runs off a phone screen when a habit has a very long name.
+
 ## 1.7.9
 
 - **Google Drive sync works on Android:** the first sync from the Android app could never create its file in

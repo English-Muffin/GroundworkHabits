@@ -13,6 +13,8 @@ use tauri::{AppHandle, Emitter, Manager, WebviewUrl, WebviewWindowBuilder, Windo
 use tauri_plugin_notification::NotificationExt;
 
 static FLUSHED: AtomicBool = AtomicBool::new(false);
+// Settings > Reminders > Keep running in the tray: closing the main window hides it, so reminders keep coming
+static TRAY: AtomicBool = AtomicBool::new(false);
 // the bridge every window gets before the app's scripts (main, widget and reminder pop-ups)
 const BRIDGE: &str = include_str!("bridge.js");
 
@@ -159,6 +161,30 @@ fn flushed(app: AppHandle) {
     app.exit(0);
 }
 
+// ask the page to finish its last save, then quit (at most 3 s if it never answers)
+fn quit(app: &AppHandle) {
+    if FLUSHED.load(Ordering::SeqCst) { app.exit(0); return; }
+    let _ = app.emit("app:flush", ());
+    let app = app.clone();
+    std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_secs(3));
+        FLUSHED.store(true, Ordering::SeqCst);
+        app.exit(0);
+    });
+}
+
+// the page's tray settings (sent at start and on change): the tray icon, and starting hidden in the tray at sign-in
+#[tauri::command]
+fn tray(app: AppHandle, on: bool, login: bool) -> Result<(), String> {
+    use tauri_plugin_autostart::ManagerExt;
+    TRAY.store(on, Ordering::SeqCst);
+    if let Some(t) = app.tray_by_id("main") { let _ = t.set_visible(on); }
+    let auto = app.autolaunch();
+    let want = on && login;
+    if want != auto.is_enabled().unwrap_or(false) { if want { auto.enable() } else { auto.disable() }.map_err(|e| e.to_string())?; }
+    Ok(())
+}
+
 // the full app's commands (Lite builds without them; its bridge never calls them)
 #[cfg(feature = "full")]
 #[tauri::command]
@@ -204,37 +230,40 @@ fn main() {
     let builder = tauri::Builder::default()
         // a second start brings the open window forward instead of opening another copy
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| show_main(app.clone())))
-        .plugin(tauri_plugin_notification::init());
+        .plugin(tauri_plugin_notification::init())
+        // start with the computer: Windows' Run key / a macOS login item, opening hidden in the tray
+        .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, Some(vec!["--hidden"])));
     #[cfg(feature = "full")]
     let builder = builder.register_uri_scheme_protocol("gw", |ctx, req| gw(ctx.app_handle(), req));
     builder
         .setup(|app| {
             let name = app.config().product_name.clone().unwrap_or_else(|| "Groundwork Habits".into());
             WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
-                .title(name).inner_size(1320.0, 860.0).min_inner_size(420.0, 600.0)
+                .title(&name).inner_size(1320.0, 860.0).min_inner_size(420.0, 600.0)
                 .initialization_script(&if std::env::var("GROUNDWORK_SELFTEST").is_ok() { format!("{BRIDGE}
 {SELFTEST}") } else { BRIDGE.to_string() })
+                .visible(!std::env::args().any(|a| a == "--hidden"))
                 .additional_browser_args(&web_args()).build()?;
+            use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}};
+            let open = MenuItem::with_id(app, "open", "Open", true, None::<&str>)?;
+            let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+            let mut tb = TrayIconBuilder::with_id("main").tooltip(&name).menu(&Menu::with_items(app, &[&open, &quit_i])?).show_menu_on_left_click(false)
+                .on_menu_event(|app, e| match e.id.as_ref() { "open" => show_main(app.clone()), "quit" => quit(app), _ => {} })
+                .on_tray_icon_event(|t, e| if let TrayIconEvent::Click { button: MouseButton::Left, button_state: MouseButtonState::Up, .. } = e { show_main(t.app_handle().clone()) });
+            if let Some(i) = app.default_window_icon() { tb = tb.icon(i.clone()); }
+            tb.build(app)?.set_visible(false)?; // shown once the page turns the tray on
             Ok(())
         })
         .invoke_handler({
-            #[cfg(feature = "full")] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, choose, fetch_cal, update_check, update_install, oauth] }
-            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest] }
+            #[cfg(feature = "full")] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, choose, fetch_cal, update_check, update_install, oauth] }
+            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray] }
         })
         .on_window_event(|window, event| {
             // closing the main window: let the page finish saving first (at most 3 s), like the Electron app
             if window.label() == "main" {
                 if let WindowEvent::CloseRequested { api, .. } = event {
-                    if !FLUSHED.load(Ordering::SeqCst) {
-                        api.prevent_close();
-                        let _ = window.emit("app:flush", ());
-                        let app = window.app_handle().clone();
-                        std::thread::spawn(move || {
-                            std::thread::sleep(Duration::from_secs(3)); // the page never answered: quit anyway
-                            FLUSHED.store(true, Ordering::SeqCst);
-                            app.exit(0);
-                        });
-                    }
+                    if TRAY.load(Ordering::SeqCst) { api.prevent_close(); let _ = window.hide(); }
+                    else if !FLUSHED.load(Ordering::SeqCst) { api.prevent_close(); quit(window.app_handle()); }
                 }
             }
         })

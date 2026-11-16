@@ -1059,3 +1059,7 @@ P119|Te lo recuerdo de nuevo en $1 minutos
 940|Trae tu calendario
 941|Tus citas aparecen como tareas junto a tus planes.
 942|Ajustes del calendario
+943|Seguir en la bandeja del sistema
+944|Al cerrar la ventana, Groundwork Habits sigue en la bandeja del sistema y los recordatorios siguen llegando
+945|Iniciar con el ordenador
+946|Se abre en la bandeja al iniciar sesión
