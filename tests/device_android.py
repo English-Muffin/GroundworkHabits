@@ -162,5 +162,43 @@ async def run(D, sh):
             signed = await pg.evaluate("!!localStorage.getItem('groundwork-v2-cloud')")
             check('cloud sync: an answer with the wrong state does not sign in', not signed)
             await b.close()
+        # Later on a real notification: it closes, then comes back after the snooze (1 minute here, so the test needn't wait 15)
+        sh('am', 'start', '-n', 'com.groundwork.habits/.MainActivity'); time.sleep(3); b, pg = await page(p, D, sh)
+        await pg.evaluate("Capacitor.Plugins.GroundworkNative.schedule({items:[{id:1999,at:Date.now()+15000,title:'Snooze test',body:'Have you done it?',h:'hz',k:'2026-01-01',alarm:false,yes:'Yes, done',no:'No',later:'Later',snooze:1}]})")
+        await b.close(); sh('input', 'keyevent', '3')
+        shown = False
+        for _ in range(30):
+            if 'Snooze test' in sh('dumpsys', 'notification', '--noredact'): shown = True; break
+            time.sleep(2)
+        later = None
+        if shown:
+            sh('cmd', 'statusbar', 'expand-notifications'); time.sleep(2)
+            for _ in range(2):
+                sh('uiautomator', 'dump', '/sdcard/ui.xml'); xml = sh('cat', '/sdcard/ui.xml') or ''
+                later = re.search(r'text="(?:Later|LATER)"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml)
+                if later: break
+                t = re.search(r'text="Snooze test"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml)
+                if t: sh('input', 'swipe', t.group(1), t.group(2), t.group(1), str(int(t.group(2)) + 300)); time.sleep(1)
+        check('reminder notification has a Later button', bool(later))
+        if later:
+            sh('input', 'tap', str((int(later.group(1)) + int(later.group(3))) // 2), str((int(later.group(2)) + int(later.group(4))) // 2)); time.sleep(3)
+            gone = 'Snooze test' not in sh('dumpsys', 'notification', '--noredact')
+            back = False
+            for _ in range(50):
+                if 'Snooze test' in sh('dumpsys', 'notification', '--noredact'): back = True; break
+                time.sleep(3)
+            check('Later closes the notification and it comes back after the snooze time', gone and back, [gone, back])
+        sh('cmd', 'statusbar', 'collapse')
+        # Restore a backup kept on the phone: listed in Settings, opens the restore preview
+        sh('am', 'start', '-n', 'com.groundwork.habits/.MainActivity'); time.sleep(3); b, pg = await page(p, D, sh)
+        await pg.evaluate("Capacitor.Plugins.GroundworkNative.backup({name:'groundwork-backup-2020-01-01.json',text:JSON.stringify({v:1,habits:[{id:'hb',name:'From backup',type:'daily',color:'#22d3be'}],log:{},tasks:{},goals:[]}),keep:8})")
+        await pg.evaluate("modal=null;location.hash='#settings/data'"); await pg.wait_for_timeout(800)
+        await pg.evaluate("document.querySelector('#main [data-act=lbaks]').click()"); await pg.wait_for_timeout(1500)
+        rows = await pg.evaluate("[...document.querySelectorAll('#modal [data-act=cbakrestore]')].map(x=>x.dataset.n)")
+        if 'groundwork-backup-2020-01-01.json' in rows:
+            await pg.evaluate("document.querySelector('#modal [data-act=cbakrestore][data-n=\"groundwork-backup-2020-01-01.json\"]').click()"); await pg.wait_for_timeout(1500)
+        prev = await pg.evaluate("!!document.querySelector('#modal [data-act=imprevok]')")
+        check('Restore a backup lists the phone\'s backups and opens the restore preview', 'groundwork-backup-2020-01-01.json' in rows and prev, [rows, prev])
+        await pg.evaluate("modal=null;render();location.hash='#today'"); await b.close()
 
 if __name__ == "__main__": main()
