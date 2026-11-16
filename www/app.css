@@ -371,7 +371,7 @@ html.widget .top{display:none}html.widget body{padding:12px}html.widget .app{pad
 .tstreaks{margin:14px 0}.tsg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
 .tsi{background:var(--g15);border-radius:14px;padding:12px 14px;display:grid;gap:4px}.tsi b{font-size:20px;font-weight:700}
 .review{margin:0 0 14px}.rvg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:12px}
-.rvg>div{display:grid;gap:4px}.rvg b{font-size:22px;font-weight:700}
+.rvg>div{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}.rvg b{font-size:22px;font-weight:700}
 .heat{margin-bottom:14px}.hwrap{overflow-x:auto;margin-top:12px;padding-bottom:4px}
 .hmon,.hgrid{display:grid;grid-template-columns:repeat(var(--hw,26),minmax(10px,1fr));gap:3px;max-width:1500px}
 .hmon span{font-size:9px;color:var(--muted);height:13px;white-space:nowrap;overflow:visible}

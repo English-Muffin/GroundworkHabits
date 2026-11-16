@@ -13,7 +13,7 @@ BIG = r"""(()=>{const p=n=>String(n).padStart(2,'0'),k=d=>d.getFullYear()+'-'+p(
  const S={v:1,habits:[],log:{},tasks:{},goals:[],journal:{},quits:[],count:{},notes:{},templates:[]};const now=new Date();
  const C=['#8b5cf6','#3b82f6','#f43f5e','#22c55e','#f59e0b','#ec4899'];
  for(let i=0;i<40;i++){const id='h'+i,ty=i<26?'daily':i<34?'weekly':'monthly';S.habits.push({id,name:(i%5===0?'LONG':'Habit '+i)+(i%7===0?' with emoji-free extra words to wrap':''),type:ty,color:C[i%6],target:i%4===0?8:1,per:i%3===0?3:7});S.log[id]={};S.count[id]={};S.notes[id]={};
-   for(let d=0;d<200;d++){const dt=new Date(now);dt.setDate(dt.getDate()-d);if(Math.random()<.6)S.log[id][k(dt)]=1;if(i%4===0&&Math.random()<.3)S.count[id][k(dt)]=3;if(Math.random()<.05)S.notes[id][k(dt)]='Note '+'lorem ipsum '.repeat(10)}
+   for(let d=0;d<200;d++){const dt=new Date(now);dt.setDate(dt.getDate()-d);if(Math.random()<.6||i===5&&d<30)S.log[id][k(dt)]=1;/* h5 (a long name) always has the best streak: Insights' week review shows it */if(i%4===0&&Math.random()<.3)S.count[id][k(dt)]=3;if(Math.random()<.05)S.notes[id][k(dt)]='Note '+'lorem ipsum '.repeat(10)}
    S.log[id][now.getFullYear()+'-'+p(now.getMonth()+1)+'-W2']=1;S.log[id][now.getFullYear()+'-'+p(now.getMonth()+1)]=1}
  for(let d=-40;d<20;d++){const dt=new Date(now);dt.setDate(dt.getDate()+d);S.tasks[k(dt)]={items:[...Array(12)].map((_,j)=>({id:'t'+d+'_'+j,text:j%4===0?'LONG task '+'word '.repeat(20):'Task '+j,done:Math.random()<.5,...(j===11?{cal:'u'+d}:{})})),mind:{energy:Math.ceil(Math.random()*10),focus:5,motivation:7}}}
  for(let i=0;i<30;i++)S.goals.push({id:'g'+i,title:i%3?'Goal '+i:'LONG',area:'Health',pct:(i*7)%101});
