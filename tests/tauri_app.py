@@ -17,6 +17,16 @@ DIRS = [LOCAL / ID] + ([ROAM / ID] if LITE else [ROAM / 'Groundwork Habits'])
 PORT = 9556
 PICK = pathlib.Path(tempfile.mkdtemp(prefix='gh-folder-'))
 fails = []
+async def wait_js(pg, expr, timeout=15000):
+    # a Python poll: Playwright's wait-for-function evaluates a string, which the app's CSP (no 'unsafe-eval') refuses
+    for _ in range(timeout // 200):
+        try:
+            if await pg.evaluate(expr): return
+        except Exception: pass
+        await asyncio.sleep(0.2)
+    raise TimeoutError(expr)
+
+
 def check(name, ok, info=''):
     print(('PASS ' if ok else 'FAIL ') + name + (('  ' + str(info)[:300]) if not ok and info else ''))
     if not ok: fails.append(name)
@@ -64,7 +74,7 @@ async def run(had_electron):
         p = start({'GROUNDWORK_TEST_PICK': str(PICK), 'GROUNDWORK_TEST_ANSWERS': '0'})
         try:
             b, pg = await main_page(pw)
-            await pg.wait_for_function('window.GroundworkTest&&document.title.includes("Groundwork Habits")', timeout=15000)
+            await wait_js(pg, '!!(window.GroundworkTest&&document.title.includes("Groundwork Habits"))')
             check(('Lite' if LITE else 'the full app') + ' is running', await pg.evaluate('document.documentElement.classList.contains("lite")') == LITE)
             if not LITE and had_electron:
                 check('the move from Electron: the saved data is there on the first start', await pg.evaluate("window.GroundworkTest.state().habits.length>0"))
@@ -121,7 +131,7 @@ async def run(had_electron):
         p = start()
         try:
             b, pg = await main_page(pw)
-            await pg.wait_for_function('window.GroundworkTest', timeout=15000)
+            await wait_js(pg, '!!(window.GroundworkTest)')
             check('data survives closing and reopening', await pg.evaluate("window.GroundworkTest.state().habits.some(h=>h.name==='Tauri habit')"))
             await b.close()
         finally:
