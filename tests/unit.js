@@ -10,6 +10,8 @@ const stub = () => new Proxy(function () {}, {
   apply: () => stub(), construct: () => stub(), set: () => true,
 });
 const store = new Map();
+// a signed-in Google Calendar for the paging test (calEvents reads its token at load)
+store.set('groundwork-v2-gcal', JSON.stringify({ tok: 'T', exp: 4e12, rt: '' }));
 const sandbox = {
   console, Date, Math, JSON, Intl, Promise, Set, Map, URL, setTimeout: () => 0, clearTimeout: () => {}, setInterval: () => 0,
   TextEncoder, TextDecoder, crypto: globalThis.crypto, atob, btoa,
@@ -25,11 +27,13 @@ const src = order.map(n => fs.readFileSync(path.join(www, 'js', n + '.js'), 'utf
 // the files share one scope; the tail hands the functions under test (and a way to set "today") to this script
 vm.runInContext("'use strict';\n" + src + `
 ;globalThis.__T={backupPrefs,restorePrefs,getP:()=>P,freezeOf,curStreak,repeatDates,gPct,gForecast,gLine,clean,backupProblem,missTwice,chDone,chLine,histStep,
-  setToday:d=>{TODAY=d},setS:x=>{S=x;fzCache.clear()},getS:()=>S,dk,addDays,empty,merge3,syncIn,parseIcs:typeof parseIcs==='function'?parseIcs:null};`, sandbox, { filename: 'app' });
+  setToday:d=>{TODAY=d},setS:x=>{S=x;fzCache.clear()},getS:()=>S,dk,addDays,empty,merge3,syncIn,gEvent,cloud:()=>CLOUD,parseIcs:typeof parseIcs==='function'?parseIcs:null};`, sandbox, { filename: 'app' });
 const T = sandbox.__T;
 
 let fails = 0, n = 0;
-const test = (name, fn) => { n++; try { fn(); console.log('PASS ' + name); } catch (e) { fails++; console.log('FAIL ' + name + '\n  ' + e.message); } };
+const pending = [], fail = (name, e) => { fails++; console.log('FAIL ' + name + '\n  ' + e.message); };
+// a test may be async: its result is waited for before the summary
+const test = (name, fn) => { n++; try { const r = fn(); if (r && r.then) pending.push(r.then(() => console.log('PASS ' + name), e => fail(name, e))); else console.log('PASS ' + name); } catch (e) { fail(name, e); } };
 const same = (a, b) => assert.deepStrictEqual(Array.from(a), b); // arrays from the sandbox are another realm's Array
 const day = s => new Date(s + 'T00:00');
 const habit = (log, extra) => { const S = T.empty(); const h = Object.assign({ id: 'h1', name: 'Read', type: 'daily', color: '#9cc96b', target: 1, per: 7, track: 'check' }, extra); S.habits.push(h); S.log.h1 = log; T.setS(S); return h; };
@@ -166,5 +170,30 @@ test('Google Drive uploads avoid multipart (the Android WebView fails those befo
   assert.ok(!/uploadType=multipart/.test(fs.readFileSync(path.join(www, 'js', 'cloud.js'), 'utf8')));
 });
 
-console.log(`\n${n - fails} of ${n} unit tests passed`);
-process.exit(fails ? 1 : 0);
+
+// Google Calendar events as tasks: all-day dates stay, timed events land on this device's local day and time
+test('calendar: all-day events keep their date, cancelled and broken ones are dropped', () => {
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(T.gEvent({ id: 'a', summary: 'Holiday', start: { date: '2026-03-10' } }))), { uid: 'g:a', day: '2026-03-10', time: '', text: 'Holiday' });
+  assert.strictEqual(T.gEvent({ id: 'b', status: 'cancelled', start: { date: '2026-03-10' } }), null);
+  assert.strictEqual(T.gEvent({ id: 'c' }), null);
+  assert.strictEqual(T.gEvent({ id: 'd', start: { dateTime: 'not a date' } }), null);
+  assert.strictEqual(T.gEvent({ id: 'e', start: { date: '2026-03-10' } }).text, '', 'no title stays empty (applyCalendar shows "(No title)")');
+});
+test('calendar: a late-evening event in another time zone lands on the next day here', () => {
+  const was = process.env.TZ; process.env.TZ = 'Europe/Lisbon';
+  try {
+    const x = T.gEvent({ id: 'f', summary: 'Call', start: { dateTime: '2026-03-10T23:30:00-08:00' } }); // 07:30 the next morning in Lisbon (UTC+0 in March)
+    assert.strictEqual(x.day, '2026-03-11'); assert.strictEqual(x.time, '07:30');
+    const y = T.gEvent({ id: 'g', summary: 'Late', start: { dateTime: '2026-07-01T23:59:00+01:00' } }); // summer: Lisbon is UTC+1, same moment
+    assert.strictEqual(y.day, '2026-07-01'); assert.strictEqual(y.time, '23:59');
+  } finally { if (was === undefined) delete process.env.TZ; else process.env.TZ = was; }
+});
+test('calendar: more than one page of events is read to the end', async () => {
+  const pages = { '': { items: [{ id: '1', start: { date: '2026-03-01' } }], nextPageToken: 'p2' }, p2: { items: [{ id: '2', start: { date: '2026-03-02' } }] } };
+  let calls = 0;
+  sandbox.fetch = async url => { calls++; const tok = new URL(url).searchParams.get('pageToken') || ''; return { ok: true, status: 200, json: async () => pages[tok] }; };
+  const evs = await T.cloud().calEvents('2026-02-01', '2026-04-30');
+  assert.deepStrictEqual(Array.from(evs, e => e.uid), ['g:1', 'g:2']); assert.strictEqual(calls, 2);
+});
+
+Promise.all(pending).then(() => { console.log(`\n${n - fails} of ${n} unit tests passed`); process.exit(fails ? 1 : 0); });
