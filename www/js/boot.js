@@ -68,6 +68,7 @@ function alarmStart(){ // short beeps every 1.5 s for up to a minute
   alarmStop();let n=0;const beep=()=>{try{const A=alarmStart.a||(alarmStart.a=new (window.AudioContext||window.webkitAudioContext)()),o=A.createOscillator(),g=A.createGain();o.frequency.value=880;o.connect(g);g.connect(A.destination);g.gain.setValueAtTime(.2,A.currentTime);g.gain.exponentialRampToValueAtTime(.001,A.currentTime+.5);o.start();o.stop(A.currentTime+.5)}catch(e){}if(++n>=40)alarmStop()};
   beep();alarmT=setInterval(beep,1500)}
 // Later: this reminder waits until P.remSnooze[id] (per device)
+const snoozeMin=()=>[5,15,30,60].includes(P.snoozeMin)?P.snoozeMin:15;
 const snoozed=id=>((P.remSnooze||{})[id]||0)>Date.now();
 function checkHabitReminders(){
   if(LN||WIDGET||encWait)return;const n=new Date(),now=n.getHours()*60+n.getMinutes(),d=dk(TODAY);
@@ -98,8 +99,8 @@ async function syncReminders(){
     const now=new Date(),items=[];
     hs.slice(0,25).forEach((h,i)=>{const [hh,mm]=h.rem.t.split(':').map(Number);
       for(let d=0;d<14;d++){const at=new Date(now.getFullYear(),now.getMonth(),now.getDate()+d,hh,mm),k=pKey(h,at);if(at<=now||L(h)[k]||isRest(h,at))continue;
-        items.push({id:1000+i*20+d,at:at.getTime(),title:remTitle(h.name),body:remBody('Have you done it '+perWord(h)+'?','habit'),h:h.id,k,alarm:h.rem.m==='alarm',rep:h.type,yes:tx('Yes, done'),no:tx('No'),later:tx('Later')})}});
-    ts.slice(0,200).forEach(([k,it],n)=>{const [hh,mm]=it.rem.t.split(':').map(Number),at=new Date(k+'T00:00');at.setHours(hh,mm);if(at>now)items.push({id:2000+n,at:at.getTime(),title:remTitle(it.text),body:remBody('Have you done it?','task'),h:it.id,k,alarm:it.rem.m==='alarm',yes:tx('Yes, done'),no:tx('No'),later:tx('Later')})});
+        items.push({id:1000+i*20+d,at:at.getTime(),title:remTitle(h.name),body:remBody('Have you done it '+perWord(h)+'?','habit'),h:h.id,k,alarm:h.rem.m==='alarm',rep:h.type,yes:tx('Yes, done'),no:tx('No'),later:tx('Later'),snooze:snoozeMin()})}});
+    ts.slice(0,200).forEach(([k,it],n)=>{const [hh,mm]=it.rem.t.split(':').map(Number),at=new Date(k+'T00:00');at.setHours(hh,mm);if(at>now)items.push({id:2000+n,at:at.getTime(),title:remTitle(it.text),body:remBody('Have you done it?','task'),h:it.id,k,alarm:it.rem.m==='alarm',yes:tx('Yes, done'),no:tx('No'),later:tx('Later'),snooze:snoozeMin()})});
     goalDue().forEach(([g,key,at,txt],n)=>{if(at>now&&at-now<60*864e5)items.push({id:4000+n,at:at.getTime(),title:'Groundwork Habits',body:tx(feat('remnames')?txt:'A goal deadline is coming up'),h:g.id,k:key,info:true})});
     const res=await NB.schedule({items});
     // Android 14+: alarms ring on time only with the user's OK, otherwise they can be a few minutes late

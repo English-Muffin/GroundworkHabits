@@ -1051,3 +1051,8 @@ P117|one=$1 Ziel‖other=$1 Ziele
 934|Mit Google Kalender verbunden
 935|Melde dich erneut bei Google Kalender an
 P118|Mit Google Kalender verbunden als $1
+936|Später wartet
+937|Wenn du bei einer Erinnerung auf Später tippst
+938|Melde dich erneut bei Google Kalender an, um weiter zu synchronisieren
+939|Erneut anmelden
+P119|Erinnere dich in $1 Minuten erneut

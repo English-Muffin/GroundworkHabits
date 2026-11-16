@@ -20,7 +20,7 @@ function setStatus(k){
   if(k==='language')return P.lang?(LANGS.find(l=>l[0]===P.lang)||['','English'])[1]:'Same as this device';
   if(k==='features')return FEAT.filter(f=>f[0]!=='remnames'&&f[0]!=='reminder'&&feat(f[0])).length+' of '+(FEAT.length-2)+' on';
   if(k==='reminders')return permS&&!permS.notify?'Notifications blocked':feat('reminder')?'Daily at '+(P.remTime||'21:00'):'Daily reminder off';
-  if(k==='calendar')return P.cal==='google'?'Google Calendar':P.cal?'Connected':'Not connected';
+  if(k==='calendar')return P.cal==='google'?(CLOUD&&CLOUD.calOff?'Sign in again':'Google Calendar'):P.cal?'Connected':'Not connected';
   if(k==='data'){const e=P.bakEvery===undefined?7:P.bakEvery;return (e?({1:'Backs up every day',7:'Backs up every week',30:'Backs up every month'})[e]:'Automatic backup off')+(P.bakAt?' · last '+new Date(P.bakAt).toLocaleDateString():'')}
   if(k==='security')return P.lock?'PIN on'+(P.bio?' · fingerprint on':''):'No PIN'
   return 'Groundwork Habits '+APPV}
@@ -38,12 +38,13 @@ function setSection(k){
       +(feat('reminder')?(LN||'Notification' in window?srow('Time',LN?'A notification every day, even when Groundwork Habits is closed':'Only while Groundwork Habits is open or in the background','<input type="time" class="field stime" id="remTime" value="'+esc(P.remTime||'21:00')+'" aria-label="Reminder time">'):srow('Reminders aren’t supported here yet','')):''))
     +sgrp('Habit and task reminders',srow('Show names in reminders',FEATD.remnames,sw('feat','remnames',feat('remnames'),'Show names in reminders'))
       +srow('Set a reminder','Open a habit (tap its name) or tap the bell on a task','')
+      +srow('Later waits','When you tap Later on a reminder','<select class="field ssel" id="snoozeSel" aria-label="Later waits">'+[5,15,30,60].map(n=>'<option value="'+n+'"'+(snoozeMin()===n?' selected':'')+'>'+n+' min</option>').join('')+'</select>','snooze later')
       +(NB&&NB.permStatus?srow('Notifications',!permS?'Checking…':permS.notify?'Allowed':'Blocked: reminders can’t appear',permS&&!permS.notify?sbtn('notifyopen','Open settings'):'')
         +srow('Exact alarms',!permS?'Checking…':permS.exact?'Allowed: reminders come on time':'Not allowed: reminders may come a few minutes late',permS&&!permS.exact?sbtn('exactok','Allow'):'')
         :NB&&NB.openExactSettings?sgo('exactok','Allow exact alarms','Android 14 and later: lets alarms ring on time instead of a few minutes late'):'')
       +sgo('testnote','Send a test notification','Checks that notifications reach you'));
   const gcan=CLOUD&&CLOUD.can('google');
-  if(k==='calendar')b=sgrp('Google Calendar',calFetch||gcan?(P.cal?srow(P.cal==='google'?'Connected to Google Calendar'+(CLOUD&&CLOUD.calWho()?' as '+esc(CLOUD.calWho()):''):'Connected','Events sync every 15 minutes'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''),sbtn('calsync','Sync now'))+sgo('caloff','Stop calendar sync','Removes the calendar events from your tasks','red')
+  if(k==='calendar')b=sgrp('Google Calendar',calFetch||gcan?(P.cal?srow(P.cal==='google'?'Connected to Google Calendar'+(CLOUD&&CLOUD.calWho()?' as '+esc(CLOUD.calWho()):''):'Connected',P.cal==='google'&&CLOUD&&CLOUD.calOff?'Signed out. Sign in again to keep syncing':'Events sync every 15 minutes'+(P.calAt?', last '+new Date(P.calAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''),P.cal==='google'&&CLOUD&&CLOUD.calOff?sbtn('gcalsign','Sign in'):sbtn('calsync','Sync now'))+sgo('caloff','Stop calendar sync','Removes the calendar events from your tasks','red')
       :(gcan?sgo('gcalsign','Sign in with Google','Shows the events of your main Google Calendar as tasks. Read-only'):'')+(calFetch?sgo('calset','Connect a calendar…','Paste your calendar’s secret iCal address; no Google login needed'):'')):srow('Calendar sync works in the desktop and Android apps',''))
     +sgrp('Export',sgo('calexport','Export tasks to calendar (.ics)','Import the file in Google Calendar: Settings, Import & export'));
   if(k==='data'){const can=(DFS&&DFS.backup)||(NB&&NB.backup)||(CLOUD&&CLOUD.on()),e=P.bakEvery===undefined?7:P.bakEvery;

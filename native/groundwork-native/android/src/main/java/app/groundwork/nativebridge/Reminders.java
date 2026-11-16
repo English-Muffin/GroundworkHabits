@@ -174,9 +174,8 @@ final class Reminders {
         try { NotificationManagerCompat.from(c).notify(id, n); } catch (SecurityException e) {}
     }
 
-    // Later: the same reminder again in 15 minutes. The item travels with the alarm, because the app may have
+    // Later: the same reminder again after the item's "snooze" minutes (the user's choice, 15 by default). The item travels with the alarm, because the app may have
     // rescheduled its list in between (past reminders drop out of it)
-    static final long SNOOZE_MS = 15 * 60 * 1000L;
     private static PendingIntent snoozeIntent(Context c, int id, JSONObject it) {
         Intent i = new Intent(c, ReminderReceiver.class).setAction(ReminderReceiver.SNOOZE).putExtra("id", id).putExtra("item", it.toString());
         return PendingIntent.getBroadcast(c, id + 300000, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -186,7 +185,9 @@ final class Reminders {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(c, ReminderReceiver.class).setAction(ReminderReceiver.FIRE).putExtra("id", id).putExtra("item", item);
         PendingIntent pi = PendingIntent.getBroadcast(c, id + 400000, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        long at = System.currentTimeMillis() + SNOOZE_MS;
+        int min = 15;
+        try { min = Math.max(1, Math.min(60, new JSONObject(item).optInt("snooze", 15))); } catch (Exception e) {}
+        long at = System.currentTimeMillis() + min * 60000L;
         if (Build.VERSION.SDK_INT < 23) am.setExact(AlarmManager.RTC_WAKEUP, at, pi);
         else if (canExact(c)) am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
         else am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);

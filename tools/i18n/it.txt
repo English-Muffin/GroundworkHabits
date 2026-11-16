@@ -1051,3 +1051,8 @@ P117|one=$1 obiettivo‖other=$1 obiettivi
 934|Collegato a Google Calendar
 935|Accedi di nuovo a Google Calendar
 P118|Collegato a Google Calendar come $1
+936|Più tardi aspetta
+937|Quando tocchi Più tardi su un promemoria
+938|Accedi di nuovo a Google Calendar per continuare a sincronizzare
+939|Accedi di nuovo
+P119|Te lo ricordo di nuovo tra $1 minuti

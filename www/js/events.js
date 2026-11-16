@@ -110,7 +110,7 @@ document.addEventListener('click',e=>{
     case 'afoldno':persist=false;if(modal.cloud)CLOUD.signOut();else{FOLD.clearFolder();P.andDir='';applyPrefs()}modal=null;break;
     case 'csign':persist=false;menuOpen=false;if(modal&&modal.kind==='tips'){try{localStorage.setItem('groundwork-tips','1')}catch(e){}modal=null}CLOUD.signIn(t.dataset.p).catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
     case 'creconnect':persist=false;reconnectToast.told=0;CLOUD.reconnect().catch(()=>toast('Could not sign in'));break;
-    case 'syncgo':persist=false;location.hash='#settings/data';return;
+    case 'syncgo':persist=false;location.hash=P.cal==='google'&&CLOUD&&CLOUD.calOff?'#settings/calendar':'#settings/data';return;
     case 'lbaks':case 'cbaks':{persist=false;const here=act==='lbaks';modal={kind:'cbaks',here,list:null};(here?localBackups():CLOUD.backups()).then(l=>{if(modal&&modal.kind==='cbaks'){modal.list=l;render()}}).catch(()=>{if(modal&&modal.kind==='cbaks'){modal.list=[];modal.err=1;render()}});break}
     case 'cbakrestore':persist=false;(modal&&modal.here?localBackup(t.dataset.n):CLOUD.getBackup(t.dataset.n)).then(x=>{if(isEnc(x)){modal={kind:'impin',text:x};focusSel='#impPin'}else{modal=null;previewImport(JSON.parse(x))}render()}).catch(()=>toast('Could not load that backup'));break;
     case 'cwipe':persist=false;if(!confirmWipe){confirmWipe=true;break}confirmWipe=false;{const n=CLOUD.name();CLOUD.wipe().then(()=>{toast('Deleted your data from '+n+'. It stays on this device');render()}).catch(()=>toast('Could not delete your data from '+n))}break;
@@ -127,8 +127,8 @@ document.addEventListener('click',e=>{
     case 'notifyopen':persist=false;if(NB&&NB.openNotifySettings)NB.openNotifySettings();break;
     case 'exactok':persist=false;$('#toast').hidden=true;if(NB&&NB.openExactSettings)NB.openExactSettings();break;
     case 'askyes':alarmStop();remYes(t.dataset.h,t.dataset.k);if(ASK){window.close();return}modal=null;break;
-    case 'asklater':alarmStop();{const id=t.dataset.id,f=Object.assign({},P.remFired);delete f[id];P.remFired=f;P.remSnooze=Object.assign({},P.remSnooze,{[id]:Date.now()+15*6e4});applyPrefs()}
-      if(ASK){window.close();return}modal=null;persist=false;toast('Reminding you again in 15 minutes');break;
+    case 'asklater':alarmStop();{const id=t.dataset.id,f=Object.assign({},P.remFired);delete f[id];P.remFired=f;P.remSnooze=Object.assign({},P.remSnooze,{[id]:Date.now()+snoozeMin()*6e4});applyPrefs()}
+      if(ASK){window.close();return}modal=null;persist=false;toast('Reminding you again in '+snoozeMin()+' minutes');break;
     case 'askno':alarmStop();if(ASK){window.close();return}modal=null;persist=false;break;
     case 'mtrack':{const g=x=>{const e=$(x);return e?e.value:null};if(g('#mUnit')!==null)modal.unit=g('#mUnit');if(g('#mGoal')!==null)modal.goal=g('#mGoal');if(g('#mTarget')!==null)modal.target=g('#mTarget');modal.track=t.dataset.v;persist=false;break}
     case 'mrem':modal.rem=t.dataset.v;persist=false;break;
@@ -361,6 +361,7 @@ document.addEventListener('change',e=>{
   if(e.target.dataset&&e.target.dataset.mind){render()}
   if(e.target.id==='lockSel'){P.lockIdle=+e.target.value;applyPrefs();render();return}
   if(e.target.id==='bakSel'){P.bakEvery=+e.target.value;applyPrefs();autoBackup();return}
+  if(e.target.id==='snoozeSel'){P.snoozeMin=+e.target.value;applyPrefs();syncReminders();return}
   if(e.target.id==='bakKeepSel'){P.bakKeep=+e.target.value;applyPrefs();render();return} // fewer copies take effect at the next backup
   if(e.target.id==='hSort'){P.hsort=e.target.value||undefined;applyPrefs();render();return}
   if(e.target.id==='heatSel'){P.heatM=e.target.value==='auto'?undefined:+e.target.value;applyPrefs();render();return}

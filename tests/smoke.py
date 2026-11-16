@@ -702,6 +702,10 @@ async def cloudSync(b):
     txt = await pg.locator('#main').inner_text()
     check('calendar: Sign in with Google turns the main calendar\'s events into tasks (cancelled ones left out)',
           cal == ['09:30 Dentist', 'Holiday'] and store.get('gcal_auth') == 'Bearer G1' and 'Connected to Google Calendar' in txt and not errs3, [cal, store.get('gcal_auth'), txt[-300:], errs3])
+    await pg.evaluate("(()=>{const g=JSON.parse(localStorage.getItem('groundwork-v2-gcal'));g.exp=0;localStorage.setItem('groundwork-v2-gcal',JSON.stringify(g))})()")
+    await pg.reload(); await pg.wait_for_timeout(1200)
+    st = await pg.evaluate("[document.getElementById('toast').textContent,document.getElementById('syncBtn').hidden,document.getElementById('syncBtn').classList.contains('serr'),!!document.querySelector('#main [data-act=gcalsign]')]")
+    check('calendar: when the web sign-in runs out, it asks to sign in again (toast, red header icon, Sign in in Settings)', 'Sign in to Google Calendar again' in st[0] and st[1] is False and st[2] and st[3], st)
     await ctx.close()
     # no sign-in IDs (a build before the apps are registered): no Cloud sync group at all; Lite never has one
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={dropbox:'',google:'',googleWeb:''}")
@@ -1075,10 +1079,15 @@ async def reminders(b):
     await pg.click('#modal [data-act=asklater]'); await pg.wait_for_timeout(200)
     gone = await pg.locator('#modal .ask').count() == 0
     await pg.evaluate("GroundworkTest.remCheck()"); waits = await pg.locator('#modal .ask').count() == 0
-    await pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('groundwork-prefs'));for(const k in p.remSnooze)p.remSnooze[k]=Date.now()-1000;localStorage.setItem('groundwork-prefs',JSON.stringify(p))})()")
+    await pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('groundwork-prefs'));for(const k in p.remSnooze)p.remSnooze[k]=Date.now()-1000;p.snoozeMin=30;localStorage.setItem('groundwork-prefs',JSON.stringify(p))})()")
     await pg.reload(); await pg.wait_for_timeout(300); await pg.evaluate("GroundworkTest.remCheck()")
     back = await pg.locator('#modal .ask', has_text='Stretch').count() == 1
     check('reminder Later: closes it, waits 15 minutes, then asks again', gone and waits and back, [gone, waits, back])
+    await pg.click('#modal [data-act=asklater]'); await pg.wait_for_timeout(200)
+    mins = await pg.evaluate("(()=>{const s=JSON.parse(localStorage.getItem('groundwork-prefs')).remSnooze;return Math.round((Math.max(...Object.values(s))-Date.now())/60000)})()")
+    check('reminder Later waits the chosen time (30 minutes)', mins in (29, 30), mins)
+    await pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('groundwork-prefs'));for(const k in p.remSnooze)p.remSnooze[k]=Date.now()-1000;localStorage.setItem('groundwork-prefs',JSON.stringify(p))})()")
+    await pg.reload(); await pg.wait_for_timeout(300); await pg.evaluate("GroundworkTest.remCheck()")
     await pg.click('#modal [data-act=askyes]')
     done = await pg.evaluate(f"(()=>{{const s=JSON.parse(localStorage.getItem('groundwork-v2'));return !!s.log[s.habits[0].id][{TK}]}})()")
     check('habit reminder saves, skips a time already passed, asks Yes/No and marks done', rem == {'t': '00:00', 'm': 'ask'} and early == 0 and asked == 1 and done)

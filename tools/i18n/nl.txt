@@ -1051,3 +1051,8 @@ P117|one=$1 doel‖other=$1 doelen
 934|Verbonden met Google Agenda
 935|Log opnieuw in bij Google Agenda
 P118|Verbonden met Google Agenda als $1
+936|Later wacht
+937|Als je bij een herinnering op Later tikt
+938|Log opnieuw in bij Google Agenda om te blijven synchroniseren
+939|Opnieuw inloggen
+P119|Ik herinner je over $1 minuten opnieuw

@@ -1051,3 +1051,8 @@ P117|one=$1 objectif‖other=$1 objectifs
 934|Connecté à Google Agenda
 935|Reconnectez-vous à Google Agenda
 P118|Connecté à Google Agenda en tant que $1
+936|Plus tard attend
+937|Quand vous touchez Plus tard sur un rappel
+938|Reconnectez-vous à Google Agenda pour continuer la synchronisation
+939|Se reconnecter
+P119|Je vous le rappelle dans $1 minutes

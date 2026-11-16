@@ -142,7 +142,7 @@ function toCsv(){
    folders or per-device state: a backup can be shared, and those belong to one device or are secret */
 const PREF_KEYS={theme:v=>['system','dark','light','amoled'].includes(v),accent:v=>/^#[0-9a-f]{6}$/i.test(v),
   feat:v=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(x=>typeof x==='boolean'),
-  lang:v=>LANGS.some(l=>l[0]===v),tabNames:v=>typeof v==='boolean',remTime:v=>/^([01]\d|2[0-3]):[0-5]\d$/.test(v),
+  lang:v=>LANGS.some(l=>l[0]===v),tabNames:v=>typeof v==='boolean',remTime:v=>/^([01]\d|2[0-3]):[0-5]\d$/.test(v),snoozeMin:v=>[5,15,30,60].includes(v),
   heatM:v=>[3,6,12].includes(v),hsort:v=>['streak','name','missed'].includes(v),bakEvery:v=>[0,1,7,30].includes(v),bakKeep:v=>Number.isInteger(v)&&v>=1&&v<=8,lockIdle:v=>[1,5,15,30].includes(v),focusMin:v=>Number.isInteger(v)&&v>0&&v<=240,
   layout:v=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(a=>Array.isArray(a)&&a.every(x=>typeof x==='string'&&x.length<40))};
 const backupPrefs=()=>Object.fromEntries(Object.keys(PREF_KEYS).filter(k=>P[k]!==undefined).map(k=>[k,P[k]]));
@@ -287,7 +287,9 @@ function applyCalendar(evs){
 }
 async function pullCalendar(manual){
   if(P.cal==='google'){if(!CLOUD||!CLOUD.calOn()||encWait)return;let evs;
-    try{evs=await CLOUD.calEvents(dk(addDays(TODAY,-30)),dk(addDays(TODAY,90)))}catch(e){if(manual)toast(e&&e.message||'Could not reach your calendar');return}
+    try{evs=await CLOUD.calEvents(dk(addDays(TODAY,-30)),dk(addDays(TODAY,90)))}catch(e){if(CLOUD.calOff){if(!pullCalendar.told||manual){pullCalendar.told=1;toastAct('Sign in to Google Calendar again to keep syncing','Sign in','gcalsign')}if(typeof syncBtn==='function')syncBtn();if(view==='settings'&&!modal)render()}
+      else if(manual)toast(e&&e.message||'Could not reach your calendar');return}
+    pullCalendar.told=0;
     const n=applyCalendar(evs);P.calAt=Date.now();applyPrefs();save();if(!modal&&!addingTask)render();if(manual)toast(n+' calendar events synced');return}
   if(!calFetch||!P.cal||encWait)return;
   let r;try{r=await calFetch(P.cal)}catch(e){}
