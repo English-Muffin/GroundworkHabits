@@ -61,14 +61,16 @@ is the first proper one. What changed in the earlier versions is still in the [c
 - **Never miss twice:** after a missed day, Today marks the habit so one miss doesn't become two.
 - **Challenges:** 7, 21, 30, 66 or 100 days of a habit, with the day you're on and a medal at the end.
 - **Reminders per habit:** a quiet Yes or No notification, or an alarm. On Android you answer from the
-  notification without opening the app.
+  notification without opening the app, or tap **Later** to be asked again in 5, 15, 30 or 60 minutes.
+  Settings shows whether Android lets notifications and exact alarms through, with a button to fix it.
 
 **Tasks**
 
 - A week of task columns with a progress ring per day and a mindset tracker (energy, focus, motivation).
 - Repeating tasks (every day, weekday, week, 2 weeks, month, the 2nd Tuesday, the last Friday),
   reminders on any task, a focus timer, and missed tasks marked with a red X.
-- Google Calendar events (no Google login) show up as tasks, including repeating events, in your time zone.
+- Your calendar's events show up as tasks, including repeating events, in your time zone: **sign in with
+  Google** (read-only, also in the web app) or paste a calendar's secret address with no login at all.
 
 **Goals**
 
@@ -93,8 +95,9 @@ is the first proper one. What changed in the earlier versions is still in the [c
   <img src="assets/readme/today-light.png" alt="Today in the light theme with a pink accent" width="49%">
 </p>
 
-- Dark, AMOLED and light themes and any accent colour: moss green by default, presets, or your own from
-  the built-in picker (hue, saturation, lightness or a hex code). Habits and life areas get the same picker.
+- Dark, AMOLED and light themes, or **System** to follow your device, and any accent colour: moss green by
+  default, presets, or your own from the built-in picker (hue, saturation, lightness or a hex code). Habits and
+  life areas get the same picker.
 - **13 languages:** English, Portuguese, Spanish, French, German, Italian, Dutch, Polish, Russian,
   Chinese, Japanese, and Arabic and Hebrew right to left. Groundwork Habits follows your device, or pick
   one in Settings.
@@ -123,8 +126,8 @@ is the first proper one. What changed in the earlier versions is still in the [c
 
 **Your data stays yours**
 
-- Everything is saved on your devices. Automatic backups (daily, weekly or monthly), export to JSON or
-  a spreadsheet, and import on any device.
+- Everything is saved on your devices. Automatic backups (daily, weekly or monthly, keeping 1 to 8 copies)
+  that you can restore from Settings, export to JSON or a spreadsheet, and import on any device.
 - **Cloud sync with Google Drive or Dropbox:** sign in and your data is kept in your own account
   (Drive's hidden app folder, or `Apps/Groundwork Habits` in Dropbox) and synced between your devices.
   Changes made on two devices before they sync are merged, not overwritten. Settings shows when it last
