@@ -1056,3 +1056,6 @@ P118|Verbonden met Google Agenda als $1
 938|Log opnieuw in bij Google Agenda om te blijven synchroniseren
 939|Opnieuw inloggen
 P119|Ik herinner je over $1 minuten opnieuw
+940|Haal je agenda erbij
+941|Afspraken verschijnen als taken naast je plannen.
+942|Agenda-instellingen

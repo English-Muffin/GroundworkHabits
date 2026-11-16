@@ -1056,3 +1056,6 @@ P118|Ligado ao Google Calendar como $1
 938|Inicia sessão no Google Calendar de novo para continuar a sincronizar
 939|Iniciar sessão de novo
 P119|Lembro-te de novo daqui a $1 minutos
+940|Traz o teu calendário
+941|Os compromissos aparecem como tarefas ao lado dos teus planos.
+942|Definições do calendário

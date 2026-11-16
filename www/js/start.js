@@ -1,0 +1,5 @@
+// runs before the app scripts (a file, not inline, for the Content Security Policy):
+// language: the user's choice, else the device language; English needs no file
+(function(){try{if(!localStorage.getItem('groundwork-v2'))for(var i=localStorage.length;i--;){var k=localStorage.key(i);if(k&&k.indexOf('daybook-')===0&&localStorage.getItem('groundwork-'+k.slice(8))===null)localStorage.setItem('groundwork-'+k.slice(8),localStorage.getItem(k))}for(var j=localStorage.length;j--;){var o=localStorage.key(j);if(o&&o.indexOf('daybook-')===0&&localStorage.getItem('groundwork-'+o.slice(8))!==null)localStorage.removeItem(o)}}catch(e){}})(); // data saved under the old name moves across once
+(function(){var L=['pt','es','fr','de','it','nl','pl','ru','zh','ja','ar','he'],l='';try{l=(JSON.parse(localStorage.getItem('groundwork-prefs')||'{}').lang)||''}catch(e){}
+if(!l)l=(navigator.language||'en').slice(0,2).toLowerCase();if(L.indexOf(l)>=0){window.GROUNDWORK_LANG=l;document.documentElement.lang=l;if(l==='ar'||l==='he')document.documentElement.dir='rtl';document.write('<script src="i18n/'+l+'.js"><\/script>')}})()

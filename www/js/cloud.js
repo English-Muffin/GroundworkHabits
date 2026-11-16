@@ -15,6 +15,11 @@ const CLOUD_IDS={
 Object.keys(CLOUD_IDS).forEach(k=>{const v=window.GW_KEYS&&window.GW_KEYS[k];if(v)CLOUD_IDS[k]=v});
 if(TESTING&&window.GW_CLOUD_IDS)Object.assign(CLOUD_IDS,window.GW_CLOUD_IDS); // smoke tests sign in against a fake Dropbox
 const OAUTH_PORT=53682;
+// one Google Calendar event as a task for applyCalendar(): all-day events keep their date; timed ones use this device's
+// local day and time (an event at 23:30 in New York can be tomorrow here). Cancelled ones and ones without a start are dropped
+function gEvent(e){if(!e||e.status==='cancelled'||!e.start)return null;const p=n=>String(n).padStart(2,'0');
+  if(e.start.date)return {uid:'g:'+e.id,day:e.start.date,time:'',text:e.summary||''};const d=new Date(e.start.dateTime);if(isNaN(d))return null;
+  return {uid:'g:'+e.id,day:d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()),time:p(d.getHours())+':'+p(d.getMinutes()),text:e.summary||''}}
 const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
   const SK=KEY+'-cloud',OK=KEY+'-oauth',WEB=!DFS&&!NB;
   const NAT=DFS&&DFS.oauth?u=>DFS.oauth(u):NB&&NB.oauth?u=>NB.oauth({url:u}):null;
@@ -102,7 +107,6 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     P.cal='google';P.calAt=0;applyPrefs();pullCalendar(true)}
   async function gcToken(){if(!gc)throw new Error('signed out');if(gc.tok&&gc.exp>Date.now()+60e3)return gc.tok;if(!gc.rt){api.calOff=true;throw new Error('Sign in to Google Calendar again')}
     let j;try{j=await tokenCall('google',{grant_type:'refresh_token',refresh_token:gc.rt})}catch(e){if(navigator.onLine!==false)api.calOff=true;throw new Error('Sign in to Google Calendar again')}gc.tok=j.access_token;gc.exp=Date.now()+(j.expires_in||3600)*1e3;gkeep();return gc.tok}
-  const pad=n=>String(n).padStart(2,'0'),dayOf=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
   const api={off:false,why:'',
     calOn:()=>!!gc,calOff:false,calWho:()=>gc&&gc.who||'',
     async calSignIn(){if(!can('google')){toast('Sign-in with Google isn’t set up in this version');return}
@@ -120,8 +124,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
           timeMin:new Date(lo+'T00:00').toISOString(),timeMax:new Date(hi+'T23:59:59').toISOString()},page?{pageToken:page}:{})),{headers:{Authorization:'Bearer '+t}});
         if(r.status===401){api.calOff=true;throw new Error('Sign in to Google Calendar again')}
         if(!r.ok){let m='';try{m=((await r.json()).error||{}).message||''}catch(e){}throw new Error(('Google Calendar: '+r.status+' '+m).trim())}
-        const j=await r.json();(j.items||[]).forEach(e=>{if(e.status==='cancelled'||!e.start)return;const all=!!e.start.date,d=all?null:new Date(e.start.dateTime);
-          out.push({uid:'g:'+e.id,day:all?e.start.date:dayOf(d),time:all?'':pad(d.getHours())+':'+pad(d.getMinutes()),text:e.summary||''})});
+        const j=await r.json();(j.items||[]).forEach(e=>{const x=gEvent(e);if(x)out.push(x)});
         if(!j.nextPageToken)break;page=j.nextPageToken}
       api.calOff=false;return out},
     can,PROV,
@@ -149,6 +152,8 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     async resume(){let pend=null;try{pend=JSON.parse(sessionStorage.getItem(OK)||'null')}catch(e){}if(!pend)return;
       const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.slice(1)),s=q.get('state')||h.get('state');if(!s)return;
       try{sessionStorage.removeItem(OK)}catch(e){}history.replaceState(null,'',here());addEventListener('load',()=>{location.hash='settings/data'}); // the route was read before this ran: go there once every script has loaded (a timer could fire between script loads)
+      // the rest uses the whole app (toast, render, save): wait until every script has loaded
+      if(document.readyState!=='complete')await new Promise(r=>addEventListener('load',r,{once:true}));
       if(s!==pend.s){toast('Sign-in was cancelled');return}
       if(pend.cal){addEventListener('load',()=>{location.hash='settings/calendar'});try{if(h.get('access_token'))await gcFinish({access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600});else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}return}
       try{if(h.get('access_token'))await finish(pend.p,{access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600});

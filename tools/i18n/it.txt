@@ -1056,3 +1056,6 @@ P118|Collegato a Google Calendar come $1
 938|Accedi di nuovo a Google Calendar per continuare a sincronizzare
 939|Accedi di nuovo
 P119|Te lo ricordo di nuovo tra $1 minuti
+940|Porta il tuo calendario
+941|Gli appuntamenti appaiono come attività accanto ai tuoi piani.
+942|Impostazioni calendario

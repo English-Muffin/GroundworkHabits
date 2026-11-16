@@ -1056,3 +1056,6 @@ P118|Połączono z Kalendarzem Google jako $1
 938|Zaloguj się ponownie do Kalendarza Google, aby dalej synchronizować
 939|Zaloguj się ponownie
 P119|one=Przypomnę ponownie za $1 minutę‖few=Przypomnę ponownie za $1 minuty‖many=Przypomnę ponownie za $1 minut‖other=Przypomnę ponownie za $1 minuty
+940|Dodaj swój kalendarz
+941|Spotkania pojawią się jako zadania obok twoich planów.
+942|Ustawienia kalendarza

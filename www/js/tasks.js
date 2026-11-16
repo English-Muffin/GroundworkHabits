@@ -68,7 +68,11 @@ function vTasks(){
   const e=addDays(taskWeek,6);
   const range=p2(taskWeek.getDate())+' '+MONR[taskWeek.getMonth()]+' – '+p2(e.getDate())+' '+MONR[e.getMonth()]+' '+e.getFullYear();
   const H=110;
-  let o='<div class="ttop"><section class="card wk"><div class="wkhead"><div><div class="lbl" style="font-size:9px">WEEK STARTING</div><span class="wkpill">'+range+'</span></div>'
+  // an empty week with no calendar connected: offer it once (Not now hides it for good)
+  const gcan=CLOUD&&CLOUD.can('google'),calTip=!tot&&!P.cal&&!P.calTipOff&&(gcan||calFetch);
+  let o=(calTip?'<section class="card tcal"><div class="tcalt"><b>Bring your calendar in</b><span class="sub">Appointments show up as tasks next to your plans.</span></div><div class="row">'
+    +(gcan?'<button class="btn" data-act="gcalsign">Sign in with Google</button>':'')+'<button class="btn ghost" data-act="tcalset">Calendar settings</button><button class="btn ghost" data-act="tcaloff">Not now</button></div></section>':'')
+    +'<div class="ttop"><section class="card wk"><div class="wkhead"><div><div class="lbl" style="font-size:9px">WEEK STARTING</div><span class="wkpill">'+range+'</span></div>'
    +'<div class="wknav"><button data-act="tpl" data-v="tasks" class="wktpl">Templates</button><button data-act="tprev" aria-label="Previous week">'+ic('prev')+'</button><button data-act="tnow">'+(isNow?'This week':'Go to this week')+'</button><button data-act="tnext" aria-label="Next week">'+ic('next')+'</button><button data-act="tmonth">Month</button></div></div>'
    +'<div class="wkbody"><div class="ovp"><div class="t">Overall progress</div><div class="bars">'+data.map(x=>{
       const th=x.todo.length?Math.max(10,x.todo.length/mx*H):6,fh=x.todo.length?x.done/mx*H:0;

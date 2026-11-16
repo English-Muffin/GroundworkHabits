@@ -34,6 +34,8 @@ document.addEventListener('click',e=>{
     case 'calsave':{const u=($('#calUrl').value||'').trim().replace(/^webcal:/i,'https:');
       if(!/^https:\/\/\S+$/i.test(u)){$('#calUrl').focus();toast('Paste the calendar’s secret iCal address (starts with https://)');return}
       P.cal=u;applyPrefs();modal=null;persist=false;pullCalendar(true);break}
+    case 'tcalset':persist=false;location.hash='#settings/calendar';return;
+    case 'tcaloff':P.calTipOff=true;applyPrefs();persist=false;break;
     case 'gcalsign':persist=false;CLOUD.calSignIn().catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
     case 'calsync':menuOpen=false;persist=false;pullCalendar(true);break;
     case 'caloff':{if(P.cal==='google'&&CLOUD)CLOUD.calSignOut();P.cal='';P.calAt=0;applyPrefs();Object.keys(S.tasks).forEach(k=>{S.tasks[k].items=S.tasks[k].items.filter(it=>!it.cal)});toast('Calendar sync stopped');break}

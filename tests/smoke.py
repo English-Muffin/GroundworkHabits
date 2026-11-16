@@ -607,7 +607,7 @@ async def cloudSync(b):
         if u.path == '/drive/v3/files/F1': return await route.fulfill(status=200, headers=CORS, body=store['gd'])
         return await route.fulfill(status=404, headers=CORS)
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); errs = []
-    await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={dropbox:'dbxkey',googleWeb:'gweb'}")
+    await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={dropbox:'dbxkey',googleWeb:'gweb'};document.addEventListener('securitypolicyviolation',e=>{const v=JSON.parse(sessionStorage.getItem('csp')||'[]');v.push(e.violatedDirective+' '+e.blockedURI);sessionStorage.setItem('csp',JSON.stringify(v))})")
     for host in ['www.dropbox.com', 'api.dropboxapi.com', 'content.dropboxapi.com', 'accounts.google.com', 'www.googleapis.com']:
         await ctx.route('https://' + host + '/**', fake)
     pg = await ctx.new_page(); pg.on('pageerror', lambda e: errs.append(str(e)))
@@ -669,6 +669,8 @@ async def cloudSync(b):
     await pg.click('#main [data-act=cwipe]'); await pg.wait_for_timeout(1500)
     left = await pg.evaluate("[localStorage.getItem('groundwork-v2-cloud'),GroundworkTest.state().habits.length]")
     check('cloud sync: Delete my data asks twice, removes the save from Drive and signs out; this device keeps its data', first and 'gd' not in store and left[0] is None and left[1] > 0, [first, 'gd' in store, left])
+    csp = await pg.evaluate("sessionStorage.getItem('csp')")
+    check('security: the Content Security Policy allows everything cloud sync needs and nothing was blocked', not csp, csp)
     # a save locked with a PIN on another device: signing in here asks for that PIN, then this device uses it too
     plain = _j.dumps(dict(up, habits=[dict(up['habits'][0], name='Locked elsewhere')] + up['habits'][1:], at=up['at'] + 900000))
     store['dbx'] = await pg.evaluate("t=>GroundworkTest.encFor(t,'2468')", plain)
@@ -727,6 +729,13 @@ async def settingsBest(b):
     check('settings: Features are grouped (Habits, Today and Insights, Tasks, Everywhere)', [h.lower() for h in heads] == ['habits', 'today and insights', 'tasks', 'everywhere'], heads)
     await pg.goto(URL + '#today'); await pg.wait_for_timeout(300); await pg.keyboard.press('Control+Comma'); await pg.wait_for_timeout(300)
     check('settings: Ctrl+, opens Settings', (await pg.evaluate('location.hash')).startswith('#settings') and not errs, errs)
+    await ctx.close()
+    # an empty Tasks week offers the calendar once; Not now hides it for good
+    ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={googleWeb:'gweb'}")
+    pg = await ctx.new_page(); await pg.goto(URL + '#tasks'); await pg.wait_for_timeout(400)
+    shown = await pg.locator('#main .tcal [data-act=gcalsign]').count() == 1
+    await pg.click('#main [data-act=tcaloff]'); await pg.wait_for_timeout(200); await pg.reload(); await pg.wait_for_timeout(400)
+    check('tasks: an empty week offers Google Calendar sign-in; Not now hides it for good', shown and await pg.locator('#main .tcal').count() == 0, shown)
     await ctx.close()
     # Storage line, Reset appearance and features (asks twice; reminders and data stay), phones reopen the last section
     ctx = await b.new_context(viewport={'width': 390, 'height': 844}, has_touch=True, is_mobile=True); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1')")

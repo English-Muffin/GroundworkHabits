@@ -1056,3 +1056,6 @@ P118|Mit Google Kalender verbunden als $1
 938|Melde dich erneut bei Google Kalender an, um weiter zu synchronisieren
 939|Erneut anmelden
 P119|Erinnere dich in $1 Minuten erneut
+940|Hol deinen Kalender dazu
+941|Termine erscheinen als Aufgaben neben deinen Plänen.
+942|Kalendereinstellungen

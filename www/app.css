@@ -761,3 +761,4 @@ body{overflow-wrap:anywhere}.pnav a,.tsi,.g2area,.g2aw,.lrow .top>*{min-width:0}
 .tipsync span{color:var(--g6a)}
 .tipsync .row{margin-top:var(--sp-2);flex-wrap:wrap}
 .cbl{display:grid;max-height:50vh;overflow:auto}
+.tcal{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);flex-wrap:wrap;margin-bottom:var(--sp-4)}.tcalt{display:grid;gap:2px;min-width:0}.tcal .row{flex-wrap:wrap}

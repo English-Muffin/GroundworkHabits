@@ -1056,3 +1056,6 @@ P118|Connecté à Google Agenda en tant que $1
 938|Reconnectez-vous à Google Agenda pour continuer la synchronisation
 939|Se reconnecter
 P119|Je vous le rappelle dans $1 minutes
+940|Ajoutez votre agenda
+941|Vos rendez-vous s’affichent comme tâches à côté de vos plans.
+942|Réglages de l’agenda
