@@ -2,7 +2,7 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
-## Unreleased
+## 1.7.11
 
 - New goal type: Times a week (for example, walk 3 times a week). Tick the days on the goal card as you go.
   The bar shows this week, and the card counts the weeks you met the target.

@@ -77,7 +77,7 @@ is the first proper one. What changed in the earlier versions is still in the [c
 **Goals**
 
 - Measure a goal the way it works: an **amount** towards a target (€ saved, km run), **from → to**
-  (weight 85 → 78 kg, debt down to €0), the number of times a **habit** is done, **steps**, or **tasks**
+  (weight 85 → 78 kg, debt down to €0), the number of times a **habit** is done, **times a week** (walk 3 times a week, any days), **steps**, or **tasks**
   that show up on their day.
 - A forecast at the pace so far ("At this pace: 20/04/2026 · before your deadline").
 - Ideas to start from in every life area, your own life areas, deadlines with a reminder, automatic
@@ -254,7 +254,7 @@ before it's used.
 | Lite edition | `node tools/edition.js lite` on a copy of the repository, then the same commands |
 | macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac, with Rust) |
 | Android `.apk` | `npm install && npx cap add android && npx cap sync android`, then build in Android Studio |
-| Everything, in the cloud | Push a tag like `v1.7.10`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
+| Everything, in the cloud | Push a tag like `v1.7.11`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
 
 ### Tests
 

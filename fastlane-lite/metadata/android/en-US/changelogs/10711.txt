@@ -1,0 +1,2 @@
+- New goal type: Times a week. Tick the days on the goal card as you go.
+- Fix: dialogs stay open after a text selection ends outside them.
