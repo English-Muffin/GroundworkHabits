@@ -3,7 +3,7 @@
 'use strict';
 /* ---------- render ---------- */
 let focusSel=null;
-let lastView=null;
+let lastView=null,lastSec=null;
 function render(){
   fzCache=new Map();if(!modal){cpOpen.habit=false;cpOpen.area=false} // dialog pickers start closed next time
   if(view!=='settings')cpOpen.accent=false;
@@ -24,7 +24,11 @@ function render(){
       el.dataset.drag='cards';el.dataset.id=base+(n>1?n:'');el.insertAdjacentHTML('afterbegin',GRIP('card','cg'))});
     const ord=((P.layout||{})[view]||[]).flatMap(x=>x==='tgrid'?['thero','ttasks']:[x]),pos=el=>{const i=ord.indexOf(el.dataset.id);return i<0?1000+kids.indexOf(el):i};
     kids.slice().sort((a,b)=>pos(a)-pos(b)).forEach(el=>tpl.appendChild(el))}
+  // Settings keeps its height after a change in place (sign out, delete, a switch that hides rows), so the page
+  // doesn't get shorter under you and pull everything up; it resets when you move to another screen or section
+  const mb=$('#main'),mh=mb.offsetHeight,same=view==='settings'&&lastView===view&&lastSec===setSec;
   trDom(tpl);if(lastView!==view)$('#main').innerHTML='';morphKids($('#main'),tpl);
+  if(!same)mb.style.minHeight='';else if(mb.offsetHeight<mh)mb.style.minHeight=mh+'px';lastSec=setSec;
   const mn=$('#menu');mn.hidden=!menuOpen;
   mn.innerHTML='';
   $('#modal').innerHTML=vModal();['#modal','#menu','#nav','#ttl'].forEach(q=>trDom($(q)));dlgFocus();document.title=tx(vi[1])+' | Groundwork Habits';

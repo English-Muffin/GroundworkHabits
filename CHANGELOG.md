@@ -6,6 +6,8 @@ All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
 - Google Calendar sign-in: if the calendar box is left unticked on Google's page, the app says so and stays
   signed out, instead of showing "403 Request had insufficient authentication scopes".
+- Web: signing in to Google Calendar comes back to Settings > Calendar (it opened Data & backups).
+- Settings no longer jumps when signing out or deleting cloud data makes the page shorter.
 
 ## 1.7.10
 

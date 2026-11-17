@@ -106,6 +106,14 @@ async def run(had_electron):
             await pg.evaluate("groundworkFS.tray(false,false); groundworkFS.showMain()"); await asyncio.sleep(1)
             # the Windows reminder notification with buttons: installed or portable (it registers its app ID in HKCU)
             check('reminder notification with buttons is shown', await pg.evaluate("groundworkFS.askToast('x','2026-01-01','Test reminder','Groundwork Habits test','Yes','Later','No')") is True)
+            if not LITE:
+                # Settings keeps its place when you sign out of cloud sync (a fake signed-in state; nothing reaches the network)
+                await pg.evaluate("localStorage.setItem('groundwork-v2-cloud',JSON.stringify({p:'google',tok:'x',rt:'',exp:Date.now()+3e6,who:'a@b.c'}));location.hash='settings'")
+                await pg.reload(); await wait_js(pg, '!!window.GroundworkTest'); await asyncio.sleep(0.8)
+                await pg.evaluate("document.querySelector('#main [data-act=cout]').scrollIntoView({block:'center'})"); await asyncio.sleep(0.3)
+                y0 = await pg.evaluate('scrollY'); await pg.evaluate("document.querySelector('#main [data-act=cout]').click()"); await asyncio.sleep(1)
+                y1 = await pg.evaluate('scrollY')
+                check('Settings stays put when you sign out of cloud sync', y0 > 300 and abs(y1 - y0) < 150, [y0, y1])
             check('notifications do not fail', await pg.evaluate("(()=>{try{new Notification('Groundwork Habits',{body:'test'});return true}catch(e){return false}})()"))
             if LITE:
                 check('Lite has no online parts in its bridge', await pg.evaluate("!groundworkFS.fetchCal&&!groundworkFS.updateCheck&&groundworkFS.folder()===''"))
