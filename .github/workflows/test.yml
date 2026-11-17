@@ -22,6 +22,8 @@ jobs:
         run: npm run test:unit
       - run: pip install playwright && python -m playwright install --with-deps chromium
       - run: python tests/smoke.py
+      - name: Click every button on every screen (scroll jumps, errors)
+        run: python tests/clickall.py
       - name: Lite edition
         run: python tests/lite.py
       - name: Layout stress test
