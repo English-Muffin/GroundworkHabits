@@ -196,4 +196,54 @@ test('calendar: more than one page of events is read to the end', async () => {
   assert.deepStrictEqual(Array.from(evs, e => e.uid), ['g:1', 'g:2']); assert.strictEqual(calls, 2);
 });
 
+// random edits on two devices from a shared copy, 3000 times: the merge must never duplicate an item, lose something added
+// on one side, bring back something deleted on one side that the other left alone, or drop a change made on only one side
+test('sync merge: 3000 random two-device edits lose and duplicate nothing', () => {
+  let seed = 7; const rnd = n => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed % n; };
+  const J = x => JSON.parse(JSON.stringify(x)), days = ['d1', 'd2', 'd3'];
+  for (let it = 0; it < 3000; it++) {
+    const base = { habits: [], log: {}, tasks: {} };
+    for (let i = 0; i < 1 + rnd(4); i++) { base.habits.push({ id: 'h' + i, name: 'H' + i }); base.log['h' + i] = {}; if (rnd(2)) base.log['h' + i].d1 = 1; }
+    for (const d of days) if (rnd(2)) base.tasks[d] = { items: [{ id: 't' + d, text: 'T', done: false }] };
+    const edit = (s, side) => {
+      for (let k = 0; k < 1 + rnd(4); k++) {
+        const h = s.habits.length ? s.habits[rnd(s.habits.length)] : null, d = days[rnd(3)];
+        switch (rnd(7)) {
+          case 0: { const id = side + it + '_' + k; s.habits.push({ id, name: 'new' }); s.log[id] = {}; break; }
+          case 1: if (h) h.name = h.name + side; break;
+          case 2: if (h) { s.habits = s.habits.filter(x => x !== h); delete s.log[h.id]; } break;
+          case 3: if (h) s.log[h.id][d] = 1; break;
+          case 4: if (h) delete s.log[h.id][d]; break;
+          case 5: (s.tasks[d] = s.tasks[d] || { items: [] }).items.push({ id: side + 't' + it + '_' + k, text: 'x', done: false }); break;
+          case 6: if (s.tasks[d] && s.tasks[d].items.length) { const t = s.tasks[d].items[0]; t.done = !t.done; } break;
+        }
+      }
+      return s;
+    };
+    const L = edit(J(base), 'L'), R = edit(J(base), 'R'), M = J(T.merge3(J(base), J(L), J(R), !!rnd(2)));
+    const ctx = 'iteration ' + it + ': ' + JSON.stringify({ base, L, R, M });
+    const byId = a => new Map((a || []).map(x => [x.id, x])), bH = byId(base.habits), lH = byId(L.habits), rH = byId(R.habits), mH = byId(M.habits);
+    assert.strictEqual(mH.size, (M.habits || []).length, 'duplicate habit ' + ctx);
+    for (const [id, h] of lH) if (!bH.has(id)) assert.ok(mH.has(id), 'added habit lost ' + ctx);
+    for (const [id, h] of rH) if (!bH.has(id)) assert.ok(mH.has(id), 'added habit lost ' + ctx);
+    for (const [id, b] of bH) {
+      const l = lH.get(id), r = rH.get(id), m = mH.get(id), same = (x, y) => JSON.stringify(x) === JSON.stringify(y);
+      if (!l && r && same(r, b)) assert.ok(!m, 'deleted habit came back ' + ctx);
+      if (!r && l && same(l, b)) assert.ok(!m, 'deleted habit came back ' + ctx);
+      if (l && r && same(r, b)) assert.deepStrictEqual(m, l, 'one-side change lost ' + ctx);
+      if (l && r && same(l, b)) assert.deepStrictEqual(m, r, 'one-side change lost ' + ctx);
+    }
+    // ticks: added on one side survive unless that habit's tick was removed... per key: added on one side = kept
+    for (const id of mH.keys()) for (const d of days) {
+      const b = !!(base.log[id] || {})[d], l = !!(L.log[id] || {})[d], r = !!(R.log[id] || {})[d], m = !!((M.log || {})[id] || {})[d];
+      if (lH.has(id) && rH.has(id)) { if (l === r) assert.strictEqual(m, l, 'tick ' + ctx); else assert.strictEqual(m, l !== b ? l : r, 'tick change lost ' + ctx); }
+    }
+    for (const d of days) {
+      const ids = ((M.tasks || {})[d] || { items: [] }).items.map(t => t.id);
+      assert.strictEqual(new Set(ids).size, ids.length, 'duplicate task ' + ctx);
+      for (const S2 of [L, R]) for (const t of (S2.tasks[d] || { items: [] }).items) if (!(base.tasks[d] || { items: [] }).items.some(x => x.id === t.id)) assert.ok(ids.includes(t.id), 'added task lost ' + ctx);
+    }
+  }
+});
+
 Promise.all(pending).then(() => { console.log(`\n${n - fails} of ${n} unit tests passed`); process.exit(fails ? 1 : 0); });
