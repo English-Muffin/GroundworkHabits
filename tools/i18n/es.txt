@@ -1070,3 +1070,8 @@ P119|Te lo recuerdo de nuevo en $1 minutos
 951|Sin conexión. Se sincroniza cuando vuelvas a estar en línea
 952|Se sincroniza cuando vuelvas a estar en línea
 953|Sin conexión
+954|Veces por semana
+955|Elige de 1 a 7 veces por semana
+956|Elige cualquier día: marca un día en la tarjeta del objetivo cuando lo hagas. La barra muestra esta semana.
+P120|$1 de $2 esta semana
+P121|$1 de $2 esta semana · semanas cumplidas: $3

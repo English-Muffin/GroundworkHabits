@@ -1070,3 +1070,8 @@ P119|Erinnere dich in $1 Minuten erneut
 951|Offline. Synchronisiert, sobald du wieder online bist
 952|Synchronisiert, sobald du wieder online bist
 953|Offline
+954|Mal pro Woche
+955|Gib 1 bis 7 Mal pro Woche an
+956|Wähle beliebige Tage: Hake einen Tag auf der Zielkarte ab, wenn du es machst. Der Balken zeigt diese Woche.
+P120|$1 von $2 diese Woche
+P121|$1 von $2 diese Woche · geschaffte Wochen: $3

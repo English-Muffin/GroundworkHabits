@@ -469,6 +469,23 @@ async def goalsAndFreezes(b):
     check('repeating contribution adds €100 on the 1st of each month since the start (3 so far) and draws a history line', len(hol['log']) == 3 and all(x.get('a') for x in hol['log']) and '€300 of €1,000' in await hc.inner_text() and await hc.locator('.g2sp svg').count() == 1, hol)
     await pg.reload(); await pg.wait_for_timeout(300)
     check('repeating contribution is not added twice after a reload', len(await pg.evaluate("GroundworkTest.state().goals.find(g=>g.title==='Holiday fund').log")) == 3)
+    # times a week: pick the days on the card as you go
+    await pg.click('.g2sum [data-act=newgoal]'); await pg.fill('#gTitle', 'Walk 3 times a week'); await pg.click('[data-act=gkind][data-v=week]')
+    await pg.fill('#gTarget', '9'); await pg.click('[data-act=gsave]'); await pg.wait_for_timeout(150)
+    check('times a week goal refuses more than 7', await pg.locator('#modal .mgoal').count() == 1)
+    await pg.fill('#gTarget', '3'); await pg.click('[data-act=gsave]'); await pg.wait_for_timeout(200)
+    wk = pg.locator('.goal2', has_text='Walk 3 times a week')
+    await wk.locator('[data-act=gwday]:not([disabled])').last.click(); await pg.wait_for_timeout(200)
+    check('times a week goal: ticking today shows 1 of 3 and 33%', '1 of 3 this week' in await wk.inner_text() and '33%' in await wk.inner_text(), await wk.inner_text())
+    check('times a week goal: later days this week cannot be ticked yet', await wk.locator('[data-act=gwday][disabled]').count() == 6 - await pg.evaluate("new Date().getDay()"))
+    await pg.reload(); await pg.wait_for_timeout(300)
+    check('times a week goal: the ticked day persists', len(await pg.evaluate("GroundworkTest.state().goals.find(g=>g.title==='Walk 3 times a week').days")) == 1)
+    # selecting text in a dialog field and letting go outside the dialog keeps it open
+    await pg.click('.g2sum [data-act=newgoal]'); await pg.fill('#gTitle', 'Drag select'); box = await pg.locator('#gTitle').bounding_box()
+    await pg.mouse.move(box['x'] + box['width'] - 4, box['y'] + box['height'] / 2); await pg.mouse.down(); await pg.mouse.move(2, 2, steps=5); await pg.mouse.up(); await pg.wait_for_timeout(150)
+    check('dialog stays open after a drag that ends outside it', await pg.locator('#modal .mgoal').count() == 1)
+    await pg.mouse.click(3, 3); await pg.wait_for_timeout(150)
+    check('a plain click outside still closes the dialog', await pg.locator('#modal .mgoal').count() == 0)
     await pg.click('.g2sum [data-act=newgoal]'); await pg.fill('#gTitle', 'Launch the website'); await pg.click('[data-act=gkind][data-v=tasks]')
     for txt in ['Buy the domain', 'Write the homepage']:
         await pg.fill('#gStep', txt); await pg.click('[data-act=gtaskadd]')

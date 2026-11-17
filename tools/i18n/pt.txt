@@ -1070,3 +1070,8 @@ P119|Lembro-te de novo daqui a $1 minutos
 951|Sem ligação. Sincroniza quando voltares a estar online
 952|Sincroniza quando voltares a estar online
 953|Sem ligação
+954|Vezes por semana
+955|Defina de 1 a 7 vezes por semana
+956|Escolha quaisquer dias: marque um dia no cartão da meta quando o fizer. A barra mostra esta semana.
+P120|$1 de $2 esta semana
+P121|$1 de $2 esta semana · semanas cumpridas: $3

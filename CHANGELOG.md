@@ -4,6 +4,10 @@ All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
 ## Unreleased
 
+- New goal type: Times a week (for example, walk 3 times a week). Tick the days on the goal card as you go.
+  The bar shows this week, and the card counts the weeks you met the target.
+- Dialogs no longer close when you select text in a field and let go of the mouse outside the dialog
+  (or outside the window on Windows).
 - Google Calendar sign-in: if the calendar box is left unticked on Google's page, the app says so and stays
   signed out, instead of showing "403 Request had insufficient authentication scopes".
 - Web: signing in to Google Calendar comes back to Settings > Calendar (it opened Data & backups).

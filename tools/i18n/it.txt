@@ -1070,3 +1070,8 @@ P119|Te lo ricordo di nuovo tra $1 minuti
 951|Offline. Si sincronizza quando torni online
 952|Si sincronizza quando torni online
 953|Offline
+954|Volte a settimana
+955|Imposta da 1 a 7 volte a settimana
+956|Scegli i giorni che vuoi: spunta un giorno sulla scheda dell’obiettivo quando lo fai. La barra mostra questa settimana.
+P120|$1 di $2 questa settimana
+P121|$1 di $2 questa settimana · settimane riuscite: $3

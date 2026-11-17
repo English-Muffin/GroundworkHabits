@@ -1070,3 +1070,8 @@ P119|Ik herinner je over $1 minuten opnieuw
 951|Offline. Synchroniseert zodra je weer online bent
 952|Synchroniseert zodra je weer online bent
 953|Offline
+954|Keer per week
+955|Kies 1 tot 7 keer per week
+956|Kies zelf de dagen: vink een dag aan op de doelkaart als je het doet. De balk toont deze week.
+P120|$1 van $2 deze week
+P121|$1 van $2 deze week · weken gehaald: $3

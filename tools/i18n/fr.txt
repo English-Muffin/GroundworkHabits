@@ -1070,3 +1070,8 @@ P119|Je vous le rappelle dans $1 minutes
 951|Hors ligne. Se synchronise à votre retour en ligne
 952|Se synchronise à votre retour en ligne
 953|Hors ligne
+954|Fois par semaine
+955|Indiquez de 1 à 7 fois par semaine
+956|Choisissez les jours librement : cochez un jour sur la carte de l’objectif quand vous le faites. La barre montre cette semaine.
+P120|$1 sur $2 cette semaine
+P121|$1 sur $2 cette semaine · semaines réussies : $3

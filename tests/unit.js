@@ -43,6 +43,15 @@ T.setToday(day('2026-03-18'));
 
 // calendar repeat rules (RRULE): one task per date in the window, 30 days back to 90 ahead
 const ics = rule => T.parseIcs(['BEGIN:VEVENT', 'UID:e1', 'SUMMARY:Ev', 'DTSTART;VALUE=DATE:20260302', 'RRULE:' + rule, 'END:VEVENT'].join('\n')).map(e => e.day);
+test('goal: times a week counts only this week, weeks met before it, clean keeps days', () => {
+  T.setToday(day('2026-03-11')); // Wednesday; week starts Sunday 8 March
+  const g = { id: 'g', title: 'Walk', area: 'Health', kind: 'week', target: 3, days: ['2026-03-01', '2026-03-03', '2026-03-05', '2026-03-08', '2026-03-10'] };
+  assert.ok(T.gPct(g) === 67, 'pct ' + T.gPct(g));
+  assert.ok(T.gLine(g) === '2 of 3 this week · 1 week met', T.gLine(g));
+  const c = T.clean({ goals: [Object.assign({}, g, { days: g.days.concat(['bad', '2026-03-10']) })] });
+  same(c.goals[0].days, g.days); assert.ok(c.goals[0].kind === 'week', 'kind kept');
+  T.setToday(day('2026-03-18'));
+});
 test('calendar: weekly on Monday and Wednesday, 4 dates', () => same(ics('FREQ=WEEKLY;BYDAY=MO,WE;COUNT=4'), ['2026-03-02', '2026-03-04', '2026-03-09', '2026-03-11']));
 test('calendar: second Tuesday of each month until May', () => same(ics('FREQ=MONTHLY;BYDAY=2TU;UNTIL=20260531'), ['2026-03-10', '2026-04-14', '2026-05-12']));
 test('calendar: last weekday of the month (BYSETPOS=-1)', () => same(ics('FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1;COUNT=3'), ['2026-03-31', '2026-04-30', '2026-05-29']));

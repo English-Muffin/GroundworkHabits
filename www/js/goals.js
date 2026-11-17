@@ -4,20 +4,24 @@
 /* ---------- Goals ---------- */
 // goals: summary ring, the 10 life areas (tap one to filter), pinned goals, then the rest. A goal may carry due (YYYY-MM-DD), pin and steps [{id,text,due,done}]; with steps its progress follows them
 /* how a goal is measured (g.kind): pct (slider), steps (ticked steps), num (amounts added up to a target, e.g. € saved),
-   range (from a start value to a target, e.g. kg or debt left; the latest logged value counts), habit (times a habit was done since a date) */
+   range (from a start value to a target, e.g. kg or debt left; the latest logged value counts), habit (times a habit was done since a date), week (N days a week, the days ticked on the card as you go: days) */
 const gKind=g=>g.kind||(g.steps&&g.steps.length?'steps':'pct');
 // a goal you move yourself (not one fed by a habit or tasks) that hasn't changed in 14 days gets a nudge
-const gStale=g=>!g.arch&&!['habit','tasks'].includes(gKind(g))&&gPct(g)<100&&g.upd&&(TODAY-new Date(g.upd+'T00:00'))/864e5>=14;
+const gStale=g=>!g.arch&&!['habit','tasks','week'].includes(gKind(g))&&gPct(g)<100&&g.upd&&(TODAY-new Date(g.upd+'T00:00'))/864e5>=14;
 const gTouch=g=>{if(g)g.upd=dk(TODAY)};
 const gSum=g=>(g.log||[]).reduce((n,x)=>n+x.v,0);
 const gLast=g=>{const l=(g.log||[]).slice().sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);return l.length?l[l.length-1].v:g.start};
 const gHabitN=g=>{const h=findH(g.habit);if(!h)return 0;const since=g.since||'0000';return Object.keys(L(h)).filter(k=>/-\d{2}$/.test(k)?k>=since:k.slice(0,7)>=since.slice(0,7)).length};
+const gWeek=(g,d)=>{const s=dk(wkStart(d||TODAY)),e=dk(addDays(wkStart(d||TODAY),6));return (g.days||[]).filter(k=>k>=s&&k<=e).length};
+// weeks (before this one) where the target was met
+const gWeeksMet=g=>{const w={};(g.days||[]).forEach(k=>{const s=dk(wkStart(new Date(k+'T00:00')));w[s]=(w[s]||0)+1});const now=dk(wkStart(TODAY));return Object.keys(w).filter(s=>s<now&&w[s]>=g.target).length};
 const clampP=x=>Math.max(0,Math.min(100,Math.round(x)));
 function gPct(g){const k=gKind(g);
   if(k==='steps')return g.steps&&g.steps.length?Math.round(g.steps.filter(x=>x.done).length/g.steps.length*100):0;
   if(k==='num')return g.target>0?clampP(gSum(g)/g.target*100):0;
   if(k==='range'){const c=gLast(g);return g.start===undefined||g.target===undefined||g.start===g.target||c===undefined?0:clampP((g.start-c)/(g.start-g.target)*100)}
   if(k==='habit')return g.target>0?clampP(gHabitN(g)/g.target*100):0;
+  if(k==='week')return g.target>0?clampP(gWeek(g)/g.target*100):0;
   if(k==='tasks'){const t=gTasks(g);return t.length?Math.round(t.filter(x=>x.it.done).length/t.length*100):0}
   return g.pct}
 // tasks linked to a goal: [{k (day), it (task)}], oldest first
@@ -43,6 +47,7 @@ function gLine(g){const k=gKind(g),u=g.unit||'';
   if(k==='num')return fmtU(gSum(g),u)+' of '+fmtU(g.target||0,u);
   if(k==='range'){const c=gLast(g);return c===undefined?'Starts at '+fmtU(g.start,u):fmtU(c,u)+' now · goal '+fmtU(g.target,u)+' (from '+fmtU(g.start,u)+')'}
   if(k==='habit'){const h=findH(g.habit);return h?gHabitN(g)+' of '+(g.target||0)+' times · '+esc(h.name):'The linked habit was deleted'}
+  if(k==='week'){const m=gWeeksMet(g);return gWeek(g)+' of '+(g.target||0)+' this week'+(m?' · '+pl(m,'week')+' met':'')}
   if(k==='tasks'){const t=gTasks(g),nx=t.find(x=>!x.it.done);return t.filter(x=>x.it.done).length+' of '+pl(t.length,'task')+' done'+(nx?' · next: '+esc(nx.it.text)+' ('+dmy(new Date(nx.k+'T00:00'))+')':'')}
   return ''}
 // forecast: when the goal is reached at the pace so far (amount, from-to, habit goals; needs a week of history)
@@ -65,7 +70,7 @@ const IDEAS={Health:[['Reach a healthy weight','range','kg'],['Sleep 7 hours for
   Home:[['Save for a house deposit','num','€',20000],['Declutter every room','steps'],['Renovate a room','steps']],
   Mindset:[['Meditate 100 times','habit','',100],['Journal for 30 days','habit','',30],['Read 20 minutes a day for 90 days','habit','',90]],
   '':[['Reach a number','num','',10],['Go from one value to another','range',''],['Finish a set of steps','steps'],['Build a habit','habit','',30]]};
-const MEAS=[['pct','Percent'],['steps','Steps'],['num','Amount'],['range','From → to'],['habit','Habit'],['tasks','Tasks']];
+const MEAS=[['pct','Percent'],['steps','Steps'],['num','Amount'],['range','From → to'],['habit','Habit'],['week','Times a week'],['tasks','Tasks']];
 const gLeft=g=>g.due?Math.ceil((new Date(g.due+'T00:00')-TODAY)/864e5):null;
 const gState=g=>gPct(g)>=100?['Reached','ok']:gLeft(g)!==null&&gLeft(g)<0?['Overdue','late']:gPct(g)>0?['In progress','on']:['Not started','off'];
 const ACOL={Health:'#22c55e',Fitness:'#f43f5e',Career:'#3b82f6',Money:'#f59e0b',Learning:'#8b5cf6',Relationships:'#ec4899',Family:'#fb7185',Fun:'#14b8a6',Home:'#a3a3a3',Mindset:'#6366f1'};
@@ -74,6 +79,7 @@ function goalCard(g){const p=gPct(g),st=gState(g),l=gLeft(g),next=(g.steps||[]).
    +(gStale(g)?'<p class="g2stale">'+ic('alert')+'Not updated in over 2 weeks</p>':'')+'<div class="g2m"><span class="g2st '+st[1]+'">'+st[0]+'</span><span class="g2a"><i style="--c:'+areaCol(g.area)+'"></i>'+esc(g.area)+'</span>'+(l===null||p>=100?'':'<span class="g2d'+(l<0?' late':'')+'">'+(l<0?-l+(l===-1?' day over':' days over'):l===0?'Due today':l+(l===1?' day to go':' days to go'))+'</span>')+(g.steps&&g.steps.length?'<span>'+sd+' of '+pl(g.steps.length,'step')+'</span>':'')+'</div>'
    +(next?'<div class="g2n">Next step: '+esc(next.text)+(next.due?' · '+dmy(new Date(next.due+'T00:00')):'')+'</div>':'')
    +(gLine(g)?'<div class="g2n g2v"><span>'+gLine(g)+'</span>'+(gKind(g)==='num'||gKind(g)==='range'?'<button class="btn ghost g2add" data-act="gval" data-g="'+g.id+'">'+(gKind(g)==='num'?'+ Add':'Log value')+'</button>':'')+'</div>':'')
+   +(gKind(g)==='week'?'<div class="rdays gwk" role="group" aria-label="This week">'+[0,1,2,3,4,5,6].map(i=>{const d=addDays(wkStart(TODAY),i),k=dk(d),on=(g.days||[]).includes(k);return '<button class="'+(on?'on':'')+'" data-act="gwday" data-g="'+g.id+'" data-k="'+k+'" role="checkbox" aria-checked="'+on+'"'+(d>TODAY?' disabled':'')+' aria-label="'+DAYS[i]+'">'+new Intl.DateTimeFormat(LANG,{weekday:'narrow'}).format(d)+'</button>'}).join('')+'</div>':'')
    +(()=>{const f=gForecast(g);return f?'<div class="g2n g2fc'+(f.late?' late':'')+'">'+f.txt+'</div>':''})()
    +gSpark(g)+(g.recur&&gKind(g)==='num'?'<div class="g2n" style="color:var(--muted)">Adds '+fmtU(g.recur.v,g.unit)+' every '+(g.recur.every==='w'?'week':'month')+'</div>':'')
    +'<div class="g2b"><div class="tr"><i style="width:'+p+'%"></i></div><b>'+p+'%</b></div>'+(g.arch?'<button class="btn ghost g2add" data-act="garch" data-g="'+g.id+'">Restore</button>':p>=100?'<button class="btn ghost g2add" data-act="garch" data-g="'+g.id+'">Archive</button>':'')+'</section>'}

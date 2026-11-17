@@ -1070,3 +1070,8 @@ P119|one=Przypomnę ponownie za $1 minutę‖few=Przypomnę ponownie za $1 minut
 951|Offline. Synchronizuje się po powrocie do sieci
 952|Synchronizuje się po powrocie do sieci
 953|Offline
+954|Razy w tygodniu
+955|Ustaw od 1 do 7 razy w tygodniu
+956|Wybieraj dowolne dni: zaznacz dzień na karcie celu, gdy to zrobisz. Pasek pokazuje ten tydzień.
+P120|$1 z $2 w tym tygodniu
+P121|$1 z $2 w tym tygodniu · udane tygodnie: $3
