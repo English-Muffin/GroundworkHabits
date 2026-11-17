@@ -114,7 +114,7 @@ document.addEventListener('click',e=>{
     case 'creconnect':persist=false;reconnectToast.told=0;CLOUD.reconnect().catch(()=>toast('Could not sign in'));break;
     // the header cloud icon: all fine = sync now (Settings one tap away in the toast); a problem = the Settings row that fixes it
     case 'syncgo':persist=false;{const calBad=P.cal==='google'&&CLOUD&&CLOUD.calOff,bad=calBad||(CLOUD&&CLOUD.on()&&CLOUD.off)||(WEBF&&WEBF.off&&P.andDir)||!!syncInfo().err;
-      if(bad){location.hash=calBad?'#settings/calendar':'#settings/data';return}syncNow(m=>toastAct(m,'Settings','syncset'))}break;
+      if(navigator.onLine===false&&!dataDir){toast('Offline. Syncs when you’re back online');break}if(bad){location.hash=calBad?'#settings/calendar':'#settings/data';return}syncNow(m=>toastAct(m,'Settings','syncset'))}break;
     case 'syncset':persist=false;location.hash='#settings/data';return;
     case 'lbaks':case 'cbaks':{persist=false;const here=act==='lbaks';modal={kind:'cbaks',here,list:null};(here?localBackups():CLOUD.backups()).then(l=>{if(modal&&modal.kind==='cbaks'){modal.list=l;render()}}).catch(()=>{if(modal&&modal.kind==='cbaks'){modal.list=[];modal.err=1;render()}});break}
     case 'cbakrestore':persist=false;(modal&&modal.here?localBackup(t.dataset.n):CLOUD.getBackup(t.dataset.n)).then(x=>{if(isEnc(x)){modal={kind:'impin',text:x};focusSel='#impPin'}else{modal=null;previewImport(JSON.parse(x))}render()}).catch(()=>toast('Could not load that backup'));break;

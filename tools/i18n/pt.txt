@@ -1067,3 +1067,6 @@ P119|Lembro-te de novo daqui a $1 minutos
 948|Sair
 949|O teu computador não permitiu iniciar o Groundwork Habits com ele
 950|O Google Calendar não foi autorizado. Inicia sessão de novo e marca a caixa do calendário
+951|Sem ligação. Sincroniza quando voltares a estar online
+952|Sincroniza quando voltares a estar online
+953|Sem ligação

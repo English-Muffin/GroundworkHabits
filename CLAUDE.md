@@ -14,7 +14,7 @@ It has its own name and branding (Groundwork Habits: layered "foundation" mark).
 - `capacitor.config.json`  Android wrapper (the `android/` folder is generated, never commit it)
 - `assets/`  source icon (1024 png, ico) and splash
 - `.github/workflows/build.yml`  builds the Windows setup and portable exe, the macOS universal zip and the APKs (full and Lite) in CI
-- `tests/clickall.py`  clicks every button on every screen (desktop and phone, demo data); fails on a scroll jump or any JS/console error (CI)
+- `tests/clickall.py`  clicks every button on every screen (desktop and phone dark, desktop light, demo data); fails on a scroll jump, any JS/console error, or an axe-core WCAG 2 A/AA violation on any screen or dialog it opens (axe-core is a devDependency, CI). Light theme accent: `lightAccent()` (core.js) sets `--accent-l`, the accent darkened to 4.8:1 on white. Offline: `#syncBtn.soff` (grey) and an Offline row; the `online` event syncs at once (boot.js)
 - `tests/smoke.py`  Playwright smoke tests (157 checks, desktop and phone; the desktop shell is checked by `tests/tauri_app.py`)
 - `tests/visual.py`  screenshot comparison, light and dark (local only; fixed clock + demo data). `UPDATE=1` accepts a new look after checking the PNGs in `tests/visual/`
 - `tests/launch_check.js`  CI: starts the packaged desktop app and waits for it to render

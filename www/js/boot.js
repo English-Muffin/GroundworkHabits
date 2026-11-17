@@ -86,6 +86,9 @@ function syncNow(say){if(dataDir){if(!readFile())writeFile();render();say('Synce
 // web: renew Google's one-hour pass quietly when the app opens or comes back on screen (not mid-dialog, typing or locked)
 function renewQuiet(){if(CLOUD&&CLOUD.renewWeb&&!modal&&!locked&&!encWait&&!isField(document.activeElement))CLOUD.renewWeb()}
 addEventListener('load',()=>setTimeout(renewQuiet,800));document.addEventListener('visibilitychange',()=>{if(!document.hidden)renewQuiet()});
+// connection lost: the header icon turns grey; back online: sync at once (with cloud sync or an Android/web folder on)
+addEventListener('offline',()=>{syncBtn();if(view==='settings'&&!modal)render()});
+addEventListener('online',()=>{syncBtn();if((CLOUD&&CLOUD.on())||P.andDir)syncNow(()=>{syncBtn();if(view==='settings'&&!modal)render()})});
 function checkHabitReminders(){
   if(LN||WIDGET||encWait)return;const n=new Date(),now=n.getHours()*60+n.getMinutes(),d=dk(TODAY);
   S.habits.forEach(h=>{if(!h.rem||h.arch)return;const [hh,mm]=h.rem.t.split(':').map(Number),k=pKey(h,TODAY);

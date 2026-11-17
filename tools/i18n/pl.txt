@@ -1067,3 +1067,6 @@ P119|one=Przypomnę ponownie za $1 minutę‖few=Przypomnę ponownie za $1 minut
 948|Zakończ
 949|Komputer nie pozwolił uruchamiać Groundwork Habits razem z nim
 950|Nie zezwolono na Kalendarz Google. Zaloguj się ponownie i zaznacz pole kalendarza
+951|Offline. Synchronizuje się po powrocie do sieci
+952|Synchronizuje się po powrocie do sieci
+953|Offline

@@ -1067,3 +1067,6 @@ P119|Je vous le rappelle dans $1 minutes
 948|Quitter
 949|Votre ordinateur n’a pas autorisé le démarrage de Groundwork Habits avec lui
 950|Google Agenda n’a pas été autorisé. Reconnectez-vous et cochez la case de l’agenda
+951|Hors ligne. Se synchronise à votre retour en ligne
+952|Se synchronise à votre retour en ligne
+953|Hors ligne

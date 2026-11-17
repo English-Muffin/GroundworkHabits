@@ -727,6 +727,12 @@ async def cloudSync(b):
     await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200); await pg.click('#syncBtn'); await pg.wait_for_timeout(2200)
     st = await pg.evaluate("[location.hash,document.getElementById('toast').textContent,!!document.querySelector('#toast [data-act=syncset]')]")
     check('the header cloud icon syncs now and offers Settings', st[0] == '#today' and st[2], st)
+    # offline: the icon goes grey (not red) and says so; back online it syncs by itself
+    await ctx.set_offline(True); await pg.wait_for_timeout(300); await pg.click('#syncBtn'); await pg.wait_for_timeout(300)
+    off = await pg.evaluate("[document.getElementById('syncBtn').className,document.getElementById('toast').textContent]")
+    await pg.evaluate("localStorage.removeItem('groundwork-v2-syncinfo')"); await ctx.set_offline(False); await pg.wait_for_timeout(2500)
+    on = await pg.evaluate("[document.getElementById('syncBtn').className,!!JSON.parse(localStorage.getItem('groundwork-v2-syncinfo')||'{}').ok]")
+    check('offline: grey cloud icon and an offline message; back online it syncs by itself', 'soff' in off[0] and 'serr' not in off[0] and 'Offline' in off[1] and 'soff' not in on[0] and on[1], [off, on])
     await pg.evaluate("location.hash='settings/data'"); await pg.wait_for_timeout(300)
     await pg.evaluate('scrollTo(0,1e6)'); await pg.wait_for_timeout(150); y0 = await pg.evaluate('scrollY')
     await pg.evaluate("document.querySelector('#main [data-act=cout]').click()"); await pg.wait_for_timeout(400); y1 = await pg.evaluate('scrollY')

@@ -10,6 +10,9 @@ All notable changes to Groundwork Habits. Versions match the GitHub releases.
 - Settings no longer jumps when signing out or deleting cloud data makes the page shorter.
 - Web: Google Drive sync and Calendar renew their one-hour sign-in quietly when you open the app or come back to it,
   instead of asking you to sign in again every hour.
+- Offline: the cloud icon turns grey and says it syncs when you're back online, instead of a red error; it syncs by
+  itself when the connection returns.
+- Light theme: accent-coloured text is darkened just enough to read well (WCAG AA) with any accent, including your own.
 - The cloud icon in the header syncs straight away (Settings is one tap away in the message); it still opens Settings
   when something needs fixing.
 
