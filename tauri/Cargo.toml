@@ -33,6 +33,10 @@ rusty-leveldb = { version = "3", optional = true }
 tokio = { version = "1", optional = true, features = ["net", "time"] }
 url = { version = "2", optional = true }
 
+# reminder notifications with buttons (already used inside tauri-plugin-notification)
+[target.'cfg(windows)'.dependencies]
+tauri-winrt-notification = "0.8"
+
 [profile.release]
 # small exe: these are the settings Tauri recommends for size
 codegen-units = 1

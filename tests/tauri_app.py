@@ -92,6 +92,19 @@ async def run(had_electron):
             check('backups on this PC are listed and read back for Restore; other files are refused', any(b['n'] == 'groundwork-backup-test.json' for b in lst) and '"habits"' in txt and bad == 'refused', [lst, txt[:40], bad])
             # tray on and off again (start with the computer stays off: it would write the Run key)
             check('the tray can be turned on and off', await pg.evaluate("groundworkFS.tray(true,false).then(a=>groundworkFS.tray(false,false).then(b=>a===null&&b===null))"))
+            # in the tray: closing hides the window and the page's minute timer must keep running (reminders).
+            # Always a short look; HIDDEN_MIN=8 (local) waits past Chromium's 5-minute heavy throttling
+            mins = float(os.environ.get('HIDDEN_MIN') or 0.5)
+            await pg.evaluate("groundworkFS.tray(true,false); window.__ticks=[]; setInterval(()=>__ticks.push(Date.now()),60000)")
+            close_main(p.pid); await asyncio.sleep(mins * 60 + 5)
+            ticks = await pg.evaluate("[document.visibilityState, __ticks.length, __ticks.map((t,i)=>i?t-__ticks[i-1]:0)]")
+            # close_main finds only visible windows, so False = hidden (the page itself still reports "visible")
+            check('in the tray: closing hides the window and the app keeps running', p.poll() is None and not close_main(p.pid), ticks)
+            if mins >= 1: check('in the tray: the minute timer keeps ticking while hidden (gaps at most 70 s)', ticks[1] >= int(mins) - 1 and max(ticks[2] or [0]) <= 70000, ticks)
+            await pg.evaluate("groundworkFS.tray(false,false); groundworkFS.showMain()"); await asyncio.sleep(1)
+            # the Windows reminder notification only in an install (uninstaller next to the exe); elsewhere the pop-up is used
+            inst = any(pathlib.Path(EXE).parent.glob('Uninstall *.exe'))
+            check('reminder notification with buttons: ' + ('shown in an install' if inst else 'off outside an install, so the pop-up is used'), await pg.evaluate("groundworkFS.askToast('x','2026-01-01','Test reminder','Groundwork Habits test','Yes','Later','No')") is inst)
             check('notifications do not fail', await pg.evaluate("(()=>{try{new Notification('Groundwork Habits',{body:'test'});return true}catch(e){return false}})()"))
             if LITE:
                 check('Lite has no online parts in its bridge', await pg.evaluate("!groundworkFS.fetchCal&&!groundworkFS.updateCheck&&groundworkFS.folder()===''"))

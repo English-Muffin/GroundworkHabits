@@ -1063,3 +1063,5 @@ P119|Te lo recuerdo de nuevo en $1 minutos
 944|Al cerrar la ventana, Groundwork Habits sigue en la bandeja del sistema y los recordatorios siguen llegando
 945|Iniciar con el ordenador
 946|Se abre en la bandeja al iniciar sesión
+947|Sí
+948|Salir

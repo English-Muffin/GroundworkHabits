@@ -6,7 +6,7 @@
   // this runs before Tauri's own script defines __TAURI_INTERNALS__: look it up when a call happens
   const T = () => window.__TAURI_INTERNALS__;
   const call = (cmd, args) => T() ? T().invoke(cmd, args || {}) : Promise.reject(new Error('Tauri not ready'));
-  let flushCb = null;
+  let flushCb = null, answerCb = null;
   window.groundworkFS = {
     folder: () => '', read: () => null, write: () => false, choose: () => Promise.resolve(null), reset: () => true,
     backup: (name, text, keep) => call('backup', { name, text, keep: Number(keep) || 8 }).catch(() => null),
@@ -16,7 +16,10 @@
     widget: () => { call('widget').catch(() => {}); },
     showMain: () => { call('show_main').catch(() => {}); },
     ask: (h, k) => { call('ask', { h, k }).catch(() => {}); },
-    tray: (on, login) => call('tray', { on: !!on, login: !!login }).catch(() => null),
+    tray: (on, login, open, quit) => call('tray', { on: !!on, login: !!login, open: open ? String(open) : null, quit: quit ? String(quit) : null }).catch(() => null),
+    // Windows: a reminder notification with Yes / Later / No buttons; false = not possible here (use ask instead)
+    askToast: (id, k, title, body, yes, later, no) => call('ask_toast', { id: String(id), k: String(k), title: String(title), body: String(body), yes: String(yes), later: String(later), no: String(no) }).catch(() => false),
+    onAnswer: cb => { answerCb = cb; },
     onFlush: cb => { flushCb = cb; },
   };
   // the full app (built with --features full) answers on a local "gw" address with its data folder; Lite has none.
@@ -53,6 +56,8 @@
       try { if (flushCb) await flushCb(); } catch (e) {}
       call('flushed').catch(() => {});
     }) }).catch(() => {});
+    // a button on a reminder notification (askToast): { id, k, a: 'yes' | 'later' | 'no' }
+    call('plugin:event|listen', { event: 'ask:answer', target: { kind: 'Any' }, handler: T().transformCallback(e => { try { if (answerCb) answerCb(e.payload); } catch (x) {} }) }).catch(() => {});
   })();
   // the daily reminder uses the web Notification API: send it to the system notification instead
   function N(title, opts) { call('notify', { title: String(title), body: String((opts && opts.body) || '') }).catch(() => {}); this.close = () => {}; }

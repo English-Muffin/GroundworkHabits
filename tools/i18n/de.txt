@@ -1063,3 +1063,5 @@ P119|Erinnere dich in $1 Minuten erneut
 944|Beim Schließen des Fensters bleibt Groundwork Habits im Infobereich, damit Erinnerungen weiter ankommen
 945|Mit dem Computer starten
 946|Öffnet sich beim Anmelden im Infobereich
+947|Ja
+948|Beenden

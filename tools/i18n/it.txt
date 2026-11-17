@@ -1063,3 +1063,5 @@ P119|Te lo ricordo di nuovo tra $1 minuti
 944|Chiudendo la finestra Groundwork Habits resta nell’area di notifica, così i promemoria arrivano comunque
 945|Avvia con il computer
 946|Si apre nell’area di notifica all’accesso
+947|Sì
+948|Esci

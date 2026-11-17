@@ -70,18 +70,21 @@ function alarmStart(){ // short beeps every 1.5 s for up to a minute
 // Later: this reminder waits until P.remSnooze[id] (per device)
 const snoozeMin=()=>[5,15,30,60].includes(P.snoozeMin)?P.snoozeMin:15;
 const snoozed=id=>((P.remSnooze||{})[id]||0)>Date.now();
+// desktop: Windows' notification with Yes / Later / No when it can, else (alarm mode, macOS, portable) the pop-up
+function deskAsk(id,k,name,q,kind,m){if(m==='alarm'||!DFS.askToast){DFS.ask(id,k);return}
+  DFS.askToast(id,k,remTitle(name),remBody(q,kind),tx('Yes'),tx('Later'),tx('No')).then(ok=>{if(!ok)DFS.ask(id,k)})}
 function checkHabitReminders(){
   if(LN||WIDGET||encWait)return;const n=new Date(),now=n.getHours()*60+n.getMinutes(),d=dk(TODAY);
   S.habits.forEach(h=>{if(!h.rem||h.arch)return;const [hh,mm]=h.rem.t.split(':').map(Number),k=pKey(h,TODAY);
     if(isRest(h,TODAY)||(P.remFired||{})[h.id]===d||now<hh*60+mm||snoozed(h.id))return;P.remFired=Object.assign({},P.remFired,{[h.id]:d});applyPrefs();if(L(h)[k])return;
-    if(DFS&&DFS.ask){DFS.ask(h.id,k);return}
+    if(DFS&&DFS.ask){deskAsk(h.id,k,h.name,'Have you done it '+perWord(h)+'?','habit',h.rem.m);return}
     try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(h.name),{body:remBody('Have you done it '+perWord(h)+'?','habit'),tag:'groundwork-h-'+h.id,requireInteraction:true,silent:h.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
     if(!modal&&!locked){modal={kind:'ask',h:h.id,k};render()}if(h.rem.m==='alarm')alarmStart()});
   goalDue().forEach(([g,key,at,txt])=>{if(dk(at)!==d||n<at||(P.remFired||{})[key]===d)return;P.remFired=Object.assign({},P.remFired,{[key]:d});applyPrefs();
     try{if('Notification' in window&&Notification.permission==='granted')new Notification('Groundwork Habits',{body:feat('remnames')?txt:'A goal deadline is coming up',tag:'groundwork-'+key})}catch(e){}toast(txt)});
   ((S.tasks[d]||{}).items||[]).forEach(it=>{if(!it.rem||it.done||it.hidden||it.cal)return;const [hh,mm]=it.rem.t.split(':').map(Number);
     if((P.remFired||{})[it.id]===d||now<hh*60+mm||snoozed(it.id))return;P.remFired=Object.assign({},P.remFired,{[it.id]:d});applyPrefs();
-    if(DFS&&DFS.ask){DFS.ask(it.id,d);return}
+    if(DFS&&DFS.ask){deskAsk(it.id,d,it.text,'Have you done it?','task',it.rem.m);return}
     try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(it.text),{body:remBody('Have you done it?','task'),tag:'groundwork-t-'+it.id,requireInteraction:true,silent:it.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
     if(!modal&&!locked){modal={kind:'ask',h:it.id,k:d};render()}if(it.rem.m==='alarm')alarmStart()})}
 if(ASK){const h=findH(ASK.h),t=findT(ASK.h,ASK.k);if(h&&h.rem&&h.rem.m==='alarm'&&!L(h)[ASK.k]||t&&t.rem&&t.rem.m==='alarm'&&!t.done)alarmStart()}
@@ -141,5 +144,7 @@ if(IOS&&!navigator.standalone&&!WIDGET&&!window.Capacitor)try{if(!localStorage.g
 idbGet().then(r=>{if(!r||WIDGET)return;let at=0;try{at=+localStorage.getItem(KEY+'-at')||0;if(r.t===localStorage.getItem(KEY))return}catch(e){}if(r.at<=at)return;
   if(isEnc(r.t)){idbLate=r.t;return}try{S=clean(JSON.parse(r.t));histJ=histOf();if(!modal)render()}catch(e){}});
 // desktop: keep running in the tray and start with the computer (Settings > Reminders); the shell forgets it on exit
-if(DFS&&DFS.tray&&!WIDGET)DFS.tray(!!P.tray,!!P.trayLogin);
+if(DFS&&DFS.tray&&!WIDGET)DFS.tray(!!P.tray,!!P.trayLogin,tx('Open'),tx('Quit'));
+// Windows reminder notification buttons (askToast): Yes ticks it, Later asks again after the Later wait
+if(DFS&&DFS.onAnswer&&!WIDGET)DFS.onAnswer(r=>{if(!r||encWait)return;if(r.a==='yes')remYes(r.id,r.k);else if(r.a==='later'){const f=Object.assign({},P.remFired);delete f[r.id];P.remFired=f;P.remSnooze=Object.assign({},P.remSnooze,{[r.id]:Date.now()+snoozeMin()*6e4});applyPrefs()}});
 render();

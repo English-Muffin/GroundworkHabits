@@ -175,14 +175,51 @@ fn quit(app: &AppHandle) {
 
 // the page's tray settings (sent at start and on change): the tray icon, and starting hidden in the tray at sign-in
 #[tauri::command]
-fn tray(app: AppHandle, on: bool, login: bool) -> Result<(), String> {
+fn tray(app: AppHandle, on: bool, login: bool, open: Option<String>, quit: Option<String>) -> Result<(), String> {
     use tauri_plugin_autostart::ManagerExt;
     TRAY.store(on, Ordering::SeqCst);
-    if let Some(t) = app.tray_by_id("main") { let _ = t.set_visible(on); }
+    if let Some(t) = app.tray_by_id("main") {
+        let _ = t.set_visible(on);
+        // the menu in the app's language
+        if let (Some(o), Some(q)) = (open, quit) {
+            use tauri::menu::{Menu, MenuItem};
+            if let (Ok(o), Ok(q)) = (MenuItem::with_id(&app, "open", o, true, None::<&str>), MenuItem::with_id(&app, "quit", q, true, None::<&str>)) {
+                if let Ok(m) = Menu::with_items(&app, &[&o, &q]) { let _ = t.set_menu(Some(m)); }
+            }
+        }
+    }
     let auto = app.autolaunch();
     let want = on && login;
     if want != auto.is_enabled().unwrap_or(false) { if want { auto.enable() } else { auto.disable() }.map_err(|e| e.to_string())?; }
     Ok(())
+}
+
+// Windows: a habit or task reminder as a notification with Yes / Later / No, answered without opening the app (the
+// answer goes to the page as "ask:answer"). Only for the installed app: the toast needs the Start menu shortcut's
+// app ID, so the portable exe answers false and the page opens the pop-up instead
+#[tauri::command]
+#[allow(clippy::too_many_arguments)]
+async fn ask_toast(app: AppHandle, id: String, k: String, title: String, body: String, yes: String, later: String, no: String) -> bool {
+    #[cfg(windows)]
+    {
+        use tauri_winrt_notification::{Scenario, Toast};
+        let exe = std::env::current_exe().unwrap_or_default();
+        let installed = exe.parent().map(|d| d.join(format!("Uninstall {}.exe", product(&app))).exists()).unwrap_or(false);
+        if !installed { return false; }
+        let a = app.clone();
+        Toast::new(&app.config().identifier).title(&title).text1(&body).scenario(Scenario::Reminder)
+            .add_button(&yes, "yes").add_button(&later, "later").add_button(&no, "no")
+            .on_activated(move |act| {
+                match act.as_deref() {
+                    Some(x @ ("yes" | "later" | "no")) => { let _ = a.emit("ask:answer", serde_json::json!({ "id": id, "k": k, "a": x })); }
+                    _ => show_main(a.clone()), // the notification itself: open the app
+                }
+                Ok(())
+            })
+            .show().is_ok()
+    }
+    #[cfg(not(windows))]
+    { let _ = (app, id, k, title, body, yes, later, no); false }
 }
 
 // the full app's commands (Lite builds without them; its bridge never calls them)
@@ -255,8 +292,8 @@ fn main() {
             Ok(())
         })
         .invoke_handler({
-            #[cfg(feature = "full")] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, choose, fetch_cal, update_check, update_install, oauth] }
-            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray] }
+            #[cfg(feature = "full")] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, ask_toast, choose, fetch_cal, update_check, update_install, oauth] }
+            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, ask_toast] }
         })
         .on_window_event(|window, event| {
             // closing the main window: let the page finish saving first (at most 3 s), like the Electron app

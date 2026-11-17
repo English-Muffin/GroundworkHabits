@@ -1063,3 +1063,5 @@ P119|Ik herinner je over $1 minuten opnieuw
 944|Als je het venster sluit, blijft Groundwork Habits in het systeemvak, zodat herinneringen blijven komen
 945|Starten met je computer
 946|Opent in het systeemvak als je inlogt
+947|Ja
+948|Afsluiten

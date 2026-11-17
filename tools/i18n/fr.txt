@@ -1063,3 +1063,5 @@ P119|Je vous le rappelle dans $1 minutes
 944|Fermer la fenêtre laisse Groundwork Habits dans la zone de notification, pour que les rappels arrivent toujours
 945|Démarrer avec l’ordinateur
 946|S’ouvre dans la zone de notification à la connexion
+947|Oui
+948|Quitter
