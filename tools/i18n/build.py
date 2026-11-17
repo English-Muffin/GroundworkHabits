@@ -22,6 +22,6 @@ for f in sorted(D.glob('*.txt')):
             if 'other' not in fm or any(not set(re.findall(r'\$\d', t)) <= set(re.findall(r'\$\d', en)) for t in fm.values()): print(f'{lang}: P{i} plural forms wrong'); bad += 1
         elif sorted(re.findall(r'\$\d', v)) != sorted(re.findall(r'\$\d', en)): print(f'{lang}: P{i} placeholders differ'); bad += 1
         p.append([rx, v])
-    (OUT / f'{lang}.js').write_text('window.GROUNDWORK_I18N=' + json.dumps({'lang': lang, 't': t, 'p': p}, ensure_ascii=False, separators=(',', ':')) + ';\n', encoding='utf-8')
+    (OUT / f'{lang}.js').write_text('window.GROUNDWORK_I18N=' + json.dumps({'lang': lang, 't': t, 'p': p}, ensure_ascii=False, separators=(',', ':')) + ';\n', encoding='utf-8', newline='\n')  # LF like the rest of the repo
     print(f'{lang}: {len(t)} strings, {len(p)} patterns')
 sys.exit(1 if bad else 0)
