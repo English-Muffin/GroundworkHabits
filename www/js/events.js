@@ -3,10 +3,11 @@
 'use strict';
 /* ---------- events ---------- */
 const findH=id=>S.habits.find(h=>h.id===id);
+let ovDown=null;document.addEventListener('pointerdown',e=>{ovDown=e.target},true);
 document.addEventListener('click',e=>{
   const t=e.target.closest('[data-act]');
   const act=t&&t.dataset.act;
-  if(t&&act==='ovclose'&&e.target!==t)return; // clicks inside the dialog
+  if(t&&act==='ovclose'&&(e.target!==t||(ovDown&&ovDown!==t)))return; // clicks inside the dialog, or a drag that began inside it (text selection let go outside)
   let changed=false;
   if(menuOpen&&act!=='gear'&&!(e.target.closest('#menu'))){menuOpen=false;changed=true}
   if(insMenu&&act!=='menu'&&act!=='pick'){insMenu=null;changed=true}
@@ -186,20 +187,23 @@ document.addEventListener('click',e=>{
       const g=modal.id?S.goals.find(x=>x.id===modal.id):null,o=g||{id:uid()};Object.assign(o,f);
       if(/^\d{4}-\d{2}-\d{2}$/.test(modal.due))o.due=modal.due;else delete o.due;if(modal.pin)o.pin=true;else delete o.pin;
       const k=modal.gk;
+      if(k==='week'&&!(modal.target>=1&&modal.target<=7)){toast('Set 1 to 7 times a week');const e=$('#gTarget');if(e)e.focus();return}
       if((k==='num'||k==='habit')&&!(modal.target>0)){toast('Set a target above 0');const e=$('#gTarget');if(e)e.focus();return}
       if(k==='range'&&(modal.start===undefined||modal.target===undefined||modal.start===modal.target)){toast('Set a start and a different target');const e=$('#gStart');if(e)e.focus();return}
       if(k==='habit'&&!findH(modal.habit)){toast('Pick a habit');return}
       if(k==='num'&&modal.recur&&!(Number.isFinite(modal.recur.v)&&modal.recur.v!==0&&/^\d{4}-\d{2}-\d{2}$/.test(modal.recur.from))){toast('Set the amount and start date to add automatically');return}
       if(k==='tasks'&&!(modal.newTasks||[]).length&&!(modal.id&&gTasks({id:modal.id}).length)){toast('Add at least one task');const e=$('#gStep');if(e)e.focus();return}
-      const oldRec=o.recur;['kind','unit','target','start','log','habit','since','recur'].forEach(x=>delete o[x]);if(k!=='steps')delete o.steps;
+      const oldRec=o.recur;const oldDays=o.days;['kind','unit','target','start','log','habit','since','recur','days'].forEach(x=>delete o[x]);if(k!=='steps')delete o.steps;
       if(k!=='pct')o.kind=k;
       if(k==='steps'&&modal.steps.length)o.steps=modal.steps;
       if(k==='num'||k==='range'){o.unit=modal.unit;o.target=modal.target;o.log=modal.log;if(k==='range')o.start=modal.start}
       if(k==='habit'){o.habit=modal.habit;o.target=Math.round(modal.target);o.since=/^\d{4}-\d{2}-\d{2}$/.test(modal.since||'')?modal.since:dk(TODAY)}
+      if(k==='week'){o.target=Math.round(modal.target);o.days=oldDays||[]}
       if(k==='num'&&modal.recur){o.recur={v:modal.recur.v,every:modal.recur.every,from:modal.recur.from};if(oldRec&&oldRec.last&&oldRec.from===o.recur.from&&oldRec.every===o.recur.every)o.recur.last=oldRec.last}
       if(k==='tasks')(modal.newTasks||[]).forEach(x=>(S.tasks[x.k]=S.tasks[x.k]||{items:[],mind:null}).items.push({id:uid(),text:x.text,done:false,goal:o.id}));
       o.pct=gPct(o);
       gTouch(o);if(!g)S.goals.push(o);applyRecurring();o.pct=gPct(o);modal=null;break}
+    case 'gwday':{const g=S.goals.find(x=>x.id===t.dataset.g),k=t.dataset.k;if(!g||!/^\d{4}-\d{2}-\d{2}$/.test(k))break;g.days=g.days||[];const i=g.days.indexOf(k);if(i<0)g.days.push(k);else g.days.splice(i,1);g.days.sort();g.pct=gPct(g);gTouch(g);break}
     case 'newquit':modal={kind:'quit',name:'',since:nowLocal()};focusSel='#qName';persist=false;break;
     case 'editquit':{const q=S.quits.find(x=>x.id===t.dataset.q);if(!q)break;modal={kind:'quit',id:q.id,name:q.name,since:q.since};focusSel='#qName';persist=false;break}
     case 'qsave':{
