@@ -224,7 +224,10 @@ function setColor(f,hex,from){COLOR_SET[f](hex);
   document.querySelectorAll('[data-cpk="'+f+'"]').forEach(w=>{w.style.setProperty('--h',hsl[0]);w.style.setProperty('--s',hsl[1]+'%');w.style.setProperty('--l',hsl[2]+'%');w.style.setProperty('--c',hex);const m=w.querySelector('.cmore');if(m)m.classList.toggle('on',!pre)})}
 // the theme in effect: 'system' follows the device's light or dark setting
 const theme=()=>P.theme==='system'?(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):(P.theme||'dark');
-function applyPrefs(){const d=document.documentElement;d.classList.toggle('lite',LITE);d.classList.toggle('nomind',!!P.feat&&P.feat.mind===false);/* not feat(): defined later in this file */d.style.setProperty('--accent',P.accent);d.classList.toggle('light',theme()==='light');d.classList.toggle('amoled',theme()==='amoled');d.classList.toggle('notabnames',P.tabNames===false);
+// the light theme's accent: the chosen colour darkened just enough for text to read on white (4.8:1, WCAG AA with margin)
+function lightAccent(h){if(!/^#[0-9a-f]{6}$/i.test(h||''))return '';const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),L=x=>(x/=255)<=.03928?x/12.92:((x+.055)/1.055)**2.4;
+  for(let f=1;f>0;f-=.02){const m=c.map(v=>v*f);if(1.05/(.2126*L(m[0])+.7152*L(m[1])+.0722*L(m[2])+.05)>=4.8)return '#'+m.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')}return '#000000'}
+function applyPrefs(){const d=document.documentElement;d.classList.toggle('lite',LITE);d.classList.toggle('nomind',!!P.feat&&P.feat.mind===false);/* not feat(): defined later in this file */d.style.setProperty('--accent',P.accent);d.style.setProperty('--accent-l',lightAccent(P.accent)||'');d.classList.toggle('light',theme()==='light');d.classList.toggle('amoled',theme()==='amoled');d.classList.toggle('notabnames',P.tabNames===false);
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=theme()==='light'?'#f7f7f7':theme()==='amoled'?'#000000':'#080808';try{localStorage.setItem(PKEY,JSON.stringify(P))}catch(e){}}
 applyPrefs();
 if(window.matchMedia)matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{if(P.theme==='system')applyPrefs()});

@@ -19,6 +19,7 @@
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
+    "axe-core": "^4.10.3",
     "eslint": "^9.39.5",
     "globals": "^15.15.0"
   },

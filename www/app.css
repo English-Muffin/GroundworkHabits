@@ -453,7 +453,7 @@ html.amoled{--g08:#000;--g0a:#000;--g0b:#000;--g0c:#000;--g0d:#000;--g0e:#000;--
 html.amoled body{background:#000}
 /* light theme: same tokens, hand-mapped greys; accent darkened for contrast on white */
 html.light{--g0a:#ffffff; --g0b:#ffffff; --g0c:#ffffff; --g0d:#ffffff; --g0e:#ffffff; --g10:#fefefe; --g11:#fcfcfc; --g12:#fbfbfb; --g13:#fafafa; --g16:#f6f6f6; --g17:#f5f5f5; --g18:#f4f4f4; --g1a:#f1f1f1; --g1d:#eeeeee; --g22:#e7e7e7; --g33:#c7c7c7; --g3a:#bfbfbf; --g3b:#bebebe; --g4a:#717171; --g4d:#717171; --g4f:#707070; --g55:#6f6f6f; --g5a:#6e6e6e; --g5e:#6d6d6d; --g66:#6b6b6b; --g6a:#6a6a6a; --g6b:#696969; --g77:#666666; --g7d:#646464; --g8a:#626262; --gaa:#444444; --gbb:#313131; --gcf:#1b1b1b; --gdd:#141414; --gff:#141414; --g08:#f3f3f1; --g0f:#ffffff; --g14:#f9f9f9; --g15:#f8f8f8; --g1b:#f0f0f0; --g1c:#efefef; --g2a:#dddddd; --g45:#b3b3b3; --g6f:#686868; --gf2:#141414;
-  --teal:color-mix(in srgb,var(--accent) 72%,#000); --on:#fff; color-scheme:light;--red:#d61f45;--green:#15803d;--flame:#c2410c;--amber:#b45309;--purple:#7c3aed;--star:#a16207}
+  --teal:var(--accent-l,color-mix(in srgb,var(--accent) 60%,#000)); --on:#fff; color-scheme:light;--red:#d61f45;--green:#15803d;--flame:#c2410c;--amber:#b45309;--purple:#7c3aed;--star:#a16207}
 html.light .btn.danger{background:#fde8ec;color:#c81e3c;border-color:#f6c3cd}
 html.light .menu,html.light .dd,html.light .pnav{box-shadow:0 12px 30px rgba(0,0,0,.12)}
 
@@ -483,6 +483,7 @@ html.light .menu,html.light .dd,html.light .pnav{box-shadow:0 12px 30px rgba(0,0
 .g2m{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;font-size:11px;color:var(--muted)}
 .g2st{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:99px}
 .g2st.on{background:color-mix(in srgb,var(--teal) 16%,transparent);color:var(--teal)}.g2st.ok{background:color-mix(in srgb,var(--green) 18%,transparent);color:var(--green)}
+html.light .g2st.ok{color:color-mix(in srgb,var(--green) 80%,#000)}html.light .g2st.on{color:color-mix(in srgb,var(--teal) 82%,#000)} /* the tint behind these badges needs darker text for 4.5:1 */
 .g2st.late{background:color-mix(in srgb,var(--red) 16%,transparent);color:var(--red)}.g2st.off{background:var(--g18);color:var(--gaa)}
 .g2a{display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.08em;font-weight:600;font-size:10px}.g2a i{width:7px;height:7px;border-radius:50%;background:var(--c)}
 .g2n{font-size:12px;color:var(--gcf)}.g2b{display:flex;align-items:center;gap:12px}.g2b .tr{flex:1;height:8px;background:var(--g18);border-radius:99px;overflow:hidden}.g2b .tr i{display:block;height:100%;background:var(--teal);border-radius:99px;transition:width .4s}.g2b b{font-size:13px;min-width:38px;text-align:end}
@@ -756,6 +757,7 @@ body{overflow-wrap:anywhere}.pnav a,.tsi,.g2area,.g2aw,.lrow .top>*{min-width:0}
 
 /* header sync status (render.js syncBtn) and the welcome dialog's sign-in offer */
 #syncBtn.serr{color:var(--red)}
+#syncBtn.soff{opacity:.45}
 #syncBtn.serr svg{forced-color-adjust:auto}
 .tipsync{display:grid;gap:4px;margin-top:var(--sp-3);padding:var(--sp-3);border-radius:12px;background:var(--g1a)}
 .tipsync span{color:var(--g6a)}
