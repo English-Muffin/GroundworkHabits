@@ -1065,3 +1065,4 @@ P119|Lembro-te de novo daqui a $1 minutos
 946|Abre na área de notificação quando inicias sessão
 947|Sim
 948|Sair
+949|O teu computador não permitiu iniciar o Groundwork Habits com ele

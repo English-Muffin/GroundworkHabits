@@ -16,7 +16,9 @@
     widget: () => { call('widget').catch(() => {}); },
     showMain: () => { call('show_main').catch(() => {}); },
     ask: (h, k) => { call('ask', { h, k }).catch(() => {}); },
-    tray: (on, login, open, quit) => call('tray', { on: !!on, login: !!login, open: open ? String(open) : null, quit: quit ? String(quit) : null }).catch(() => null),
+    // resolves null, or the reason when starting with the computer could not be set up
+    tray: (on, login, open, quick, quit) => call('tray', { on: !!on, login: !!login, open: open ? String(open) : null, quick: quick ? String(quick) : null, quit: quit ? String(quit) : null }).then(() => null, e => String(e || 'error')),
+    trayTip: text => { call('tray_tip', { text: String(text) }).catch(() => {}); },
     // Windows: a reminder notification with Yes / Later / No buttons; false = not possible here (use ask instead)
     askToast: (id, k, title, body, yes, later, no) => call('ask_toast', { id: String(id), k: String(k), title: String(title), body: String(body), yes: String(yes), later: String(later), no: String(no) }).catch(() => false),
     // Windows: a notification whose click opens the app and sends { id, a: 'open' } to onAnswer

@@ -1065,3 +1065,4 @@ P119|Je vous le rappelle dans $1 minutes
 946|S’ouvre dans la zone de notification à la connexion
 947|Oui
 948|Quitter
+949|Votre ordinateur n’a pas autorisé le démarrage de Groundwork Habits avec lui

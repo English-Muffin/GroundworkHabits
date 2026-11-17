@@ -173,20 +173,27 @@ fn quit(app: &AppHandle) {
     });
 }
 
+fn tray_menu(app: &AppHandle, open: &str, quick: &str, quit: &str) -> tauri::Result<tauri::menu::Menu<tauri::Wry>> {
+    use tauri::menu::{Menu, MenuItem};
+    Menu::with_items(app, &[&MenuItem::with_id(app, "open", open, true, None::<&str>)?, &MenuItem::with_id(app, "quick", quick, true, None::<&str>)?,
+        &MenuItem::with_id(app, "quit", quit, true, None::<&str>)?])
+}
+
+// the tray icon's tooltip: the app's name and today's habits (from the page after each change)
+#[tauri::command]
+fn tray_tip(app: AppHandle, text: String) {
+    if let Some(t) = app.tray_by_id("main") { let _ = t.set_tooltip(Some(text)); }
+}
+
 // the page's tray settings (sent at start and on change): the tray icon, and starting hidden in the tray at sign-in
 #[tauri::command]
-fn tray(app: AppHandle, on: bool, login: bool, open: Option<String>, quit: Option<String>) -> Result<(), String> {
+fn tray(app: AppHandle, on: bool, login: bool, open: Option<String>, quick: Option<String>, quit: Option<String>) -> Result<(), String> {
     use tauri_plugin_autostart::ManagerExt;
     TRAY.store(on, Ordering::SeqCst);
     if let Some(t) = app.tray_by_id("main") {
         let _ = t.set_visible(on);
         // the menu in the app's language
-        if let (Some(o), Some(q)) = (open, quit) {
-            use tauri::menu::{Menu, MenuItem};
-            if let (Ok(o), Ok(q)) = (MenuItem::with_id(&app, "open", o, true, None::<&str>), MenuItem::with_id(&app, "quit", q, true, None::<&str>)) {
-                if let Ok(m) = Menu::with_items(&app, &[&o, &q]) { let _ = t.set_menu(Some(m)); }
-            }
-        }
+        if let (Some(o), Some(a), Some(q)) = (open, quick, quit) { if let Ok(m) = tray_menu(&app, &o, &a, &q) { let _ = t.set_menu(Some(m)); } }
     }
     let auto = app.autolaunch();
     let want = on && login;
@@ -298,7 +305,9 @@ fn main() {
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| show_main(app.clone())))
         .plugin(tauri_plugin_notification::init())
         // start with the computer: Windows' Run key / a macOS login item, opening hidden in the tray
-        .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, Some(vec!["--hidden"])));
+        // named after the product (the Run value the uninstaller removes), so the full app and Lite keep separate entries
+        .plugin(tauri_plugin_autostart::Builder::new().arg("--hidden") // macOS: a LaunchAgent (the default)
+            .app_name(if cfg!(feature = "full") { "Groundwork Habits" } else { "Groundwork Habits Lite" }).build());
     #[cfg(feature = "full")]
     let builder = builder.register_uri_scheme_protocol("gw", |ctx, req| gw(ctx.app_handle(), req));
     builder
@@ -310,19 +319,22 @@ fn main() {
 {SELFTEST}") } else { BRIDGE.to_string() })
                 .visible(!std::env::args().any(|a| a == "--hidden"))
                 .additional_browser_args(&web_args()).build()?;
-            use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}};
-            let open = MenuItem::with_id(app, "open", "Open", true, None::<&str>)?;
-            let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
-            let mut tb = TrayIconBuilder::with_id("main").tooltip(&name).menu(&Menu::with_items(app, &[&open, &quit_i])?).show_menu_on_left_click(false)
-                .on_menu_event(|app, e| match e.id.as_ref() { "open" => show_main(app.clone()), "quit" => quit(app), _ => {} })
+            use tauri::{tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}};
+            let mut tb = TrayIconBuilder::with_id("main").tooltip(&name).menu(&tray_menu(app.handle(), "Open", "Quick add", "Quit")?).show_menu_on_left_click(false)
+                .on_menu_event(|app, e| match e.id.as_ref() {
+                    "open" => show_main(app.clone()),
+                    "quick" => { show_main(app.clone()); let _ = app.emit("ask:answer", serde_json::json!({ "a": "quick" })); }
+                    "quit" => quit(app),
+                    _ => {}
+                })
                 .on_tray_icon_event(|t, e| if let TrayIconEvent::Click { button: MouseButton::Left, button_state: MouseButtonState::Up, .. } = e { show_main(t.app_handle().clone()) });
             if let Some(i) = app.default_window_icon() { tb = tb.icon(i.clone()); }
             tb.build(app)?.set_visible(false)?; // shown once the page turns the tray on
             Ok(())
         })
         .invoke_handler({
-            #[cfg(feature = "full")] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, ask_toast, open_toast, choose, fetch_cal, update_check, update_install, oauth] }
-            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, ask_toast, open_toast] }
+            #[cfg(feature = "full")] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, tray_tip, ask_toast, open_toast, choose, fetch_cal, update_check, update_install, oauth] }
+            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, tray_tip, ask_toast, open_toast] }
         })
         .on_window_event(|window, event| {
             // closing the main window: let the page finish saving first (at most 3 s), like the Electron app

@@ -1065,3 +1065,4 @@ P119|Te lo ricordo di nuovo tra $1 minuti
 946|Si apre nell’area di notifica all’accesso
 947|Sì
 948|Esci
+949|Il computer non ha consentito di avviare Groundwork Habits all’accesso

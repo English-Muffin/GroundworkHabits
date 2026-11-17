@@ -1065,3 +1065,4 @@ P119|Ik herinner je over $1 minuten opnieuw
 946|Opent in het systeemvak als je inlogt
 947|Ja
 948|Afsluiten
+949|Je computer stond niet toe dat Groundwork Habits mee opstart

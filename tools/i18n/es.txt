@@ -1065,3 +1065,4 @@ P119|Te lo recuerdo de nuevo en $1 minutos
 946|Se abre en la bandeja al iniciar sesión
 947|Sí
 948|Salir
+949|Tu ordenador no permitió iniciar Groundwork Habits con él

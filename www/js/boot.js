@@ -77,6 +77,9 @@ function deskAsk(id,k,name,q,kind,m){if(m==='alarm'||!DFS.askToast){DFS.ask(id,k
 function openGoal(id){const g=S.goals.find(x=>x.id===id);if(!g||locked)return;goalArea='';if(g.arch)goalArchOpen=true;
   const go=()=>{render();const b=document.querySelector('[data-act=gopen][data-g="'+CSS.escape(id)+'"]');if(b)b.click()};
   if(view==='goals'){modal=null;go()}else{window.addEventListener('hashchange',()=>setTimeout(go),{once:true});location.hash='goals'}}
+// desktop tray: settings to the shell (start-up turns the switch back off if the computer refused it) and the tooltip
+function trayOn(quiet){DFS.tray(!!P.tray,!!P.trayLogin,tx('Open'),tx('Quick add'),tx('Quit')).then(err=>{if(err&&P.trayLogin){P.trayLogin=false;applyPrefs();render();if(!quiet)toast('Your computer didn’t allow starting Groundwork Habits with it')}});trayTip()}
+function trayTip(){if(!DFS||!DFS.trayTip||WIDGET||!P.tray)return;const d=doneToday();DFS.trayTip((LITE?'Groundwork Habits Lite':'Groundwork Habits')+'\n'+(d.total&&d.done>=d.total?tx('All done today'):tx(d.done+'/'+d.total+' habits done today')))}
 function checkHabitReminders(){
   if(LN||WIDGET||encWait)return;const n=new Date(),now=n.getHours()*60+n.getMinutes(),d=dk(TODAY);
   S.habits.forEach(h=>{if(!h.rem||h.arch)return;const [hh,mm]=h.rem.t.split(':').map(Number),k=pKey(h,TODAY);
@@ -135,7 +138,7 @@ function updCheck(now,manual){if(!UPD||WIDGET||ASK||(!manual&&!P.updAuto))return
 // finish any pending save first: the app closes while the setup runs
 async function updInstall(){const u=updCheck.info;if(!u)return;if(!u.auto){window.open(u.page,'_blank');return}toast('Downloading the update…');try{if(save.t)writeFile();await save.p}catch(e){}const r=await UPD.updateInstall();if(!r||!r.ok)toast(r&&r.error==='permission'?'Allow installs from Groundwork Habits, then tap Install again':(r&&r.error)||'Update failed')}
 setTimeout(()=>updCheck(false),8000);
-setInterval(()=>{refreshToday();checkReminder();checkHabitReminders();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
+setInterval(()=>{refreshToday();checkReminder();checkHabitReminders();trayTip();if(++calTick%15===0)pullCalendar();if(view==='achievements'&&!modal&&!menuOpen)render()},60000); // keep streak clocks ticking
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor&&!window.__TAURI_INTERNALS__){ // desktop and Android ship their files: no offline cache that could serve an old version
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
@@ -149,7 +152,7 @@ if(IOS&&!navigator.standalone&&!WIDGET&&!window.Capacitor)try{if(!localStorage.g
 idbGet().then(r=>{if(!r||WIDGET)return;let at=0;try{at=+localStorage.getItem(KEY+'-at')||0;if(r.t===localStorage.getItem(KEY))return}catch(e){}if(r.at<=at)return;
   if(isEnc(r.t)){idbLate=r.t;return}try{S=clean(JSON.parse(r.t));histJ=histOf();if(!modal)render()}catch(e){}});
 // desktop: keep running in the tray and start with the computer (Settings > Reminders); the shell forgets it on exit
-if(DFS&&DFS.tray&&!WIDGET)DFS.tray(!!P.tray,!!P.trayLogin,tx('Open'),tx('Quit'));
+if(DFS&&DFS.tray&&!WIDGET)trayOn(true);
 // Windows reminder notification buttons (askToast): Yes ticks it, Later asks again after the Later wait
-if(DFS&&DFS.onAnswer&&!WIDGET)DFS.onAnswer(r=>{if(!r||encWait)return;if(r.a==='open')openGoal(r.id);else if(r.a==='yes')remYes(r.id,r.k);else if(r.a==='later'){const f=Object.assign({},P.remFired);delete f[r.id];P.remFired=f;P.remSnooze=Object.assign({},P.remSnooze,{[r.id]:Date.now()+snoozeMin()*6e4});applyPrefs()}});
+if(DFS&&DFS.onAnswer&&!WIDGET)DFS.onAnswer(r=>{if(!r||encWait)return;if(r.a==='quick'){if(!locked){modal={kind:'quick'};focusSel='#qTask';render()}}else if(r.a==='open')openGoal(r.id);else if(r.a==='yes')remYes(r.id,r.k);else if(r.a==='later'){const f=Object.assign({},P.remFired);delete f[r.id];P.remFired=f;P.remSnooze=Object.assign({},P.remSnooze,{[r.id]:Date.now()+snoozeMin()*6e4});applyPrefs()}});
 render();

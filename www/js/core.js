@@ -171,7 +171,7 @@ const histOf=()=>{const r=Object.assign({},S);delete r.at;return JSON.stringify(
 function snap(j){j=j||histOf();if(histJ!==null&&j!==histJ){if(Date.now()-histT>1500){hist.push(histJ);if(hist.length>30)hist.shift()}histT=Date.now();redos=[]}histJ=j}
 function histStep(back){const from=back?hist:redos,to=back?redos:hist;if(!from.length||encWait)return false;to.push(JSON.stringify(S));S=clean(JSON.parse(from.pop()));histJ=histOf();histT=0;save();return true}
 // one JSON pass per save: at is re-added as the last key, so the history copy (no at) plus at is the full state
-function save(){if(encWait)return;delete S.at;const j=JSON.stringify(S),at=S.at=Date.now();snap(j);andWrite();pushWidget();
+function save(){if(encWait)return;delete S.at;const j=JSON.stringify(S),at=S.at=Date.now();snap(j);andWrite();pushWidget();trayTip();
   saveRaw(j.length>2?j.slice(0,-1)+',"at":'+at+'}':'{"at":'+at+'}',putData);clearTimeout(save.r);save.r=setTimeout(()=>syncReminders(),1500);if(dataDir){clearTimeout(save.t);save.t=setTimeout(writeFile,300)}}
 /* desktop only: mirror data to <folder>/groundwork.json (a Drive/OneDrive/Dropbox folder gives cloud sync) */
 const DFS=window.groundworkFS||null,NB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.GroundworkNative||null,calFetch=LITE?null:DFS&&DFS.fetchCal?DFS.fetchCal:NB?(u=>NB.fetchCal({url:u})):null;let dataDir=DFS?DFS.folder():'',fileText=null,fileJson=null;

@@ -1065,3 +1065,4 @@ P119|Erinnere dich in $1 Minuten erneut
 946|Öffnet sich beim Anmelden im Infobereich
 947|Ja
 948|Beenden
+949|Dein Computer hat den Start von Groundwork Habits mit ihm nicht erlaubt

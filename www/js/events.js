@@ -210,7 +210,7 @@ document.addEventListener('click',e=>{
     case 'undo':if(!undoLast()){persist=false;break}toast(undos.length?'Restored. '+undos.length+' more to undo':'Restored');break;
     case 'note':modal={kind:'note',h:t.dataset.h,k:t.dataset.k,text:(S.notes[t.dataset.h]||{})[t.dataset.k]||''};focusSel='#nText';persist=false;break;
     case 'nsave':{const v=($('#nText').value||'').trim().slice(0,300),n=S.notes[modal.h]||(S.notes[modal.h]={});if(v)n[modal.k]=v;else delete n[modal.k];modal=null;break}
-    case 'tray':case 'traylogin':if(act==='tray'){P.tray=!P.tray;if(!P.tray)P.trayLogin=false}else P.trayLogin=!P.trayLogin;applyPrefs();persist=false;if(DFS&&DFS.tray)DFS.tray(!!P.tray,!!P.trayLogin,tx('Open'),tx('Quit'));break;
+    case 'tray':case 'traylogin':if(act==='tray'){P.tray=!P.tray;if(!P.tray)P.trayLogin=false}else P.trayLogin=!P.trayLogin;applyPrefs();persist=false;if(DFS&&DFS.tray)trayOn(false);break;
     case 'feat':{const k=t.dataset.v,on=!feat(k);P.feat=Object.assign({},P.feat,{[k]:on});if(k==='reminder'&&on){const n=new Date(),[hh,mm]=(P.remTime||'21:00').split(':').map(Number);P.remDay=n.getHours()*60+n.getMinutes()>=hh*60+mm?dk(TODAY):''}applyPrefs();persist=false;
       if(k==='reminder')syncNativeReminder();
       if(k==='remnames')syncReminders();

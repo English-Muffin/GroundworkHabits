@@ -101,6 +101,8 @@ async def run(had_electron):
             # close_main finds only visible windows, so False = hidden (the page itself still reports "visible")
             check('in the tray: closing hides the window and the app keeps running', p.poll() is None and not close_main(p.pid), ticks)
             if mins >= 1: check('in the tray: the minute timer keeps ticking while hidden (gaps at most 70 s)', ticks[1] >= int(mins) - 1 and max(ticks[2] or [0]) <= 70000, ticks)
+            await pg.evaluate("groundworkFS.trayTip('Groundwork Habits test')")
+            check('in the tray: the translated menu (Open, Quick add, Quit) and the tooltip are accepted', await pg.evaluate("groundworkFS.tray(true,false,'Öffnen','Schnell hinzufügen','Beenden')") is None and p.poll() is None)
             await pg.evaluate("groundworkFS.tray(false,false); groundworkFS.showMain()"); await asyncio.sleep(1)
             # the Windows reminder notification with buttons: installed or portable (it registers its app ID in HKCU)
             check('reminder notification with buttons is shown', await pg.evaluate("groundworkFS.askToast('x','2026-01-01','Test reminder','Groundwork Habits test','Yes','Later','No')") is True)
