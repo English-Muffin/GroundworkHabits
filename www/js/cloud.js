@@ -102,7 +102,9 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
   const CSCOPE='https://www.googleapis.com/auth/calendar.readonly email',GK=KEY+'-gcal';
   let gc=null;try{gc=JSON.parse(localStorage.getItem(GK)||'null')}catch(e){}
   const gkeep=()=>{try{gc?localStorage.setItem(GK,JSON.stringify(gc)):localStorage.removeItem(GK)}catch(e){}};
-  async function gcFinish(j){api.calOff=false;gc={tok:j.access_token,exp:Date.now()+(j.expires_in||3600)*1e3,rt:j.refresh_token||'',who:''};gkeep();
+  // Google's consent page lets people untick the calendar box: then the answer's scope lacks it, so don't connect
+  const NOCAL='Google Calendar wasn’t allowed. Sign in again and tick the calendar box';
+  async function gcFinish(j){if(j.scope&&!/calendar\.readonly/.test(j.scope)){gc=null;gkeep();if(P.cal==='google'){P.cal='';applyPrefs()}toast(NOCAL);render();return}api.calOff=false;gc={tok:j.access_token,exp:Date.now()+(j.expires_in||3600)*1e3,rt:j.refresh_token||'',who:''};gkeep();
     try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+gc.tok}});if(r.ok){gc.who=(await r.json()).email||'';gkeep()}}catch(e){}
     P.cal='google';P.calAt=0;applyPrefs();pullCalendar(true)}
   async function gcToken(){if(!gc)throw new Error('signed out');if(gc.tok&&gc.exp>Date.now()+60e3)return gc.tok;if(!gc.rt){api.calOff=true;throw new Error('Sign in to Google Calendar again')}
@@ -123,6 +125,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
       for(let i=0;i<10;i++){const r=await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events?'+form(Object.assign({singleEvents:'true',orderBy:'startTime',maxResults:'2500',
           timeMin:new Date(lo+'T00:00').toISOString(),timeMax:new Date(hi+'T23:59:59').toISOString()},page?{pageToken:page}:{})),{headers:{Authorization:'Bearer '+t}});
         if(r.status===401){api.calOff=true;throw new Error('Sign in to Google Calendar again')}
+        if(r.status===403){let m='';try{m=((await r.clone().json()).error||{}).message||''}catch(e){}if(/scope/i.test(m)){api.calOff=true;throw new Error(NOCAL)}}
         if(!r.ok){let m='';try{m=((await r.json()).error||{}).message||''}catch(e){}throw new Error(('Google Calendar: '+r.status+' '+m).trim())}
         const j=await r.json();(j.items||[]).forEach(e=>{const x=gEvent(e);if(x)out.push(x)});
         if(!j.nextPageToken)break;page=j.nextPageToken}
@@ -155,7 +158,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
       // the rest uses the whole app (toast, render, save): wait until every script has loaded
       if(document.readyState!=='complete')await new Promise(r=>addEventListener('load',r,{once:true}));
       if(s!==pend.s){toast('Sign-in was cancelled');return}
-      if(pend.cal){addEventListener('load',()=>{location.hash='settings/calendar'});try{if(h.get('access_token'))await gcFinish({access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600});else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}return}
+      if(pend.cal){addEventListener('load',()=>{location.hash='settings/calendar'});try{if(h.get('access_token'))await gcFinish({access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600,scope:h.get('scope')||''});else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}return}
       try{if(h.get('access_token'))await finish(pend.p,{access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600});
         else if(q.get('code'))await finish(pend.p,await tokenCall(pend.p,{grant_type:'authorization_code',code:q.get('code'),code_verifier:pend.ver,redirect_uri:here()}));
         else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}}};

@@ -2,6 +2,11 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
+## Unreleased
+
+- Google Calendar sign-in: if the calendar box is left unticked on Google's page, the app says so and stays
+  signed out, instead of showing "403 Request had insufficient authentication scopes".
+
 ## 1.7.10
 
 - **Desktop reminders with the window closed:** Settings > Reminders > Keep running in the tray. Closing the window

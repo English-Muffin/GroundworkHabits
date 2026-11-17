@@ -1066,3 +1066,4 @@ P119|Je vous le rappelle dans $1 minutes
 947|Oui
 948|Quitter
 949|Votre ordinateur n’a pas autorisé le démarrage de Groundwork Habits avec lui
+950|Google Agenda n’a pas été autorisé. Reconnectez-vous et cochez la case de l’agenda

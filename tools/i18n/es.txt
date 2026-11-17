@@ -1066,3 +1066,4 @@ P119|Te lo recuerdo de nuevo en $1 minutos
 947|Sí
 948|Salir
 949|Tu ordenador no permitió iniciar Groundwork Habits con él
+950|No se permitió Google Calendar. Inicia sesión de nuevo y marca la casilla del calendario

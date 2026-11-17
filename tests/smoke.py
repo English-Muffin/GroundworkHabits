@@ -570,7 +570,8 @@ async def cloudSync(b):
             store['ver_ok'] = q['code_challenge_method'] == ['S256'] and q['token_access_type'] == ['offline']
             return await route.fulfill(status=302, headers={'Location': q['redirect_uri'][0] + '?code=C1&state=' + q['state'][0]})
         if u.netloc == 'accounts.google.com':
-            return await route.fulfill(status=302, headers={'Location': q['redirect_uri'][0] + '#access_token=G1&token_type=Bearer&expires_in=3600&state=' + q['state'][0]})
+            sc = 'email' if store.get('nocal') else q['scope'][0]  # nocal: the user unticked the calendar box
+            return await route.fulfill(status=302, headers={'Location': q['redirect_uri'][0] + '#access_token=G1&token_type=Bearer&expires_in=3600&scope=' + __import__('urllib.parse').parse.quote(sc) + '&state=' + q['state'][0]})
         J = lambda o, st=200: route.fulfill(status=st, headers=dict(CORS, **{'Content-Type': 'application/json'}), body=__import__('json').dumps(o))
         if u.path == '/oauth2/token':
             store['token_body'] = r.post_data or ''; return await J({'access_token': 'T1', 'expires_in': 14400, 'refresh_token': 'R1'})
@@ -713,6 +714,11 @@ async def cloudSync(b):
     await pg.reload(); await pg.wait_for_timeout(1200)
     st = await pg.evaluate("[document.getElementById('toast').textContent,document.getElementById('syncBtn').hidden,document.getElementById('syncBtn').classList.contains('serr'),!!document.querySelector('#main [data-act=gcalsign]')]")
     check('calendar: when the web sign-in runs out, it asks to sign in again (toast, red header icon, Sign in in Settings)', 'Sign in to Google Calendar again' in st[0] and st[1] is False and st[2] and st[3], st)
+    # the calendar box unticked on Google's page: not connected, and it says why (no raw 403)
+    await pg.evaluate("localStorage.removeItem('groundwork-v2-gcal')"); store['nocal'] = True; await pg.goto(URL + '#settings/calendar'); await pg.wait_for_timeout(400)
+    await pg.click('#main [data-act=gcalsign]'); await pg.wait_for_timeout(2000); store['nocal'] = False
+    st = await pg.evaluate("[document.getElementById('toast').textContent,localStorage.getItem('groundwork-v2-gcal'),!!document.querySelector('#main [data-act=gcalsign]')]")
+    check("calendar: an unticked calendar box on Google's page is explained, and Calendar stays signed out", 'tick the calendar box' in st[0] and st[1] is None and st[2], st)
     await ctx.close()
     # no sign-in IDs (a build before the apps are registered): no Cloud sync group at all; Lite never has one
     ctx = await b.new_context(viewport={'width': 1280, 'height': 800}); await ctx.add_init_script("localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={dropbox:'',google:'',googleWeb:''}")

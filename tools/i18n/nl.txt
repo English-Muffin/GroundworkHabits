@@ -1066,3 +1066,4 @@ P119|Ik herinner je over $1 minuten opnieuw
 947|Ja
 948|Afsluiten
 949|Je computer stond niet toe dat Groundwork Habits mee opstart
+950|Google Agenda is niet toegestaan. Log opnieuw in en vink het agendavakje aan
