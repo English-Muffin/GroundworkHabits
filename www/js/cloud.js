@@ -154,11 +154,11 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     // the web app coming back from the sign-in page: Dropbox answers ?code=…, Google #access_token=…
     async resume(){let pend=null;try{pend=JSON.parse(sessionStorage.getItem(OK)||'null')}catch(e){}if(!pend)return;
       const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.slice(1)),s=q.get('state')||h.get('state');if(!s)return;
-      try{sessionStorage.removeItem(OK)}catch(e){}history.replaceState(null,'',here());addEventListener('load',()=>{location.hash='settings/data'}); // the route was read before this ran: go there once every script has loaded (a timer could fire between script loads)
+      try{sessionStorage.removeItem(OK)}catch(e){}history.replaceState(null,'',here());addEventListener('load',()=>{location.hash=pend.cal?'settings/calendar':'settings/data'}); // the route was read before this ran: go there once every script has loaded (a timer could fire between script loads)
       // the rest uses the whole app (toast, render, save): wait until every script has loaded
       if(document.readyState!=='complete')await new Promise(r=>addEventListener('load',r,{once:true}));
       if(s!==pend.s){toast('Sign-in was cancelled');return}
-      if(pend.cal){addEventListener('load',()=>{location.hash='settings/calendar'});try{if(h.get('access_token'))await gcFinish({access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600,scope:h.get('scope')||''});else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}return}
+      if(pend.cal){try{if(h.get('access_token'))await gcFinish({access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600,scope:h.get('scope')||''});else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}return}
       try{if(h.get('access_token'))await finish(pend.p,{access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600});
         else if(q.get('code'))await finish(pend.p,await tokenCall(pend.p,{grant_type:'authorization_code',code:q.get('code'),code_verifier:pend.ver,redirect_uri:here()}));
         else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}}};
