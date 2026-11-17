@@ -158,7 +158,7 @@ final class Reminders {
             .setSmallIcon(R.drawable.dbk_stat)
             .setContentTitle(it.optString("title"))
             .setContentText(it.optString("body"))
-            .setOngoing(!alarm && !it.optBoolean("info"))
+            // not ongoing: Android never sends ongoing notifications to a Wear OS watch, and Yes / Later / No should work there
             .setAutoCancel(true)
             .setCategory(alarm ? NotificationCompat.CATEGORY_ALARM : NotificationCompat.CATEGORY_REMINDER)
             .setPriority(alarm ? NotificationCompat.PRIORITY_HIGH : NotificationCompat.PRIORITY_LOW)
