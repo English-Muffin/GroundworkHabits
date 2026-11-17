@@ -8,6 +8,10 @@ All notable changes to Groundwork Habits. Versions match the GitHub releases.
   signed out, instead of showing "403 Request had insufficient authentication scopes".
 - Web: signing in to Google Calendar comes back to Settings > Calendar (it opened Data & backups).
 - Settings no longer jumps when signing out or deleting cloud data makes the page shorter.
+- Web: Google Drive sync and Calendar renew their one-hour sign-in quietly when you open the app or come back to it,
+  instead of asking you to sign in again every hour.
+- The cloud icon in the header syncs straight away (Settings is one tap away in the message); it still opens Settings
+  when something needs fixing.
 
 ## 1.7.10
 

@@ -112,7 +112,10 @@ document.addEventListener('click',e=>{
     case 'afoldno':persist=false;if(modal.cloud)CLOUD.signOut();else{FOLD.clearFolder();P.andDir='';applyPrefs()}modal=null;break;
     case 'csign':persist=false;menuOpen=false;if(modal&&modal.kind==='tips'){try{localStorage.setItem('groundwork-tips','1')}catch(e){}modal=null}CLOUD.signIn(t.dataset.p).catch(e=>toast(e&&e.message==='signin'?'Could not sign in':e&&e.message||'Could not sign in'));break;
     case 'creconnect':persist=false;reconnectToast.told=0;CLOUD.reconnect().catch(()=>toast('Could not sign in'));break;
-    case 'syncgo':persist=false;location.hash=P.cal==='google'&&CLOUD&&CLOUD.calOff?'#settings/calendar':'#settings/data';return;
+    // the header cloud icon: all fine = sync now (Settings one tap away in the toast); a problem = the Settings row that fixes it
+    case 'syncgo':persist=false;{const calBad=P.cal==='google'&&CLOUD&&CLOUD.calOff,bad=calBad||(CLOUD&&CLOUD.on()&&CLOUD.off)||(WEBF&&WEBF.off&&P.andDir)||!!syncInfo().err;
+      if(bad){location.hash=calBad?'#settings/calendar':'#settings/data';return}syncNow(m=>toastAct(m,'Settings','syncset'))}break;
+    case 'syncset':persist=false;location.hash='#settings/data';return;
     case 'lbaks':case 'cbaks':{persist=false;const here=act==='lbaks';modal={kind:'cbaks',here,list:null};(here?localBackups():CLOUD.backups()).then(l=>{if(modal&&modal.kind==='cbaks'){modal.list=l;render()}}).catch(()=>{if(modal&&modal.kind==='cbaks'){modal.list=[];modal.err=1;render()}});break}
     case 'cbakrestore':persist=false;(modal&&modal.here?localBackup(t.dataset.n):CLOUD.getBackup(t.dataset.n)).then(x=>{if(isEnc(x)){modal={kind:'impin',text:x};focusSel='#impPin'}else{modal=null;previewImport(JSON.parse(x))}render()}).catch(()=>toast('Could not load that backup'));break;
     case 'cwipe':persist=false;if(!confirmWipe){confirmWipe=true;break}confirmWipe=false;{const n=CLOUD.name();CLOUD.wipe().then(()=>{toast('Deleted your data from '+n+'. It stays on this device');render()}).catch(()=>toast('Could not delete your data from '+n))}break;
@@ -120,7 +123,7 @@ document.addEventListener('click',e=>{
     case 'syncpinok':{persist=false;const pin=$('#syncPin').value,txt=modal.text,salt=encSalt(txt);deriveKey(pin,salt).then(async key=>{await decText(txt,key);
         encKey=key;P.lock={salt,enc:1,check:await encText('groundwork',key,salt)};applyPrefs();modal=null;andText=null;await andApply(txt,false,true);save();render();toast('This device now uses the same PIN')})
       .catch(()=>{toast('Wrong PIN');const e=$('#syncPin');if(e){e.value='';e.focus()}});break}
-    case 'syncnow':persist=false;if(dataDir){if(!readFile())writeFile();render();toast('Synced')}else andRead().then(()=>{andText=null;andWrite(true);setTimeout(()=>{render();const i=syncInfo();toast(i.err||'Synced')},1500)});break;
+    case 'syncnow':persist=false;syncNow(toast);break;
     case 'cout':persist=false;{const n=CLOUD.name();CLOUD.signOut();toast('Signed out of '+n+'. Your data stays on this device')}break;
     case 'aclear':persist=false;FOLD.clearFolder();P.andDir='';applyPrefs();toast(NB?'Saving on this phone only':'Saving in this browser only');break;
     case 'areconnect':persist=false;WEBF.handle(true).then(()=>{andText=null;andRead();render()}).catch(()=>toast('That folder can’t be used'));break;

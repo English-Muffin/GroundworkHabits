@@ -570,6 +570,10 @@ async def cloudSync(b):
             store['ver_ok'] = q['code_challenge_method'] == ['S256'] and q['token_access_type'] == ['offline']
             return await route.fulfill(status=302, headers={'Location': q['redirect_uri'][0] + '?code=C1&state=' + q['state'][0]})
         if u.netloc == 'accounts.google.com':
+            if q.get('prompt') == ['none']:  # quiet renewal: every scope granted before, or refused when signed out of Google
+                store['silent'] = store.get('silent', 0) + 1; store['hint'] = q.get('login_hint', [''])[0]
+                tail = '#error=interaction_required' if store.get('silentfail') else '#access_token=G2&token_type=Bearer&expires_in=3600&scope=' + __import__('urllib.parse').parse.quote('email https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/calendar.readonly')
+                return await route.fulfill(status=302, headers={'Location': q['redirect_uri'][0] + tail + '&state=' + q['state'][0]})
             sc = 'email' if store.get('nocal') else q['scope'][0]  # nocal: the user unticked the calendar box
             return await route.fulfill(status=302, headers={'Location': q['redirect_uri'][0] + '#access_token=G1&token_type=Bearer&expires_in=3600&scope=' + __import__('urllib.parse').parse.quote(sc) + '&state=' + q['state'][0]})
         J = lambda o, st=200: route.fulfill(status=st, headers=dict(CORS, **{'Content-Type': 'application/json'}), body=__import__('json').dumps(o))
@@ -711,17 +715,33 @@ async def cloudSync(b):
     check('calendar: the web sign-in comes back to Settings > Calendar', await pg.evaluate('location.hash') == '#settings/calendar', await pg.evaluate('location.hash'))
     check('calendar: Sign in with Google turns the main calendar\'s events into tasks (cancelled ones left out)',
           cal == ['09:30 Dentist', 'Holiday'] and store.get('gcal_auth') == 'Bearer G1' and 'Connected to Google Calendar' in txt and not errs3, [cal, store.get('gcal_auth'), txt[-300:], errs3])
-    await pg.evaluate("(()=>{const g=JSON.parse(localStorage.getItem('groundwork-v2-gcal'));g.exp=0;localStorage.setItem('groundwork-v2-gcal',JSON.stringify(g))})()")
+    store['silentfail'] = True; await pg.evaluate("(()=>{sessionStorage.clear();const g=JSON.parse(localStorage.getItem('groundwork-v2-gcal'));g.exp=0;localStorage.setItem('groundwork-v2-gcal',JSON.stringify(g))})()")
     await pg.reload(); await pg.wait_for_timeout(1200)
     st = await pg.evaluate("[document.getElementById('toast').textContent,document.getElementById('syncBtn').hidden,document.getElementById('syncBtn').classList.contains('serr'),!!document.querySelector('#main [data-act=gcalsign]')]")
     check('calendar: when the web sign-in runs out, it asks to sign in again (toast, red header icon, Sign in in Settings)', 'Sign in to Google Calendar again' in st[0] and st[1] is False and st[2] and st[3], st)
+    store['silentfail'] = False
     # Settings doesn't jump when signing out shrinks the page (phone, scrolled to the bottom)
     await pg.set_viewport_size({'width': 390, 'height': 700})
-    await pg.evaluate("localStorage.setItem('groundwork-v2-cloud',JSON.stringify({p:'google',tok:'x',rt:'',exp:Date.now()+3e6,who:'a@b.c'}));location.hash='settings/data'"); await pg.reload(); await pg.wait_for_timeout(600)
+    await pg.evaluate("localStorage.setItem('groundwork-v2-cloud',JSON.stringify({p:'google',tok:'x',rt:'',exp:Date.now()+3e6,who:'a@b.c'}));localStorage.removeItem('groundwork-v2-gcal');const q=JSON.parse(localStorage.getItem('groundwork-prefs')||'{}');delete q.cal;localStorage.setItem('groundwork-prefs',JSON.stringify(q));location.hash='settings/data'"); await pg.reload(); await pg.wait_for_timeout(600)
+    # the header cloud icon syncs straight away when all is well; Settings is one tap away in the toast
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(200); await pg.click('#syncBtn'); await pg.wait_for_timeout(2200)
+    st = await pg.evaluate("[location.hash,document.getElementById('toast').textContent,!!document.querySelector('#toast [data-act=syncset]')]")
+    check('the header cloud icon syncs now and offers Settings', st[0] == '#today' and st[2], st)
+    await pg.evaluate("location.hash='settings/data'"); await pg.wait_for_timeout(300)
     await pg.evaluate('scrollTo(0,1e6)'); await pg.wait_for_timeout(150); y0 = await pg.evaluate('scrollY')
     await pg.evaluate("document.querySelector('#main [data-act=cout]').click()"); await pg.wait_for_timeout(400); y1 = await pg.evaluate('scrollY')
     check('Settings stays put when signing out makes the page shorter', y0 > 200 and abs(y1 - y0) < 40, [y0, y1])
     await pg.set_viewport_size({'width': 1280, 'height': 800})
+    # web: an expired Google pass renews quietly when the app opens, back on the same screen; a refusal doesn't loop
+    await pg.evaluate("localStorage.setItem('groundwork-v2-cloud',JSON.stringify({p:'google',tok:'old',rt:'',exp:1,who:'a@b.c'}));localStorage.setItem('groundwork-v2-gcal',JSON.stringify({tok:'old',rt:'',exp:1,who:'a@b.c'}));sessionStorage.clear();location.hash='tasks'"); store['silent'] = 0
+    await pg.reload(); await pg.wait_for_timeout(3000)
+    st = await pg.evaluate("[location.hash,JSON.parse(localStorage.getItem('groundwork-v2-cloud')).tok,JSON.parse(localStorage.getItem('groundwork-v2-gcal')).tok]")
+    check('web: an expired Google pass renews quietly for Drive and Calendar, back on the same screen', st == ['#tasks', 'G2', 'G2'] and store['silent'] == 1 and store.get('hint') == 'a@b.c', [st, store['silent'], store.get('hint')])
+    await pg.evaluate("localStorage.setItem('groundwork-v2-cloud',JSON.stringify({p:'google',tok:'old',rt:'',exp:1,who:'a@b.c'}));sessionStorage.clear()"); store['silent'] = 0; store['silentfail'] = True
+    await pg.reload(); await pg.wait_for_timeout(3000); await pg.reload(); await pg.wait_for_timeout(2000); store['silentfail'] = False
+    st = await pg.evaluate("[location.hash,JSON.parse(localStorage.getItem('groundwork-v2-cloud')).tok]")
+    check('web: a refused quiet renewal tries once and leaves the usual Sign in again', st == ['#tasks', 'old'] and store['silent'] == 1, [st, store['silent']])
+    await pg.evaluate("localStorage.removeItem('groundwork-v2-cloud');localStorage.removeItem('groundwork-v2-gcal')")
     # the calendar box unticked on Google's page: not connected, and it says why (no raw 403)
     await pg.evaluate("localStorage.removeItem('groundwork-v2-gcal')"); store['nocal'] = True; await pg.goto(URL + '#settings/calendar'); await pg.wait_for_timeout(400)
     await pg.click('#main [data-act=gcalsign]'); await pg.wait_for_timeout(2000); store['nocal'] = False

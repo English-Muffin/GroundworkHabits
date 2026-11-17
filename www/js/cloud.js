@@ -35,7 +35,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     dropbox:{name:'Dropbox',id:()=>CLOUD_IDS.dropbox,secret:()=>'',redirect:()=>WEB?here():'http://127.0.0.1:'+OAUTH_PORT+'/',tokenUrl:'https://api.dropboxapi.com/oauth2/token',
       auth:(ch,s)=>'https://www.dropbox.com/oauth2/authorize?'+form({client_id:CLOUD_IDS.dropbox,response_type:'code',code_challenge:ch,code_challenge_method:'S256',token_access_type:'offline',redirect_uri:PROV.dropbox.redirect(),state:s})},
     google:{name:'Google Drive',id:()=>WEB?CLOUD_IDS.googleWeb:CLOUD_IDS.google,secret:()=>CLOUD_IDS.googleSecret,redirect:()=>WEB?here():'http://127.0.0.1:'+OAUTH_PORT+'/',tokenUrl:'https://oauth2.googleapis.com/token',
-      auth:(ch,s,scope)=>'https://accounts.google.com/o/oauth2/v2/auth?'+form(WEB?{client_id:CLOUD_IDS.googleWeb,response_type:'token',scope:scope||GSCOPE,redirect_uri:here(),state:s,include_granted_scopes:'true'}
+      auth:(ch,s,scope,extra)=>'https://accounts.google.com/o/oauth2/v2/auth?'+form(WEB?Object.assign({client_id:CLOUD_IDS.googleWeb,response_type:'token',scope:scope||GSCOPE,redirect_uri:here(),state:s,include_granted_scopes:'true'},extra||{})
         :{client_id:CLOUD_IDS.google,response_type:'code',scope:scope||GSCOPE,code_challenge:ch,code_challenge_method:'S256',access_type:'offline',prompt:'consent',redirect_uri:PROV.google.redirect(),state:s})}};
   const can=p=>!!PROV[p].id()&&(WEB||!!NAT)&&!!(window.crypto&&crypto.subtle);
   async function tokenCall(p,o){const pr=PROV[p],sec=pr.secret();
@@ -109,6 +109,7 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
     P.cal='google';P.calAt=0;applyPrefs();pullCalendar(true)}
   async function gcToken(){if(!gc)throw new Error('signed out');if(gc.tok&&gc.exp>Date.now()+60e3)return gc.tok;if(!gc.rt){api.calOff=true;throw new Error('Sign in to Google Calendar again')}
     let j;try{j=await tokenCall('google',{grant_type:'refresh_token',refresh_token:gc.rt})}catch(e){if(navigator.onLine!==false)api.calOff=true;throw new Error('Sign in to Google Calendar again')}gc.tok=j.access_token;gc.exp=Date.now()+(j.expires_in||3600)*1e3;gkeep();return gc.tok}
+  const SILENT=KEY+'-silent';
   const api={off:false,why:'',
     calOn:()=>!!gc,calOff:false,calWho:()=>gc&&gc.who||'',
     async calSignIn(){if(!can('google')){toast('Sign-in with Google isn’t set up in this version');return}
@@ -149,15 +150,26 @@ const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
       const q=new URLSearchParams(r.query||'');if(q.get('state')!==s||!q.get('code'))throw new Error('Sign-in was cancelled');
       await finish(p,await tokenCall(p,{grant_type:'authorization_code',code:q.get('code'),code_verifier:ver,redirect_uri:PROV[p].redirect()}))},
     reconnect(){if(st)return api.signIn(st.p)},
+    // web: Google's pass lasts an hour. Renew it with no visible sign-in (prompt=none, same account) when the app opens or
+    // comes back on screen; at most once per 10 minutes per tab, so a refused renewal can't loop. One answer covers Drive
+    // and Calendar (include_granted_scopes). true = the page is leaving for Google and comes straight back
+    renewWeb(){if(!WEB||!can('google'))return false;const now=Date.now(),drive=st&&st.p==='google'&&st.exp<now+60e3,cal=gc&&gc.exp<now+60e3;if(!drive&&!cal)return false;
+      try{const last=+sessionStorage.getItem(SILENT)||0;if(now-last<6e5)return false;sessionStorage.setItem(SILENT,String(now))}catch(e){return false}
+      const s=rnd(),who=(drive?st.who:gc.who)||'';try{sessionStorage.setItem(OK,JSON.stringify({p:'google',s,silent:1,back:location.hash}))}catch(e){return false}
+      location.replace(PROV.google.auth('',s,drive?GSCOPE:CSCOPE,Object.assign({prompt:'none'},who?{login_hint:who}:{})));return true},
     signOut(){if(st&&st.p==='dropbox'&&st.tok)fetch('https://api.dropboxapi.com/2/auth/token/revoke',{method:'POST',headers:{Authorization:'Bearer '+st.tok}}).catch(()=>{});
       st=null;keep();api.off=false;andText=null},
     // the web app coming back from the sign-in page: Dropbox answers ?code=…, Google #access_token=…
     async resume(){let pend=null;try{pend=JSON.parse(sessionStorage.getItem(OK)||'null')}catch(e){}if(!pend)return;
       const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.slice(1)),s=q.get('state')||h.get('state');if(!s)return;
-      try{sessionStorage.removeItem(OK)}catch(e){}history.replaceState(null,'',here());addEventListener('load',()=>{location.hash=pend.cal?'settings/calendar':'settings/data'}); // the route was read before this ran: go there once every script has loaded (a timer could fire between script loads)
+      try{sessionStorage.removeItem(OK)}catch(e){}history.replaceState(null,'',here());addEventListener('load',()=>{location.hash=pend.silent?(pend.back||'#today'):pend.cal?'settings/calendar':'settings/data'}); // the route was read before this ran: go there once every script has loaded (a timer could fire between script loads)
       // the rest uses the whole app (toast, render, save): wait until every script has loaded
       if(document.readyState!=='complete')await new Promise(r=>addEventListener('load',r,{once:true}));
-      if(s!==pend.s){toast('Sign-in was cancelled');return}
+      if(s!==pend.s){if(!pend.silent)toast('Sign-in was cancelled');return}
+      // a quiet renewal: new passes for whatever the answer covers; refused (signed out of Google) = the usual Sign in again
+      if(pend.silent){const t=h.get('access_token'),sc=h.get('scope')||'',exp=Date.now()+(+h.get('expires_in')||3600)*1e3;if(!t)return;
+        if(st&&st.p==='google'&&/drive\.appdata/.test(sc)){st.tok=t;st.exp=exp;keep();api.off=false}
+        if(gc&&/calendar\.readonly/.test(sc)){gc.tok=t;gc.exp=exp;gkeep();api.calOff=false}render();return}
       if(pend.cal){try{if(h.get('access_token'))await gcFinish({access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600,scope:h.get('scope')||''});else toast('Sign-in was cancelled')}catch(e){toast('Could not sign in')}return}
       try{if(h.get('access_token'))await finish(pend.p,{access_token:h.get('access_token'),expires_in:+h.get('expires_in')||3600});
         else if(q.get('code'))await finish(pend.p,await tokenCall(pend.p,{grant_type:'authorization_code',code:q.get('code'),code_verifier:pend.ver,redirect_uri:here()}));
