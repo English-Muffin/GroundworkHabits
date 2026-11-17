@@ -424,6 +424,9 @@ static class Setup
                 try { foreach (var x in Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Name + "-before-rename-*")) RemoveDir(x); } catch (Exception) { }
             }
             try { Registry.CurrentUser.DeleteSubKeyTree(RegKey, false); } catch (Exception) { }
+            // the app's "Start with your computer" entry and the app ID it registers for notifications
+            try { using (var r = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true)) if (r != null) r.DeleteValue(Name, false); } catch (Exception) { }
+            try { Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\AppUserModelId\" + AppId, false); } catch (Exception) { }
             say(100, "Done");
             return 0;
         }
