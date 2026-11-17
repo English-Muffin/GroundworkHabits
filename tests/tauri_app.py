@@ -102,9 +102,8 @@ async def run(had_electron):
             check('in the tray: closing hides the window and the app keeps running', p.poll() is None and not close_main(p.pid), ticks)
             if mins >= 1: check('in the tray: the minute timer keeps ticking while hidden (gaps at most 70 s)', ticks[1] >= int(mins) - 1 and max(ticks[2] or [0]) <= 70000, ticks)
             await pg.evaluate("groundworkFS.tray(false,false); groundworkFS.showMain()"); await asyncio.sleep(1)
-            # the Windows reminder notification only in an install (uninstaller next to the exe); elsewhere the pop-up is used
-            inst = any(pathlib.Path(EXE).parent.glob('Uninstall *.exe'))
-            check('reminder notification with buttons: ' + ('shown in an install' if inst else 'off outside an install, so the pop-up is used'), await pg.evaluate("groundworkFS.askToast('x','2026-01-01','Test reminder','Groundwork Habits test','Yes','Later','No')") is inst)
+            # the Windows reminder notification with buttons: installed or portable (it registers its app ID in HKCU)
+            check('reminder notification with buttons is shown', await pg.evaluate("groundworkFS.askToast('x','2026-01-01','Test reminder','Groundwork Habits test','Yes','Later','No')") is True)
             check('notifications do not fail', await pg.evaluate("(()=>{try{new Notification('Groundwork Habits',{body:'test'});return true}catch(e){return false}})()"))
             if LITE:
                 check('Lite has no online parts in its bridge', await pg.evaluate("!groundworkFS.fetchCal&&!groundworkFS.updateCheck&&groundworkFS.folder()===''"))

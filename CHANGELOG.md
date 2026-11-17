@@ -7,8 +7,10 @@ All notable changes to Groundwork Habits. Versions match the GitHub releases.
 - **Desktop reminders with the window closed:** Settings > Reminders > Keep running in the tray. Closing the window
   leaves Groundwork Habits in the system tray (Open / Quit), and Start with your computer opens it there at sign-in.
 - **Answer reminders from the Windows notification:** habit and task reminders show Yes, Later and No buttons in
-  the installed Windows app, without the pop-up window. Alarm reminders, macOS and the portable app keep the pop-up.
+  the Windows app (installed or portable), without the pop-up window. Alarm reminders and macOS keep the pop-up.
+- Clicking a goal deadline notification opens that goal (Windows and web).
 - The tray menu is in the app's language.
+- Android: quiet reminders reach a Wear OS watch too, with Yes, Later and No. They can now be swiped away on the phone.
 - Large text: Insights' week review no longer runs off a phone screen when a habit has a very long name.
 
 ## 1.7.9

@@ -194,18 +194,31 @@ fn tray(app: AppHandle, on: bool, login: bool, open: Option<String>, quit: Optio
     Ok(())
 }
 
+// Windows shows a notification with buttons only for a known app ID. The installer's Start menu shortcut registers
+// it; the portable exe registers it under HKCU\Software\Classes\AppUserModelId once per run (name only, no icon)
+#[cfg(windows)]
+fn app_id_ok(app: &AppHandle) -> bool {
+    static OK: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *OK.get_or_init(|| {
+        let exe = std::env::current_exe().unwrap_or_default();
+        if exe.parent().map(|d| d.join(format!("Uninstall {}.exe", product(app))).exists()).unwrap_or(false) { return true; }
+        use std::os::windows::process::CommandExt;
+        let key = format!(r"HKCU\Software\Classes\AppUserModelId\{}",app.config().identifier);
+        std::process::Command::new("reg").args(["add", &key, "/v", "DisplayName", "/t", "REG_SZ", "/d", &product(app), "/f"])
+            .creation_flags(0x0800_0000) // CREATE_NO_WINDOW
+            .status().map(|s| s.success()).unwrap_or(false)
+    })
+}
+
 // Windows: a habit or task reminder as a notification with Yes / Later / No, answered without opening the app (the
-// answer goes to the page as "ask:answer"). Only for the installed app: the toast needs the Start menu shortcut's
-// app ID, so the portable exe answers false and the page opens the pop-up instead
+// answer goes to the page as "ask:answer"). false (no app ID) makes the page open the pop-up instead
 #[tauri::command]
 #[allow(clippy::too_many_arguments)]
 async fn ask_toast(app: AppHandle, id: String, k: String, title: String, body: String, yes: String, later: String, no: String) -> bool {
     #[cfg(windows)]
     {
         use tauri_winrt_notification::{Scenario, Toast};
-        let exe = std::env::current_exe().unwrap_or_default();
-        let installed = exe.parent().map(|d| d.join(format!("Uninstall {}.exe", product(&app))).exists()).unwrap_or(false);
-        if !installed { return false; }
+        if !app_id_ok(&app) { return false; }
         let a = app.clone();
         Toast::new(&app.config().identifier).title(&title).text1(&body).scenario(Scenario::Reminder)
             .add_button(&yes, "yes").add_button(&later, "later").add_button(&no, "no")
@@ -220,6 +233,22 @@ async fn ask_toast(app: AppHandle, id: String, k: String, title: String, body: S
     }
     #[cfg(not(windows))]
     { let _ = (app, id, k, title, body, yes, later, no); false }
+}
+
+// Windows: a plain notification (goal deadlines) whose click opens the app and tells the page ({ id, a: 'open' });
+// false when Windows can't show it, then the page uses the ordinary notification
+#[tauri::command]
+async fn open_toast(app: AppHandle, id: String, title: String, body: String) -> bool {
+    #[cfg(windows)]
+    {
+        if !app_id_ok(&app) { return false; }
+        let a = app.clone();
+        tauri_winrt_notification::Toast::new(&app.config().identifier).title(&title).text1(&body)
+            .on_activated(move |_| { show_main(a.clone()); let _ = a.emit("ask:answer", serde_json::json!({ "id": id, "a": "open" })); Ok(()) })
+            .show().is_ok()
+    }
+    #[cfg(not(windows))]
+    { let _ = (app, id, title, body); false }
 }
 
 // the full app's commands (Lite builds without them; its bridge never calls them)
@@ -292,8 +321,8 @@ fn main() {
             Ok(())
         })
         .invoke_handler({
-            #[cfg(feature = "full")] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, ask_toast, choose, fetch_cal, update_check, update_install, oauth] }
-            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, ask_toast] }
+            #[cfg(feature = "full")] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, ask_toast, open_toast, choose, fetch_cal, update_check, update_install, oauth] }
+            #[cfg(not(feature = "full"))] { tauri::generate_handler![backup, backups_list, backup_read, open_backups, open_external, notify, widget, ask, show_main, flushed, selftest, tray, ask_toast, open_toast] }
         })
         .on_window_event(|window, event| {
             // closing the main window: let the page finish saving first (at most 3 s), like the Electron app

@@ -75,6 +75,11 @@ async def desktop(b):
     await pg.fill('#gTitle', 'Renamed goal'); await pg.click('[data-act=gsave]')
     await pg.reload(); await pg.wait_for_timeout(200)
     check('empty goal title is restored, edit persists', bool(t0.strip()) and await pg.locator('.goal2 h3').first.inner_text() == 'Renamed goal')
+    # a goal deadline notification's click (openGoal) opens that goal from another screen
+    await pg.evaluate("location.hash='today'"); await pg.wait_for_timeout(150)
+    await pg.evaluate("GroundworkTest.openGoal(GroundworkTest.state().goals.find(g=>g.title==='Renamed goal').id)"); await pg.wait_for_timeout(300)
+    check('a goal deadline notification opens its goal', await pg.locator('#modal .mgoal').count() == 1 and await pg.input_value('#gTitle') == 'Renamed goal')
+    await pg.keyboard.press('Escape')
     await pg.evaluate("location.hash='tasks'"); await pg.wait_for_timeout(150)
     await pg.locator('[data-act=tadd]').nth(0).click(); await pg.keyboard.type('Past task'); await pg.keyboard.press('Enter')
     past = pg.locator('.tk', has_text='Past task').locator('.cb')

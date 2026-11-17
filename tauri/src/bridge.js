@@ -19,6 +19,8 @@
     tray: (on, login, open, quit) => call('tray', { on: !!on, login: !!login, open: open ? String(open) : null, quit: quit ? String(quit) : null }).catch(() => null),
     // Windows: a reminder notification with Yes / Later / No buttons; false = not possible here (use ask instead)
     askToast: (id, k, title, body, yes, later, no) => call('ask_toast', { id: String(id), k: String(k), title: String(title), body: String(body), yes: String(yes), later: String(later), no: String(no) }).catch(() => false),
+    // Windows: a notification whose click opens the app and sends { id, a: 'open' } to onAnswer
+    openToast: (id, title, body) => call('open_toast', { id: String(id), title: String(title), body: String(body) }).catch(() => false),
     onAnswer: cb => { answerCb = cb; },
     onFlush: cb => { flushCb = cb; },
   };

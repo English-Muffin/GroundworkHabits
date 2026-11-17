@@ -20,7 +20,7 @@ window.addEventListener('storage',e=>{
   if(e.key==='groundwork-locked'){lockNow(false);return}
   if(e.key===PKEY&&e.newValue){try{const was=P.lock&&P.lock.salt;Object.assign(P,JSON.parse(e.newValue));if(P.lock&&P.lock.salt!==was){locked=true;encKey=null}if(!P.lock){P.lock=null;encKey=null}const d=document.documentElement;d.style.setProperty('--accent',P.accent);d.classList.toggle('light',P.theme==='light');d.classList.toggle('amoled',P.theme==='amoled');d.classList.toggle('notabnames',P.tabNames===false);if(!modal&&!drag)render()}catch(_){}}
 });
-if(TESTING)window.GroundworkTest={tx,parseExternal,mergeExternal,tplAdd,parseIcs,applyCalendar,tasksToIcs,state:()=>S,save:()=>save(),encFor:async(x,pin)=>{const salt='00ff00ff00ff00ff00ff00ff00ff00ff';return encText(x,await deriveKey(pin,salt),salt)},remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
+if(TESTING)window.GroundworkTest={tx,openGoal,parseExternal,mergeExternal,tplAdd,parseIcs,applyCalendar,tasksToIcs,state:()=>S,save:()=>save(),encFor:async(x,pin)=>{const salt='00ff00ff00ff00ff00ff00ff00ff00ff';return encText(x,await deriveKey(pin,salt),salt)},remCheck:()=>checkHabitReminders(),remSync:()=>syncReminders(),remTake:()=>takeAnswers()}; // smoke tests only
 pullCalendar();let calTick=0;
 // daily reminder: a notification at the chosen time if daily habits are still open (only while Groundwork Habits is running)
 // Android app: a real daily notification scheduled with Capacitor Local Notifications (works when the app is closed)
@@ -73,6 +73,10 @@ const snoozed=id=>((P.remSnooze||{})[id]||0)>Date.now();
 // desktop: Windows' notification with Yes / Later / No when it can, else (alarm mode, macOS, portable) the pop-up
 function deskAsk(id,k,name,q,kind,m){if(m==='alarm'||!DFS.askToast){DFS.ask(id,k);return}
   DFS.askToast(id,k,remTitle(name),remBody(q,kind),tx('Yes'),tx('Later'),tx('No')).then(ok=>{if(!ok)DFS.ask(id,k)})}
+// a goal deadline notification was clicked: show that goal (the Goals page, then its dialog through the gopen action)
+function openGoal(id){const g=S.goals.find(x=>x.id===id);if(!g||locked)return;goalArea='';if(g.arch)goalArchOpen=true;
+  const go=()=>{render();const b=document.querySelector('[data-act=gopen][data-g="'+CSS.escape(id)+'"]');if(b)b.click()};
+  if(view==='goals'){modal=null;go()}else{window.addEventListener('hashchange',()=>setTimeout(go),{once:true});location.hash='goals'}}
 function checkHabitReminders(){
   if(LN||WIDGET||encWait)return;const n=new Date(),now=n.getHours()*60+n.getMinutes(),d=dk(TODAY);
   S.habits.forEach(h=>{if(!h.rem||h.arch)return;const [hh,mm]=h.rem.t.split(':').map(Number),k=pKey(h,TODAY);
@@ -81,7 +85,8 @@ function checkHabitReminders(){
     try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification(remTitle(h.name),{body:remBody('Have you done it '+perWord(h)+'?','habit'),tag:'groundwork-h-'+h.id,requireInteraction:true,silent:h.rem.m!=='alarm'});x.onclick=()=>{window.focus();x.close()}}}catch(e){}
     if(!modal&&!locked){modal={kind:'ask',h:h.id,k};render()}if(h.rem.m==='alarm')alarmStart()});
   goalDue().forEach(([g,key,at,txt])=>{if(dk(at)!==d||n<at||(P.remFired||{})[key]===d)return;P.remFired=Object.assign({},P.remFired,{[key]:d});applyPrefs();
-    try{if('Notification' in window&&Notification.permission==='granted')new Notification('Groundwork Habits',{body:feat('remnames')?txt:'A goal deadline is coming up',tag:'groundwork-'+key})}catch(e){}toast(txt)});
+    const gb=feat('remnames')?txt:'A goal deadline is coming up',web=()=>{try{if('Notification' in window&&Notification.permission==='granted'){const x=new Notification('Groundwork Habits',{body:gb,tag:'groundwork-'+key});x.onclick=()=>{window.focus();openGoal(g.id);x.close()}}}catch(e){}};
+    if(DFS&&DFS.openToast)DFS.openToast(g.id,'Groundwork Habits',tx(gb)).then(ok=>{if(!ok)web()});else web();toast(txt)});
   ((S.tasks[d]||{}).items||[]).forEach(it=>{if(!it.rem||it.done||it.hidden||it.cal)return;const [hh,mm]=it.rem.t.split(':').map(Number);
     if((P.remFired||{})[it.id]===d||now<hh*60+mm||snoozed(it.id))return;P.remFired=Object.assign({},P.remFired,{[it.id]:d});applyPrefs();
     if(DFS&&DFS.ask){deskAsk(it.id,d,it.text,'Have you done it?','task',it.rem.m);return}
@@ -146,5 +151,5 @@ idbGet().then(r=>{if(!r||WIDGET)return;let at=0;try{at=+localStorage.getItem(KEY
 // desktop: keep running in the tray and start with the computer (Settings > Reminders); the shell forgets it on exit
 if(DFS&&DFS.tray&&!WIDGET)DFS.tray(!!P.tray,!!P.trayLogin,tx('Open'),tx('Quit'));
 // Windows reminder notification buttons (askToast): Yes ticks it, Later asks again after the Later wait
-if(DFS&&DFS.onAnswer&&!WIDGET)DFS.onAnswer(r=>{if(!r||encWait)return;if(r.a==='yes')remYes(r.id,r.k);else if(r.a==='later'){const f=Object.assign({},P.remFired);delete f[r.id];P.remFired=f;P.remSnooze=Object.assign({},P.remSnooze,{[r.id]:Date.now()+snoozeMin()*6e4});applyPrefs()}});
+if(DFS&&DFS.onAnswer&&!WIDGET)DFS.onAnswer(r=>{if(!r||encWait)return;if(r.a==='open')openGoal(r.id);else if(r.a==='yes')remYes(r.id,r.k);else if(r.a==='later'){const f=Object.assign({},P.remFired);delete f[r.id];P.remFired=f;P.remSnooze=Object.assign({},P.remSnooze,{[r.id]:Date.now()+snoozeMin()*6e4});applyPrefs()}});
 render();
