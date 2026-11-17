@@ -63,6 +63,8 @@ is the first proper one. What changed in the earlier versions is still in the [c
 - **Reminders per habit:** a quiet Yes or No notification, or an alarm. On Android you answer from the
   notification without opening the app, or tap **Later** to be asked again in 5, 15, 30 or 60 minutes.
   Settings shows whether Android lets notifications and exact alarms through, with a button to fix it.
+  A watch gets them too (Wear OS). On Windows, reminders have Yes, Later and No buttons in the notification, and the
+  app can keep running in the tray and start with your computer, so reminders arrive with the window closed.
 
 **Tasks**
 
@@ -252,7 +254,7 @@ before it's used.
 | Lite edition | `node tools/edition.js lite` on a copy of the repository, then the same commands |
 | macOS universal `.zip` | `npm install && npm run dist:mac` (on a Mac, with Rust) |
 | Android `.apk` | `npm install && npx cap add android && npx cap sync android`, then build in Android Studio |
-| Everything, in the cloud | Push a tag like `v1.7.9`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
+| Everything, in the cloud | Push a tag like `v1.7.10`: [GitHub Actions](.github/workflows/build.yml) builds Windows, macOS and Android and attaches them to a release |
 
 ### Tests
 

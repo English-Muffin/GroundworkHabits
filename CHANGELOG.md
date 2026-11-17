@@ -2,10 +2,10 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
-## Unreleased
+## 1.7.10
 
 - **Desktop reminders with the window closed:** Settings > Reminders > Keep running in the tray. Closing the window
-  leaves Groundwork Habits in the system tray (Open / Quit), and Start with your computer opens it there at sign-in.
+  leaves Groundwork Habits in the system tray (Open, Quick add, Quit), and Start with your computer opens it there at sign-in.
 - **Answer reminders from the Windows notification:** habit and task reminders show Yes, Later and No buttons in
   the Windows app (installed or portable), without the pop-up window. Alarm reminders and macOS keep the pop-up.
 - Clicking a goal deadline notification opens that goal (Windows and web).

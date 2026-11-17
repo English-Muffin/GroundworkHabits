@@ -1,0 +1,2 @@
+- Android reminders reach a Wear OS watch, with Yes, Later and No.
+- Large text: Insights fits on small screens with long habit names.
