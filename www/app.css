@@ -78,7 +78,7 @@ svg{display:block}
 .circ-btn:hover{border-color:var(--g33);color:var(--gff)}
 .circ-btn:disabled{opacity:.35;cursor:default}
 .field{background:var(--g0c);border:1px solid var(--line2);border-radius:12px;padding:11px 13px;width:100%}
-.field:focus{outline:2px solid var(--teal);outline-offset:0;border-color:transparent}
+.field:focus,.field:focus-within{outline:2px solid var(--teal);outline-offset:0;border-color:transparent} /* focus-within: a date field focuses its day/month/year parts, not itself */
 textarea.field{min-height:130px;resize:vertical;line-height:1.5}
 .flame,.star{width:12px;height:12px;display:inline-block;vertical-align:-1px}
 .flame{fill:var(--flame)}.star{fill:var(--star)}

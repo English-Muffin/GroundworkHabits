@@ -12,6 +12,7 @@ All notable changes to Groundwork Habits. Versions match the GitHub releases.
   instead of asking you to sign in again every hour.
 - Offline: the cloud icon turns grey and says it syncs when you're back online, instead of a red error; it syncs by
   itself when the connection returns.
+- Keyboard: date fields (goal deadline, streak start) now show the focus ring.
 - Light theme: accent-coloured text is darkened just enough to read well (WCAG AA) with any accent, including your own.
 - The cloud icon in the header syncs straight away (Settings is one tap away in the message); it still opens Settings
   when something needs fixing.
