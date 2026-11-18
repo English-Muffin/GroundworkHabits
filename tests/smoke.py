@@ -1182,7 +1182,7 @@ async def reminders(b):
     check('no JS errors (reminders)', not errs, errs); await ctx.close()
     # Android: fake LocalNotifications (permissions) and GroundworkNative (scheduling, answers, calendar) plugins
     ctx = await b.new_context(viewport={'width': 390, 'height': 800})
-    await ctx.add_init_script("""localStorage.setItem('groundwork-tips','1');window.__nb={items:[],answers:[],cb:null,url:''};
+    await ctx.add_init_script("""localStorage.setItem('groundwork-tips','1');window.GW_CLOUD_IDS={google:'gdesk'};window.__nb={items:[],answers:[],cb:null,url:''};
       window.Capacitor={Plugins:{LocalNotifications:{checkPermissions:async()=>({display:'granted'}),requestPermissions:async()=>({display:'granted'}),cancel:async()=>{},schedule:async()=>{}},
         GroundworkNative:{schedule:async o=>{__nb.items=o.items;return {exact:true}},takeAnswers:async()=>{const a=__nb.answers;__nb.answers=[];return {answers:a}},addListener:(n,f)=>{if(n==='back')__nb.back=f;else __nb.cb=f},exitApp:async()=>{__nb.exited=true},
           saveFile:async o=>{__nb.saved=o;return {saved:true}},pickFolder:async()=>({picked:true,name:'Drive'}),widget:async o=>{__nb.widget=o.data},bioAvailable:async()=>({ok:true,on:!!localStorage.getItem('__bio')}),bioEnable:async o=>{localStorage.setItem('__bio',o.pin);return {ok:true}},bioUnlock:async()=>({ok:!!localStorage.getItem('__bio'),pin:localStorage.getItem('__bio')}),bioDisable:async()=>{localStorage.removeItem('__bio')},readFolder:async()=>(__nb.ftext?{text:__nb.ftext}:{}),writeFolder:async o=>{__nb.ftext=o.text},clearFolder:async()=>{},backup:async o=>{__nb.bak=o;return {where:'Drive/backups'}},fetchCal:async o=>{__nb.url=o.url;return {ok:true,text:['BEGIN:VCALENDAR','BEGIN:VEVENT','UID:e1','DTSTART;VALUE=DATE:'+(d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'))(new Date()),'SUMMARY:Phone event','END:VEVENT','END:VCALENDAR'].join(String.fromCharCode(13,10))}}}}};""")
@@ -1245,6 +1245,22 @@ async def reminders(b):
     check('fingerprint unlock can be turned on after setting a PIN; the widget then hides names', await pg.evaluate("localStorage.getItem('__bio')") == '4321' and wd2['locked'] and wd2['items'] == [])
     await pg.reload(); await pg.wait_for_timeout(2500)
     check('with fingerprint on, Groundwork Habits unlocks without typing the PIN', await pg.locator('#lock').is_hidden() and await pg.evaluate("GroundworkTest.state().habits.length") == 2)
+    # Android sign-in: the answer arrives while the app is behind the browser (Data Saver can block its network there:
+    # "Failed to fetch"), so the token call waits until the app is on screen again
+    tok = []
+    async def gtok(route):
+        if route.request.method == 'OPTIONS': return await route.fulfill(status=204, headers={'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'})
+        tok.append(1); await route.fulfill(status=400, headers={'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}, body='{"error":"invalid_grant"}')
+    await ctx.route('https://oauth2.googleapis.com/**', gtok)
+    await ctx.add_init_script("Capacitor.Plugins.GroundworkNative.oauth=async o=>({ok:true,query:'code=C&state='+new URL(o.url).searchParams.get('state')})")
+    await pg.reload(); await pg.wait_for_timeout(300)
+    await pg.evaluate("""(()=>{let vis='hidden';Object.defineProperty(document,'visibilityState',{get:()=>vis,configurable:true});window.__show=()=>{vis='visible';document.dispatchEvent(new Event('visibilitychange'))}})()""")
+    await pg.evaluate("location.hash='#settings/calendar'"); await pg.wait_for_timeout(300)
+    await pg.evaluate("document.querySelector('[data-act=caloff]').click()"); await pg.wait_for_timeout(300)  # the calendar link set up above
+    await pg.evaluate("document.querySelector('[data-act=gcalsign]').click()"); await pg.wait_for_timeout(600)
+    hidden_calls = len(tok)
+    await pg.evaluate("__show()"); await pg.wait_for_timeout(600)
+    check('Android sign-in: the token call waits until the app is on screen', hidden_calls == 0 and len(tok) == 1, (hidden_calls, len(tok)))
     check('no JS errors (Android reminders)', not errs, errs); await ctx.close()
 
 async def mobile(b):

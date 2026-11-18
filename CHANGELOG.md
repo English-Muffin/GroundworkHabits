@@ -2,6 +2,11 @@
 
 All notable changes to Groundwork Habits. Versions match the GitHub releases.
 
+## Unreleased
+
+- Android: Google sign-in (Calendar and Drive) no longer fails with "Failed to fetch" when Data Saver or battery
+  limits block apps in the background. The app finishes signing in once it is back on screen.
+
 ## 1.7.11
 
 - New goal type: Times a week (for example, walk 3 times a week). Tick the days on the goal card as you go.

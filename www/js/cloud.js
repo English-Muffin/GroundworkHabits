@@ -22,7 +22,10 @@ function gEvent(e){if(!e||e.status==='cancelled'||!e.start)return null;const p=n
   return {uid:'g:'+e.id,day:d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()),time:p(d.getHours())+':'+p(d.getMinutes()),text:e.summary||''}}
 const CLOUD=LITE||DEMO||WIDGET?null:(()=>{
   const SK=KEY+'-cloud',OK=KEY+'-oauth',WEB=!DFS&&!NB;
-  const NAT=DFS&&DFS.oauth?u=>DFS.oauth(u):NB&&NB.oauth?u=>NB.oauth({url:u}):null;
+  // Android: the answer arrives while the app is behind the browser, where Data Saver or battery limits can block its network
+  // ("Failed to fetch"), so the token call waits until the app is on screen again
+  const shown=()=>new Promise(ok=>{const f=()=>{if(document.visibilityState!=='hidden'){document.removeEventListener('visibilitychange',f);ok()}};document.addEventListener('visibilitychange',f);f()});
+  const NAT=DFS&&DFS.oauth?u=>DFS.oauth(u):NB&&NB.oauth?u=>NB.oauth({url:u}).then(r=>shown().then(()=>r)):null;
   let st=null;try{st=JSON.parse(localStorage.getItem(SK)||'null')}catch(e){}
   const keep=()=>{try{st?localStorage.setItem(SK,JSON.stringify(st)):localStorage.removeItem(SK)}catch(e){}};
   const b64u=b=>btoa(String.fromCharCode.apply(null,new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
